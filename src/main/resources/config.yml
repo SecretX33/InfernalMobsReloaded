@@ -1,0 +1,70 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                      ${name}                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Plugin created by SecretX (github.com/SecretX33)
+# Version ${version}
+
+# ${name} create Infernal Mobs
+
+# This file will NEVER get modified after being created, when updating the plugin please make sure you rename this one and let a new one be created, and copy your old configs to the new config file.
+
+############################################################
+# +------------------------------------------------------+ #
+# |                   General Settings                   | #
+# +------------------------------------------------------+ #
+############################################################
+
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                     Mob Abilities                    | #
+# +------------------------------------------------------+ #
+############################################################
+
+abilities:
+  # if the mob is killed for the first time, it'll will respawn
+  1up: true
+  archer: true
+  # mobs may spawns with enchanted armor, or protection buffs in case they cannot wear armor
+  armoured: true
+  berserk: true
+  # mob hits may blind the player
+  blinding: true
+  bullwark: true
+  cloaked: true
+  confusing: true
+  ender: true
+  explode: true
+  firework: true
+  flying: true
+  # shoots ghast fireballs
+  ghastly: true
+  ghost: true
+  gravity: true
+  lifesteal: true
+  # mob have a small chance of spawning 3 babies next to it
+  mama: true
+  molten: true
+  morph: true
+  mounted: true
+  necromancer: true
+  # mob hits poisons the player
+  poisonous: true
+  potions: true
+  quicksand: true
+  rust: true
+  sapper: true
+  # mob will spawn with a random speed boost
+  speedy: true
+  storm: true
+  thief: true
+  tosser: true
+  vengeance: true
+  weakness: true
+  webber: true
+  # mob hits apply withering effect
+  withering: true

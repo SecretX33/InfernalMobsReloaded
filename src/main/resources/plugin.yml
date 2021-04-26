@@ -1,0 +1,41 @@
+name: ${name}
+version: ${version}
+main: ${mainClass}
+api-version: 1.16
+authors: [SecretX]
+description: Makes WorldEdits, well, kinda instant.
+website: https://github.com/SecretX33
+softdepend: [WorldGuard]
+
+#commands:
+#  herbalism:
+#    description: ${name}
+#    usage: /<command> <sub> [parameters]
+#    aliases: [herb]
+#
+#permissions:
+#
+#  herbalism.*:
+#    description: Gives access to all ${name} commands. Default to players with op.
+#    default: op
+#    children:
+#      herbalism.reload: true
+#      herbalism.create: true
+#      herbalism.destroybyplace: true
+#      herbalism.regen: true
+#
+#  herbalism.reload:
+#    description: Allows one to reload all plugin configurations.
+#    default: false
+#
+#  herbalism.create:
+#    description: Allows one to create and destroy harvestable blocks, as well as use the selection stick.
+#    default: false
+#
+#  herbalism.destroybyplace:
+#    description: Allows one to destroy harvestable blocks by placing other block inside it.
+#    default: false
+#
+#  herbalism.regen:
+#    description: Allows one to use 'regen' and 'regenall' commands to regen the harvest blocks.
+#    default: false

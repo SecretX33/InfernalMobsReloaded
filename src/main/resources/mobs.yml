@@ -1,0 +1,8 @@
+# List of all mobs that can spawn
+
+SKELETON:
+  display-name: "DisplayName"
+  # between 0 and 1; 0 means no mob will become that type, while 1 means 100% ALL mobs of that type will become infernal
+  spawn-chance: 0.1
+
+
