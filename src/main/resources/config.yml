@@ -17,6 +17,40 @@
 # +------------------------------------------------------+ #
 ############################################################
 
+# mobs spawned under reasons listed below will have a chance of becoming infernal mobs, see all spawn reasons here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/entity/CreatureSpawnEvent.SpawnReason.html , Ctrl + F is your friend
+natural-spawn-reasons:
+  - BEEHIVE                # When a bee is released from a beehive/bee nest
+  - BREEDING               # When an animal breeds to create a child
+  - BUILD_IRONGOLEM        # When an iron golem is spawned by being built
+  - BUILD_SNOWMAN          # When an snowman is spawned by being built
+  - BUILD_WITHER           # When an wither boss is spawned by being built
+# - CURED                  # When a villager is cured from infection
+  - CUSTOM                 # When a creature is spawned by plugins
+# - DEFAULT                # When an entity is missing a SpawnReason
+# - DISPENSE_EGG           # When a creature is spawned by a dispenser dispensing an egg
+  - DROWNED                # When a creature is spawned by another entity drowning
+# - EGG                    # When a creature spawns from an egg
+# - ENDER_PEARL            # When an entity is spawned as a result of ender pearl usage
+# - EXPLOSION              # When eg an effect cloud is spawned as a result of a creeper exploding
+  - INFECTION              # When a zombie infects a villager
+# - JOCKEY                 # When an entity spawns as a jockey of another entity (mostly spider jockeys)
+  - LIGHTNING              # When a creature spawns because of a lightning strike
+  - MOUNT                  # When an entity spawns as a mount of another entity (mostly chicken jockeys)
+  - NATURAL                # When something spawns from natural means
+# - NETHER_PORTAL          # When a creature is spawned by nether portal
+  - OCELOT_BABY            # When an ocelot has a baby spawned along with them
+  - PATROL                 # When an entity is spawned as part of a patrol
+  - RAID                   # When an entity is spawned as part of a raid
+  - REINFORCEMENTS         # When an entity calls for reinforcements
+# - SHEARED                # When an cow is spawned by shearing a mushroom cow
+  - SHOULDER_ENTITY        # When an entity is spawned as a result of the entity it is being perched on jumping or being damaged
+  - SILVERFISH_BLOCK       # When a silverfish spawns from a block
+  - SLIME_SPLIT            # When a slime splits
+# - SPAWNER                # When a creature spawns from a spawner, if enabled ALL spawners will have a chance of spawning infernal mobs
+  - SPAWNER_EGG            # When a creature spawns from a Spawner Egg
+  - TRAP                   # When an entity spawns as a trap for players approaching
+# - VILLAGE_DEFENSE        # When an iron golem is spawned to defend a village
+  - VILLAGE_INVASION       # When a zombie is spawned to invade a village
 
 
 ############################################################
@@ -25,6 +59,7 @@
 # +------------------------------------------------------+ #
 ############################################################
 
+# disable abilities you don't want mobs to have here by changing their value to 'false'
 abilities:
   # if the mob is killed for the first time, it'll will respawn
   1up: true

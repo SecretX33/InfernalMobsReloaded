@@ -1,0 +1,21 @@
+murder_axe:
+  name: "&7Murder Axe"
+  material: "IRON_AXE"                   # Vanilla material of an item, material list here https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html, Ctrl + F is your friend, use the name exactly as listed in the website
+  amount: 1
+  lore:
+    - "This is a lore"
+    - "With multiple lines"
+
+thors_apple:
+  name: "&eThors Apple"
+  material: "GOLDEN_APPLE"
+  amount: 2-5                            # Random amount between 2 and 5
+  lore:
+    - "&eStolen from Thors own table."
+
+fall_far_boots:
+  name: "Fall Far Boots"
+  material: "IRON_BOOTS"
+  amount: 1
+  lore:
+    - "Lore with single line"
