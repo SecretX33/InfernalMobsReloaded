@@ -21,5 +21,6 @@ class ChunkLoadListener(plugin: Plugin, private val mobsManager: InfernalMobsMan
             .forEach { mobsManager.loadInfernalMob(it as LivingEntity) }
     }
 
-    private fun Entity.isInfernalMob() = this is LivingEntity && mobsManager.isInfernalMob(this)
+    // isValid may not return true since the entity is being loaded again (?)
+    private fun Entity.isInfernalMob() = this is LivingEntity && isValid && !isDead && mobsManager.isInfernalMob(this)
 }

@@ -1,6 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.manager
 
-import com.github.secretx33.infernalmobsreloaded.events.InfernalMobSpawnEvent
+import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.model.InfernalAbility
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
@@ -25,7 +25,7 @@ class InfernalMobsManager (
 
     fun isInfernalMob(entity: LivingEntity) = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)?.let { infernalMobTypesRepo.isValidInfernoType(it) } == true
 
-    fun makeInfernalMob(event: InfernalMobSpawnEvent) {
+    fun makeInfernalMob(event: InfernalSpawnEvent) {
         val entity = event.entity
         val infernalType = event.infernalType
 

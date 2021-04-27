@@ -1,0 +1,14 @@
+infernal-mob-spawn-messages:
+  - '&cAn Infernal mob has spawned near you!'
+  - '&cWatch out!'
+  - '&cYou hear a faint scream...'
+  - '&cSomething is coming...'
+  - '&cYou hear a mob nearby...'
+
+infernal-mob-death-messages:
+  - '&cplayer &chas killed an mob&c!'
+  - '&cAn mob &cwas slain by player&c!'
+  - '&cplayer &cowned an mob&c!'
+  - '&cAn mob &cwas beheaded by player&c''s weapon!'
+  - '&cplayer&c''s weapon &ckilled an mob&c!'
+  - '&cAn mob &cwas killed by player &cusing a weapon&c!'

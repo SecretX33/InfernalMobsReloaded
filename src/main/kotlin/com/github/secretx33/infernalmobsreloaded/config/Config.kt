@@ -82,6 +82,8 @@ enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
     INFERNAL_ALLOWED_SPAWN_REASONS("spawn-reasons-which-infernal-mobs-can-spawn", listOf(CreatureSpawnEvent.SpawnReason.NATURAL)),
     INFERNAL_ALLOWED_WORLDS("worlds-in-which-infernal-mobs-can-spawn", emptyList<String>()),
     INFERNAL_BLACKLISTED_BABY_MOBS("blacklisted-baby-mob-types", emptyList<EntityType>()),
-    PLAYERS_ONLY_SEE_WANDS_WITH_PERMISSION("players-only-see-dropped-wands-with-permission", true),
-    REMOVE_HARVEST_BLOCK_WORLD_MISSING("remove-harvest-block-if-missing-world", false),
+    ENABLE_INFERNO_SPAWN_MESSAGE("enable-inferno-spawn-messages", false),
+    INFERNO_SPAWN_MESSAGE_RADIUS("inferno-spawn-message-radius", 50),
+    ENABLE_INFERNO_DEATH_MESSAGE("enable-inferno-death-messages", false),
+    INFERNO_DEATH_MESSAGE_RADIUS("inferno-death-message-radius", 30),
 }

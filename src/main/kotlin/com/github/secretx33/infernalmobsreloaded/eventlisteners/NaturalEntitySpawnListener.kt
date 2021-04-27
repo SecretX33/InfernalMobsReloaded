@@ -2,7 +2,7 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners
 
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
-import com.github.secretx33.infernalmobsreloaded.events.InfernalMobSpawnEvent
+import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import org.bukkit.Bukkit
 import org.bukkit.World
@@ -30,7 +30,7 @@ class NaturalEntitySpawnListener(plugin: Plugin, private val config: Config, pri
         val infernoType = infernalMobTypesRepo.getInfernoTypes(entityType).firstOrNull { random.nextDouble() <= it.spawnChance } ?: return
 
         // fire event InfernalMobSpawnEvent to spawn a new infernal
-        Bukkit.getPluginManager().callEvent(InfernalMobSpawnEvent(entity, infernoType, spawnReason, world))
+        Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(entity, infernoType, spawnReason, world))
     }
 
     private fun LivingEntity.cannotBeInfernal() = !infernalMobTypesRepo.canTypeBecomeInfernal(type) || (this is Ageable && !isAdult && blacklistedBabies.contains(type))

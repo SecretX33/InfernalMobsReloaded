@@ -8,7 +8,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 
-class InfernalMobSpawnEvent(
+class InfernalSpawnEvent(
     val entity: LivingEntity,
     val infernalType: InfernalMobType,
     val spawnReason: SpawnReason,
@@ -22,7 +22,7 @@ class InfernalMobSpawnEvent(
         require(entityType.isSpawnable) { "entity needs to be spawnable" }
     }
 
-    override fun getHandlers(): HandlerList = InfernalMobSpawnEvent.handlers
+    override fun getHandlers(): HandlerList = InfernalSpawnEvent.handlers
 
     override fun isCancelled(): Boolean = isCancelled
 

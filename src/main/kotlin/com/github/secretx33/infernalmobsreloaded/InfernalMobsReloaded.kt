@@ -1,7 +1,10 @@
 package com.github.secretx33.infernalmobsreloaded
 
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.InfernalMobSpawnListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkLoadListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkUnloadListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalSpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.NaturalEntitySpawnListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalDeathListener
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
@@ -24,8 +27,11 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { KeyChain(get()) }
         single { LootItemsRepo(get(), get(), get()) }
         single { InfernalMobTypesRepo(get(), get(), get(), get()) }
+        single { InfernalDeathListener(get(), get()) }
+        single { InfernalSpawnListener(get(), get()) }
+        single { ChunkLoadListener(get(), get()) }
+        single { ChunkUnloadListener(get(), get()) }
         single { NaturalEntitySpawnListener(get(), get(), get()) }
-        single { InfernalMobSpawnListener(get(), get()) }
     }
 
 //    override fun onLoad() {
@@ -41,8 +47,11 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
             printLogger(Level.ERROR)
             loadKoinModules(mod)
         }
+        get<InfernalDeathListener>()
+        get<InfernalSpawnListener>()
+        get<ChunkLoadListener>()
+        get<ChunkUnloadListener>()
         get<NaturalEntitySpawnListener>()
-        get<InfernalMobSpawnListener>()
     }
 
     override fun onDisable() {
