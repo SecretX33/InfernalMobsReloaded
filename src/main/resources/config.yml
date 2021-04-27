@@ -57,6 +57,11 @@ spawn-reasons-which-infernal-mobs-can-spawn:
   - VILLAGE_INVASION       # When a zombie is spawned to invade a village
 
 
+# Baby form of the mobs inside this list won't become infernals; to disable this blacklist, just delete all the items and insert empty square brackets instead
+# Full list of mobs can be found here https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/EntityType.html , Ctrl + F
+blacklisted-baby-mob-types:
+  - WOLF
+
 ############################################################
 # +------------------------------------------------------+ #
 # |                     Mob Abilities                    | #

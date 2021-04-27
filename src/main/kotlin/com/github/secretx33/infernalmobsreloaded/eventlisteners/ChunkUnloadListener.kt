@@ -1,6 +1,5 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners
 
-import com.github.secretx33.infernalmobsreloaded.events.InfernalMobSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity

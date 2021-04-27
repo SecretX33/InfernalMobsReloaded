@@ -4,9 +4,8 @@ import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.LootItem
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
+import com.google.common.collect.ImmutableSet
 import com.google.common.collect.ImmutableSetMultimap
-import com.google.common.collect.Lists
-import com.google.common.collect.Sets
 import me.mattstudios.msg.adventure.AdventureMessage
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.EntityType
@@ -37,12 +36,12 @@ class InfernalMobTypesRepo (
 
     fun canTypeBecomeInfernal(type: EntityType) = infernoTypeMultimap.containsKey(type)
 
-    fun getInfernoTypes(entityType: EntityType) = infernoTypeMultimap[entityType]
+    fun getInfernoTypes(entityType: EntityType): ImmutableSet<InfernalMobType> = infernoTypeMultimap[entityType]
 
     fun isValidInfernoType(name: String) = infernoTypeCache.containsKey(name.toLowerCase(Locale.US))
 
     private fun ensureUniqueKeys() {
-        val duplicatedKeys = manager.getKeys(false).groupBy { it.toLowerCase(Locale.US) }
+        val duplicatedKeys = manager.getKeys(false).groupBy { it.toLowerCase(Locale.US) }.filterValues { it.size > 1 }
         // if there are duplicates in keys
         if(duplicatedKeys.isNotEmpty()) {
             val sb = StringBuilder("Oops, seems like there are duplicate mob categories in file '${manager.fileName}', remember that categories are caSE inSenSiTiVe, so make sure that each category has a unique name. Duplicated mob categories: ")
@@ -67,6 +66,7 @@ class InfernalMobTypesRepo (
         val spawnChance = getMobSpawnChance(name)
         // TODO("Add the spawner and spawner drop chance")
         val abilityAmounts = getAbilityAmounts(name)
+        val hpMultiplierAmounts = getHealthMultiplierAmounts(name)
         val lootTable = getMobLootTable(name)
         return InfernalMobType(name,
             displayName = displayName,
@@ -74,6 +74,8 @@ class InfernalMobTypesRepo (
             spawnChance = spawnChance,
             minAbilities = abilityAmounts.first,
             maxAbilities = abilityAmounts.second,
+            minHealthMulti = hpMultiplierAmounts.first,
+            maxHealthMulti = hpMultiplierAmounts.second,
             loots = lootTable,
         )
     }
@@ -132,6 +134,29 @@ class InfernalMobTypesRepo (
 
         val maxAmount = amounts[1].toIntOrNull()?.let { max(minAmount, it) } ?: run {
             log.severe("Max ability amount '${amounts[1]}' provided for mob category '$name' is not an integer, please fix the typo and reload the configurations. Defaulting '$name' max amount to its minimum amount, which is $minAmount.")
+            minAmount
+        }
+        return Pair(minAmount, maxAmount)
+    }
+
+    // returns a pair with the <Min, Max> amount of the health multiplier that that infernal mob will have
+    private fun getHealthMultiplierAmounts(name: String): Pair<Double, Double> {
+        val amounts = (manager.getString("$name.health-multiplier") ?: "").split('-', limit = 2)
+
+        // if there's no amount field, default it to 0
+        if(amounts[0].isBlank()) return Pair(1.0, 1.0)
+
+        // if typed amount is not an integer
+        val minAmount = amounts[0].toDoubleOrNull()?.let { max(0.01, it) } ?: run {
+            log.severe("Inside mob category '$name', health multiplier provided '${amounts[0]}' is not a double, please fix your configurations and reload. Defaulting '$name' health multiplier to 1.")
+            return Pair(1.0, 1.0)
+        }
+
+        // if there's one one number, min and max amounts should be equal
+        if(amounts.size < 2 || amounts[1].isBlank()) return Pair(minAmount, minAmount)
+
+        val maxAmount = amounts[1].toDoubleOrNull()?.let { max(minAmount, it) } ?: run {
+            log.severe("Inside mob category '$name', max health multiplier provided '${amounts[0]}' is not a double, please fix the typo and reload the configurations. Defaulting '$name' max amount to its minimum amount, which is $minAmount.")
             minAmount
         }
         return Pair(minAmount, maxAmount)

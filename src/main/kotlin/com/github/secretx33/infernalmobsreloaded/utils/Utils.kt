@@ -1,7 +1,5 @@
 package com.github.secretx33.infernalmobsreloaded.utils
 
-import com.google.common.collect.ImmutableMap
-import com.google.common.collect.ImmutableSetMultimap
 import org.apache.commons.lang.WordUtils
 import org.bukkit.Bukkit
 import org.bukkit.Location

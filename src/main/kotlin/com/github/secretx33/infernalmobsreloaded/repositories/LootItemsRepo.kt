@@ -36,14 +36,14 @@ class LootItemsRepo (
 
     //    fun getTypeOrNull(group: String): HarvestBlockGroup? = typeCache[group.toLowerCase(Locale.US)]
 
-    fun getLootItemOrNull(name: String) = lootItemCache.entries.firstOrNull { it.key.equals(name, ignoreCase = true) }?.value
+    fun getLootItemOrNull(name: String) = lootItemCache[name.toLowerCase(Locale.US)]
 
     fun getLootItem(name: String): LootItem = getLootItemOrNull(name) ?: throw NoSuchElementException("HarvestBlock for group $name was not found.")
 
     fun hasLootItem(name: String) = lootItemCache.containsKey(name.toLowerCase(Locale.US))
 
     private fun ensureUniqueKeys() {
-        val duplicatedKeys = manager.getKeys(false).groupBy { it.toLowerCase(Locale.US) }
+        val duplicatedKeys = manager.getKeys(false).groupBy { it.toLowerCase(Locale.US) }.filterValues { it.size > 1 }
         // if there are duplicates in keys
         if(duplicatedKeys.isNotEmpty()) {
             val sb = StringBuilder("Oops, seems like there are duplicate item loot names in file '${manager.fileName}', remember that item names are caSE inSenSiTiVe, so make sure that each item has a unique name. Duplicated item names: ")

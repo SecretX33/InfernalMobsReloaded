@@ -1,8 +1,5 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
-import org.bukkit.Bukkit
-import java.util.*
-
 //data class InfernalMob (
 //    val uniqueId: UUID,
 //    val infernalType: InfernalMobType,
