@@ -33,12 +33,14 @@ class LootItemsRepo(plugin: Plugin, private val log: Logger, private val adventu
         loadLootTable()
     }
 
-//    fun getTypeOrNull(group: String): HarvestBlockGroup? = typeCache[group.toLowerCase(Locale.US)]
-//
-//    fun getGroup(group: String): HarvestBlockGroup = getGroupOrNull(group) ?: throw NoSuchElementException("HarvestBlock for group $group was not found.")
-//
-//    fun hasGroup(group: String) = typeCache.containsKey(group.toLowerCase(Locale.US))
-//
+    //    fun getTypeOrNull(group: String): HarvestBlockGroup? = typeCache[group.toLowerCase(Locale.US)]
+
+    fun getLootItemOrNull(group: String) = lootCache.entries.firstOrNull { it.key.equals(group, ignoreCase = true) }?.value
+
+    fun getLootItem(group: String): LootItem = getLootItemOrNull(group) ?: throw NoSuchElementException("HarvestBlock for group $group was not found.")
+
+    fun hasLootItem(group: String) = lootCache.containsKey(group.toLowerCase(Locale.US))
+
 //    fun getAllGroups(): List<String> = typeList
 
     // used to get "current case" version of a group name, because wands store the group name the way it were, before possible case changes
@@ -48,7 +50,7 @@ class LootItemsRepo(plugin: Plugin, private val log: Logger, private val adventu
         lootNameList.apply {
             addAll(manager.getKeys(false))
             sort()
-            forEach { group -> lootCache[group.toLowerCase(Locale.US)] = makeLootItem(group) }
+            forEach { itemName -> lootCache[itemName.toLowerCase(Locale.US)] = makeLootItem(itemName) }
         }
     }
 
