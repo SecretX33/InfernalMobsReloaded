@@ -8,50 +8,34 @@ import me.mattstudios.msg.adventure.AdventureMessage
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.EntityType
 import org.bukkit.plugin.Plugin
-import java.util.*
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.min
 
-class InfernalMobTypesRepo(plugin: Plugin, private val log: Logger, private val adventureMessage: AdventureMessage, private val lootItemsRepo: LootItemsRepo) {
-
-    private val manager   = YamlManager(plugin, "mobs")
-    private val typeCache = ConcurrentHashMap<String, InfernalMobType>()     // lowercase groupName, allInfos
-    private val typeList  = CopyOnWriteArrayList<String>()                   // original groupNames
-    private val validEntities = HashSet<EntityType>()
+class InfernalMobTypesRepo (
+    plugin: Plugin,
+    private val log: Logger,
+    private val adventureMessage: AdventureMessage,
+    private val lootItemsRepo: LootItemsRepo
+) {
+    private val manager = YamlManager(plugin, "mobs")
+    private var infernoTypeCache = emptyMap<EntityType, InfernalMobType>()   // lowercase groupName, allInfos
+    private var infernoTypeNames = emptyList<String>()                       // original groupNames
 
     init { loadMobTypes() }
 
     fun reload() {
         manager.reload()
-        typeCache.clear()
-        typeList.clear()
-        validEntities.clear()
         loadMobTypes()
-        validEntities.addAll(typeCache.values.map { it.type })
     }
 
-    fun canTypeBecomeInfernal(type: EntityType) = validEntities.contains(type)
+    fun canTypeBecomeInfernal(type: EntityType) = infernoTypeCache.containsKey(type)
 
-//    fun getTypeOrNull(group: String): HarvestBlockGroup? = typeCache[group.toLowerCase(Locale.US)]
-//
-//    fun getGroup(group: String): HarvestBlockGroup = getGroupOrNull(group) ?: throw NoSuchElementException("HarvestBlock for group $group was not found.")
-//
-//    fun hasGroup(group: String) = typeCache.containsKey(group.toLowerCase(Locale.US))
-//
-//    fun getAllGroups(): List<String> = typeList
-
-    // used to get "current case" version of a group name, because wands store the group name the way it were, before possible case changes
-//    fun getGroupFromName(group: String): String? = typeList.firstOrNull { it.equals(group, ignoreCase = true) }
+    fun getInfernoTypeOrNull(entityType: EntityType) = infernoTypeCache[entityType]
 
     private fun loadMobTypes() {
-        typeList.apply {
-            addAll(manager.getKeys(false))
-            sort()
-            forEach { group -> typeCache[group.toLowerCase(Locale.US)] = makeMobType(group) }
-        }
+        infernoTypeNames = manager.getKeys(false).sorted()
+        infernoTypeCache = infernoTypeNames.map { makeMobType(it) }.associateByTo(HashMap(infernoTypeNames.size)) { it.type }
     }
 
     private fun makeMobType(name: String): InfernalMobType {

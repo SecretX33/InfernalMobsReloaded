@@ -5,7 +5,7 @@ import java.util.*
 
 data class InfernalMob (
     val uniqueId: UUID,
-    val abilities: Set<String>,
+    val abilities: Set<Ability>,
     private var lives: Int = 1,
 ) {
     val isDead: Boolean

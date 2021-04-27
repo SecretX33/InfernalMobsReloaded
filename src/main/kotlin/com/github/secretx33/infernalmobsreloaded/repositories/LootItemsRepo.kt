@@ -12,34 +12,34 @@ import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.plugin.Plugin
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.min
 
-class LootItemsRepo(plugin: Plugin, private val log: Logger, private val adventureMessage: AdventureMessage) {
+class LootItemsRepo (
+    plugin: Plugin,
+    private val log: Logger,
+    private val adventureMessage: AdventureMessage,
+) {
 
-    private val manager      = YamlManager(plugin, "loot_table")
-    private val lootCache    = ConcurrentHashMap<String, LootItem>()   // lowercase lootNames, LootItem
-    private val lootNameList = CopyOnWriteArrayList<String>()          // original lootNames
+    private val manager = YamlManager(plugin, "loot_table")
+    private var lootItemCache = emptyMap<String, LootItem>()     // lowercase lootNames, LootItem
+    private var lootItemNames = emptyList<String>()              // original lootNames
 
     init { loadLootTable() }
 
     fun reload() {
         manager.reload()
-        lootCache.clear()
-        lootNameList.clear()
         loadLootTable()
     }
 
     //    fun getTypeOrNull(group: String): HarvestBlockGroup? = typeCache[group.toLowerCase(Locale.US)]
 
-    fun getLootItemOrNull(group: String) = lootCache.entries.firstOrNull { it.key.equals(group, ignoreCase = true) }?.value
+    fun getLootItemOrNull(name: String) = lootItemCache.entries.firstOrNull { it.key.equals(name, ignoreCase = true) }?.value
 
-    fun getLootItem(group: String): LootItem = getLootItemOrNull(group) ?: throw NoSuchElementException("HarvestBlock for group $group was not found.")
+    fun getLootItem(name: String): LootItem = getLootItemOrNull(name) ?: throw NoSuchElementException("HarvestBlock for group $name was not found.")
 
-    fun hasLootItem(group: String) = lootCache.containsKey(group.toLowerCase(Locale.US))
+    fun hasLootItem(name: String) = lootItemCache.containsKey(name.toLowerCase(Locale.US))
 
 //    fun getAllGroups(): List<String> = typeList
 
@@ -47,11 +47,8 @@ class LootItemsRepo(plugin: Plugin, private val log: Logger, private val adventu
 //    fun getGroupFromName(group: String): String? = typeList.firstOrNull { it.equals(group, ignoreCase = true) }
 
     private fun loadLootTable() {
-        lootNameList.apply {
-            addAll(manager.getKeys(false))
-            sort()
-            forEach { itemName -> lootCache[itemName.toLowerCase(Locale.US)] = makeLootItem(itemName) }
-        }
+        lootItemNames = manager.getKeys(false).sorted()
+        lootItemCache = lootItemNames.map { it.toLowerCase(Locale.US) }.associateWithTo(HashMap(lootItemNames.size)) { makeLootItem(it) }
     }
 
     private fun makeLootItem(name: String): LootItem {

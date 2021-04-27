@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component
 import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
-import org.bukkit.inventory.ItemStack
 import java.util.*
 
 data class InfernalMobType (

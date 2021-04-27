@@ -1,14 +1,13 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
-import com.google.common.base.Defaults.defaultValue
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
-import kotlin.collections.HashSet
+import kotlin.Enum
 import java.lang.Enum as JavaEnum
 
 

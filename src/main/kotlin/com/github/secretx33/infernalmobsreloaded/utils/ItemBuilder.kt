@@ -2,7 +2,6 @@ package com.github.secretx33.infernalmobsreloaded.utils
 
 import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag

@@ -1,8 +1,11 @@
 package com.github.secretx33.infernalmobsreloaded
 
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.InfernalMobSpawnListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.NaturalEntitySpawnListener
+import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
+import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.*
 import me.mattstudios.msg.adventure.AdventureMessage
-import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.component.KoinApiExtension
@@ -16,8 +19,11 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
     private val mod = module {
         single<Plugin> { this@InfernalMobsReloaded } bind JavaPlugin::class
         single { get<Plugin>().logger }
-        single { BukkitAudiences.create(this@InfernalMobsReloaded) }
         single { AdventureMessage.create() }
+        single { LootItemsRepo(get(), get(), get()) }
+        single { InfernalMobTypesRepo(get(), get(), get(), get()) }
+        single { NaturalEntitySpawnListener(get(), get(), get()) }
+        single { InfernalMobSpawnListener(get()) }
     }
 
 //    override fun onLoad() {
@@ -33,10 +39,11 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
             printLogger(Level.ERROR)
             loadKoinModules(mod)
         }
+        get<NaturalEntitySpawnListener>()
+        get<InfernalMobSpawnListener>()
     }
 
     override fun onDisable() {
-        get<BukkitAudiences>().close()
         unloadKoinModules(mod)
         stopKoin()
     }
