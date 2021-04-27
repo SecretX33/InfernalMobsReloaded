@@ -10,6 +10,7 @@ import org.bukkit.block.Block
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataHolder
 import org.bukkit.plugin.Plugin
 import java.util.*
 
@@ -40,4 +41,7 @@ fun ItemStack.formattedItemName(): String = itemMeta?.displayName()?.toString()?
 fun EntityType.formattedTypeName(): String = name.replace('_', ' ').capitalizeFully()
 
 fun Player.isInventoryFull() = inventory.firstEmpty() == -1
+
+val PersistentDataHolder.pdc
+    get() = persistentDataContainer
 

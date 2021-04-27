@@ -11,8 +11,10 @@ data class InfernalMobType (
     val displayName: Component,
     val entityType: EntityType,
     val spawnChance: Double,
-    val minAbilities: Int,
-    val maxAbilities: Int,
+    private val minAbilities: Int,
+    private val maxAbilities: Int,
+    private val minHealthMulti: Double,
+    private val maxHealthMulti: Double,
     private val loots: Map<LootItem, Double>,
 ) {
     val entityClass: Class<out Entity> = entityType.entityClass ?: throw IllegalArgumentException("entityClass cannot be null")
@@ -22,12 +24,21 @@ data class InfernalMobType (
         require(entityType.isSpawnable) { "entityType needs to be spawnable, $entityType is not" }
         require(entityClass !is ComplexLivingEntity) { "entityClass cannot be a ComplexLivingEntity" }
         require(loots.values.all { it in 0.0..1.0 }) { "all loot chances must be within 0 and 1, something inside the loop map was not, map = $loots"}
+
+        // abilities number
         require(minAbilities >= 0) { "minAbilities has to be at least 0, minAbilities = $minAbilities" }
         require(maxAbilities >= 0) { "maxAbilities has to be at least 0, maxAbilities = $maxAbilities" }
         require(minAbilities <= maxAbilities) { "minAbilities cannot be higher than maxAbilities, minAbilities = $minAbilities, maxAbilities = $maxAbilities" }
+
+        // health multiplier
+        require(minHealthMulti > 0) { "minHealthMulti has to be higher than 0, minHealthMulti = $minHealthMulti" }
+        require(maxHealthMulti > 0) { "maxHealthMulti has to be higher than 0, maxHealthMulti = $maxHealthMulti" }
+        require(minHealthMulti <= maxHealthMulti) { "minHealthMulti cannot be higher than maxHealthMulti, minHealthMulti = $minHealthMulti, maxHealthMulti = $maxHealthMulti" }
     }
 
     fun getDrops() = loots.filterValues { random.nextDouble() <= it }.keys
+
+    fun getAbilityNumber() = random.nextInt(maxAbilities - minAbilities) + minAbilities
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

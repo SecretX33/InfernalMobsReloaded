@@ -39,6 +39,8 @@ class InfernalMobTypesRepo (
 
     fun getInfernoTypes(entityType: EntityType) = infernoTypeMultimap[entityType]
 
+    fun isValidInfernoType(name: String) = infernoTypeCache.containsKey(name.toLowerCase(Locale.US))
+
     private fun ensureUniqueKeys() {
         val duplicatedKeys = manager.getKeys(false).groupBy { it.toLowerCase(Locale.US) }
         // if there are duplicates in keys

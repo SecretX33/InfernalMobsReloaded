@@ -1,6 +1,8 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
-enum class Ability {
+import kotlin.math.min
+
+enum class InfernalAbility {
     SECOND_WING,
     ARCHER,
     ARMOURED,
@@ -35,5 +37,14 @@ enum class Ability {
     VENGEANCE,
     WEAKNESS,
     WEBBER,
-    WITHERING,
+    WITHERING;
+
+    companion object {
+        val values = values().toList()
+
+        fun random(number: Int): List<InfernalAbility> {
+            require(number >= 0) { "number cannot be lower than 0, number = $number" }
+            return values.subList(0, min(values.size, number))
+        }
+    }
 }

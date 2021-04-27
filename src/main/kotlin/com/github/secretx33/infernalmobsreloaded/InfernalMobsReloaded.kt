@@ -2,6 +2,7 @@ package com.github.secretx33.infernalmobsreloaded
 
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.InfernalMobSpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.NaturalEntitySpawnListener
+import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.*
@@ -20,10 +21,11 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single<Plugin> { this@InfernalMobsReloaded } bind JavaPlugin::class
         single { get<Plugin>().logger }
         single { AdventureMessage.create() }
+        single { KeyChain(get()) }
         single { LootItemsRepo(get(), get(), get()) }
         single { InfernalMobTypesRepo(get(), get(), get(), get()) }
         single { NaturalEntitySpawnListener(get(), get(), get()) }
-        single { InfernalMobSpawnListener(get()) }
+        single { InfernalMobSpawnListener(get(), get()) }
     }
 
 //    override fun onLoad() {
