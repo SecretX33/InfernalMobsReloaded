@@ -4,10 +4,14 @@ import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.LootItem
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
+import com.google.common.collect.ImmutableSetMultimap
+import com.google.common.collect.Lists
+import com.google.common.collect.Sets
 import me.mattstudios.msg.adventure.AdventureMessage
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.EntityType
 import org.bukkit.plugin.Plugin
+import java.util.*
 import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.min
@@ -19,23 +23,37 @@ class InfernalMobTypesRepo (
     private val lootItemsRepo: LootItemsRepo
 ) {
     private val manager = YamlManager(plugin, "mobs")
-    private var infernoTypeCache = emptyMap<EntityType, InfernalMobType>()   // lowercase groupName, allInfos
-    private var infernoTypeNames = emptyList<String>()                       // original groupNames
+    private var infernoTypeNames = emptyList<String>()                    // original groupNames
+    private var infernoTypeCache = emptyMap<String, InfernalMobType>()    // lowercase groupName, infernoType
+    private var infernoTypeMultimap = ImmutableSetMultimap.of<EntityType, InfernalMobType>()
 
-    init { loadMobTypes() }
+    init { reload() }
 
     fun reload() {
         manager.reload()
+        ensureUniqueKeys()
         loadMobTypes()
     }
 
-    fun canTypeBecomeInfernal(type: EntityType) = infernoTypeCache.containsKey(type)
+    fun canTypeBecomeInfernal(type: EntityType) = infernoTypeMultimap.containsKey(type)
 
-    fun getInfernoTypeOrNull(entityType: EntityType) = infernoTypeCache[entityType]
+    fun getInfernoTypes(entityType: EntityType) = infernoTypeMultimap[entityType]
+
+    private fun ensureUniqueKeys() {
+        val keys = manager.getKeys(false).map { it.toLowerCase(Locale.US) }
+        val keysDistinct = keys.distinct()
+        // if there are duplicates in keys
+        if(keys.size != keysDistinct.size) {
+            log.severe("Oops, seems like there are duplicate mob categories in file '${manager.fileName}', remember that categories are casE inSenSiTiVe, so make sure that each category has a unique name. Duplicated categories: ${(keys - keysDistinct).joinToString()}")
+        }
+    }
 
     private fun loadMobTypes() {
         infernoTypeNames = manager.getKeys(false).sorted()
-        infernoTypeCache = infernoTypeNames.map { makeMobType(it) }.associateByTo(HashMap(infernoTypeNames.size)) { it.type }
+        infernoTypeCache = infernoTypeNames.map { it.toLowerCase(Locale.US) }.associateWithTo(HashMap(infernoTypeNames.size)) { makeMobType(it) }
+        val builder = ImmutableSetMultimap.builder<EntityType, InfernalMobType>()
+        infernoTypeCache.forEach { (_, infernoType) -> builder.put(infernoType.entityType, infernoType) }
+        infernoTypeMultimap = builder.build()
     }
 
     private fun makeMobType(name: String): InfernalMobType {
@@ -43,13 +61,75 @@ class InfernalMobTypesRepo (
         val displayName = getMobDisplayName(name, type)
         val spawnChance = getMobSpawnChance(name)
         // TODO("Add the spawner and spawner drop chance")
+        val abilityAmounts = getAbilityAmounts(name)
         val lootTable = getMobLootTable(name)
         return InfernalMobType(name,
             displayName = displayName,
-            type = type,
+            entityType = type,
             spawnChance = spawnChance,
+            minAbilities = abilityAmounts.first,
+            maxAbilities = abilityAmounts.second,
             loots = lootTable,
         )
+    }
+
+    private fun getMobType(name: String): EntityType {
+        val mobType = manager.getString("$name.type") ?: ""
+
+        // if name is absent or blank
+        if(mobType.isBlank()) {
+            log.severe("You must provide a type of mob for the category '$name'! Please fix your mobs configurations and reload, defaulting $name mob type to Zombie.")
+            return EntityType.ZOMBIE
+        }
+
+        return EntityType.values().firstOrNull { it.name.equals(mobType, ignoreCase = true) } ?: run {
+            log.severe("Inside mob category '$name', mob of type '$mobType' doesn't exist, please fix your mobs configurations. Defaulting $name mob type to Zombie.")
+            EntityType.ZOMBIE
+        }
+    }
+
+    private fun getMobDisplayName(name: String, type: EntityType): Component {
+        val displayName = manager.getString("$name.display-name") ?: ""
+
+        if(displayName.isBlank()) {
+            log.severe("You must provide a display name for the mob category '$name'! Defaulting $name display name to its type.")
+            return Component.text(type.formattedTypeName())
+        }
+        return adventureMessage.parse(displayName)
+    }
+
+    private fun getMobSpawnChance(name: String): Double {
+        val spawnChance = manager.getDouble("$name.spawn-chance", Double.MIN_VALUE)
+
+        // if user forgot to insert the spawnChance of that mob category
+        if(spawnChance == Double.MIN_VALUE) {
+            log.severe("You must provide a spawn chance for the mob category '$name'! Please fix your mobs configurations and reload, defaulting $name spawn chance to 15%.")
+            return 0.15
+        }
+        return max(0.0, min(1.0, spawnChance))
+    }
+
+    // returns a pair with the <Min, Max> amount of abilities that that infernal mob will have
+    private fun getAbilityAmounts(name: String): Pair<Int, Int> {
+        val amounts = (manager.getString("$name.ability-amount") ?: "").split('-', limit = 2)
+
+        // if there's no amount field, default it to 0
+        if(amounts[0].isBlank()) return Pair(0, 0)
+
+        // if typed amount is not an integer
+        val minAmount = amounts[0].toIntOrNull()?.let { max(0, it) } ?: run {
+            log.severe("Ability amount '${amounts[0]}' provided for mob category '$name' is not an integer, please fix your configurations and reload. Defaulting '$name' ability amount to 1.")
+            return Pair(1, 1)
+        }
+
+        // if there's one one number, min and max amounts should be equal
+        if(amounts.size < 2 || amounts[1].isBlank()) return Pair(minAmount, minAmount)
+
+        val maxAmount = amounts[1].toIntOrNull()?.let { max(minAmount, it) } ?: run {
+            log.severe("Max ability amount '${amounts[1]}' provided for mob category '$name' is not an integer, please fix the typo and reload the configurations. Defaulting '$name' max amount to its minimum amount, which is $minAmount.")
+            minAmount
+        }
+        return Pair(minAmount, maxAmount)
     }
 
     private fun getMobLootTable(name: String): Map<LootItem, Double> {
@@ -81,41 +161,5 @@ class InfernalMobTypesRepo (
             }
         }
         return lootItems
-    }
-
-    private fun getMobSpawnChance(name: String): Double {
-        val spawnChance = manager.getDouble("$name.spawn-chance", Double.MIN_VALUE)
-
-        // if user forgot to insert the spawnChance of that mob category
-        if(spawnChance == Double.MIN_VALUE) {
-            log.severe("You must provide a spawn chance for the mob category '$name'! Please fix your mobs configurations and reload, defaulting $name spawn chance to 15%.")
-            return 0.15
-        }
-        return max(0.0, min(1.0, spawnChance))
-    }
-
-    private fun getMobType(name: String): EntityType {
-        val mobType = manager.getString("$name.type") ?: ""
-
-        // if name is absent or blank
-        if(mobType.isBlank()) {
-            log.severe("You must provide a type of mob for the category '$name'! Please fix your mobs configurations and reload, defaulting $name mob type to Zombie.")
-            return EntityType.ZOMBIE
-        }
-
-         return EntityType.values().firstOrNull { it.name.equals(mobType, ignoreCase = true) } ?: run {
-             log.severe("Inside mob category '$name', mob of type '$mobType' doesn't exist, please fix your mobs configurations. Defaulting $name mob type to Zombie.")
-             EntityType.ZOMBIE
-         }
-    }
-
-    private fun getMobDisplayName(name: String, type: EntityType): Component {
-        val displayName = manager.getString("$name.display-name") ?: ""
-
-        if(displayName.isBlank()) {
-            log.severe("You must provide a display name for the mob category '$name'! Defaulting $name display name to its type.")
-            return Component.text(type.formattedTypeName())
-        }
-        return adventureMessage.parse(displayName)
     }
 }

@@ -78,8 +78,8 @@ class Config(plugin: Plugin, private val logger: Logger) {
 }
 
 enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
-    INFERNAL_SPAWN_REASONS("spawn-reasons-which-infernal-mobs-can-spawn", listOf(CreatureSpawnEvent.SpawnReason.NATURAL)),
-    HARVEST_BONUS_SPEED("harvest.bonus_speed", emptyList<Int>()),
+    INFERNAL_ALLOWED_SPAWN_REASONS("spawn-reasons-which-infernal-mobs-can-spawn", listOf(CreatureSpawnEvent.SpawnReason.NATURAL)),
+    INFERNAL_ALLOWED_WORLDS("worlds-in-which-infernal-mobs-can-spawn", emptyList<String>()),
     HARVEST_MAX_WALK_DISTANCE("harvest.max-walk-distance", 0.4),
     PLAYERS_ONLY_SEE_WANDS_WITH_PERMISSION("players-only-see-dropped-wands-with-permission", true),
     REMOVE_HARVEST_BLOCK_WORLD_MISSING("remove-harvest-block-if-missing-world", false),

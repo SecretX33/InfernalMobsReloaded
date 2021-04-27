@@ -9,20 +9,38 @@ import java.util.*
 data class InfernalMobType (
     val name: String,
     val displayName: Component,
-    val type: EntityType,
+    val entityType: EntityType,
     val spawnChance: Double,
+    val minAbilities: Int,
+    val maxAbilities: Int,
     private val loots: Map<LootItem, Double>,
 ) {
-    val entityClass: Class<out Entity> = type.entityClass ?: throw IllegalArgumentException("entityClass cannot be null")
+    val entityClass: Class<out Entity> = entityType.entityClass ?: throw IllegalArgumentException("entityClass cannot be null")
 
     init {
-        require(spawnChance in 0.0..1.0) { "spawnChance needs to be within 0 and 1" }
-        require(type.isSpawnable) { "type needs to be spawnable" }
+        require(spawnChance in 0.0..1.0) { "spawnChance needs to be within 0 and 1, spawnChance = $spawnChance" }
+        require(entityType.isSpawnable) { "entityType needs to be spawnable, $entityType is not" }
         require(entityClass !is ComplexLivingEntity) { "entityClass cannot be a ComplexLivingEntity" }
         require(loots.values.all { it in 0.0..1.0 }) { "all loot chances must be within 0 and 1, something inside the loop map was not, map = $loots"}
+        require(minAbilities >= 0) { "minAbilities has to be at least 0, minAbilities = $minAbilities" }
+        require(maxAbilities >= 0) { "maxAbilities has to be at least 0, maxAbilities = $maxAbilities" }
+        require(minAbilities <= maxAbilities) { "minAbilities cannot be higher than maxAbilities, minAbilities = $minAbilities, maxAbilities = $maxAbilities" }
     }
 
     fun getDrops() = loots.filterValues { random.nextDouble() <= it }.keys
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as InfernalMobType
+        if (!name.equals(other.name, ignoreCase = true)) return false
+        if (entityType != other.entityType) return false
+
+        return true
+    }
+
+    override fun hashCode() = Objects.hash(name.toLowerCase(Locale.US), entityType)
 
     private companion object {
         val random = Random()

@@ -17,7 +17,11 @@
 # +------------------------------------------------------+ #
 ############################################################
 
-# mobs spawned under reasons listed below will have a chance of becoming infernal mobs, see all spawn reasons here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/entity/CreatureSpawnEvent.SpawnReason.html , Ctrl + F is your friend
+# Worlds in which mobs will have a chance of becoming infernal mobs; <ALL> is a special tag, it will allow the spawn of infernal mobs on ALL worlds; to prevent the spawn of infernals everywhere, just delete all the items and insert empty square brackets instead
+worlds-in-which-infernal-mobs-can-spawn:
+  - "<ALL>"
+
+# Mobs spawned under reasons listed below will have a chance of becoming infernal mobs, see all spawn reasons here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/entity/CreatureSpawnEvent.SpawnReason.html , Ctrl + F is your friend
 spawn-reasons-which-infernal-mobs-can-spawn:
   - BEEHIVE                # When a bee is released from a beehive/bee nest
   - BREEDING               # When an animal breeds to create a child

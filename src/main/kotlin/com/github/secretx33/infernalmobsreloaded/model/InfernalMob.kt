@@ -5,6 +5,7 @@ import java.util.*
 
 data class InfernalMob (
     val uniqueId: UUID,
+    val infernalType: InfernalMobType,
     val abilities: Set<Ability>,
     private var lives: Int = 1,
 ) {

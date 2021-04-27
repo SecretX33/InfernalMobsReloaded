@@ -1,13 +1,19 @@
 package com.github.secretx33.infernalmobsreloaded.events
 
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
+import org.bukkit.World
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 
-class InfernalMobSpawnEvent(val entity: LivingEntity, val infernoType: InfernalMobType, val spawnReason: SpawnReason) : Event(), Cancellable {
+class InfernalMobSpawnEvent(
+    val entity: LivingEntity,
+    val infernalType: InfernalMobType,
+    val spawnReason: SpawnReason,
+    val world: World,
+) : Event(), Cancellable {
 
     val entityType = entity.type
 

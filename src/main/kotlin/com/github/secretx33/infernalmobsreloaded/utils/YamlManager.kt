@@ -13,7 +13,7 @@ class YamlManager (
     path: String,
 ) : YamlConfiguration() {
 
-    private val fileName: String = path.replace('\\', '/').split('/').last().appendIfMissing(".yml")
+    val fileName: String = path.replace('\\', '/').split('/').last().appendIfMissing(".yml")
     private val relativePath: String = path.replace('\\', '/').appendIfMissing(".yml")
     private val file: File = File(plugin.dataFolder.absolutePath, relativePath)
 
