@@ -64,10 +64,5 @@ class ItemBuilder private constructor(material: Material) {
 
     companion object {
         fun from(material: Material) = ItemBuilder(material)
-
-        private val serializer = LegacyComponentSerializer.builder()
-            .hexColors()
-            .useUnusualXRepeatedCharacterHexFormat()
-            .build()
     }
 }
