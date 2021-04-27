@@ -1,21 +1,47 @@
 murder_axe:
-  name: "&7Murder Axe"
-  material: "IRON_AXE"                   # Vanilla material of an item, material list here https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html, Ctrl + F is your friend, use the name exactly as listed in the website
-  amount: 1
-  lore:
+  name: "&7Murder Axe"                   # item display name, the name that will appear when the player hover over the item or holds it
+  material: "IRON_AXE"                   # vanilla material of an item, material list here https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html, Ctrl + F is your friend, use the name exactly as listed in the website
+  amount: 1                              # if you omit this field, the amount will default to 1
+  lore:                                  # this is how you set up lore that has multiple lines
     - "This is a lore"
     - "With multiple lines"
-
-thors_apple:
-  name: "&eThors Apple"
-  material: "GOLDEN_APPLE"
-  amount: 2-5                            # Random amount between 2 and 5
-  lore:
-    - "&eStolen from Thors own table."
 
 fall_far_boots:
   name: "Fall Far Boots"
   material: "IRON_BOOTS"
   amount: 1
-  lore:
+  lore:                                  # and this is how you make the item lore with only one line
     - "Lore with single line"
+
+demon_sword:
+  name: "&4Demon Sword"
+  material: "GOLDEN_SWORD"
+  amount: 1
+  lore: []                               # put this empty square brackets to make the item have no lore, or simply omit this field
+  enchants: []                           # put this empty square brackets to make the item have no enchants, or simply omit this field
+
+thors_apple:
+  name: "&eThors Apple"
+  material: "GOLDEN_APPLE"
+  amount: 2-5                            # random amount between 2 and 5
+  lore:
+    - "&eStolen from Thors own table."
+
+silky:
+  name: "&fSilky"
+  material: "DIAMOND_PICKAXE"
+  amount: 1
+  lore:
+    - "&7Silkier than milk!"
+  enchants:
+    - "silk_touch:5"                     # will make every 'silky' pickaxe have Silk Touch level 5; full list of enchantments can be seen here https://hub.spigotmc.org/javadocs/spigot/org/bukkit/enchantments/Enchantment.html , Ctrl + F
+
+glass_drill:
+  name: "&7Glass Drill"
+  material: "GOLDEN_PICKAXE"
+  amount: 1
+  lore:
+    - "&8Use in case of emergency!"
+  enchants:
+    - "efficiency:8-15"                  # every 'glass_drill' pickaxe will have Efficiency enchantment with level between 8 and 15
+    - "unbreaking:1-3:0.5"               # and 50% chance of having the enchantment Unbreaking with level between 1 and 3

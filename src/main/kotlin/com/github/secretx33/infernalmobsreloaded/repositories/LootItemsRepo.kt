@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.logging.Logger
 
-class LootTableRepo (plugin: Plugin, private val log: Logger) {
+class LootItemsRepo (plugin: Plugin, private val log: Logger) {
 
     private val manager   = YamlManager(plugin, "mobs")
     private val lootCache = ConcurrentHashMap<String, LootItem>()      // lowercase lootNames, LootItem

@@ -1,12 +1,15 @@
 package com.github.secretx33.infernalmobsreloaded.utils
 
+import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataContainer
 
-class ItemBuilder(material: Material) {
+class ItemBuilder private constructor(material: Material) {
 
     private val item = ItemStack(material)
     private val meta = item.itemMeta
@@ -18,8 +21,8 @@ class ItemBuilder(material: Material) {
         return this
     }
 
-    fun setDisplayName(name: String): ItemBuilder {
-        meta?.setDisplayName(name)
+    fun displayName(name: Component): ItemBuilder {
+        meta?.displayName(name)
         return this
     }
 
@@ -33,19 +36,24 @@ class ItemBuilder(material: Material) {
         return this
     }
 
-    fun addLore(lines: List<String>): ItemBuilder {
-        meta?.lore = meta?.lore?.plus(lines)
+    fun addEnchantments(enchants: Collection<CustomEnchantment>): ItemBuilder {
+        enchants.forEach { it.get().ifPresent { (enchant, level) -> meta?.addEnchant(enchant, level, true) } }
         return this
     }
 
-    fun addLore(vararg lines: String) = addLore(lines.toList())
-
-    fun setLore(lines: List<String>): ItemBuilder {
-        meta?.lore = lines
+    fun addLore(lines: List<Component>): ItemBuilder {
+        meta?.lore(meta.lore()?.plus(lines))
         return this
     }
 
-    fun setLore(vararg lines: String) = setLore(lines.toList())
+    fun addLore(vararg lines: Component) = addLore(lines.toList())
+
+    fun setLore(lines: List<Component>): ItemBuilder {
+        meta.lore(lines)
+        return this
+    }
+
+    fun setLore(vararg lines: Component) = setLore(lines.toList())
 
     fun pdc(block: (PersistentDataContainer) -> Unit): ItemBuilder {
         meta?.persistentDataContainer?.let { block(it) }
@@ -53,4 +61,13 @@ class ItemBuilder(material: Material) {
     }
 
     fun build() = item.apply { itemMeta = meta }
+
+    companion object {
+        fun from(material: Material) = ItemBuilder(material)
+
+        private val serializer = LegacyComponentSerializer.builder()
+            .hexColors()
+            .useUnusualXRepeatedCharacterHexFormat()
+            .build()
+    }
 }

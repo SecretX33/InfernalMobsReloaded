@@ -2,8 +2,11 @@
 
 skeleton:
   display-name: "<#d1d1d1>Infernal <r:0.0:1.0>Skeleton"
-  spawn-chance: 0.1              # has 10% change of being a infernal mob; accepts any value between 0 and 1; 0 means no mob of that type will become infernal, 0.5 means 50% of all mobs of that type will be of that type, and 1 means 100% ALL mobs of that type will become infernal
-  mob-spawn-drop-chance: 0.001   # has 0.1% chance of this infernal mob type drop its spawner
+  spawn-chance: 0.1                # has 10% change of being a infernal mob; accepts any value between 0 and 1; 0 means no mob of that type will become infernal, 0.5 means 50% of all mobs of that type will be of that type, and 1 means 100% ALL mobs of that type will become infernal
+  mob-spawn-drop-chance: 0.001     # has 0.1% chance of this infernal mob type drop its spawner
   loot-table:
-    - "murder_axe;chance:0.1"
+    - "murder_axe:0.5"             # will have 50% chance of dropping a 'murder_axe'
+    - "demon_sword:0.954321"       # will have 95.4321% chance of dropping a 'demon_sword'
+    - "thors_apple"                # will have 100% chance of dropping a 'thors_apple'
+    - "fall_far_boots:1.0"         # will also have 100% chance of dropping a 'fall_far_boots'
 

@@ -18,7 +18,7 @@
 ############################################################
 
 # mobs spawned under reasons listed below will have a chance of becoming infernal mobs, see all spawn reasons here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/entity/CreatureSpawnEvent.SpawnReason.html , Ctrl + F is your friend
-natural-spawn-reasons:
+spawn-reasons-which-infernal-mobs-can-spawn:
   - BEEHIVE                # When a bee is released from a beehive/bee nest
   - BREEDING               # When an animal breeds to create a child
   - BUILD_IRONGOLEM        # When an iron golem is spawned by being built

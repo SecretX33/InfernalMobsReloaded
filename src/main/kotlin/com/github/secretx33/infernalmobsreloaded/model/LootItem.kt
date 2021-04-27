@@ -1,29 +1,62 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
-import org.bukkit.inventory.ItemStack
+import com.github.secretx33.infernalmobsreloaded.utils.ItemBuilder
+import net.kyori.adventure.text.Component
+import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
 import java.util.*
 
 data class LootItem (
     val name: String,
-    private val dropItem: ItemStack,
+    val displayName: Component,
+    val material: Material,
+    val minAmount: Int,
+    val maxAmount: Int = minAmount,
+    val lore: List<Component>,
+    val enchants: Set<CustomEnchantment>,
 ) {
-    fun getDrop(): ItemStack = dropItem.clone()
-
     init {
         require(name.isNotBlank()) { "LootItem name is invalid, it cannot be blank or empty" }
-        require(dropItem.type.isItem) { "dropItem needs to be an item, and ${dropItem.type} is not" }
+        require(material.isItem) { "material needs to be an item, and $material is not" }
+        require(minAmount >= 1) { "minAmount has to be a number equal to or higher than 0, value passed was $minAmount" }
+        require(maxAmount >= 1) { "maxAmount has to be a number equal to or higher than 0, value passed was $maxAmount" }
+        require(minAmount <= maxAmount) { "minAmount cannot be higher than maxAmount, values passed minAmount = $minAmount and maxAmount = $maxAmount" }
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+    fun makeItem() = ItemBuilder.from(material)
+        .displayName(displayName)
+        .addLore(lore)
+        .amount(random.nextInt(maxAmount - minAmount) + minAmount)
+        .setLore(lore)
+        .addEnchantments(enchants)
+        .build()
 
-        other as LootItem
-        if (name.equals(other.name, ignoreCase = true)) return false
-        if (dropItem != other.dropItem) return false
+    private companion object {
+        val random = Random()
+    }
+}
 
-        return true
+data class CustomEnchantment (
+    private val type: Enchantment,
+    private val minLevel: Int,
+    private val maxLevel: Int = minLevel,
+    private val chance: Double = 1.0,
+) {
+    init {
+        require(minLevel >= 0) { "minLevel has to be a number equal to or higher than 0, value passed was $minLevel" }
+        require(maxLevel >= 0) { "maxLevel has to be a number equal to or higher than 0, value passed was $maxLevel" }
+        require(minLevel <= maxLevel) { "minLevel cannot be higher than maxLevel, values passed minLevel = $minLevel and maxLevel = $maxLevel" }
+        require(chance in 0.0..1.0) { "chance has to be a value between 0 and 1, but chance = $chance" }
     }
 
-    override fun hashCode() = Objects.hash(name.toLowerCase(Locale.US), dropItem)
+    fun get(): Optional<Pair<Enchantment, Int>> {
+        // returns empty optional if the 'try' for get the enchantment is not successful
+        if(random.nextDouble() > chance) return Optional.empty()
+        val level = random.nextInt(maxLevel - minLevel) + minLevel
+        return Optional.of(Pair(type, level))
+    }
+
+    private companion object {
+        val random = Random()
+    }
 }

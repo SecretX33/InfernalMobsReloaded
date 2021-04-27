@@ -3,8 +3,6 @@ package com.github.secretx33.infernalmobsreloaded.model
 import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 
 data class InfernalMobType (
     val displayName: String,

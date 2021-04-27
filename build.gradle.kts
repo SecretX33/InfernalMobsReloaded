@@ -35,15 +35,14 @@ dependencies {
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
-    compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT") // Spigot API dependency
+    compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT") // Spigot API dependency
     compileOnly(fileTree("libs"))      // Spigot server dependency
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
     val koin_version = "2.2.2"
     implementation("org.koin:koin-core:$koin_version")
     testCompileOnly("org.koin:koin-test:$koin_version")
     implementation("com.github.cryptomorin:XSeries:7.9.1.1")
-//    implementation("net.kyori:adventure-api:4.7.0")
-    implementation("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
+//    implementation("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
     implementation("me.mattstudios:triumph-msg-adventure:2.2.4-SNAPSHOT")
 //    compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0")
 //    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.5")

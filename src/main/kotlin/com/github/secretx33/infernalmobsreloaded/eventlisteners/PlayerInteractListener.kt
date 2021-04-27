@@ -1,6 +1,5 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners
 
-import com.github.secretx33.infernalmobsreloaded.utils.pdc
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
