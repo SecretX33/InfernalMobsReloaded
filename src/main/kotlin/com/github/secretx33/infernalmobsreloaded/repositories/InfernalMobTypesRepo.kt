@@ -25,7 +25,7 @@ class InfernalMobTypesRepo (
     private val manager = YamlManager(plugin, "mobs")
     private var infernoTypeNames = emptyList<String>()                    // original groupNames
     private var infernoTypeCache = emptyMap<String, InfernalMobType>()    // lowercase groupName, infernoType
-    private var infernoTypeMultimap = ImmutableSetMultimap.of<EntityType, InfernalMobType>()
+    private var infernoTypeMultimap = ImmutableSetMultimap.of<EntityType, InfernalMobType>()  // entityType, set<infernoType>
 
     init { reload() }
 
@@ -40,11 +40,14 @@ class InfernalMobTypesRepo (
     fun getInfernoTypes(entityType: EntityType) = infernoTypeMultimap[entityType]
 
     private fun ensureUniqueKeys() {
-        val keys = manager.getKeys(false).map { it.toLowerCase(Locale.US) }
-        val keysDistinct = keys.distinct()
+        val duplicatedKeys = manager.getKeys(false).groupBy { it.toLowerCase(Locale.US) }
         // if there are duplicates in keys
-        if(keys.size != keysDistinct.size) {
-            log.severe("Oops, seems like there are duplicate mob categories in file '${manager.fileName}', remember that categories are casE inSenSiTiVe, so make sure that each category has a unique name. Duplicated categories: ${(keys - keysDistinct).joinToString()}")
+        if(duplicatedKeys.isNotEmpty()) {
+            val sb = StringBuilder("Oops, seems like there are duplicate mob categories in file '${manager.fileName}', remember that categories are caSE inSenSiTiVe, so make sure that each category has a unique name. Duplicated mob categories: ")
+            duplicatedKeys.entries.forEachIndexed { index, (k, v) ->
+                sb.append("\n${index + 1}) $k = {${v.joinToString()}}")
+            }
+            log.severe(sb.toString())
         }
     }
 

@@ -26,10 +26,11 @@ class LootItemsRepo (
     private var lootItemCache = emptyMap<String, LootItem>()     // lowercase lootNames, LootItem
     private var lootItemNames = emptyList<String>()              // original lootNames
 
-    init { loadLootTable() }
+    init { reload() }
 
     fun reload() {
         manager.reload()
+        ensureUniqueKeys()
         loadLootTable()
     }
 
@@ -41,10 +42,17 @@ class LootItemsRepo (
 
     fun hasLootItem(name: String) = lootItemCache.containsKey(name.toLowerCase(Locale.US))
 
-//    fun getAllGroups(): List<String> = typeList
-
-    // used to get "current case" version of a group name, because wands store the group name the way it were, before possible case changes
-//    fun getGroupFromName(group: String): String? = typeList.firstOrNull { it.equals(group, ignoreCase = true) }
+    private fun ensureUniqueKeys() {
+        val duplicatedKeys = manager.getKeys(false).groupBy { it.toLowerCase(Locale.US) }
+        // if there are duplicates in keys
+        if(duplicatedKeys.isNotEmpty()) {
+            val sb = StringBuilder("Oops, seems like there are duplicate item loot names in file '${manager.fileName}', remember that item names are caSE inSenSiTiVe, so make sure that each item has a unique name. Duplicated item names: ")
+            duplicatedKeys.entries.forEachIndexed { index, (k, v) ->
+                sb.append("\n${index + 1}) $k = {${v.joinToString()}}")
+            }
+            log.severe(sb.toString())
+        }
+    }
 
     private fun loadLootTable() {
         lootItemNames = manager.getKeys(false).sorted()
