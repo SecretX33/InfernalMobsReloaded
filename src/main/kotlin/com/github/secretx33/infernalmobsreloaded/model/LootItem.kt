@@ -11,7 +11,7 @@ data class LootItem (
     val displayName: Component,
     val material: Material,
     val minAmount: Int,
-    val maxAmount: Int = minAmount,
+    val maxAmount: Int,
     val lore: List<Component>,
     val enchants: Set<CustomEnchantment>,
 ) {
@@ -25,7 +25,6 @@ data class LootItem (
 
     fun makeItem() = ItemBuilder.from(material)
         .displayName(displayName)
-        .addLore(lore)
         .amount(random.nextInt(maxAmount - minAmount) + minAmount)
         .setLore(lore)
         .addEnchantments(enchants)
@@ -39,8 +38,8 @@ data class LootItem (
 data class CustomEnchantment (
     private val type: Enchantment,
     private val minLevel: Int,
-    private val maxLevel: Int = minLevel,
-    private val chance: Double = 1.0,
+    private val maxLevel: Int,
+    private val chance: Double,
 ) {
     init {
         require(minLevel >= 0) { "minLevel has to be a number equal to or higher than 0, value passed was $minLevel" }
