@@ -1,6 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
+import com.google.common.base.Enums
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.plugin.Plugin
@@ -10,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
 import kotlin.Enum
 import java.lang.Enum as JavaEnum
-
 
 @KoinApiExtension
 class Config(plugin: Plugin, private val logger: Logger) {
@@ -47,14 +47,14 @@ class Config(plugin: Plugin, private val logger: Logger) {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> getEnumSet(key: ConfigKeys): Set<T> {
+    fun <T : Enum<T>> getEnumSet(key: ConfigKeys, clazz: Class<out Enum<T>>): Set<T> {
         return cache.getOrPut(key.configEntry) {
             if(!manager.contains(key.configEntry)) return@getOrPut key.defaultValue
             manager.getStringList(key.configEntry).mapNotNullTo(HashSet()) {
                 try {
-                    JavaEnum.valueOf((key.defaultValue as Enum<*>)::class.java, it.toUpperCase(Locale.US))
+                    JavaEnum.valueOf(clazz, it.toUpperCase(Locale.US))
                 } catch(e: IllegalArgumentException) {
-                    logger.severe("Error while trying to get config key '$key', value passed ${it.toUpperCase(Locale.US)} is an invalid value, please fix this entry in the config.yml and reload the configs")
+                    logger.severe("Error while trying to get config key '$key', value passed '${it.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the config.yml and reload the configs")
                     null
                 }
             }
@@ -86,4 +86,6 @@ enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
     INFERNO_SPAWN_MESSAGE_RADIUS("inferno-spawn-message-radius", 50),
     ENABLE_INFERNO_DEATH_MESSAGE("enable-inferno-death-messages", false),
     INFERNO_DEATH_MESSAGE_RADIUS("inferno-death-message-radius", 30),
+    ENABLE_PARTICLE_EFFECTS("enable-particle-effects", true),
+    DELAY_BETWEEN_INFERNO_PARTICLES("delay-between-inferno-particles", 4.0),
 }

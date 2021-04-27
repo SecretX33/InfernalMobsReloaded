@@ -42,7 +42,7 @@ class InfernalDeathListener (
         }
     }
 
-    private fun LivingEntity.isInfernalMob() = mobsManager.isInfernalMob(this)
+    private fun LivingEntity.isInfernalMob() = mobsManager.isValidInfernalMob(this)
 
     private val deathMessageEnabled
         get() = config.get<Boolean>(ConfigKeys.ENABLE_INFERNO_DEATH_MESSAGE)

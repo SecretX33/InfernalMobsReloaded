@@ -89,7 +89,7 @@ class LootItemsRepo (
                 log.severe("Inside item loot '$name', enchantment with name '${fields[0]}' doesn't exist, please fix your item loot configurations. Defaulting this enchantment to ${Enchantment.LUCK}.")
                 Enchantment.LUCK
             }!!
-            if(fields.size == 1) CustomEnchantment(type = enchant, minLevel = 0, maxLevel = 0, chance = 1.0)
+            if(fields.size == 1) return@mapTo CustomEnchantment(type = enchant, minLevel = 0, maxLevel = 0, chance = 1.0)
 
             // split the level section by '-' to get the enchant minLevel and maxLevel
             val levels = fields[1].split('-')
@@ -102,7 +102,7 @@ class LootItemsRepo (
             // get the enchant maxLevel or just default it to minLevel, in case of missing or invalid argument
             val maxLevel = levels.getOrNull(1)?.toIntOrNull()?.let { max(minLevel, it - 1) } ?: minLevel
 
-            if(fields.size == 2) CustomEnchantment(type = enchant, minLevel = minLevel, maxLevel = maxLevel, chance = 1.0)
+            if(fields.size == 2) return@mapTo CustomEnchantment(type = enchant, minLevel = minLevel, maxLevel = maxLevel, chance = 1.0)
 
             // parse the chance of that enchant to be applied to the item
             val chance = fields[2].toDoubleOrNull()?.let { max(0.0, min(1.0, it)) } ?: run {

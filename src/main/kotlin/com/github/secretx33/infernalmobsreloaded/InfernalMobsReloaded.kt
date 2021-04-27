@@ -1,10 +1,14 @@
 package com.github.secretx33.infernalmobsreloaded
 
+import com.github.secretx33.infernalmobsreloaded.config.Config
+import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkLoadListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkUnloadListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalSpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.NaturalEntitySpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalDeathListener
+import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
+import com.github.secretx33.infernalmobsreloaded.manager.ParticlesHelper
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
@@ -24,11 +28,15 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single<Plugin> { this@InfernalMobsReloaded } bind JavaPlugin::class
         single { get<Plugin>().logger }
         single { AdventureMessage.create() }
+        single { Config(get(), get()) }
+        single { Messages(get(), get()) }
         single { KeyChain(get()) }
+        single { ParticlesHelper(get(), get()) }
         single { LootItemsRepo(get(), get(), get()) }
         single { InfernalMobTypesRepo(get(), get(), get(), get()) }
-        single { InfernalDeathListener(get(), get()) }
-        single { InfernalSpawnListener(get(), get()) }
+        single { InfernalMobsManager(get(), get(), get(), get(), get()) }
+        single { InfernalDeathListener(get(), get(), get(), get()) }
+        single { InfernalSpawnListener(get(), get(), get(), get()) }
         single { ChunkLoadListener(get(), get()) }
         single { ChunkUnloadListener(get(), get()) }
         single { NaturalEntitySpawnListener(get(), get(), get()) }

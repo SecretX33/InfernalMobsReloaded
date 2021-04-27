@@ -40,13 +40,13 @@ class NaturalEntitySpawnListener(plugin: Plugin, private val config: Config, pri
     private fun World.isWhitelisted() = validWorlds.contains("<ALL>") || validWorlds.any { it.equals(name, ignoreCase = true) }
 
     private val validReasons
-        get() = config.getEnumSet<SpawnReason>(ConfigKeys.INFERNAL_ALLOWED_SPAWN_REASONS)
+        get() = config.getEnumSet<SpawnReason>(ConfigKeys.INFERNAL_ALLOWED_SPAWN_REASONS, SpawnReason::class.java)
 
     private val validWorlds
         get() = config.get<List<String>>(ConfigKeys.INFERNAL_ALLOWED_WORLDS)
 
     private val blacklistedBabies
-        get() = config.getEnumSet<EntityType>(ConfigKeys.INFERNAL_BLACKLISTED_BABY_MOBS)
+        get() = config.getEnumSet<EntityType>(ConfigKeys.INFERNAL_BLACKLISTED_BABY_MOBS, EntityType::class.java)
 
     private companion object {
         val random = Random()

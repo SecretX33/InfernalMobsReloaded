@@ -9,7 +9,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.world.ChunkUnloadEvent
 import org.bukkit.plugin.Plugin
+import org.koin.core.component.KoinApiExtension
 
+@KoinApiExtension
 class ChunkUnloadListener(plugin: Plugin, private val mobsManager: InfernalMobsManager): Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
@@ -21,6 +23,6 @@ class ChunkUnloadListener(plugin: Plugin, private val mobsManager: InfernalMobsM
             .forEach { mobsManager.unloadInfernalMob(it as LivingEntity) }
     }
 
-    private fun Entity.isInfernalMob() = this is LivingEntity && mobsManager.isInfernalMob(this)
+    private fun Entity.isInfernalMob() = this is LivingEntity && mobsManager.isValidInfernalMob(this)
 }
 

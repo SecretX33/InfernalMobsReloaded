@@ -8,7 +8,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 
-class InfernalSpawnEvent(
+class InfernalSpawnEvent (
     val entity: LivingEntity,
     val infernalType: InfernalMobType,
     val spawnReason: SpawnReason,
@@ -16,6 +16,7 @@ class InfernalSpawnEvent(
 ) : Event(), Cancellable {
 
     val entityType = entity.type
+    private var isCancelled = false
 
     init {
         require(entityType.entityClass != null) { "entity class cannot be null" }

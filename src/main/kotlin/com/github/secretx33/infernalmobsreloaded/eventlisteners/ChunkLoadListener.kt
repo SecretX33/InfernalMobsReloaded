@@ -9,7 +9,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.plugin.Plugin
+import org.koin.core.component.KoinApiExtension
 
+@KoinApiExtension
 class ChunkLoadListener(plugin: Plugin, private val mobsManager: InfernalMobsManager): Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
@@ -17,10 +19,10 @@ class ChunkLoadListener(plugin: Plugin, private val mobsManager: InfernalMobsMan
     @EventHandler(priority = EventPriority.MONITOR)
     private fun ChunkLoadEvent.onInfernalMobsRespawn() {
         chunk.entities.asSequence()
-            .filter { it.isInfernalMob() }
+            .filter { it.isPossibleInfernalMob() }
             .forEach { mobsManager.loadInfernalMob(it as LivingEntity) }
     }
 
     // isValid may not return true since the entity is being loaded again (?)
-    private fun Entity.isInfernalMob() = this is LivingEntity && isValid && !isDead && mobsManager.isInfernalMob(this)
+    private fun Entity.isPossibleInfernalMob() = this is LivingEntity && isValid && !isDead && mobsManager.isPossibleInfernalMob(this)
 }

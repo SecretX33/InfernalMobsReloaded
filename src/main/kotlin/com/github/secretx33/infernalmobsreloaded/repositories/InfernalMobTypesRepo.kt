@@ -36,6 +36,8 @@ class InfernalMobTypesRepo (
 
     fun canTypeBecomeInfernal(type: EntityType) = infernoTypeMultimap.containsKey(type)
 
+    fun getInfernoTypeOrNull(name: String) = infernoTypeCache[name.toLowerCase(Locale.US)]
+
     fun getInfernoTypes(entityType: EntityType): ImmutableSet<InfernalMobType> = infernoTypeMultimap[entityType]
 
     fun isValidInfernoType(name: String) = infernoTypeCache.containsKey(name.toLowerCase(Locale.US))
@@ -181,14 +183,14 @@ class InfernalMobTypesRepo (
 
             if(fields.size == 1) {
                 lootItems[item] = 1.0
-            } else {
-                // if 'chance' part of this item loot is invalid (by typoing the number)
-                val chance = fields[1].toDoubleOrNull()?.let { max(0.0, min(1.0, it)) } ?: run {
-                    log.severe("Inside drop for item '${fields[0]} of mob category '$name', chance '${fields[1]}' is invalid, please fix your configurations and reload. Defaulting this item drop chance to 100%.")
-                    1.0
-                }
-                lootItems[item] = chance
+                return@forEach
             }
+            // if 'chance' part of this item loot is invalid (by typoing the number)
+            val chance = fields[1].toDoubleOrNull()?.let { max(0.0, min(1.0, it)) } ?: run {
+                log.severe("Inside drop for item '${fields[0]} of mob category '$name', chance '${fields[1]}' is invalid, please fix your configurations and reload. Defaulting this item drop chance to 100%.")
+                1.0
+            }
+            lootItems[item] = chance
         }
         return lootItems
     }
