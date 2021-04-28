@@ -85,7 +85,7 @@ class InfernalMobTypesRepo (
     private fun getMobType(name: String): EntityType {
         val mobType = manager.getString("$name.type") ?: ""
 
-        // if name is absent or blank
+        // if type is absent or blank
         if(mobType.isBlank()) {
             log.severe("You must provide a type of mob for the category '$name'! Please fix your mobs configurations and reload, defaulting $name mob type to Zombie.")
             return EntityType.ZOMBIE
@@ -131,7 +131,7 @@ class InfernalMobTypesRepo (
             return Pair(1, 1)
         }
 
-        // if there's one one number, min and max amounts should be equal
+        // if there's only one number, min and max amounts should be equal
         if(amounts.size < 2 || amounts[1].isBlank()) return Pair(minAmount, minAmount)
 
         val maxAmount = amounts[1].toIntOrNull()?.let { max(minAmount, it) } ?: run {

@@ -96,7 +96,7 @@ class LootItemsRepo (
 
             // get the enchant minLevel and maxLevel as well, if present
             val minLevel = levels[0].toIntOrNull()?.let { max(0, it - 1) } ?: run {
-                log.severe("Inside item loot '$name', level for enchantment '${levels[0]}' is not an integer. Defaulting '$name' level to 1.")
+                log.severe("Inside item loot '$name', level '${levels[0]}' for enchantment $enchant is not an integer. Defaulting $name's $enchant level to 1.")
                 1
             }
             // get the enchant maxLevel or just default it to minLevel, in case of missing or invalid argument
@@ -106,7 +106,7 @@ class LootItemsRepo (
 
             // parse the chance of that enchant to be applied to the item
             val chance = fields[2].toDoubleOrNull()?.let { max(0.0, min(1.0, it)) } ?: run {
-                log.severe("Inside item loot '$name', chance for enchantment '${levels[0]}' is invalid. Defaulting '$name' change to 100%.")
+                log.severe("Inside item loot '$name', chance for enchantment '${levels[0]}' is invalid. Defaulting $name's $enchant enchant chance to 100%.")
                 1.0
             }
             CustomEnchantment(type = enchant, minLevel = minLevel, maxLevel = maxLevel, chance = chance)

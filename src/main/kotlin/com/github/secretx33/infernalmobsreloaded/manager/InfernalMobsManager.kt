@@ -113,7 +113,7 @@ class InfernalMobsManager (
     }
 
     private val delayBetweenParticleEmission
-        get() = (max(0.5, config.get(ConfigKeys.DELAY_BETWEEN_INFERNO_PARTICLES)) * 1000.0).toLong()
+        get() = (max(0.01, config.get(ConfigKeys.DELAY_BETWEEN_INFERNO_PARTICLES)) * 1000.0).toLong()
 
     fun unloadInfernalMob(entity: LivingEntity) {
         cancelAllTasks(entity)
