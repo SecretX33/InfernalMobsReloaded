@@ -23,6 +23,17 @@ data class CustomEnchantment (
         return Optional.of(Pair(type, level))
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as CustomEnchantment
+        if (type != other.type) return false
+        return true
+    }
+
+    override fun hashCode() = type.hashCode()
+
     private companion object {
         val random = Random()
     }

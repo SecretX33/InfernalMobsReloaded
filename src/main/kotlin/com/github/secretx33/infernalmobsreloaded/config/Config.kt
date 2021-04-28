@@ -1,6 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
+import com.google.common.base.Enums
 import com.google.common.base.Predicate
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent
@@ -50,13 +51,12 @@ class Config(plugin: Plugin, private val logger: Logger) {
     fun <T : Enum<T>> getEnumSet(key: ConfigKeys, clazz: Class<out Enum<T>>, filter: Predicate<T>? = null): Set<T> {
         return cache.getOrPut(key.configEntry) {
             if(!manager.contains(key.configEntry)) return@getOrPut key.defaultValue
-            manager.getStringList(key.configEntry).mapNotNullTo(HashSet()) {
-                try {
-                    JavaEnum.valueOf(clazz, it.toUpperCase(Locale.US))?.takeIf { enum -> filter == null || filter.apply(enum as T) }
-                } catch(e: IllegalArgumentException) {
-                    logger.severe("Error while trying to get config key '$key', value passed '${it.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the config.yml and reload the configs")
-                    null
+            manager.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
+                val optional = Enums.getIfPresent(clazz, item.toUpperCase(Locale.US)).takeIf { opt -> opt.isPresent } ?: run {
+                    logger.severe("Error while trying to get config key '$key', value passed '${item.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the config.yml and reload the configs")
+                    return@mapNotNullTo null
                 }
+                optional.get().takeIf { filter == null || filter.apply(it as T) }
             }
         } as Set<T>
     }

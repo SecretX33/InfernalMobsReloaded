@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableSet
 import com.google.common.collect.ImmutableSetMultimap
 import me.mattstudios.msg.adventure.AdventureMessage
 import net.kyori.adventure.text.Component
+import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.EntityType
 import org.bukkit.plugin.Plugin
 import java.util.*
@@ -91,8 +92,8 @@ class InfernalMobTypesRepo (
             return EntityType.ZOMBIE
         }
 
-        return EntityType.values().firstOrNull { it.name.equals(mobType, ignoreCase = true) } ?: run {
-            log.severe("Inside mob category '$name', mob of type '$mobType' doesn't exist, please fix your mobs configurations. Defaulting $name mob type to Zombie.")
+        return EntityType.values().firstOrNull { it.entityClass != null && it.entityClass !is ComplexLivingEntity && it.isSpawnable && it.name.equals(mobType, ignoreCase = true) } ?: run {
+            log.severe("Inside mob category '$name', mob of type '$mobType' is invalid or doesn't exist, please fix your mobs configurations. Defaulting $name mob type to Zombie.")
             EntityType.ZOMBIE
         }
     }

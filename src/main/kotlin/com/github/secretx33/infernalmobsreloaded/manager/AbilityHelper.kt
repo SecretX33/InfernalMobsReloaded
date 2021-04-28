@@ -5,6 +5,7 @@ import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.Abilities
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.utils.pdc
+import com.github.secretx33.infernalmobsreloaded.utils.toUuid
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Job
@@ -64,6 +65,13 @@ class AbilityHelper (
         movSpeed.addModifier(mod)
     }
 
+    private val speedyBonus: Double
+        get() {
+            val minBonus = abilityConfig.get<Double>(AbilityConfigKeys.SPEEDY_MIN_BONUS)
+            val maxBonus = abilityConfig.get<Double>(AbilityConfigKeys.SPEEDY_MAX_BONUS)
+            return minBonus + (maxBonus - minBonus) * random.nextDouble()
+        }
+
     private fun addArmouredAbility(entity: LivingEntity) {
         if (entity.equipWithArmor()) return
         // fallback to potion effect if entity cannot wear armor
@@ -108,12 +116,12 @@ class AbilityHelper (
         }
     }
 
-    private fun addInvisibleAbility(entity: LivingEntity) {
-        entity.addPotionEffect(PotionEffect(PotionEffectType.INVISIBILITY, Int.MAX_VALUE, 0, abilityConfig.getPotionIsAmbient(Abilities.INVISIBLE), abilityConfig.getPotionEmitParticles(Abilities.INVISIBLE), false))
-    }
+    private fun addInvisibleAbility(entity: LivingEntity) = entity.addPermanentPotion(PotionEffectType.INVISIBILITY, Abilities.INVISIBLE)
 
-    private fun addMoltenAbility(entity: LivingEntity) {
-        entity.addPotionEffect(PotionEffect(PotionEffectType.FIRE_RESISTANCE, Int.MAX_VALUE, 0, abilityConfig.getPotionIsAmbient(Abilities.INVISIBLE), abilityConfig.getPotionEmitParticles(Abilities.INVISIBLE), false))
+    private fun addMoltenAbility(entity: LivingEntity) = entity.addPermanentPotion(PotionEffectType.FIRE_RESISTANCE, Abilities.MOLTEN)
+
+    private fun LivingEntity.addPermanentPotion(effectType: PotionEffectType, ability: Abilities, amplifier: Int = 0) {
+        addPotionEffect(PotionEffect(effectType, Int.MAX_VALUE, amplifier, abilityConfig.getPotionIsAmbient(ability), abilityConfig.getPotionEmitParticles(ability), false))
     }
 
     fun startTargetTasks(entity: LivingEntity, target: LivingEntity): List<Job> {
@@ -150,9 +158,6 @@ class AbilityHelper (
         }
     }
 
-    private val speedyBonus
-        get() = abilityConfig.get<Double>(AbilityConfigKeys.SPEEDY_MIN_BONUS) + (abilityConfig.get<Double>(AbilityConfigKeys.SPEEDY_MAX_BONUS) - abilityConfig.get<Double>(AbilityConfigKeys.SPEEDY_MIN_BONUS)) * random.nextDouble()
-
     private fun LivingEntity.doesFly() = this is Bee || this is Parrot
 
     private fun LivingEntity.getAbilities(): Set<Abilities>? = pdc.get(keyChain.abilityListKey, PersistentDataType.STRING)?.toAbilitySet()
@@ -163,7 +168,7 @@ class AbilityHelper (
         val random = Random()
         val gson = Gson()
         val infernalAbilityListToken: Type = object : TypeToken<Set<Abilities>>() {}.type
-        private val movSpeedUID = UUID.fromString("57202f4c-2e52-46cb-ad37-77550e99edb2")
-        private val knockbackResistUID = UUID.fromString("984e7a8c-188f-444b-82ea-5d02197ea8e4")
+        val movSpeedUID: UUID = "57202f4c-2e52-46cb-ad37-77550e99edb2".toUuid()
+        val knockbackResistUID: UUID = "984e7a8c-188f-444b-82ea-5d02197ea8e4".toUuid()
     }
 }

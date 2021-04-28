@@ -28,10 +28,9 @@ class InfernalTargetListener  (
     private fun EntityTargetLivingEntityEvent.onInfernalTarget() {
         if(!entity.isInfernalMob()) return
         val entity = entity as LivingEntity
-        val target = target ?: return
-
         mobsManager.cancelTargetTasks(entity)
-        mobsManager.startTargetTasks(entity)
+        val target = target ?: return
+        mobsManager.startTargetTasks(entity, target)
     }
 
     private fun Entity.isInfernalMob() = this is LivingEntity && mobsManager.isValidInfernalMob(this)
