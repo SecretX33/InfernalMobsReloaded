@@ -26,7 +26,7 @@ class InfernalSpawnListener (
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    private fun InfernalSpawnEvent.onInfernoSpawn() {
+    private fun InfernalSpawnEvent.onInfernalSpawn() {
         mobsManager.makeInfernalMob(this)
         // TODO("Apply the right effects to this mob and start all its scheduled tasks")
         sendSpawnMessage()

@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded
 
+import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkLoadListener
@@ -30,6 +31,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { AdventureMessage.create() }
         single { Config(get(), get()) }
         single { Messages(get(), get()) }
+        single { AbilityConfig(get(), get(), get()) }
         single { KeyChain(get()) }
         single { ParticlesHelper(get(), get()) }
         single { LootItemsRepo(get(), get(), get()) }

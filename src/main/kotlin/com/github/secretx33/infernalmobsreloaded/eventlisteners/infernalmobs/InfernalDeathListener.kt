@@ -26,7 +26,7 @@ class InfernalDeathListener (
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    private fun EntityDeathEvent.onInfernalMobDeath() {
+    private fun EntityDeathEvent.onInfernalDeath() {
         if(!entity.isInfernalMob()) return
         // TODO("Manage second live & add custom loot")
         mobsManager.unloadInfernalMob(entity)

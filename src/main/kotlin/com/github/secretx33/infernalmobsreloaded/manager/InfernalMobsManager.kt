@@ -3,13 +3,14 @@ package com.github.secretx33.infernalmobsreloaded.manager
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
-import com.github.secretx33.infernalmobsreloaded.model.InfernalAbility
+import com.github.secretx33.infernalmobsreloaded.model.Abilities
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.utils.pdc
 import com.github.secretx33.infernalmobsreloaded.utils.runSync
 import com.google.common.collect.MultimapBuilder
+import com.google.common.collect.Multimaps
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
@@ -30,9 +31,11 @@ class InfernalMobsManager (
     private val keyChain: KeyChain,
     private val infernalMobTypesRepo: InfernalMobTypesRepo,
     private val particlesHelper: ParticlesHelper,
+    private val abilityHelper: AbilityHelper,
 ) {
 
-    private val infernalMobTasks = MultimapBuilder.hashKeys().arrayListValues().build<UUID, Job>()
+    private val infernalMobPeriodicTasks = Multimaps.synchronizedListMultimap(MultimapBuilder.hashKeys().arrayListValues().build<UUID, Job>())
+    private val infernalMobTargetTasks = Multimaps.synchronizedListMultimap(MultimapBuilder.hashKeys().arrayListValues().build<UUID, Job>())
 
     fun isValidInfernalMob(entity: LivingEntity) = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)?.let { infernalMobTypesRepo.isValidInfernoType(it) } == true
 
@@ -44,7 +47,8 @@ class InfernalMobsManager (
 
         addCustomNameToInfernal(entity, infernalType)
         addPdcKeysToInfernal(entity, infernalType)
-        startAllTasks(entity, infernalType)
+        abilityHelper.addAbilityEffects(entity)
+        loadInfernalMob(entity)
     }
 
     private fun unmakeInfernalMob(entity: LivingEntity) {
@@ -62,8 +66,8 @@ class InfernalMobsManager (
     }
 
     private fun addPdcKeysToInfernal(entity: LivingEntity, infernalType: InfernalMobType) {
-        val abilityList = InfernalAbility.random(infernalType.getAbilityNumber())
-        val livesNumber = if(abilityList.contains(InfernalAbility.SECOND_WING)) 2 else 1
+        val abilityList = Abilities.random(infernalType.getAbilityNumber())
+        val livesNumber = if(abilityList.contains(Abilities.SECOND_WING)) 2 else 1
 
         entity.pdc.apply {
             set(keyChain.infernalCategoryKey, PersistentDataType.STRING, infernalType.name)
@@ -96,37 +100,45 @@ class InfernalMobsManager (
             unmakeInfernalMob(entity)
             return
         }
-        startAllTasks(entity, infernalType)
+        startParticleEmissionTask(entity, infernalType)
     }
 
-    private val delayBetweenParticleEmission
-        get() = (max(0.5, config.get(ConfigKeys.DELAY_BETWEEN_INFERNO_PARTICLES)) * 1000.0).toLong()
-
-    private fun startAllTasks(entity: LivingEntity, infernalType: InfernalMobType) {
+    private fun startParticleEmissionTask(entity: LivingEntity, infernalType: InfernalMobType) {
         val delay = delayBetweenParticleEmission
         val job = CoroutineScope(Dispatchers.Default).launch {
             runSync(plugin) { particlesHelper.sendParticle(entity, Particle.LAVA, 2.0) }
             delay(delay)
         }
-        infernalMobTasks.put(entity.uniqueId, job)
+        infernalMobPeriodicTasks.put(entity.uniqueId, job)
     }
+
+    private val delayBetweenParticleEmission
+        get() = (max(0.5, config.get(ConfigKeys.DELAY_BETWEEN_INFERNO_PARTICLES)) * 1000.0).toLong()
 
     fun unloadInfernalMob(entity: LivingEntity) {
         cancelAllTasks(entity)
     }
 
     private fun cancelAllTasks(entity: LivingEntity) {
-        infernalMobTasks[entity.uniqueId].forEach { it.cancel() }
-        infernalMobTasks.removeAll(entity.uniqueId)
+        infernalMobPeriodicTasks[entity.uniqueId].forEach { it.cancel() }
+        infernalMobPeriodicTasks.removeAll(entity.uniqueId)
+        infernalMobTargetTasks[entity.uniqueId].forEach { it.cancel() }
+        infernalMobTargetTasks.removeAll(entity.uniqueId)
     }
 
-    private fun List<InfernalAbility>.toJson() = gson.toJson(this, infernalAbilityListToken)
+    fun cancelTargetTasks(entity: LivingEntity) {
+        infernalMobTargetTasks[entity.uniqueId].forEach { it.cancel() }
+        infernalMobTargetTasks.removeAll(entity.uniqueId)
+    }
 
-    private fun String.toAbilityList() = gson.fromJson<List<InfernalAbility>>(this, infernalAbilityListToken)
+    fun startTargetTasks(entity: LivingEntity, target: LivingEntity) {
+        abilityHelper.startTargetTasks(entity, target)
+    }
+
+    private fun List<Abilities>.toJson() = gson.toJson(this, infernalAbilityListToken)
 
     private companion object {
-        val random = Random()
         val gson = Gson()
-        val infernalAbilityListToken: Type = object : TypeToken<List<InfernalAbility>>() {}.type
+        val infernalAbilityListToken: Type = object : TypeToken<Set<Abilities>>() {}.type
     }
 }

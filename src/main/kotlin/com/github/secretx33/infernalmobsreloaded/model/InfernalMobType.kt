@@ -25,7 +25,7 @@ data class InfernalMobType (
         require(entityClass !is ComplexLivingEntity) { "entityClass cannot be a ComplexLivingEntity" }
         require(loots.values.all { it in 0.0..1.0 }) { "all loot chances must be within 0 and 1, something inside the loop map was not, map = $loots"}
 
-        // abilities number
+        // abilities amount
         require(minAbilities >= 0) { "minAbilities has to be at least 0, minAbilities = $minAbilities" }
         require(maxAbilities >= 0) { "maxAbilities has to be at least 0, maxAbilities = $maxAbilities" }
         require(minAbilities <= maxAbilities) { "minAbilities cannot be higher than maxAbilities, minAbilities = $minAbilities, maxAbilities = $maxAbilities" }

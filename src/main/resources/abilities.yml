@@ -1,0 +1,48 @@
+archer:
+armoured:
+  fallback-dmg-resist-potion-level: 1    # When the mob cannot wear armor, it'll instead gain the Resistance effect, and each level gives it + 20% damage reduction; level 1 will provide 20% damage reduction
+berserk:
+blinding:
+call_the_gang:
+confusing:
+explode:
+firework:
+flying:
+ghastly:
+ghost:
+heavy:
+  knockback-resist-percentage: 0.4      # The scale of the amount of knockback resisted from attacks and projectiles, does not affect explosions; 0.0 value means 0% resistance, 0.5 means 50% resistance and 1.0 means 100% resistance added (meaning fully invincible against knockbacks)
+
+invisible:
+  # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
+  is-ambient: true
+  # if invisible mobs should emit invisible particles as if they had used a potion of invisibility
+  emit-particles: true
+levitate:
+lifesteal:
+molten:
+  # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
+  is-ambient: true
+  # if invisible mobs should emit invisible particles as if they had used a potion of invisibility
+  emit-particles: true
+morph:
+mounted:
+necromancer:
+poisonous:
+potions:
+quicksand:
+resilient:
+rust:
+sapper:
+second_wing:
+speedy:
+  min-bonus: 1.5     # any mob with this effect will have between 1.5 and 2.5 times its normal speed
+  max-bonus: 2.5
+storm:
+teleport:
+thief:
+tosser:
+vengeance:
+weakness:
+webber:
+withering:

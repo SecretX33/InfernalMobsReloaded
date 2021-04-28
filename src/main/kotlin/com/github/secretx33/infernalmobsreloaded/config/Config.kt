@@ -1,7 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
-import com.google.common.base.Enums
+import com.google.common.base.Predicate
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.plugin.Plugin
@@ -23,7 +23,7 @@ class Config(plugin: Plugin, private val logger: Logger) {
         return cache.getOrPut(key) {
             manager.get(key, default)
         } as? T ?: run {
-            logger.severe("On config key $key, expected value of type ${default!!::class.java.simpleName} but got ${manager.get(key)?.javaClass?.simpleName} instead, place fix your configuration file and reload")
+            logger.severe("On config key $key, expected value of type ${default!!::class.java.simpleName} but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your configuration file and reload")
             default
         }
     }
@@ -34,25 +34,25 @@ class Config(plugin: Plugin, private val logger: Logger) {
     fun <T> get(key: ConfigKeys, default: T): T = get(key.configEntry, default)
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : Enum<T>> getEnum(key: ConfigKeys): Enum<T> {
+    fun <T : Enum<T>> getEnum(key: ConfigKeys): T {
         return cache.getOrPut(key.configEntry) {
             manager.getString(key.configEntry)?.let {
                 try {
-                    JavaEnum.valueOf((key.defaultValue as Enum<*>)::class.java, it.toUpperCase(Locale.US))
+                    JavaEnum.valueOf(key.defaultValue::class.java as Class<out Enum<T>>, it.toUpperCase(Locale.US))
                 } catch(e: IllegalArgumentException) {
                     logger.severe("Error while trying to get config key '$key', value passed ${it.toUpperCase(Locale.US)} is an invalid value, please fix this entry in the config.yml and reload the configs, defaulting to ${(key.defaultValue as Enum<T>).name}")
                 }
             } ?: key.defaultValue
-        } as Enum<T>
+        } as T
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : Enum<T>> getEnumSet(key: ConfigKeys, clazz: Class<out Enum<T>>): Set<T> {
+    fun <T : Enum<T>> getEnumSet(key: ConfigKeys, clazz: Class<out Enum<T>>, filter: Predicate<T>? = null): Set<T> {
         return cache.getOrPut(key.configEntry) {
             if(!manager.contains(key.configEntry)) return@getOrPut key.defaultValue
             manager.getStringList(key.configEntry).mapNotNullTo(HashSet()) {
                 try {
-                    JavaEnum.valueOf(clazz, it.toUpperCase(Locale.US))
+                    JavaEnum.valueOf(clazz, it.toUpperCase(Locale.US))?.takeIf { enum -> filter == null || filter.apply(enum as T) }
                 } catch(e: IllegalArgumentException) {
                     logger.severe("Error while trying to get config key '$key', value passed '${it.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the config.yml and reload the configs")
                     null
@@ -60,7 +60,6 @@ class Config(plugin: Plugin, private val logger: Logger) {
             }
         } as Set<T>
     }
-
     fun has(path: String): Boolean = manager.contains(path)
 
     fun set(key: String, value: Any) {

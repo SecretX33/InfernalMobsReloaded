@@ -19,7 +19,7 @@ class InfernalMobTypesRepo (
     plugin: Plugin,
     private val log: Logger,
     private val adventureMessage: AdventureMessage,
-    private val lootItemsRepo: LootItemsRepo
+    private val lootItemsRepo: LootItemsRepo,
 ) {
     private val manager = YamlManager(plugin, "mobs")
     private var infernoTypeNames = emptyList<String>()                    // original groupNames
@@ -164,6 +164,7 @@ class InfernalMobTypesRepo (
         return Pair(minAmount, maxAmount)
     }
 
+    // get map containing <Item, DropChance> what items should be dropped by that infernal mob type and what is the chance of them being dropped
     private fun getMobLootTable(name: String): Map<LootItem, Double> {
         val loots = manager.getStringList("$name.loot-table")
 

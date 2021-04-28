@@ -1,26 +1,24 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
+import java.util.*
 import kotlin.math.min
 
-enum class InfernalAbility {
-    SECOND_WING,
+enum class Abilities {
     ARCHER,
     ARMOURED,
     BERSERK,
     BLINDING,
-    HEAVY,
-    RESILIENT,
-    INVISIBLE,
+    CALL_THE_GANG,
     CONFUSING,
-    TELEPORT,
-    EXPLODE,
     FIREWORK,
     FLYING,
     GHASTLY,
     GHOST,
+    HEAVY,
+    INVISIBLE,
     LEVITATE,
     LIFESTEAL,
-    CALL_THE_GANG,
+    KAMIKAZE,
     MOLTEN,
     MORPH,
     MOUNTED,
@@ -28,10 +26,13 @@ enum class InfernalAbility {
     POISONOUS,
     POTIONS,
     QUICKSAND,
+    RESILIENT,
     RUST,
     SAPPER,
+    SECOND_WING,
     SPEEDY,
     STORM,
+    TELEPORT,
     THIEF,
     TOSSER,
     VENGEANCE,
@@ -39,10 +40,12 @@ enum class InfernalAbility {
     WEBBER,
     WITHERING;
 
+    val configEntry = name.toLowerCase(Locale.US).replace('_', '-')
+
     companion object {
         val values = values().toList()
 
-        fun random(number: Int): List<InfernalAbility> {
+        fun random(number: Int): List<Abilities> {
             require(number >= 0) { "number cannot be lower than 0, number = $number" }
             return values.subList(0, min(values.size, number))
         }

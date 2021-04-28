@@ -24,7 +24,7 @@ infernal_creeper:
     - "silky:0.75"                 # will have 75% chance of dropping a 'silky'
 
 scary_silverfish:
-  display-name: "<#737373>Infernal <#f5f5f5>Fishy"
+  display-name: "<#737373>Infernal <#f5f5f5>**Fishy**"
   type: "SILVERFISH"
   spawn-chance: 0.20               # has 20% change of being a infernal mob
   mob-spawn-drop-chance: 0.001
