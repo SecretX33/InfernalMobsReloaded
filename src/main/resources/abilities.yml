@@ -1,4 +1,8 @@
 archer:
+  arrow-speed: 2.2          # honestly this speed is in vector, so you can think in it like m/s or something
+  arrow-amount: 8-15        # how many arrows are going to be shot, in default configuration it is 8-15
+  arrow-delay: 0.2          # in seconds, the delay between each arrow launch
+  chance: 0.05              # each second, the power has this chance of being triggered
 armoured:
   fallback-dmg-resist-potion-level: 1    # When the mob cannot wear armor, it'll instead gain the Resistance effect, and each level gives it + 20% damage reduction; level 1 will provide 20% damage reduction
 berserk:

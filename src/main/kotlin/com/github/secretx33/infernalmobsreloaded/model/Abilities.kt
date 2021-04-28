@@ -44,9 +44,9 @@ enum class Abilities {
     companion object {
         val values = values().toList()
 
-        fun random(number: Int): List<Abilities> {
+        fun random(number: Int): MutableSet<Abilities> {
             require(number >= 0) { "number cannot be lower than 0, number = $number" }
-            return values.subList(0, min(values.size, number))
+            return values.subList(0, min(values.size, number)).toMutableSet()
         }
     }
 }

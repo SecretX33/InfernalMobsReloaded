@@ -16,9 +16,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import org.bukkit.Particle
-import org.bukkit.entity.Entity
-import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Monster
+import org.bukkit.entity.*
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
@@ -43,7 +41,7 @@ class InfernalMobsManager (
 
     fun isPossibleInfernalMob(entity: LivingEntity) = entity.pdc.has(keyChain.infernalCategoryKey, PersistentDataType.STRING)
 
-    fun isMountOfAnotherInfernal(entity: Entity) = entity.pdc.has(keyChain.infernalMountKey, PersistentDataType.SHORT)
+    fun isMountOfAnotherInfernal(entity: Entity) = entity.pdc.has(keyChain.infernalMountKey, PersistentDataType.SHORT) || entity.pdc.has(keyChain.infernalBatMountKey, PersistentDataType.SHORT)
 
     fun makeInfernalMob(event: InfernalSpawnEvent) {
         val entity = event.entity
@@ -51,7 +49,7 @@ class InfernalMobsManager (
 
         addCustomNameToInfernal(entity, infernalType)
         addPdcKeysToInfernal(entity, infernalType)
-        abilityHelper.addAbilityEffects(entity)
+        abilityHelper.addAbilityEffects(entity, infernalType)
         loadInfernalMob(entity)
     }
 
@@ -71,14 +69,23 @@ class InfernalMobsManager (
     }
 
     private fun addPdcKeysToInfernal(entity: LivingEntity, infernalType: InfernalMobType) {
-        val abilityList = Abilities.random(infernalType.getAbilityNumber())
-        val livesNumber = if(abilityList.contains(Abilities.SECOND_WING)) 2 else 1
+        val abilitySet = Abilities.random(infernalType.getAbilityNumber()).filterConflicts()
+        val livesNumber = if(abilitySet.contains(Abilities.SECOND_WING)) 2 else 1
 
         entity.pdc.apply {
             set(keyChain.infernalCategoryKey, PersistentDataType.STRING, infernalType.name)
-            set(keyChain.abilityListKey, PersistentDataType.STRING, abilityList.toJson())
+            set(keyChain.abilityListKey, PersistentDataType.STRING, abilitySet.toJson())
             set(keyChain.livesKey, PersistentDataType.INTEGER, livesNumber)
         }
+    }
+
+    private fun MutableSet<Abilities>.filterConflicts(): MutableSet<Abilities> {
+        if(contains(Abilities.FLYING) && contains(Abilities.MOUNTED)) {
+            if(random.nextInt(2) == 0) remove(Abilities.FLYING)
+            else remove(Abilities.MOUNTED)
+            add(Abilities.values.filter { it != Abilities.FLYING && it != Abilities.MOUNTED }.random())
+        }
+        return this
     }
 
     private fun removePdcKeysOfInfernal(entity: LivingEntity) {
@@ -137,13 +144,14 @@ class InfernalMobsManager (
     }
 
     fun startTargetTasks(entity: LivingEntity, target: LivingEntity) {
-        abilityHelper.startTargetTasks(entity, target)
+        abilityHelper.startTargetTasks(entity, target, infernalMobTargetTasks)
     }
 
-    private fun List<Abilities>.toJson() = gson.toJson(this, infernalAbilityListToken)
+    private fun Set<Abilities>.toJson() = gson.toJson(this, infernalAbilityListToken)
 
     private companion object {
         val gson = Gson()
+        val random = Random()
         val infernalAbilityListToken: Type = object : TypeToken<Set<Abilities>>() {}.type
     }
 }

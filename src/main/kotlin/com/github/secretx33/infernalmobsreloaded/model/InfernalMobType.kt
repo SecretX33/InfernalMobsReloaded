@@ -41,6 +41,8 @@ data class InfernalMobType (
 
     fun getAbilityNumber() = random.nextInt(maxAbilities - minAbilities) + minAbilities
 
+    fun getHealthMulti() = minHealthMulti + (maxHealthMulti - minHealthMulti) * random.nextDouble()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

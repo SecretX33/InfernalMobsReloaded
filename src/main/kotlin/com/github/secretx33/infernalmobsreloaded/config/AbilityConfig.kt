@@ -4,7 +4,6 @@ import com.github.secretx33.infernalmobsreloaded.model.Abilities
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import me.mattstudios.msg.adventure.AdventureMessage
 import org.bukkit.plugin.Plugin
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
 import kotlin.math.max
@@ -36,6 +35,8 @@ class AbilityConfig (
     fun getPotionIsAmbient(ability: Abilities) = get("${ability.configEntry}.is-ambient", true)
 
     fun getPotionEmitParticles(ability: Abilities) = get("${ability.configEntry}.emit-particles", true)
+
+    fun getAbilityChance(ability: Abilities, default: Double) = get("${ability.configEntry}.chance", default)
 
     // returns a pair of ints containing the <Min, Max> value of that property
     @Suppress("UNCHECKED_CAST")
@@ -95,6 +96,9 @@ class AbilityConfig (
 }
 
 enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
+    ARCHER_ARROW_SPEED("archer.arrow-speed", 2.2),
+    ARCHER_ARROW_AMOUNT("archer.arrow-amount", 10),
+    ARCHER_ARROW_DELAY("archer.arrow-delay", 0.2),
     SPEEDY_BONUS("speedy.bonus", 1.5),
     ARMOURED_POTION_LEVEL("armoured.fallback-dmg-resist-potion-level", 1),
     HEAVY_RESIST_PERCENTAGE("heavy.knockback-resist-percentage", 0.4),

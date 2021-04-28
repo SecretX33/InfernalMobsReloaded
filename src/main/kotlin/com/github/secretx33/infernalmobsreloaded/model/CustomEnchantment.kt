@@ -26,9 +26,7 @@ data class CustomEnchantment (
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-
-        other as CustomEnchantment
-        if (type != other.type) return false
+        if (type != (other as CustomEnchantment).type) return false
         return true
     }
 

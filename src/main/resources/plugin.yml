@@ -3,7 +3,7 @@ version: ${version}
 main: ${mainClass}
 api-version: 1.16
 authors: [SecretX]
-description: Makes WorldEdits, well, kinda instant.
+description: Introduce Infernal Mobs, adding so much to any Survival Multiplayer experience.
 website: https://github.com/SecretX33
 softdepend: [WorldGuard]
 
