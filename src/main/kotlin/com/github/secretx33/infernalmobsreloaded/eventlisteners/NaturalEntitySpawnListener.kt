@@ -3,6 +3,7 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
+import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import org.bukkit.Bukkit
 import org.bukkit.World
@@ -19,7 +20,12 @@ import org.koin.core.component.KoinApiExtension
 import java.util.*
 
 @KoinApiExtension
-class NaturalEntitySpawnListener(plugin: Plugin, private val config: Config, private val infernalMobTypesRepo: InfernalMobTypesRepo): Listener {
+class NaturalEntitySpawnListener (
+    plugin: Plugin,
+    private val config: Config,
+    private val infernalManager: InfernalMobsManager,
+    private val infernalTypesRepo: InfernalMobTypesRepo,
+): Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
@@ -27,13 +33,13 @@ class NaturalEntitySpawnListener(plugin: Plugin, private val config: Config, pri
     private fun CreatureSpawnEvent.onNaturalEntitySpawn() {
         val world = entity.world
         if(!spawnReason.isAllowed() || entity.cannotBeInfernal() || !world.isWhitelisted()) return
-        val infernoType = infernalMobTypesRepo.getInfernoTypes(entityType).firstOrNull { random.nextDouble() <= it.spawnChance } ?: return
+        val infernoType = infernalTypesRepo.getInfernoTypes(entityType).firstOrNull { random.nextDouble() <= it.spawnChance } ?: return
 
         // fire event InfernalMobSpawnEvent to spawn a new infernal
         Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(entity, infernoType, spawnReason, world))
     }
 
-    private fun LivingEntity.cannotBeInfernal() = !infernalMobTypesRepo.canTypeBecomeInfernal(type) || (this is Ageable && !isAdult && blacklistedBabies.contains(type))
+    private fun LivingEntity.cannotBeInfernal() = !infernalTypesRepo.canTypeBecomeInfernal(type) || (this is Ageable && !isAdult && blacklistedBabies.contains(type)) || infernalManager.isMountOfAnotherInfernal(this)
 
     private fun SpawnReason.isAllowed() = validReasons.contains(this)
 

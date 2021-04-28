@@ -9,6 +9,7 @@ import java.util.*
 data class InfernalMobType (
     val name: String,
     val displayName: Component,
+    val bossBarName: Component,
     val entityType: EntityType,
     val spawnChance: Double,
     private val minAbilities: Int,

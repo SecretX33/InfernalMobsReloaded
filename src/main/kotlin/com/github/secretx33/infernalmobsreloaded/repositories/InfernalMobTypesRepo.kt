@@ -66,6 +66,7 @@ class InfernalMobTypesRepo (
     private fun makeMobType(name: String): InfernalMobType {
         val type = getMobType(name)
         val displayName = getMobDisplayName(name, type)
+        val bossBarName = getMobBossBarName(name, type)
         val spawnChance = getMobSpawnChance(name)
         // TODO("Add the spawner and spawner drop chance")
         val abilityAmounts = getAbilityAmounts(name)
@@ -73,6 +74,7 @@ class InfernalMobTypesRepo (
         val lootTable = getMobLootTable(name)
         return InfernalMobType(name,
             displayName = displayName,
+            bossBarName = bossBarName,
             entityType = type,
             spawnChance = spawnChance,
             minAbilities = abilityAmounts.first,
@@ -103,6 +105,16 @@ class InfernalMobTypesRepo (
 
         if(displayName.isBlank()) {
             log.severe("You must provide a display name for the mob category '$name'! Defaulting $name display name to its type.")
+            return Component.text(type.formattedTypeName())
+        }
+        return adventureMessage.parse(displayName)
+    }
+
+    private fun getMobBossBarName(name: String, type: EntityType): Component {
+        val displayName = manager.getString("$name.boss-bar-name") ?: ""
+
+        if(displayName.isBlank()) {
+            log.severe("You must provide a boss bar name for the mob category '$name'! Defaulting $name display name to its type.")
             return Component.text(type.formattedTypeName())
         }
         return adventureMessage.parse(displayName)

@@ -4,6 +4,7 @@ import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.model.Abilities
+import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
@@ -15,6 +16,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import org.bukkit.Particle
+import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Monster
 import org.bukkit.persistence.PersistentDataType
@@ -41,6 +43,8 @@ class InfernalMobsManager (
 
     fun isPossibleInfernalMob(entity: LivingEntity) = entity.pdc.has(keyChain.infernalCategoryKey, PersistentDataType.STRING)
 
+    fun isMountOfAnotherInfernal(entity: Entity) = entity.pdc.has(keyChain.infernalMountKey, PersistentDataType.SHORT)
+
     fun makeInfernalMob(event: InfernalSpawnEvent) {
         val entity = event.entity
         val infernalType = event.infernalType
@@ -54,14 +58,15 @@ class InfernalMobsManager (
     private fun unmakeInfernalMob(entity: LivingEntity) {
         removeCustomNameOfInfernal(entity)
         removePdcKeysOfInfernal(entity)
-        cancelAllTasks(entity)
+        cancelAllInfernalTasks(entity)
     }
 
     private fun addCustomNameToInfernal(entity: LivingEntity, infernalType: InfernalMobType) {
+        val displayMode = config.getEnum<DisplayCustomNameMode>(ConfigKeys.DISPLAY_INFERNAL_NAME_MODE)
         entity.apply {
             isPersistent = true
-            customName(infernalType.displayName)
-            isCustomNameVisible = true
+            if(displayMode.addCustomName) customName(infernalType.displayName)
+            isCustomNameVisible = displayMode.customNameVisible
         }
     }
 
@@ -116,10 +121,10 @@ class InfernalMobsManager (
         get() = (max(0.01, config.get(ConfigKeys.DELAY_BETWEEN_INFERNO_PARTICLES)) * 1000.0).toLong()
 
     fun unloadInfernalMob(entity: LivingEntity) {
-        cancelAllTasks(entity)
+        cancelAllInfernalTasks(entity)
     }
 
-    private fun cancelAllTasks(entity: LivingEntity) {
+    private fun cancelAllInfernalTasks(entity: LivingEntity) {
         infernalMobPeriodicTasks[entity.uniqueId].forEach { it.cancel() }
         infernalMobPeriodicTasks.removeAll(entity.uniqueId)
         infernalMobTargetTasks[entity.uniqueId].forEach { it.cancel() }

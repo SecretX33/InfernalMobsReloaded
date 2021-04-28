@@ -7,7 +7,7 @@
 # Plugin created by SecretX (github.com/SecretX33)
 # Version ${version}
 
-# ${name} create Infernal Mobs
+# ${name} create Infernal Mobs according to `mobs.yml` file
 
 # This file will NEVER get modified after being created, when updating the plugin please make sure you rename this one and let a new one be created, and copy your old configs to the new config file.
 
@@ -19,18 +19,24 @@
 
 # If false, particles effects for ALL things will be disabled GLOBALLY
 enable-particle-effects: true
+# Delay between infernal particles
+delay-between-infernal-particles: 1.5   # in seconds
+# Spread of infernal particles
+infernal-particles-spread: 2.0          # in blocks
+# Amount of particles spawned, this number greatly varies per particle, so I suggest you test it and manually adjust it to a balanced amount
+amount-infernal-particles: 10           # in particles
 
-# Delay between inferno particles
-delay-between-inferno-particles: 4.0   # in seconds
+# Display custom name mode, valid values are NONE, LOOKING_AT, ALWAYS; keep in mind that this option only affect new infernal mobs, the ones that already exist won't be affected by this change
+display-infernal-custom-name-mode: LOOKING_AT
 
 # If true, nearby players will be notified about the spawn of a new Infernal Mob with one of the spawn messages set on the `messages.yml` file
 enable-inferno-spawn-messages: true
 # The radius around the newly spawned infernal mob that a player has to be to receive the spawn message
-inferno-spawn-message-radius: 50       # in blocks
+inferno-spawn-message-radius: 30       # in blocks
 # If true, nearby players will be notified about the death of a Infernal Mob with one of the spawn messages set on the `messages.yml` file
 enable-inferno-death-messages: true
 # The radius around the dead infernal mob that a player has to be to receive the death message
-inferno-death-message-radius: 30       # in blocks
+inferno-death-message-radius: 20       # in blocks
 
 # Worlds in which mobs will have a chance of becoming infernal mobs; <ALL> is a special tag, it will allow the spawn of infernal mobs on ALL worlds; to prevent the spawn of infernals everywhere, just delete all the items and insert empty square brackets instead
 worlds-in-which-infernal-mobs-can-spawn:
@@ -44,7 +50,7 @@ spawn-reasons-which-infernal-mobs-can-spawn:
   - BUILD_SNOWMAN          # When an snowman is spawned by being built
   - BUILD_WITHER           # When an wither boss is spawned by being built
 # - CURED                  # When a villager is cured from infection
-  - CUSTOM                 # When a creature is spawned by plugins
+# - CUSTOM                 # When a creature is spawned by plugins, can conflict with this plugin when spawning mounts, do NOT enable
 # - DEFAULT                # When an entity is missing a SpawnReason
 # - DISPENSE_EGG           # When a creature is spawned by a dispenser dispensing an egg
   - DROWNED                # When a creature is spawned by another entity drowning
@@ -76,6 +82,51 @@ spawn-reasons-which-infernal-mobs-can-spawn:
 # Full list of mobs can be found here https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/EntityType.html , Ctrl + F
 blacklisted-baby-mob-types:
   - WOLF
+
+# Which types of infernal mobs can spawn mounted onto another mob; to prevent all mobs from spawning mounted, just delete all the items and insert empty square brackets instead
+# Full list of mobs can be found here https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/EntityType.html , Ctrl + F
+infernal-mobs-that-can-spawn-mounted:
+  - DROWNED
+  - ENDERMAN
+  - EVOKER
+  - HUSK
+  - ILLUSIONER
+  - PIG_ZOMBIE
+  - PIGLIN
+  - SKELETON
+  - SNOWMAN
+  - STRAY
+  - VILLAGER
+  - VINDICATOR
+  - WITCH
+  - WITHER_SKELETON
+  - ZOMBIE
+  - ZOMBIE_VILLAGER
+  - ZOMBIFIED_PIGLIN
+
+# Which types of mobs can become a mount for a mounted infernal mob; to disable all the mounts, just delete all the items and insert empty square brackets instead
+# Full list of mobs can be found here https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/EntityType.html , Ctrl + F
+infernal-mobs-that-can-be-rided-by-another-infernal:
+  - CHICKEN
+  - COW
+  - DONKEY
+  - GHAST
+  - HOGLIN
+  - HORSE
+  - LLAMA
+  - MAGMA_CUBE
+  - MULE
+  - MUSHROOM_COW
+  - PHANTOM
+  - PIG
+  - POLAR_BEAR
+  - SHEEP
+  - SKELETON_HORSE
+  - SLIME
+  - SPIDER
+  - STRIDER
+  - ZOGLIN
+  - ZOMBIE_HORSE
 
 ############################################################
 # +------------------------------------------------------+ #

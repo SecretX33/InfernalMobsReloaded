@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
+import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.google.common.base.Enums
 import com.google.common.base.Predicate
@@ -56,7 +57,7 @@ class Config(plugin: Plugin, private val logger: Logger) {
                     logger.severe("Error while trying to get config key '$key', value passed '${item.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the config.yml and reload the configs")
                     return@mapNotNullTo null
                 }
-                optional.get().takeIf { filter == null || filter.apply(it as T) }
+                optional.get().takeIf { it != null && (filter == null || filter.apply(it as T)) }
             }
         } as Set<T>
     }
@@ -78,13 +79,16 @@ class Config(plugin: Plugin, private val logger: Logger) {
 }
 
 enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
-    INFERNAL_ALLOWED_SPAWN_REASONS("spawn-reasons-which-infernal-mobs-can-spawn", listOf(CreatureSpawnEvent.SpawnReason.NATURAL)),
+    INFERNAL_ALLOWED_SPAWN_REASONS("spawn-reasons-which-infernal-mobs-can-spawn", setOf(CreatureSpawnEvent.SpawnReason.NATURAL)),
     INFERNAL_ALLOWED_WORLDS("worlds-in-which-infernal-mobs-can-spawn", emptyList<String>()),
-    INFERNAL_BLACKLISTED_BABY_MOBS("blacklisted-baby-mob-types", emptyList<EntityType>()),
-    ENABLE_INFERNO_SPAWN_MESSAGE("enable-inferno-spawn-messages", false),
-    INFERNO_SPAWN_MESSAGE_RADIUS("inferno-spawn-message-radius", 50),
+    INFERNAL_BLACKLISTED_BABY_MOBS("blacklisted-baby-mob-types", emptySet<EntityType>()),
+    ENABLE_INFERNO_SPAWN_MESSAGE("enable-infernal-spawn-messages", false),
+    INFERNO_SPAWN_MESSAGE_RADIUS("inferno-spawn-message-radius", 30),
     ENABLE_INFERNO_DEATH_MESSAGE("enable-inferno-death-messages", false),
-    INFERNO_DEATH_MESSAGE_RADIUS("inferno-death-message-radius", 30),
+    INFERNO_DEATH_MESSAGE_RADIUS("inferno-death-message-radius", 20),
     ENABLE_PARTICLE_EFFECTS("enable-particle-effects", true),
-    DELAY_BETWEEN_INFERNO_PARTICLES("delay-between-inferno-particles", 4.0),
+    DELAY_BETWEEN_INFERNO_PARTICLES("delay-between-inferno-particles", 1.5),
+    DISPLAY_INFERNAL_NAME_MODE("display-infernal-custom-name-mode", DisplayCustomNameMode.LOOKING_AT),
+    INFERNAL_MOBS_THAT_CAN_SPAWN_MOUNTED("infernal-mobs-that-can-spawn-mounted", emptySet<EntityType>()),
+    INFERNAL_MOBS_THAT_CAN_BE_RIDED_BY_ANOTHER("infernal-mobs-that-can-be-rided-by-another-infernal", emptySet<EntityType>()),
 }

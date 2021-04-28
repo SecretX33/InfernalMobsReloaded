@@ -38,7 +38,7 @@ class LootItemsRepo (
 
     fun getLootItemOrNull(name: String) = lootItemCache[name.toLowerCase(Locale.US)]
 
-    fun getLootItem(name: String): LootItem = getLootItemOrNull(name) ?: throw NoSuchElementException("HarvestBlock for group $name was not found.")
+    fun getLootItem(name: String): LootItem = getLootItemOrNull(name) ?: throw NoSuchElementException("Loot item named $name was not found.")
 
     fun hasLootItem(name: String) = lootItemCache.containsKey(name.toLowerCase(Locale.US))
 
