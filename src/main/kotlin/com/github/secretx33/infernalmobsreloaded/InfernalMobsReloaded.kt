@@ -6,16 +6,16 @@ import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkLoadListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkUnloadListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.NaturalEntitySpawnListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.PlayerInteractListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalDeathListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalSpawnListener
-import com.github.secretx33.infernalmobsreloaded.manager.AbilityHelper
-import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
-import com.github.secretx33.infernalmobsreloaded.manager.ParticlesHelper
+import com.github.secretx33.infernalmobsreloaded.manager.*
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.*
 import me.mattstudios.msg.adventure.AdventureMessage
+import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.component.KoinApiExtension
@@ -36,22 +36,24 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { KeyChain(get()) }
         single { ParticlesHelper(get(), get()) }
         single { LootItemsRepo(get(), get(), get()) }
+        single { AbilityHelper(get(),get(), get(), get(), get(), get(), get()) }
         single { InfernalMobTypesRepo(get(), get(), get(), get()) }
-        single { InfernalMobsManager(get(), get(), get(), get(), get()) }
+        single { InfernalMobsManager(get(), get(), get(), get(), get(), get()) }
         single { InfernalDeathListener(get(), get(), get(), get()) }
         single { InfernalSpawnListener(get(), get(), get(), get()) }
-        single { ChunkLoadListener(get(), get()) }
         single { ChunkUnloadListener(get(), get()) }
-        single { NaturalEntitySpawnListener(get(), get(), get()) }
+        single { ChunkLoadListener(get(), get()) }
+        single { NaturalEntitySpawnListener(get(), get(), get(), get()) }
+        single<WorldGuardChecker> { WorldGuardCheckerDummy() }
     }
 
-//    override fun onLoad() {
-//        // if worldguard is enabled, replace dummy module with real one
-//        if(isWorldGuardEnabled) {
-//            // creation of the WorldGuardChecker happens here because WG is bae and requires hooking to happen on method onLoad
-//            mod.single<WorldGuardChecker>(override = true) { WorldGuardCheckerImpl() }
-//        }
-//    }
+    override fun onLoad() {
+        // if worldguard is enabled, replace dummy module with real one
+        if(isWorldGuardEnabled) {
+            // creation of the WorldGuardChecker happens here because WG is bae and requires hooking to happen on method onLoad
+            mod.single<WorldGuardChecker>(override = true) { WorldGuardCheckerImpl() }
+        }
+    }
 
     override fun onEnable() {
         startKoin {
@@ -60,8 +62,8 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         }
         get<InfernalDeathListener>()
         get<InfernalSpawnListener>()
-        get<ChunkLoadListener>()
         get<ChunkUnloadListener>()
+        get<ChunkLoadListener>()
         get<NaturalEntitySpawnListener>()
     }
 
@@ -71,6 +73,6 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         stopKoin()
     }
 
-//    private val isWorldGuardEnabled
-//        get() = Bukkit.getPluginManager().getPlugin("WorldGuard") != null
+    private val isWorldGuardEnabled
+        get() = Bukkit.getPluginManager().getPlugin("WorldGuard") != null
 }

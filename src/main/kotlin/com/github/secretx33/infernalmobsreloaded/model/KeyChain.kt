@@ -11,5 +11,5 @@ class KeyChain(plugin: Plugin) {
     val abilityListKey      = NamespacedKey(plugin, "ability_list")        // String
     val livesKey            = NamespacedKey(plugin, "lives_count")         // Int > 0
     val infernalMountKey    = NamespacedKey(plugin, "mob_spawned_as_mount_for_infernal")  // Short = 1
-    val infernalBatMountKey = NamespacedKey(plugin, "bat_spawned_to_make_infernal_fly")  // Short = 1
+    val infernalBatMountKey = NamespacedKey(plugin, "bat_spawned_to_make_infernal_fly")   // Short = 1
 }
