@@ -1,16 +1,32 @@
+############################################################
+# +------------------------------------------------------+ #
+# |               General Abilities Settings             | #
+# +------------------------------------------------------+ #
+############################################################
+
+# This is a global property used by all abilities that may affect multiple nearby targets, like the Archer ability; if you don't want abilities to be able to affect multiple targets, set its value to 0.0
+nearby-entities-range: 3.0     # in blocks, how close the entity has to be of the main target to also be affected by it
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |              Specific Abilities Settings             | #
+# +------------------------------------------------------+ #
+############################################################
+
 # Archer ability
-# Shoot a volley of arrows on the target and nearby entities
+# Shoots a volley of arrows on the target and nearby entities
 archer:
-  projectile-speed: 2.2       # honestly, this speed is in vector, so you can think in it like m/s or something
-  arrow-amount: 8-15          # how many arrows are going to be shot, in default configuration it is 8-15
-  arrow-delay: 0.2            # in seconds, the delay between each arrow launch
-  recheck-delay: 1.0          # in seconds, every 1 second it'll run the random chance to see if it's going to spawn shoot the arrows
-  chance: 0.04                # in percentage, every 'reckeck-delay' seconds, the power will have 5% chance of being triggered
+  projectile-speed: 2.2        # honestly, this speed is in vector, so you can think in it like m/s or something
+  arrow-amount: 8-15           # how many arrows are going to be shot, in default configuration it is 8-15
+  arrow-delay: 0.2             # in seconds, the delay between each arrow launch
+  recheck-delay: 1.0           # in seconds, every 1 second it'll run the random chance to see if it's going to spawn shoot the arrows
+  chance: 0.04                 # in percentage, every 'reckeck-delay' seconds, the power will have 5% chance of being triggered
 
 # Armoured ability
 # Makes the entity spawn with a beefy armor, or a damage reduction effect if it cannot wear armor
 armoured:
-  armor-drop-chance: 0.001    # armoured mobs will have 0.1% chance of dropping one of its special armor pieces or weapon
+  armor-drop-chance: 0.001     # armoured mobs will have 0.1% chance of dropping one of its special armor pieces or weapon
   fallback-dmg-resist-potion-level: 1    # When the mob cannot wear armor, it'll instead gain the Resistance effect, and each level gives it + 20% damage reduction; level 1 will provide 20% damage reduction
 
 # Berserk ability
@@ -18,13 +34,13 @@ armoured:
 berserk:
 
 # Bliding ability
-# Each hit it does may cause blindness on
+# Each of its attacks may cause blindness on whoever is unlucky enough to be fighting against it
 blinding:
 
 call_the_gang:
-  recheck-delay: 2.0          # in seconds, every 2 second it'll run the random chance to see if it's going to spawn a "gang" of babies of its type
-  chance: 0.025               # in percentage, will have 2.5% chance of calling the "gang" every 'recheck-delay' seconds
-  amount: 2-4                 # will call between 2 and 4 mobs of its type
+  recheck-delay: 2.0           # in seconds, every 2 second it'll run the random chance to see if it's going to spawn a "gang" of babies of its type
+  chance: 0.025                # in percentage, will have 2.5% chance of calling the "gang" every 'recheck-delay' seconds
+  amount: 2-4                  # will call between 2 and 4 mobs of its type
 
 confusing:
 
@@ -34,12 +50,12 @@ flying:
 
 ghastly:
   projectile-speed: 1.5
-  recheck-delay: 1.5           # in seconds, every 1.5 seconds it'll run the random chance to see if it's going to spawn shoot the arrows
-  chance: 0.25                 # every 'reckeck-delay' seconds, the power will have 25% chance of being triggered
+  recheck-delay: 1.5            # in seconds, every 1.5 seconds it'll run the random chance to see if it's going to spawn shoot the arrows
+  chance: 0.25                  # every 'reckeck-delay' seconds, the power will have 25% chance of being triggered
 
 ghost:
-  evil-chance: 0.3             # in percentage, what chance they'll have of becoming "evil" ghosts
-  item-drop-chance: 0.2        # what chance each of its items will have of being dropped upon death
+  evil-chance: 0.3              # in percentage, what chance they'll have of becoming "evil" ghosts
+  item-drop-chance: 0.2         # what chance each of its items will have of being dropped upon death
 
 heavy:
   knockback-resist-percentage: 0.3-0.45     # The scale of the amount of knockback resisted from attacks and projectiles, does not affect explosions; 0.0 value means 0% resistance, 0.5 means 50% resistance and 1.0 means 100% resistance added (meaning fully invincible against knockbacks)
@@ -68,10 +84,12 @@ morph:
 
 mounted:
 
+# Necromancer ability
+# Shoots a Wither Skull on the target and nearby entities
 necromancer:
   projectile-speed: 2.0
-  recheck-delay: 2.5          # in seconds, every 2.5 seconds it'll run the random chance to see if it's going to spawn shoot the arrows
-  chance: 0.25                # in percentage, every 'reckeck-delay' seconds, the power will have 25% chance of being triggered
+  recheck-delay: 2.5           # in seconds, every 2.5 seconds it'll run the random chance to see if it's going to spawn shoot the arrows
+  chance: 0.25                 # in percentage, every 'reckeck-delay' seconds, the power will have 25% chance of being triggered
 
 poisonous:
 
@@ -89,15 +107,15 @@ second_wing:
   particle-effect: ""
 
 speedy:
-  bonus: 1.5-2.5              # any mob with this effect will have between 1.5 and 2.5 times its normal speed
+  bonus: 1.5-2.5               # any mob with this effect will have between 1.5 and 2.5 times its normal speed
 
 storm:
 
 teleport:
 
 thief:
-  recheck-delay: 4.0          # in seconds, each 4 seconds it'll run the random chance to see if it's going to steal what's on player hand
-  chance: 0.05                # every 'recheck-delay' seconds, it'll run the random chance that will have 5% of spawning a web on the player's feet
+  recheck-delay: 4.0           # in seconds, each 4 seconds it'll run the random chance to see if it's going to steal what's on player hand
+  chance: 0.05                 # every 'recheck-delay' seconds, it'll run the random chance that will have 5% of spawning a web on the player's feet
 
 tosser:
 
@@ -106,9 +124,9 @@ vengeance:
 weakness:
 
 webber:
-  recheck-delay: 2.0          # in seconds, each 2 seconds it'll run the random chance to see if it's going to spawn a web on player's feet
-  chance: 0.05                # every 'recheck-delay' seconds, it'll run the random chance that will have 5% of spawning a web on the player's feet
-  duration: 5.0               # in seconds, how many seconds the cobweb will stay there
-  trap-density: 0.6           # how "dense" the spawned cage will be, or in other words, what's the chance of each block around the target being temporally morphed into a cobweb
+  recheck-delay: 2.0           # in seconds, each 2 seconds it'll run the random chance to see if it's going to spawn a web on player's feet
+  chance: 0.05                 # every 'recheck-delay' seconds, it'll run the random chance that will have 5% of spawning a web on the player's feet
+  duration: 5.0                # in seconds, how many seconds the cobweb will stay there
+  trap-density: 0.6            # how "dense" the spawned cage will be, or in other words, what's the chance of each block around the target being temporally morphed into a cobweb
 
 withering:

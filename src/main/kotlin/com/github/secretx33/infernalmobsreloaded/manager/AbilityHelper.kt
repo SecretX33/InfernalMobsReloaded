@@ -287,6 +287,7 @@ class AbilityHelper (
     }
 
     private fun makeArcherTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+        val nearbyRange = abilityConfig.getNearbyRange()
         val speed = abilityConfig.getProjectileSpeed(Abilities.ARCHER, 2.2)
         val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).getRandomBetween()
         val delay = abilityConfig.getDouble(AbilityConfigKeys.ARCHER_ARROW_DELAY, minValue = 0.001).toLongDelay()
@@ -296,14 +297,20 @@ class AbilityHelper (
         while(isActive && !isInvalid(entity, target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
+            val victims = target.location.getNearbyLivingEntities(nearbyRange)
+            // TODO("Remove this check after I confirm the returning list never contain its target")
+            if(victims.contains(target)) throw IllegalStateException("Nearby entities function return a list contains self")
+            victims.add(target)
 
             for (i in 1..amount) {
-                val dir = entity.shootDirection()?.multiply(speed)
-                if (!isActive || dir == null || isInvalid(entity, target)) {
-                    multimap.remove(entity.uniqueId, coroutineContext.job)
-                    return@launch
+                victims.forEach {
+                    val dir = entity.shootDirection(it).multiply(speed)
+                    if (!isActive || isInvalid(entity, target)) {
+                        multimap.remove(entity.uniqueId, coroutineContext.job)
+                        return@launch
+                    }
+                    entity.shootProjectile(dir, Arrow::class.java)
                 }
-                entity.shootProjectile(dir, Arrow::class.java)
                 delay(delay)
             }
         }
@@ -439,6 +446,10 @@ class AbilityHelper (
     private fun LivingEntity.shootDirection(): Vector? {
         if(this !is Mob) return eyeLocation.direction
         val target = target ?: return null
+        return shootDirection(target)
+    }
+
+    private fun LivingEntity.shootDirection(target: LivingEntity): Vector {
         val src = eyeLocation.apply { y -= height / 12 }
         val dest = target.location.apply {
             y += target.height * 0.75

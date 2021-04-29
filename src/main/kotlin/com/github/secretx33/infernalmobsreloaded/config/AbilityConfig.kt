@@ -72,6 +72,9 @@ class AbilityConfig (
     fun getProjectileSpeed(ability: Abilities, default: Double, minValue: Double = 0.05, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.projectile-speed", default, minValue, maxValue)
 
+    fun getNearbyRange(default: Double = 3.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+        = getDouble("nearby-entities-range", default, minValue, maxValue)
+
     fun getIntAmounts(ability: Abilities, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE) = getIntPair("${ability.configEntry}.amount", default, minValue, maxValue)
 
     // returns a pair of ints containing the <Min, Max> value of that property
