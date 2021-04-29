@@ -139,6 +139,8 @@ class InfernalMobsManager (
         cancelAllInfernalTasks(entity)
     }
 
+    fun triggerOnDeathAbilities(entity: LivingEntity) = abilityHelper.triggerOnDeathAbilities()
+
     private fun cancelAllInfernalTasks(entity: LivingEntity) {
         infernalMobPeriodicTasks[entity.uniqueId].forEach { it.cancel() }
         infernalMobPeriodicTasks.removeAll(entity.uniqueId)

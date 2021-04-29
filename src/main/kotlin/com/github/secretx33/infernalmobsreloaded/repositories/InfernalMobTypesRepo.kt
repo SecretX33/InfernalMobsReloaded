@@ -43,6 +43,9 @@ class InfernalMobTypesRepo (
 
     fun isValidInfernalType(name: String) = infernoTypeCache.containsKey(name.toLowerCase(Locale.US))
 
+    // weighted by mob type, so it won't produce more than one type of entity vs another
+    fun getRandomInfernalType() = infernoTypeMultimap[infernoTypeMultimap.keys().random()].random()
+
     private fun ensureUniqueKeys() {
         val duplicatedKeys = manager.getKeys(false).groupBy { it.toLowerCase(Locale.US) }.filterValues { it.size > 1 }
         // if there are duplicates in keys
@@ -51,7 +54,7 @@ class InfernalMobTypesRepo (
             duplicatedKeys.entries.forEachIndexed { index, (k, v) ->
                 sb.append("\n${index + 1}) $k = {${v.joinToString()}}")
             }
-            log.severe(sb.toString())
+            log.warning(sb.toString())
         }
     }
 
@@ -90,12 +93,12 @@ class InfernalMobTypesRepo (
 
         // if type is absent or blank
         if(mobType.isBlank()) {
-            log.severe("You must provide a type of mob for the category '$name'! Please fix your mobs configurations and reload, defaulting $name mob type to Zombie.")
+            log.warning("You must provide a type of mob for the category '$name'! Please fix your mobs configurations and reload, defaulting $name mob type to Zombie.")
             return EntityType.ZOMBIE
         }
 
         return EntityType.values().firstOrNull { it.entityClass != null && it.entityClass !is ComplexLivingEntity && it.isSpawnable && it.name.equals(mobType, ignoreCase = true) } ?: run {
-            log.severe("Inside mob category '$name', mob of type '$mobType' is invalid or doesn't exist, please fix your mobs configurations. Defaulting $name mob type to Zombie.")
+            log.warning("Inside mob category '$name', mob of type '$mobType' is invalid or doesn't exist, please fix your mobs configurations. Defaulting $name mob type to Zombie.")
             EntityType.ZOMBIE
         }
     }
@@ -104,7 +107,7 @@ class InfernalMobTypesRepo (
         val displayName = manager.getString("$name.display-name") ?: ""
 
         if(displayName.isBlank()) {
-            log.severe("You must provide a display name for the mob category '$name'! Defaulting $name display name to its type.")
+            log.warning("You must provide a display name for the mob category '$name'! Defaulting $name display name to its type.")
             return Component.text(type.formattedTypeName())
         }
         return adventureMessage.parse(displayName)
@@ -114,7 +117,7 @@ class InfernalMobTypesRepo (
         val displayName = manager.getString("$name.boss-bar-name") ?: ""
 
         if(displayName.isBlank()) {
-            log.severe("You must provide a boss bar name for the mob category '$name'! Defaulting $name display name to its type.")
+            log.warning("You must provide a boss bar name for the mob category '$name'! Defaulting $name display name to its type.")
             return Component.text(type.formattedTypeName())
         }
         return adventureMessage.parse(displayName)
@@ -125,7 +128,7 @@ class InfernalMobTypesRepo (
 
         // if user forgot to insert the spawnChance of that mob category
         if(spawnChance == Double.MIN_VALUE) {
-            log.severe("You must provide a spawn chance for the mob category '$name'! Please fix your mobs configurations and reload, defaulting $name spawn chance to 15%.")
+            log.warning("You must provide a spawn chance for the mob category '$name'! Please fix your mobs configurations and reload, defaulting $name spawn chance to 15%.")
             return 0.15
         }
         return max(0.0, min(1.0, spawnChance))
@@ -140,7 +143,7 @@ class InfernalMobTypesRepo (
 
         // if typed amount is not an integer
         val minAmount = amounts[0].toIntOrNull()?.let { max(0, it) } ?: run {
-            log.severe("Ability amount '${amounts[0]}' provided for mob category '$name' is not an integer, please fix your configurations and reload. Defaulting '$name' ability amount to 1.")
+            log.warning("Ability amount '${amounts[0]}' provided for mob category '$name' is not an integer, please fix your configurations and reload. Defaulting '$name' ability amount to 1.")
             return Pair(1, 1)
         }
 
@@ -148,7 +151,7 @@ class InfernalMobTypesRepo (
         if(amounts.size < 2 || amounts[1].isBlank()) return Pair(minAmount, minAmount)
 
         val maxAmount = amounts[1].toIntOrNull()?.let { max(minAmount, it) } ?: run {
-            log.severe("Max ability amount '${amounts[1]}' provided for mob category '$name' is not an integer, please fix the typo and reload the configurations. Defaulting '$name' max amount to its minimum amount, which is $minAmount.")
+            log.warning("Max ability amount '${amounts[1]}' provided for mob category '$name' is not an integer, please fix the typo and reload the configurations. Defaulting '$name' max amount to its minimum amount, which is $minAmount.")
             minAmount
         }
         return Pair(minAmount, maxAmount)
@@ -163,7 +166,7 @@ class InfernalMobTypesRepo (
 
         // if typed amount is not an integer
         val minAmount = amounts[0].toDoubleOrNull()?.let { max(0.01, it) } ?: run {
-            log.severe("Inside mob category '$name', health multiplier provided '${amounts[0]}' is not a double, please fix your configurations and reload. Defaulting '$name' health multiplier to 1.")
+            log.warning("Inside mob category '$name', health multiplier provided '${amounts[0]}' is not a double, please fix your configurations and reload. Defaulting '$name' health multiplier to 1.")
             return Pair(1.0, 1.0)
         }
 
@@ -171,7 +174,7 @@ class InfernalMobTypesRepo (
         if(amounts.size < 2 || amounts[1].isBlank()) return Pair(minAmount, minAmount)
 
         val maxAmount = amounts[1].toDoubleOrNull()?.let { max(minAmount, it) } ?: run {
-            log.severe("Inside mob category '$name', max health multiplier provided '${amounts[0]}' is not a double, please fix the typo and reload the configurations. Defaulting '$name' max amount to its minimum amount, which is $minAmount.")
+            log.warning("Inside mob category '$name', max health multiplier provided '${amounts[0]}' is not a double, please fix the typo and reload the configurations. Defaulting '$name' max amount to its minimum amount, which is $minAmount.")
             minAmount
         }
         return Pair(minAmount, maxAmount)
@@ -186,7 +189,7 @@ class InfernalMobTypesRepo (
 
         // print error in console for any missing loot item
         loots.filter { !lootItemsRepo.hasLootItem(it.split(':')[0]) }.forEach {
-            log.severe("Inside mob category $name, loot item named '$it' was not found! Please fix your mobs or item loot configurations and reload.")
+            log.warning("Inside mob category $name, loot item named '$it' was not found! Please fix your mobs or item loot configurations and reload.")
         }
 
         val lootItems = HashMap<LootItem, Double>()
@@ -201,7 +204,7 @@ class InfernalMobTypesRepo (
             }
             // if 'chance' part of this item loot is invalid (by typoing the number)
             val chance = fields[1].toDoubleOrNull()?.let { max(0.0, min(1.0, it)) } ?: run {
-                log.severe("Inside drop for item '${fields[0]} of mob category '$name', chance '${fields[1]}' is invalid, please fix your configurations and reload. Defaulting this item drop chance to 100%.")
+                log.warning("Inside drop for item '${fields[0]} of mob category '$name', chance '${fields[1]}' is invalid, please fix your configurations and reload. Defaulting this item drop chance to 100%.")
                 1.0
             }
             lootItems[item] = chance

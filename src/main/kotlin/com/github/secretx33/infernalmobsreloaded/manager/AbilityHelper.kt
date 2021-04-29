@@ -8,6 +8,7 @@ import com.github.secretx33.infernalmobsreloaded.model.Abilities
 import com.github.secretx33.infernalmobsreloaded.model.BlockModification
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
+import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.Cuboid
 import com.github.secretx33.infernalmobsreloaded.utils.pdc
@@ -22,11 +23,13 @@ import org.bukkit.*
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.block.Block
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.*
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.material.Colorable
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
@@ -49,6 +52,7 @@ class AbilityHelper (
     private val lootItemsRepo: LootItemsRepo,
     private val wgChecker: WorldGuardChecker,
     private val particlesHelper: ParticlesHelper,
+    private val infernalMobTypesRepo: InfernalMobTypesRepo,
 ){
 
     private val blockModifications = Sets.newConcurrentHashSet<BlockModification>()
@@ -192,9 +196,67 @@ class AbilityHelper (
         movSpeed.addModifier(mod)
     }
 
-    private fun LivingEntity.addPermanentPotion(effectType: PotionEffectType, ability: Abilities, amplifier: Int = 0) {
-        addPotionEffect(PotionEffect(effectType, Int.MAX_VALUE, amplifier, abilityConfig.getPotionIsAmbient(ability), abilityConfig.getPotionEmitParticles(ability), false))
+    private fun LivingEntity.addPermanentPotion(effectType: PotionEffectType, ability: Abilities, amplifier: Int = 0, isAmbient: Boolean = abilityConfig.getPotionIsAmbient(ability), emitParticles: Boolean = abilityConfig.getPotionEmitParticles(ability)) {
+        addPotionEffect(PotionEffect(effectType, Int.MAX_VALUE, amplifier, isAmbient, emitParticles))
     }
+
+    fun triggerOnDeathAbilities(entity: LivingEntity) {
+        val abilities = entity.getAbilities() ?: return
+        abilities.forEach {
+            when(it) {
+                Abilities.GHOST -> entity.triggerGhost()
+                Abilities.KAMIKAZE -> entity.triggerKamizake()
+                else -> {}
+            }
+        }
+    }
+    private fun LivingEntity.triggerGhost() {
+        val evil = random.nextDouble() <= abilityConfig.getDouble(AbilityConfigKeys.GHOST_EVIL_CHANCE)
+        val evilPrefix = if(evil) "evil_" else ""
+        val itemDropChance = abilityConfig.getDouble(AbilityConfigKeys.GHOST_ITEM_DROP_CHANCE, maxValue = 1.0).toFloat()
+
+        val ghost = world.spawn(location, Zombie::class.java, SpawnReason.CUSTOM) {
+            it.addPermanentPotion(PotionEffectType.INVISIBILITY, Abilities.GHOST, isAmbient = true, emitParticles = true)
+            it.canPickupItems = false
+
+            val equip = it.equipment
+            EquipmentSlot.values().forEach { slot -> equip?.setDropChance(slot, itemDropChance) }
+
+            equip?.apply {
+                helmet = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_helmet")?.makeItem()
+                chestplate = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_chestplate")?.makeItem()
+                leggings = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_leggings")?.makeItem()
+                boots = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_boots")?.makeItem()
+                setItemInMainHand(lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_weapon")?.makeItem())
+            }
+        }
+
+        if(evil) particlesHelper.sendParticle(ghost, Particle.SMOKE_LARGE, 2.25, 50)
+        else particlesHelper.sendParticle(ghost, Particle.CLOUD, 1.25, 25)
+
+        if (evil) {
+            aList.add("necromancer")
+            aList.add("withering")
+            aList.add("blinding")
+        } else {
+            aList.add("ghastly")
+            aList.add("sapper")
+            aList.add("confusing")
+        }
+        val newMob: InfernalMob
+        if (evil) {
+            newMob = InfernalMob(g, g.uniqueId, false, aList, 1, "smoke:2:12")
+        } else {
+            newMob = InfernalMob(g, g.uniqueId, false, aList, 1, "cloud:0:8")
+        }
+        this.infernalList.add(newMob)
+    }
+
+
+    private fun LivingEntity.triggerKamizake() {
+        TODO("Not yet implemented")
+    }
+
 
     fun startTargetTasks(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) {
         val abilities = entity.getAbilities() ?: return
@@ -223,7 +285,10 @@ class AbilityHelper (
         while(isActive && !isInvalid(entity, target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
-
+            val newType = infernalMobTypesRepo.getRandomInfernalType()
+            val keepHpPercent = abilityConfig.get<Boolean>(AbilityConfigKeys.MORPH_KEEP_HP_PERCENTAGE)
+            entity.remove()
+            entity.world.spawn(entity.location, newType.entityClass, SpawnReason.CUSTOM)
         }
         multimap.remove(entity.uniqueId, coroutineContext.job)
     }

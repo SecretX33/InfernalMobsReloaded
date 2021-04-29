@@ -61,42 +61,42 @@ glass_drill:
 # These are armoured armor pieces that will be given to every mob with Armoured ability, you may freely change all the attributes you want, just don't remove or rename these entries, or change their type to something completely different (e.g. you may change the netherite_sword to a golden_sword, but not to dirt)
 
 armoured_helmet:
-  name: "<#808080>Armoured **Helmet**"
+  name: "<#808080>Armoured Helmet"
   material: "NETHERITE_HELMET"
   amount: 1
   enchants:
     - "protection_projectile"
 
 armoured_chestplate:
-  name: "<#808080>Armoured **Helmet**"
+  name: "<#808080>Armoured Chestplate"
   material: "NETHERITE_CHESTPLATE"
   amount: 1
   enchants:
     - "protection_explosions"
 
 armoured_leggings:
-  name: "<#808080>Armoured **Helmet**"
+  name: "<#808080>Armoured Leggings"
   material: "NETHERITE_LEGGINGS"
   amount: 1
   enchants:
     - "protection_environmental"
 
 armoured_boots:
-  name: "<#808080>Armoured **Helmet**"
+  name: "<#808080>Armoured Boots"
   material: "NETHERITE_BOOTS"
   amount: 1
   enchants:
     - "soul_speed:2"
 
 armoured_sword:
-  name: "<#808080>Armoured **Sword**"
+  name: "<#808080>Armoured Sword"
   material: "NETHERITE_SWORD"
   amount: 1
   enchants:
-    - "damage_all:2-4"
+    - "damage_all:2-4"                   # sharpness 2-4
 
 armoured_bow:
-  name: "<#808080>Armoured **Bow**"
+  name: "<#808080>Armoured Bow"
   material: "BOW"
   amount: 1
   enchants:
@@ -104,10 +104,71 @@ armoured_bow:
     - "arrow_damage:2"
 
 armoured_crossbow:
-  name: "<#808080>Armoured **Crossbow**"
+  name: "<#808080>Armoured Crossbow"
   material: "CROSSBOW"
   amount: 1
   enchants:
     - "multishot:1"
     - "piercing:1-3"
     - "quick_charge:2-3"
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                    Ghost Equipment                   | #
+# +------------------------------------------------------+ #
+############################################################
+
+# These are armor pieces of a Ghost, spawned when a mob with Ghost ability dies, you may freely change all the attributes you want, just don't rename these entries, or change their type to something completely different (e.g. you may change the netherite_sword to a golden_sword, but not to dirt)
+
+ghost_helmet:
+  name: "<#808080>Ghost Head"
+  material: "SKELETON_SKULL"
+  amount: 1
+
+ghost_chestplate:
+  name: "<#808080>Ghost Chestplate"
+  material: "LEATHER_CHESTPLATE"
+  color: "WHITE"
+  amount: 1
+  enchants:
+    - "protection_environmental:7-9"
+
+# You may also want to implement these, just uncomment them and fill the necessary data
+
+# ghost_leggings:
+
+# ghost_boots:
+
+ghost_weapon:
+  name: "<#808080>Ghost Weapon"
+  material: "IRON_SWORD"
+  amount: 1
+  enchants:
+    - "damage_all"                       # sharpness
+
+evil_ghost_helmet:
+  name: "<#808080>Evil Ghost Head"
+  material: "WITHER_SKELETON_SKULL"
+  amount: 1
+
+evil_ghost_chestplate:
+  name: "<#808080>Evil Ghost Chestplate"
+  material: "LEATHER_CHESTPLATE"
+  color: "BLACK"
+  amount: 1
+  enchants:
+    - "protection_environmental:9-11"
+
+evil_ghost_weapon:
+  name: "<#808080>Evil Ghost Weapon"
+  material: "IRON_SWORD"
+  amount: 1
+  enchants:
+    - "damage_all"                       # sharpness
+
+  # You may also want to implement these, just uncomment them and fill the necessary data
+
+# evil_ghost_leggings:
+
+# evil_ghost_boots:

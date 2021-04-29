@@ -2,16 +2,20 @@ package com.github.secretx33.infernalmobsreloaded.utils
 
 import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
 import net.kyori.adventure.text.Component
+import org.bukkit.Color
+import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.LeatherArmorMeta
+import org.bukkit.material.Colorable
 import org.bukkit.persistence.PersistentDataContainer
 
 class ItemBuilder private constructor(material: Material) {
 
     private val item = ItemStack(material)
-    private val meta = item.itemMeta
+    private var meta = item.itemMeta
 
     init { require(material.isItem) { "Material $material is not an item" } }
 
@@ -37,6 +41,18 @@ class ItemBuilder private constructor(material: Material) {
 
     fun addEnchantments(enchants: Collection<CustomEnchantment>): ItemBuilder {
         enchants.forEach { it.get().ifPresent { (enchant, level) -> meta?.addEnchant(enchant, level, true) } }
+        return this
+    }
+
+    fun color(color: Color): ItemBuilder {
+        (meta as? LeatherArmorMeta)?.setColor(color)
+        return this
+    }
+
+    fun dyeColor(dyeColor: DyeColor): ItemBuilder {
+        item.itemMeta = meta
+        (item as? Colorable)?.color = dyeColor
+        meta = item.itemMeta
         return this
     }
 

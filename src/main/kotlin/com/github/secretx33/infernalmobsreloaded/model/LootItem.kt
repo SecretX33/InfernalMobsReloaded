@@ -2,6 +2,8 @@ package com.github.secretx33.infernalmobsreloaded.model
 
 import com.github.secretx33.infernalmobsreloaded.utils.ItemBuilder
 import net.kyori.adventure.text.Component
+import org.bukkit.Color
+import org.bukkit.DyeColor
 import org.bukkit.Material
 import java.util.*
 
@@ -9,6 +11,8 @@ data class LootItem (
     val name: String,
     val displayName: Component,
     val material: Material,
+    val color: Color,
+    val dyeColor: DyeColor,
     val minAmount: Int,
     val maxAmount: Int,
     val lore: List<Component>,
@@ -26,6 +30,8 @@ data class LootItem (
         .displayName(displayName)
         .amount(random.nextInt(maxAmount - minAmount) + minAmount)
         .setLore(lore)
+        .color(color)
+        .dyeColor(dyeColor)
         .addEnchantments(enchants)
         .build()
 

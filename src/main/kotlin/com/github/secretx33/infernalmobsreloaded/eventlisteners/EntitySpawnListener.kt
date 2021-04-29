@@ -35,7 +35,7 @@ class EntitySpawnListener (
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun CreatureSpawnEvent.onNaturalEntitySpawn() {
         val world = entity.world
-        if(!spawnReason.isAllowed() || entity.cannotBeInfernal() || !world.isWhitelisted()) return
+        if(!spawnReason.isAllowed() || entity.cannotBeInfernal() || entity.alreadyIsInfernal() || !world.isWhitelisted()) return
         val infernoType = infernalTypesRepo.getInfernalTypes(entityType).firstOrNull { random.nextDouble() <= it.spawnChance } ?: return
 
         // fire event InfernalMobSpawnEvent to spawn a new infernal
@@ -46,18 +46,17 @@ class EntitySpawnListener (
 
     private fun LivingEntity.cannotBeInfernal() = !infernalTypesRepo.canTypeBecomeInfernal(type) || (this is Ageable && !isAdult && blacklistedBabies.contains(type)) || infernalManager.isMountOfAnotherInfernal(this)
 
+    private fun LivingEntity.alreadyIsInfernal() = infernalManager.isPossibleInfernalMob(this)
+
     private fun SpawnReason.isAllowed() = validReasons.contains(this)
 
     private fun World.isWhitelisted() = validWorlds.contains("<ALL>") || validWorlds.any { it.equals(name, ignoreCase = true) }
 
-    private val validReasons
-        get() = config.getEnumSet(ConfigKeys.INFERNAL_ALLOWED_SPAWN_REASONS, SpawnReason::class.java)
+    private val validReasons get() = config.getEnumSet(ConfigKeys.INFERNAL_ALLOWED_SPAWN_REASONS, SpawnReason::class.java)
 
-    private val validWorlds
-        get() = config.get<List<String>>(ConfigKeys.INFERNAL_ALLOWED_WORLDS)
+    private val validWorlds get() = config.get<List<String>>(ConfigKeys.INFERNAL_ALLOWED_WORLDS)
 
-    private val blacklistedBabies
-        get() = config.getEnumSet(ConfigKeys.INFERNAL_BLACKLISTED_BABY_MOBS, EntityType::class.java)
+    private val blacklistedBabies get() = config.getEnumSet(ConfigKeys.INFERNAL_BLACKLISTED_BABY_MOBS, EntityType::class.java)
 
     private companion object {
         val random = Random()

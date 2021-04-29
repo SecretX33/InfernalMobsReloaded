@@ -135,11 +135,14 @@ class AbilityConfig (
 }
 
 enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
-    ARCHER_ARROW_AMOUNT("archer.arrow-amount", 10),
-    ARCHER_ARROW_DELAY("archer.arrow-delay", 0.2),
-    SPEEDY_BONUS("speedy.bonus", 1.5),
-    ARMOURED_POTION_LEVEL("armoured.fallback-dmg-resist-potion-level", 1),
-    HEAVY_RESIST_PERCENTAGE("heavy.knockback-resist-percentage", 0.4),
-    WEBBER_TRAP_DENSITY("webber.trap-density", 0.6),
+    GHOST_EVIL_CHANCE("${Abilities.GHOST.configEntry}.evil-chance", 0.3),
+    GHOST_ITEM_DROP_CHANCE("${Abilities.GHOST.configEntry}.item-drop-chance", 0.2),
+    MORPH_KEEP_HP_PERCENTAGE("${Abilities.MORPH.configEntry}.keep-hp-percentage", true),
+    ARCHER_ARROW_AMOUNT("${Abilities.ARCHER.configEntry}.arrow-amount", 10),
+    ARCHER_ARROW_DELAY("${Abilities.ARCHER.configEntry}.arrow-delay", 0.2),
+    SPEEDY_BONUS("${Abilities.SPEEDY.configEntry}.bonus", 1.5),
+    ARMOURED_POTION_LEVEL("${Abilities.ARMOURED.configEntry}.fallback-dmg-resist-potion-level", 1),
+    HEAVY_RESIST_PERCENTAGE("${Abilities.HEAVY.configEntry}.knockback-resist-percentage", 0.4),
+    WEBBER_TRAP_DENSITY("${Abilities.WEBBER.configEntry}.trap-density", 0.6),
 }
 
