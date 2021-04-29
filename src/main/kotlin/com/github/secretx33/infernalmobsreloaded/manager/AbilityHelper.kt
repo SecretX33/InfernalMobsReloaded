@@ -99,16 +99,18 @@ class AbilityHelper (
      */
     private fun LivingEntity.equipWithArmor(): Boolean {
         val equip = equipment ?: return false
-        EquipmentSlot.values().forEach { equip.setDropChance(it, 0f) }
+        val dropChance = abilityConfig.getDouble(AbilityConfigKeys.ARMOURED_ARMOR_DROP_CHANCE).toFloat()
+        EquipmentSlot.values().forEach { equip.setDropChance(it, dropChance) }
+
         equip.apply {
-            helmet = lootItemsRepo.getLootItem("armoured_helmet").makeItem()
-            chestplate = lootItemsRepo.getLootItem("armoured_chestplate").makeItem()
-            leggings = lootItemsRepo.getLootItem("armoured_leggings").makeItem()
-            boots =  lootItemsRepo.getLootItem("armoured_boots").makeItem()
+            helmet = lootItemsRepo.getLootItemOrNull("armoured_helmet")?.makeItem()
+            chestplate = lootItemsRepo.getLootItemOrNull("armoured_chestplate")?.makeItem()
+            leggings = lootItemsRepo.getLootItemOrNull("armoured_leggings")?.makeItem()
+            boots =  lootItemsRepo.getLootItemOrNull("armoured_boots")?.makeItem()
             when(itemInMainHand.type) {
-                Material.BOW -> lootItemsRepo.getLootItem("armoured_bow").makeItem()
-                Material.CROSSBOW -> lootItemsRepo.getLootItem("armoured_crossbow").makeItem()
-                else -> lootItemsRepo.getLootItem("armoured_sword").makeItem()
+                Material.BOW -> lootItemsRepo.getLootItemOrNull("armoured_bow")?.makeItem()
+                Material.CROSSBOW -> lootItemsRepo.getLootItemOrNull("armoured_crossbow")?.makeItem()
+                else -> lootItemsRepo.getLootItemOrNull("armoured_sword")?.makeItem()
             }
         }
         return true
@@ -242,7 +244,11 @@ class AbilityHelper (
 
 
     private fun LivingEntity.triggerKamizake() {
-        TODO("Not yet implemented")
+        val power = abilityConfig.getDouble(AbilityConfigKeys.KAMIZAZE_EXPLOSION_POWER).toFloat()
+        val setFire = abilityConfig.get<Boolean>(AbilityConfigKeys.KAMIZAZE_SET_ON_FIRE)
+        val breakBlocks = abilityConfig.get<Boolean>(AbilityConfigKeys.KAMIZAZE_BREAK_BLOCKS)
+
+        location.createExplosion(this, power, setFire, breakBlocks)
     }
 
     fun startTargetTasks(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) {

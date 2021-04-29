@@ -141,8 +141,12 @@ enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
     ARCHER_ARROW_AMOUNT("${Abilities.ARCHER.configEntry}.arrow-amount", 10),
     ARCHER_ARROW_DELAY("${Abilities.ARCHER.configEntry}.arrow-delay", 0.2),
     SPEEDY_BONUS("${Abilities.SPEEDY.configEntry}.bonus", 1.5),
+    ARMOURED_ARMOR_DROP_CHANCE("${Abilities.ARMOURED.configEntry}.armor-drop-chance", 0.001),
     ARMOURED_POTION_LEVEL("${Abilities.ARMOURED.configEntry}.fallback-dmg-resist-potion-level", 1),
     HEAVY_RESIST_PERCENTAGE("${Abilities.HEAVY.configEntry}.knockback-resist-percentage", 0.4),
     WEBBER_TRAP_DENSITY("${Abilities.WEBBER.configEntry}.trap-density", 0.6),
+    KAMIZAZE_EXPLOSION_POWER("${Abilities.KAMIKAZE.configEntry}.explosion-power", 3.0),
+    KAMIZAZE_SET_ON_FIRE("${Abilities.KAMIKAZE.configEntry}.set-on-fire", true),
+    KAMIZAZE_BREAK_BLOCKS("${Abilities.KAMIKAZE.configEntry}.break-blocks", true),
 }
 

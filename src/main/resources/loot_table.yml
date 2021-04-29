@@ -58,7 +58,7 @@ glass_drill:
 # +------------------------------------------------------+ #
 ############################################################
 
-# These are armoured armor pieces that will be given to every mob with Armoured ability, you may freely change all the attributes you want, just don't remove or rename these entries, or change their type to something completely different (e.g. you may change the netherite_sword to a golden_sword, but not to dirt)
+# These are armoured armor pieces that will be given to every mob with Armoured ability, you may freely change all the attributes you want or comment out parts you don't want a armoured mob to wear, just don't rename these entries, or change their type to something completely different (e.g. you may change the netherite_sword to a golden_sword, but not to dirt)
 
 armoured_helmet:
   name: "<#808080>Armoured Helmet"
@@ -119,7 +119,7 @@ armoured_crossbow:
 # +------------------------------------------------------+ #
 ############################################################
 
-# These are armor pieces of a Ghost, spawned when a mob with Ghost ability dies, you may freely change all the attributes you want, just don't rename these entries, or change their type to something completely different (e.g. you may change the netherite_sword to a golden_sword, but not to dirt)
+# These are armor pieces of a Ghost, spawned when a mob with Ghost ability dies, you may freely change all the attributes you want or comment out parts you don't want a ghost to wear, just don't rename these entries, or change their type to something completely different (e.g. you may change the netherite_sword to a golden_sword, but not to dirt)
 
 ghost_helmet:
   name: "<#808080>Ghost Head"
@@ -137,7 +137,6 @@ ghost_chestplate:
 # You may also want to implement these, just uncomment them and fill the necessary data
 
 # ghost_leggings:
-
 # ghost_boots:
 
 ghost_weapon:
@@ -167,8 +166,7 @@ evil_ghost_weapon:
   enchants:
     - "damage_all"                       # sharpness
 
-  # You may also want to implement these, just uncomment them and fill the necessary data
+# You may also want to implement these, just uncomment them and fill the necessary data
 
 # evil_ghost_leggings:
-
 # evil_ghost_boots:
