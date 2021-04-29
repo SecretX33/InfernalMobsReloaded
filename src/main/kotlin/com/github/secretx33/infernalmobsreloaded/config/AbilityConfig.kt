@@ -32,21 +32,33 @@ class AbilityConfig (
 
     fun <T> get(key: AbilityConfigKeys, default: T): T = get(key.configEntry, default)
 
+    fun getDouble(key: String, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Double {
+        return cache.getOrPut(key) {
+            manager.get(key, default)?.let { (it as? Double)?.let { double -> max(minValue, min(maxValue, double)) } }
+        } as? Double ?: run {
+            log.severe("On ability entry $key, expected value of type Double but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+            default
+        }
+    }
+
+    fun getDouble(key: AbilityConfigKeys, default: Double = key.defaultValue as Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+        = getDouble(key.configEntry, default, minValue, maxValue)
+
     fun getPotionIsAmbient(ability: Abilities) = get("${ability.configEntry}.is-ambient", true)
 
     fun getPotionEmitParticles(ability: Abilities) = get("${ability.configEntry}.emit-particles", true)
 
     fun getAbilityChance(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
-        = max(minValue, min(maxValue, get("${ability.configEntry}.chance", default)))
+        = getDouble("${ability.configEntry}.chance", default, minValue, maxValue)
 
     fun getRecheckDelay(ability: Abilities, default: Double, minValue: Double = 0.01, maxValue: Double = Double.MAX_VALUE)
-        = max(minValue, min(maxValue, get("${ability.configEntry}.recheck-delay", default)))
+        = getDouble("${ability.configEntry}.recheck-delay", default, minValue, maxValue)
 
     fun getDuration(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
-        = max(minValue, min(maxValue, get("${ability.configEntry}.duration", default)))
+        = getDouble("${ability.configEntry}.duration", default, minValue, maxValue)
 
     fun getProjectileSpeed(ability: Abilities, default: Double, minValue: Double = 0.05, maxValue: Double = Double.MAX_VALUE)
-        = max(minValue, min(maxValue, get("${ability.configEntry}.projectile-speed", default)))
+        = getDouble("${ability.configEntry}.projectile-speed", default, minValue, maxValue)
 
     fun getIntAmounts(ability: Abilities, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE) = getIntPair("${ability.configEntry}.amount", default, minValue, maxValue)
 
@@ -116,5 +128,6 @@ enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
     SPEEDY_BONUS("speedy.bonus", 1.5),
     ARMOURED_POTION_LEVEL("armoured.fallback-dmg-resist-potion-level", 1),
     HEAVY_RESIST_PERCENTAGE("heavy.knockback-resist-percentage", 0.4),
+    WEBBER_TRAP_DENSITY("webber.trap-density", 0.6),
 }
 

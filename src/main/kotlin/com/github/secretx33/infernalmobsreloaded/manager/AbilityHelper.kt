@@ -23,7 +23,6 @@ import org.bukkit.entity.*
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent.*
 import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Colorable
 import org.bukkit.persistence.PersistentDataType
@@ -60,27 +59,27 @@ class AbilityHelper (
         val abilityList = entity.getAbilities() ?: return
         abilityList.forEach {
             when(it) {
-                Abilities.ARMOURED -> addArmouredAbility(entity)
+                Abilities.ARMOURED -> entity.addArmouredAbility()
                 Abilities.FLYING -> addFlyingAbility(entity)
                 Abilities.HEAVY -> addHeavyAbility(entity)
                 Abilities.INVISIBLE -> addInvisibleAbility(entity)
                 Abilities.MOLTEN -> addMoltenAbility(entity)
                 Abilities.MOUNTED -> addMountedAbility(entity)
-                Abilities.SPEEDY -> addSpeedyAbility(entity)
+                Abilities.SPEEDY -> entity.addSpeedyAbility()
                 else -> {}
             }
         }
         entity.multiplyMaxHp(infernalType.getHealthMulti())
     }
 
-    private fun addArmouredAbility(entity: LivingEntity) {
-        if(entity.equipWithArmor()) return
+    private fun LivingEntity.addArmouredAbility() {
+        if(equipWithArmor()) return
         // fallback to potion effect if entity cannot wear armor
-        addArmouredPotionEffect(entity)
+        addArmouredPotionEffect()
     }
 
-    private fun addArmouredPotionEffect(entity: LivingEntity) {
-        entity.addPotionEffect(PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Int.MAX_VALUE, max(0, abilityConfig.get<Int>(AbilityConfigKeys.ARMOURED_POTION_LEVEL) - 1), false, false, false))
+    private fun LivingEntity.addArmouredPotionEffect() {
+        addPotionEffect(PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Int.MAX_VALUE, max(0, abilityConfig.get<Int>(AbilityConfigKeys.ARMOURED_POTION_LEVEL) - 1), false, false, false))
     }
 
     /**
@@ -108,9 +107,10 @@ class AbilityHelper (
 
     private fun addFlyingAbility(entity: LivingEntity) {
         val bat = entity.world.spawn(entity.location, Bat::class.java, SpawnReason.CUSTOM) {
-            turnIntoMount(it, keyChain.infernalBatMountKey, false)
+            it.turnIntoMount(keyChain.infernalBatMountKey, false)
             it.addPotionEffect(PotionEffect(PotionEffectType.INVISIBILITY, Int.MAX_VALUE, 0,false, false, false))
-            it.velocity = Vector(0, 1, 0)
+            // makes the newly spawned bat goes in a random x z direction, upwards
+            it.velocity = Vector(random.nextDouble() * 2 - 1, 1.0, random.nextDouble() * 2 - 1)
             it.isPersistent = true
             it.multiplyMaxHp(3.5)
         }
@@ -140,10 +140,10 @@ class AbilityHelper (
 
         // if player emptied the mount list, do not mount the entity
         if(mounts.isEmpty()) return
-        // get the a random mount entity class
+        // get a random mount entity class
         val mountClass = mounts.random().entityClass ?: return
         // spawn it, applying the necessary changes
-        val mount = entity.world.spawn(entity.location, mountClass, SpawnReason.CUSTOM) { turnIntoMount(it as LivingEntity, keyChain.infernalMountKey) }
+        val mount = entity.world.spawn(entity.location, mountClass, SpawnReason.CUSTOM) { (it as LivingEntity).turnIntoMount(keyChain.infernalMountKey) }
         // and add the entity as its passenger
         mount.addPassenger(entity)
     }
@@ -151,36 +151,37 @@ class AbilityHelper (
     private val rideableMounts
         get() = config.getEnumSet(ConfigKeys.INFERNAL_MOBS_THAT_CAN_BE_RIDED_BY_ANOTHER, EntityType::class.java) { it != null && it.isSpawnable && it.entityClass is LivingEntity && it.entityClass !is ComplexLivingEntity }
 
-    private fun turnIntoMount(entity: LivingEntity, tag: NamespacedKey, enablePotionParticles: Boolean = true) {
+    private fun LivingEntity.turnIntoMount(tag: NamespacedKey, enablePotionParticles: Boolean = true) {
         // if entity that will be turned into a mount spawns mounted on something, remove that mount
-        entity.vehicle?.remove()
+        vehicle?.remove()
         // if entity that will be turned into a mount spawns with something mounted on it, remove that sneaky passenger
-        entity.passengers.forEach {
-            entity.removePassenger(it)
+        passengers.forEach {
+            removePassenger(it)
             it.remove()
         }
-        (entity as? Tameable)?.isTamed = true
-        (entity as? Colorable)?.color = DyeColor.values().apply { shuffle() }.first()
+        (this as? Tameable)?.isTamed = true
+        (this as? Colorable)?.color = DyeColor.values().random()
 
-        if(entity.type == EntityType.HORSE) {
-            (entity as Horse).apply {
+        if(type == EntityType.HORSE) {
+            (this as Horse).apply {
                 color = Horse.Color.values().random()
                 style = Horse.Style.values().random()
             }
-            entity.inventory.apply {
+            inventory.apply {
                 saddle = ItemStack(Material.SADDLE)
                 armor = ItemStack(Material.DIAMOND_HORSE_ARMOR)
             }
         }
-        addArmouredPotionEffect(entity)
-        entity.apply {
-            addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 0, enablePotionParticles, enablePotionParticles, false))
-            pdc.set(tag, PersistentDataType.SHORT, 1)
-        }
+        // add armoured resistance potion to make the mount more resilient
+        addArmouredPotionEffect()
+        // give speed potion to make the mount a bit faster
+        addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 0, enablePotionParticles, enablePotionParticles, false))
+        // and mark it as mount in its pdc, so I can check on the spawn event and death event for it
+        pdc.set(tag, PersistentDataType.SHORT, 1)
     }
 
-    private fun addSpeedyAbility(entity: LivingEntity) {
-        val movSpeed = (if(entity.doesFly()) entity.getAttribute(Attribute.GENERIC_FLYING_SPEED) else entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED))
+    private fun LivingEntity.addSpeedyAbility() {
+        val movSpeed = (if(doesFly()) getAttribute(Attribute.GENERIC_FLYING_SPEED) else getAttribute(Attribute.GENERIC_MOVEMENT_SPEED))
             ?: return
         val speedBonus = abilityConfig.getDoublePair(AbilityConfigKeys.SPEEDY_BONUS).getRandomBetween()
         val mod = AttributeModifier(movSpeedUID, Abilities.SPEEDY.name, speedBonus, AttributeModifier.Operation.ADD_SCALAR)
@@ -322,25 +323,17 @@ class AbilityHelper (
     }
 
     private fun launchCobweb(target: LivingEntity) {
-        val duration = max(100, abilityConfig.getDuration(Abilities.WEBBER, 5.0).toLongDelay())
-        val blocks = target.makeCuboidAround().blockList().filter { random.nextDouble() <= 0.6 && it.canMobGrief() }
-        val blockMod = BlockModification(blocks, blocksBlackList) { list -> list.forEach { it.type = Material.COBWEB } }
+        val trapDensity = abilityConfig.getDouble(AbilityConfigKeys.WEBBER_TRAP_DENSITY, maxValue = 1.0)
+        val duration = abilityConfig.getDuration(Abilities.WEBBER, 5.0, minValue = 0.1).toLongDelay()
+        val blocks = target.makeCuboidAround().blockList().filter { random.nextDouble() <= trapDensity && it.canMobGrief() }
+        val blockMod = BlockModification(blocks, blockModifications, blocksBlackList) { list -> list.forEach { it.type = Material.COBWEB } }
+        blocksBlackList.addAll(blockMod.blockLocations)
         blockModifications.add(blockMod)
 
         runSync(plugin) { blockMod.make() }
         CoroutineScope(Dispatchers.Default).launch {
             delay(duration)
             runSync(plugin) { blockMod.unmake() }
-        }
-    }
-
-    private fun <T : Projectile> LivingEntity.shootProjectile(dir: Vector, proj: Class<out T>) {
-        val loc = eyeLocation.apply { y -= height / 12 }
-        runSync(plugin) {
-            world.spawn(loc, proj, SpawnReason.CUSTOM) {
-                it.velocity = dir
-                (it as Projectile).shooter = this
-            }
         }
     }
 
@@ -358,6 +351,16 @@ class AbilityHelper (
             z += ceil(width) + 2
         }
         return Cuboid(lowerBound, upperBound)
+    }
+
+    private fun <T : Projectile> LivingEntity.shootProjectile(dir: Vector, proj: Class<out T>) {
+        val loc = eyeLocation.apply { y -= height / 12 }
+        runSync(plugin) {
+            world.spawn(loc, proj, SpawnReason.CUSTOM) {
+                it.velocity = dir
+                (it as Projectile).shooter = this
+            }
+        }
     }
 
     private fun LivingEntity.shootDirection(): Vector? {
@@ -407,7 +410,7 @@ class AbilityHelper (
 
     private fun LivingEntity.getAbilities(): Set<Abilities>? = pdc.get(keyChain.abilityListKey, PersistentDataType.STRING)?.toAbilitySet()
 
-    private fun String.toAbilitySet() = gson.fromJson<Set<Abilities>>(this, infernalAbilityListToken)
+    private fun String.toAbilitySet() = gson.fromJson<Set<Abilities>>(this, infernalAbilitySetToken)
 
     fun revertPendingBlockModifications() {
         blockModifications.forEach { it.unmake() }
@@ -417,7 +420,7 @@ class AbilityHelper (
     private companion object {
         val random = Random()
         val gson = Gson()
-        val infernalAbilityListToken: Type = object : TypeToken<Set<Abilities>>() {}.type
+        val infernalAbilitySetToken: Type = object : TypeToken<Set<Abilities>>() {}.type
         val movSpeedUID: UUID = "57202f4c-2e52-46cb-ad37-77550e99edb2".toUuid()
         val knockbackResistUID: UUID = "984e7a8c-188f-444b-82ea-5d02197ea8e4".toUuid()
         val healthUID: UUID = "18f1d8fb-6fed-4d47-a69b-df5c76693ad5".toUuid()

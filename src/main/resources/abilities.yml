@@ -58,4 +58,5 @@ webber:
   recheck-delay: 2.0          # in seconds, each 2 seconds it'll run the random chance to see if it's going to spawn a web on player's feet
   chance: 0.05                # every 'recheck-delay' seconds, it'll run the random chance that will have 5% of spawning a web on the player's feet
   duration: 5.0               # in seconds, how many seconds the cobweb will stay there
+  trap-density: 0.6           # how "dense" the spawned cage will be, or in other words, what's the chance of each block around the target being temporally morphed into a cobweb
 withering:
