@@ -54,6 +54,8 @@ data class InfernalMobType (
         return true
     }
 
+    fun getLoots() = loots.asSequence().filter { random.nextDouble() <= it.value }.map { it.key.makeItem() }.toList()
+
     override fun hashCode() = Objects.hash(name.toLowerCase(Locale.US), entityType)
 
     private companion object {

@@ -19,7 +19,6 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Monster
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
 import java.lang.reflect.Type
 import java.util.*
@@ -27,7 +26,6 @@ import kotlin.math.max
 
 @KoinApiExtension
 class InfernalMobsManager (
-    private val plugin: Plugin,
     private val config: Config,
     private val keyChain: KeyChain,
     private val infernalMobTypesRepo: InfernalMobTypesRepo,
@@ -38,11 +36,18 @@ class InfernalMobsManager (
     private val infernalMobPeriodicTasks = Multimaps.synchronizedListMultimap(MultimapBuilder.hashKeys().arrayListValues().build<UUID, Job>())
     private val infernalMobTargetTasks = Multimaps.synchronizedListMultimap(MultimapBuilder.hashKeys().arrayListValues().build<UUID, Job>())
 
-    fun isValidInfernalMob(entity: LivingEntity) = infernalMobTypesRepo.canTypeBecomeInfernal(entity.type) && entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)?.let { infernalMobTypesRepo.isValidInfernoType(it) } == true
+    fun isValidInfernalMob(entity: LivingEntity) = infernalMobTypesRepo.canTypeBecomeInfernal(entity.type) && entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)?.let { infernalMobTypesRepo.isValidInfernalType(it) } == true
 
     fun isPossibleInfernalMob(entity: LivingEntity) = entity.pdc.has(keyChain.infernalCategoryKey, PersistentDataType.STRING)
 
     fun isMountOfAnotherInfernal(entity: Entity) = entity.pdc.has(keyChain.infernalMountKey, PersistentDataType.SHORT) || entity.pdc.has(keyChain.infernalBatMountKey, PersistentDataType.SHORT)
+
+    fun getInfernalTypeOrNull(entity: LivingEntity) = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)
+        ?.let { infernalMobTypesRepo.getInfernalTypeOrNull(it) }
+
+    fun getLives(entity: LivingEntity): Int = entity.pdc.get(keyChain.livesKey, PersistentDataType.INTEGER) ?: throw IllegalStateException("Entity ${entity.type.name} doesn't have a ${keyChain.livesKey.key} key on its pdc, but tried to query its lives")
+
+    fun setLives(entity: LivingEntity, lives: Int) = entity.pdc.set(keyChain.livesKey, PersistentDataType.INTEGER, lives)
 
     fun makeInfernalMob(event: InfernalSpawnEvent) {
         val entity = event.entity
@@ -51,7 +56,6 @@ class InfernalMobsManager (
         addCustomNameToInfernal(entity, infernalType)
         addPdcKeysToInfernal(entity, infernalType)
         abilityHelper.addAbilityEffects(entity, infernalType)
-        loadInfernalMob(entity)
     }
 
     private fun addCustomNameToInfernal(entity: LivingEntity, infernalType: InfernalMobType) {
@@ -109,7 +113,7 @@ class InfernalMobsManager (
         val savedType = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING) ?: return
 
         // is type of that infernal is missing, convert it back to a normal entity
-        val infernalType = infernalMobTypesRepo.getInfernoTypeOrNull(savedType) ?: run {
+        val infernalType = infernalMobTypesRepo.getInfernalTypeOrNull(savedType) ?: run {
             unmakeInfernalMob(entity)
             return
         }
@@ -142,13 +146,11 @@ class InfernalMobsManager (
         infernalMobTargetTasks.removeAll(entity.uniqueId)
     }
 
+    fun startTargetTasks(entity: LivingEntity, target: LivingEntity) = abilityHelper.startTargetTasks(entity, target, infernalMobTargetTasks)
+
     fun cancelTargetTasks(entity: LivingEntity) {
         infernalMobTargetTasks[entity.uniqueId].forEach { it.cancel() }
         infernalMobTargetTasks.removeAll(entity.uniqueId)
-    }
-
-    fun startTargetTasks(entity: LivingEntity, target: LivingEntity) {
-        abilityHelper.startTargetTasks(entity, target, infernalMobTargetTasks)
     }
 
     private fun Set<Abilities>.toJson() = gson.toJson(this, infernalAbilitySetToken)

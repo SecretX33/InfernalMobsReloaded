@@ -9,7 +9,10 @@ import com.github.secretx33.infernalmobsreloaded.model.BlockModification
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
-import com.github.secretx33.infernalmobsreloaded.utils.*
+import com.github.secretx33.infernalmobsreloaded.utils.Cuboid
+import com.github.secretx33.infernalmobsreloaded.utils.pdc
+import com.github.secretx33.infernalmobsreloaded.utils.runSync
+import com.github.secretx33.infernalmobsreloaded.utils.toUuid
 import com.google.common.collect.Multimap
 import com.google.common.collect.Sets
 import com.google.gson.Gson
@@ -21,7 +24,7 @@ import org.bukkit.attribute.AttributeModifier
 import org.bukkit.block.Block
 import org.bukkit.entity.*
 import org.bukkit.entity.EntityType
-import org.bukkit.event.entity.CreatureSpawnEvent.*
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Colorable
@@ -60,11 +63,11 @@ class AbilityHelper (
         abilityList.forEach {
             when(it) {
                 Abilities.ARMOURED -> entity.addArmouredAbility()
-                Abilities.FLYING -> addFlyingAbility(entity)
-                Abilities.HEAVY -> addHeavyAbility(entity)
-                Abilities.INVISIBLE -> addInvisibleAbility(entity)
-                Abilities.MOLTEN -> addMoltenAbility(entity)
-                Abilities.MOUNTED -> addMountedAbility(entity)
+                Abilities.FLYING -> entity.addFlyingAbility()
+                Abilities.HEAVY -> entity.addHeavyAbility()
+                Abilities.INVISIBLE -> entity.addInvisibleAbility()
+                Abilities.MOLTEN -> entity.addMoltenAbility()
+                Abilities.MOUNTED -> entity.addMountedAbility()
                 Abilities.SPEEDY -> entity.addSpeedyAbility()
                 else -> {}
             }
@@ -105,8 +108,8 @@ class AbilityHelper (
         return true
     }
 
-    private fun addFlyingAbility(entity: LivingEntity) {
-        val bat = entity.world.spawn(entity.location, Bat::class.java, SpawnReason.CUSTOM) {
+    private fun LivingEntity.addFlyingAbility() {
+        val bat = world.spawn(location, Bat::class.java, SpawnReason.CUSTOM) {
             it.turnIntoMount(keyChain.infernalBatMountKey, false)
             it.addPotionEffect(PotionEffect(PotionEffectType.INVISIBILITY, Int.MAX_VALUE, 0,false, false, false))
             // makes the newly spawned bat goes in a random x z direction, upwards
@@ -114,12 +117,12 @@ class AbilityHelper (
             it.isPersistent = true
             it.multiplyMaxHp(3.5)
         }
-        bat.addPassenger(entity)
+        bat.addPassenger(this)
         // TODO("Remove bat entity when its 'master' dies")
     }
 
-    private fun addHeavyAbility(entity: LivingEntity) {
-        entity.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.apply {
+    private fun LivingEntity.addHeavyAbility() {
+        getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.apply {
             val resistAmount = abilityConfig.getDoublePair(AbilityConfigKeys.HEAVY_RESIST_PERCENTAGE).getRandomBetween()
             val mod = AttributeModifier(knockbackResistUID, Abilities.HEAVY.name, resistAmount, AttributeModifier.Operation.ADD_SCALAR)
             removeModifier(mod)
@@ -127,13 +130,13 @@ class AbilityHelper (
         }
     }
 
-    private fun addInvisibleAbility(entity: LivingEntity) = entity.addPermanentPotion(PotionEffectType.INVISIBILITY, Abilities.INVISIBLE)
+    private fun LivingEntity.addInvisibleAbility() = addPermanentPotion(PotionEffectType.INVISIBILITY, Abilities.INVISIBLE)
 
-    private fun addMoltenAbility(entity: LivingEntity) = entity.addPermanentPotion(PotionEffectType.FIRE_RESISTANCE, Abilities.MOLTEN)
+    private fun LivingEntity.addMoltenAbility() = addPermanentPotion(PotionEffectType.FIRE_RESISTANCE, Abilities.MOLTEN)
 
-    private fun addMountedAbility(entity: LivingEntity) {
-        entity.vehicle?.apply {
-            removePassenger(entity)
+    private fun LivingEntity.addMountedAbility() {
+        vehicle?.apply {
+            removePassenger(this)
             if(passengers.isEmpty()) remove()
         }
         val mounts = rideableMounts
@@ -143,9 +146,9 @@ class AbilityHelper (
         // get a random mount entity class
         val mountClass = mounts.random().entityClass ?: return
         // spawn it, applying the necessary changes
-        val mount = entity.world.spawn(entity.location, mountClass, SpawnReason.CUSTOM) { (it as LivingEntity).turnIntoMount(keyChain.infernalMountKey) }
+        val mount = world.spawn(location, mountClass, SpawnReason.CUSTOM) { (it as LivingEntity).turnIntoMount(keyChain.infernalMountKey) }
         // and add the entity as its passenger
-        mount.addPassenger(entity)
+        mount.addPassenger(this)
     }
 
     private val rideableMounts
@@ -197,12 +200,12 @@ class AbilityHelper (
         val abilities = entity.getAbilities() ?: return
 
         val jobList = ArrayList<Job>()
-        abilities.forEach {
+        abilities.forEach { // TODO("check if I need to pass multimap as parameter to these tasks, cause I'm not sure if the remove will even be called")
             when(it) {
                 Abilities.ARCHER -> makeArcherTask(entity, target, multimap)
                 Abilities.CALL_THE_GANG -> makeCallTheGangTask(entity, target, multimap)
                 Abilities.GHASTLY -> makeGhastlyTask(entity, target, multimap)
-                Abilities.MORPH -> TODO()
+                Abilities.MORPH -> makeMorphTask(entity, target, multimap)
                 Abilities.NECROMANCER -> makeNecromancerTask(entity, target, multimap)
                 Abilities.POTIONS -> TODO()
                 Abilities.THIEF -> makeThiefTask(entity, target, multimap)
@@ -213,18 +216,14 @@ class AbilityHelper (
         multimap.putAll(entity.uniqueId, jobList.filter { it.isActive })
     }
 
-    private fun makeThiefTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
-        val recheckDelay = abilityConfig.getRecheckDelay(Abilities.ARCHER, 4.0).toLongDelay()
-        val chance = abilityConfig.getAbilityChance(Abilities.ARCHER, 0.05)
+    private fun makeMorphTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+        val recheckDelay = abilityConfig.getRecheckDelay(Abilities.MORPH, 1.0).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Abilities.MORPH, 0.01)
 
         while(isActive && !isInvalid(entity, target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
 
-            val item = target.equipment?.itemInMainHand?.takeUnless { it.type.isAir } ?: continue
-            target.equipment?.setItemInMainHand(ItemStack(Material.AIR))
-            entity.world.dropItemNaturally(entity.location, item)
-            (target as? Player)?.updateInventory()
         }
         multimap.remove(entity.uniqueId, coroutineContext.job)
     }
@@ -232,7 +231,7 @@ class AbilityHelper (
     private fun makeArcherTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
         val speed = abilityConfig.getProjectileSpeed(Abilities.ARCHER, 2.2)
         val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).getRandomBetween()
-        val delay = abilityConfig.get<Double>(AbilityConfigKeys.ARCHER_ARROW_DELAY).toLongDelay()
+        val delay = abilityConfig.getDouble(AbilityConfigKeys.ARCHER_ARROW_DELAY, minValue = 0.001).toLongDelay()
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.ARCHER, 1.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.ARCHER, 0.04)
 
@@ -306,6 +305,22 @@ class AbilityHelper (
                 return@launch
             }
             entity.shootProjectile(dir, WitherSkull::class.java)
+        }
+        multimap.remove(entity.uniqueId, coroutineContext.job)
+    }
+
+    private fun makeThiefTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+        val recheckDelay = abilityConfig.getRecheckDelay(Abilities.ARCHER, 4.0).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Abilities.ARCHER, 0.05)
+
+        while(isActive && !isInvalid(entity, target)) {
+            delay(recheckDelay)
+            if(random.nextDouble() > chance) continue
+
+            val item = target.equipment?.itemInMainHand?.takeUnless { it.type.isAir } ?: continue
+            target.equipment?.setItemInMainHand(ItemStack(Material.AIR))
+            entity.world.dropItemNaturally(entity.location, item)
+            (target as? Player)?.updateInventory()
         }
         multimap.remove(entity.uniqueId, coroutineContext.job)
     }

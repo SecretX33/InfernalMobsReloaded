@@ -27,6 +27,7 @@ class InfernalSpawnListener (
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun InfernalSpawnEvent.onInfernalSpawn() {
         mobsManager.makeInfernalMob(this)
+        mobsManager.loadInfernalMob(entity)
         // TODO("Apply the right effects to this mob and start all its scheduled tasks")
         sendSpawnMessage()
     }

@@ -5,6 +5,9 @@ import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Ageable
@@ -20,7 +23,7 @@ import org.koin.core.component.KoinApiExtension
 import java.util.*
 
 @KoinApiExtension
-class NaturalEntitySpawnListener (
+class EntitySpawnListener (
     plugin: Plugin,
     private val config: Config,
     private val infernalManager: InfernalMobsManager,
@@ -33,10 +36,12 @@ class NaturalEntitySpawnListener (
     private fun CreatureSpawnEvent.onNaturalEntitySpawn() {
         val world = entity.world
         if(!spawnReason.isAllowed() || entity.cannotBeInfernal() || !world.isWhitelisted()) return
-        val infernoType = infernalTypesRepo.getInfernoTypes(entityType).firstOrNull { random.nextDouble() <= it.spawnChance } ?: return
+        val infernoType = infernalTypesRepo.getInfernalTypes(entityType).firstOrNull { random.nextDouble() <= it.spawnChance } ?: return
 
         // fire event InfernalMobSpawnEvent to spawn a new infernal
-        Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(entity, infernoType, spawnReason, world))
+        CoroutineScope(Dispatchers.Default).launch {
+            Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(entity, infernoType, spawnReason))
+        }
     }
 
     private fun LivingEntity.cannotBeInfernal() = !infernalTypesRepo.canTypeBecomeInfernal(type) || (this is Ageable && !isAdult && blacklistedBabies.contains(type)) || infernalManager.isMountOfAnotherInfernal(this)

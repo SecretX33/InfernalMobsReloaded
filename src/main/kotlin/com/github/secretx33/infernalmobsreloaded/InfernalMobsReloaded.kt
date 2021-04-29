@@ -5,8 +5,7 @@ import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkLoadListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkUnloadListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.NaturalEntitySpawnListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.PlayerInteractListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.EntitySpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalDeathListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalSpawnListener
 import com.github.secretx33.infernalmobsreloaded.manager.*
@@ -43,7 +42,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { InfernalSpawnListener(get(), get(), get(), get()) }
         single { ChunkUnloadListener(get(), get()) }
         single { ChunkLoadListener(get(), get()) }
-        single { NaturalEntitySpawnListener(get(), get(), get(), get()) }
+        single { EntitySpawnListener(get(), get(), get(), get()) }
         single<WorldGuardChecker> { WorldGuardCheckerDummy() }
     }
 
@@ -64,7 +63,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<InfernalSpawnListener>()
         get<ChunkUnloadListener>()
         get<ChunkLoadListener>()
-        get<NaturalEntitySpawnListener>()
+        get<EntitySpawnListener>()
     }
 
     override fun onDisable() {

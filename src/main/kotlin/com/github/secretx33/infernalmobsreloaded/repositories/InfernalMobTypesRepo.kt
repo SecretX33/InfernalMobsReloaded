@@ -37,11 +37,11 @@ class InfernalMobTypesRepo (
 
     fun canTypeBecomeInfernal(type: EntityType) = infernoTypeMultimap.containsKey(type)
 
-    fun getInfernoTypeOrNull(name: String) = infernoTypeCache[name.toLowerCase(Locale.US)]
+    fun getInfernalTypeOrNull(name: String) = infernoTypeCache[name.toLowerCase(Locale.US)]
 
-    fun getInfernoTypes(entityType: EntityType): ImmutableSet<InfernalMobType> = infernoTypeMultimap[entityType]
+    fun getInfernalTypes(entityType: EntityType): ImmutableSet<InfernalMobType> = infernoTypeMultimap[entityType]
 
-    fun isValidInfernoType(name: String) = infernoTypeCache.containsKey(name.toLowerCase(Locale.US))
+    fun isValidInfernalType(name: String) = infernoTypeCache.containsKey(name.toLowerCase(Locale.US))
 
     private fun ensureUniqueKeys() {
         val duplicatedKeys = manager.getKeys(false).groupBy { it.toLowerCase(Locale.US) }.filterValues { it.size > 1 }

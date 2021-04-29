@@ -32,6 +32,8 @@ molten:
   is-ambient: true             # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
   emit-particles: true         # if mobs with molten effect should emit particles as if they had used a potion of fire resistance
 morph:
+  recheck-delay: 4.0          # in seconds, every 4 seconds it'll run the random chance to see if it's going to morph into another entity
+  chance: 0.01                # every 'reckeck-delay' seconds, the morph will have 1% of happening
 mounted:
 necromancer:
   projectile-speed: 2.0
@@ -44,6 +46,7 @@ resilient:
 rust:
 sapper:
 second_wing:
+  particle-effect: ""
 speedy:
   bonus: 1.5-2.5              # any mob with this effect will have between 1.5 and 2.5 times its normal speed
 storm:

@@ -32,6 +32,18 @@ class AbilityConfig (
 
     fun <T> get(key: AbilityConfigKeys, default: T): T = get(key.configEntry, default)
 
+    fun getInt(key: String, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Int {
+        return cache.getOrPut(key) {
+            manager.get(key, default)?.let { (it as? Int)?.let { int -> max(minValue, min(maxValue, int)) } }
+        } as? Int ?: run {
+            log.severe("On ability entry $key, expected value of type Int but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+            default
+        }
+    }
+
+    fun getInt(key: AbilityConfigKeys, default: Int = key.defaultValue as Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE)
+        = getInt(key.configEntry, default, minValue, maxValue)
+
     fun getDouble(key: String, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Double {
         return cache.getOrPut(key) {
             manager.get(key, default)?.let { (it as? Double)?.let { double -> max(minValue, min(maxValue, double)) } }

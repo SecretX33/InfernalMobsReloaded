@@ -50,7 +50,7 @@ spawn-reasons-which-infernal-mobs-can-spawn:
   - BUILD_SNOWMAN          # When an snowman is spawned by being built
   - BUILD_WITHER           # When an wither boss is spawned by being built
 # - CURED                  # When a villager is cured from infection
-# - CUSTOM                 # When a creature is spawned by plugins, can conflict with this plugin when spawning mounts, do NOT enable
+# - CUSTOM                 # When a creature is spawned by plugins, may conflict with other plugins that also spawn mobs, disable if you notice strange behavior or compatibility errors
 # - DEFAULT                # When an entity is missing a SpawnReason
 # - DISPENSE_EGG           # When a creature is spawned by a dispenser dispensing an egg
   - DROWNED                # When a creature is spawned by another entity drowning

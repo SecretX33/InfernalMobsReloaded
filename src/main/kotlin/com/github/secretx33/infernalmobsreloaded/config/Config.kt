@@ -12,10 +12,12 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
 import kotlin.Enum
+import kotlin.math.max
+import kotlin.math.min
 import java.lang.Enum as JavaEnum
 
 @KoinApiExtension
-class Config(plugin: Plugin, private val logger: Logger) {
+class Config(plugin: Plugin, private val log: Logger) {
 
     private val manager = YamlManager(plugin, "config")
     private val cache = ConcurrentHashMap<String, Any>()
@@ -25,7 +27,7 @@ class Config(plugin: Plugin, private val logger: Logger) {
         return cache.getOrPut(key) {
             manager.get(key, default)
         } as? T ?: run {
-            logger.severe("On config key $key, expected value of type ${default!!::class.java.simpleName} but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your configuration file and reload")
+            log.severe("On config key $key, expected value of type ${default!!::class.java.simpleName} but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your configuration file and reload")
             default
         }
     }
@@ -35,6 +37,30 @@ class Config(plugin: Plugin, private val logger: Logger) {
 
     fun <T> get(key: ConfigKeys, default: T): T = get(key.configEntry, default)
 
+    fun getInt(key: String, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Int {
+        return cache.getOrPut(key) {
+            manager.get(key, default)?.let { (it as? Int)?.let { int -> max(minValue, min(maxValue, int)) } }
+        } as? Int ?: run {
+            log.severe("On config key $key, expected value of type Int but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+            default
+        }
+    }
+
+    fun getInt(key: ConfigKeys, default: Int = key.defaultValue as Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE)
+        = getInt(key.configEntry, default, minValue, maxValue)
+
+    fun getDouble(key: String, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Double {
+        return cache.getOrPut(key) {
+            manager.get(key, default)?.let { (it as? Double)?.let { double -> max(minValue, min(maxValue, double)) } }
+        } as? Double ?: run {
+            log.severe("On config key $key, expected value of type Double but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+            default
+        }
+    }
+
+    fun getDouble(key: ConfigKeys, default: Double = key.defaultValue as Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+        = getDouble(key.configEntry, default, minValue, maxValue)
+
     @Suppress("UNCHECKED_CAST")
     fun <T : Enum<T>> getEnum(key: ConfigKeys): T {
         return cache.getOrPut(key.configEntry) {
@@ -42,7 +68,7 @@ class Config(plugin: Plugin, private val logger: Logger) {
                 try {
                     JavaEnum.valueOf(key.defaultValue::class.java as Class<out Enum<T>>, it.toUpperCase(Locale.US))
                 } catch(e: IllegalArgumentException) {
-                    logger.severe("Error while trying to get config key '$key', value passed ${it.toUpperCase(Locale.US)} is an invalid value, please fix this entry in the config.yml and reload the configs, defaulting to ${(key.defaultValue as Enum<T>).name}")
+                    log.severe("Error while trying to get config key '$key', value passed ${it.toUpperCase(Locale.US)} is an invalid value, please fix this entry in the config.yml and reload the configs, defaulting to ${(key.defaultValue as Enum<T>).name}")
                 }
             } ?: key.defaultValue
         } as T
@@ -54,13 +80,14 @@ class Config(plugin: Plugin, private val logger: Logger) {
             if(!manager.contains(key.configEntry)) return@getOrPut key.defaultValue
             manager.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
                 val optional = Enums.getIfPresent(clazz, item.toUpperCase(Locale.US)).takeIf { opt -> opt.isPresent } ?: run {
-                    logger.severe("Error while trying to get config key '$key', value passed '${item.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the config.yml and reload the configs")
+                    log.severe("Error while trying to get config key '$key', value passed '${item.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the config.yml and reload the configs")
                     return@mapNotNullTo null
                 }
                 optional.get().takeIf { it != null && (filter == null || filter.apply(it as T)) }
             }
         } as Set<T>
     }
+
     fun has(path: String): Boolean = manager.contains(path)
 
     fun set(key: String, value: Any) {
