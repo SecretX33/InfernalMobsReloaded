@@ -88,6 +88,8 @@ enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
     INFERNO_DEATH_MESSAGE_RADIUS("inferno-death-message-radius", 20),
     ENABLE_PARTICLE_EFFECTS("enable-particle-effects", true),
     DELAY_BETWEEN_INFERNO_PARTICLES("delay-between-inferno-particles", 1.5),
+    INFERNO_PARTICLES_SPREAD("infernal-particles-spread", 2.0),
+    INFERNO_PARTICLES_AMOUNT("infernal-particles-amount", 10),
     DISPLAY_INFERNAL_NAME_MODE("display-infernal-custom-name-mode", DisplayCustomNameMode.LOOKING_AT),
     INFERNAL_MOBS_THAT_CAN_SPAWN_MOUNTED("infernal-mobs-that-can-spawn-mounted", emptySet<EntityType>()),
     INFERNAL_MOBS_THAT_CAN_BE_RIDED_BY_ANOTHER("infernal-mobs-that-can-be-rided-by-another-infernal", emptySet<EntityType>()),

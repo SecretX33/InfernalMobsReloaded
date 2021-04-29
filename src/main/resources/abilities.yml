@@ -1,18 +1,25 @@
 archer:
-  arrow-speed: 2.2          # honestly this speed is in vector, so you can think in it like m/s or something
-  arrow-amount: 8-15        # how many arrows are going to be shot, in default configuration it is 8-15
-  arrow-delay: 0.2          # in seconds, the delay between each arrow launch
-  chance: 0.05              # each second, the power has this chance of being triggered
+  projectile-speed: 2.2       # honestly this speed is in vector, so you can think in it like m/s or something
+  arrow-amount: 8-15          # how many arrows are going to be shot, in default configuration it is 8-15
+  arrow-delay: 0.2            # in seconds, the delay between each arrow launch
+  recheck-delay: 1.0          # in seconds, every 1 second it'll run the random chance to see if it's going to spawn shoot the arrows
+  chance: 0.04                # every 'reckeck-delay' seconds, the power will have 5% chance of being triggered
 armoured:
   fallback-dmg-resist-potion-level: 1    # When the mob cannot wear armor, it'll instead gain the Resistance effect, and each level gives it + 20% damage reduction; level 1 will provide 20% damage reduction
 berserk:
 blinding:
 call_the_gang:
+  recheck-delay: 2.0          # in seconds, every 2 second it'll run the random chance to see if it's going to spawn a "gang" of babies of its type
+  chance: 0.025               # in percentage, will have 2.5% chance of calling the "gang" every 'recheck-delay' seconds
+  amount: 2-4                 # will call between 2 and 4 mobs of its type
 confusing:
 explode:
 firework:
 flying:
 ghastly:
+  projectile-speed: 1.5
+  recheck-delay: 1.5          # in seconds, every 1.5 seconds it'll run the random chance to see if it's going to spawn shoot the arrows
+  chance: 0.25                # every 'reckeck-delay' seconds, the power will have 25% chance of being triggered
 ghost:
 heavy:
   knockback-resist-percentage: 0.3-0.45     # The scale of the amount of knockback resisted from attacks and projectiles, does not affect explosions; 0.0 value means 0% resistance, 0.5 means 50% resistance and 1.0 means 100% resistance added (meaning fully invincible against knockbacks)
@@ -27,6 +34,9 @@ molten:
 morph:
 mounted:
 necromancer:
+  projectile-speed: 2.0
+  recheck-delay: 2.5          # in seconds, every 2.5 seconds it'll run the random chance to see if it's going to spawn shoot the arrows
+  chance: 0.25                # every 'reckeck-delay' seconds, the power will have 25% chance of being triggered
 poisonous:
 potions:
 quicksand:
@@ -39,6 +49,8 @@ speedy:
 storm:
 teleport:
 thief:
+  recheck-delay: 4.0          # in seconds, each 4 seconds it'll run the random chance to see if it's going to steal what's on player hand
+  chance: 0.05                # every 'recheck-delay' seconds, it'll run the random chance that will have 5% of spawning a web on the player's feet
 tosser:
 vengeance:
 weakness:

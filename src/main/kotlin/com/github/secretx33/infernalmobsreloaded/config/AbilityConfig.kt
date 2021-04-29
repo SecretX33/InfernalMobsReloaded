@@ -36,24 +36,32 @@ class AbilityConfig (
 
     fun getPotionEmitParticles(ability: Abilities) = get("${ability.configEntry}.emit-particles", true)
 
-    fun getAbilityChance(ability: Abilities, default: Double) = get("${ability.configEntry}.chance", default)
+    fun getAbilityChance(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+        = max(minValue, min(maxValue, get("${ability.configEntry}.chance", default)))
 
-    fun getRecheckDelay(ability: Abilities, default: Double) = get("${ability.configEntry}.recheck-delay", default)
+    fun getRecheckDelay(ability: Abilities, default: Double, minValue: Double = 0.01, maxValue: Double = Double.MAX_VALUE)
+        = max(minValue, min(maxValue, get("${ability.configEntry}.recheck-delay", default)))
 
-    fun getDuration(ability: Abilities, default: Double) = get("${ability.configEntry}.duration", default)
+    fun getDuration(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+        = max(minValue, min(maxValue, get("${ability.configEntry}.duration", default)))
+
+    fun getProjectileSpeed(ability: Abilities, default: Double, minValue: Double = 0.05, maxValue: Double = Double.MAX_VALUE)
+        = max(minValue, min(maxValue, get("${ability.configEntry}.projectile-speed", default)))
+
+    fun getIntAmounts(ability: Abilities, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE) = getIntPair("${ability.configEntry}.amount", default, minValue, maxValue)
 
     // returns a pair of ints containing the <Min, Max> value of that property
     @Suppress("UNCHECKED_CAST")
-    fun getIntPair(key: AbilityConfigKeys, default: Int = key.defaultValue as Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Pair<Int, Int> {
-        return cache.getOrPut(key.configEntry) {
-            val amounts = (manager.getString(key.configEntry) ?: "").split('-', limit = 2)
+    fun getIntPair(key: String, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Pair<Int, Int> {
+        return cache.getOrPut(key) {
+            val amounts = (manager.getString(key) ?: "").split('-', limit = 2)
 
             // if there's no amount field, use default value
             if (amounts[0].isBlank()) return@getOrPut Pair(default, default)
 
             // if typed amount is not an integer
             val minAmount = amounts[0].toIntOrNull()?.let { max(minValue, min(maxValue, it)) } ?: run {
-                log.severe("Oops, while trying to get ability '${key.configEntry}' value, could not parse '${amounts[0]}' because it's not an integer, please fix your configurations and reload. Defaulting '${key.configEntry}' value to $default.")
+                log.severe("Oops, while trying to get ability '$key' value, could not parse '${amounts[0]}' because it's not an integer, please fix your configurations and reload. Defaulting '$key' value to $default.")
                 return Pair(default, default)
             }
 
@@ -61,12 +69,15 @@ class AbilityConfig (
             if (amounts.size < 2 || amounts[1].isBlank()) return@getOrPut Pair(minAmount, minAmount)
 
             val maxAmount = amounts[1].toIntOrNull()?.let { max(minAmount, min(maxValue, it)) } ?: run {
-                log.severe("Max value '${amounts[1]}' provided for ability entry '${key.configEntry}' is not an integer, please fix the typo and reload the configurations. Defaulting '${key.configEntry}' max value to its minimum amount, which is $minAmount.")
+                log.severe("Max value '${amounts[1]}' provided for ability entry '$key' is not an integer, please fix the typo and reload the configurations. Defaulting '$key' max value to its minimum amount, which is $minAmount.")
                 minAmount
             }
             Pair(minAmount, maxAmount)
         } as Pair<Int, Int>
     }
+
+    fun getIntPair(key: AbilityConfigKeys, default: Int = key.defaultValue as Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Pair<Int, Int>
+        = getIntPair(key.configEntry, default, minValue, maxValue)
 
     // returns a pair of doubles containing the <Min, Max> value of that property
     @Suppress("UNCHECKED_CAST")
@@ -100,7 +111,6 @@ class AbilityConfig (
 }
 
 enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
-    ARCHER_ARROW_SPEED("archer.arrow-speed", 2.2),
     ARCHER_ARROW_AMOUNT("archer.arrow-amount", 10),
     ARCHER_ARROW_DELAY("archer.arrow-delay", 0.2),
     SPEEDY_BONUS("speedy.bonus", 1.5),

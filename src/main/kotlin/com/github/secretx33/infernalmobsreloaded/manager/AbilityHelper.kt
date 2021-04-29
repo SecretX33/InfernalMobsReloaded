@@ -15,10 +15,7 @@ import com.google.common.collect.Sets
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
-import org.bukkit.DyeColor
-import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.NamespacedKey
+import org.bukkit.*
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.block.Block
@@ -26,6 +23,7 @@ import org.bukkit.entity.*
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent.*
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Colorable
 import org.bukkit.persistence.PersistentDataType
@@ -39,6 +37,7 @@ import java.lang.reflect.Type
 import java.util.*
 import kotlin.math.*
 
+
 @KoinApiExtension
 class AbilityHelper (
     private val plugin: Plugin,
@@ -47,6 +46,7 @@ class AbilityHelper (
     private val abilityConfig: AbilityConfig,
     private val lootItemsRepo: LootItemsRepo,
     private val wgChecker: WorldGuardChecker,
+    private val particlesHelper: ParticlesHelper,
 ){
 
     private val blockModifications = Sets.newConcurrentHashSet<BlockModification>()
@@ -199,13 +199,12 @@ class AbilityHelper (
         abilities.forEach {
             when(it) {
                 Abilities.ARCHER -> makeArcherTask(entity, target, multimap)
-                Abilities.CALL_THE_GANG -> makeCallTheGangTask()
-                Abilities.GHASTLY -> TODO()
-                Abilities.GHOST -> TODO()
+                Abilities.CALL_THE_GANG -> makeCallTheGangTask(entity, target, multimap)
+                Abilities.GHASTLY -> makeGhastlyTask(entity, target, multimap)
                 Abilities.MORPH -> TODO()
-                Abilities.NECROMANCER -> TODO()
+                Abilities.NECROMANCER -> makeNecromancerTask(entity, target, multimap)
                 Abilities.POTIONS -> TODO()
-                Abilities.THIEF -> TODO()
+                Abilities.THIEF -> makeThiefTask(entity, target, multimap)
                 Abilities.WEBBER -> makeWebberTask(entity, target, multimap)
                 else -> null
             }?.let { job -> jobList.add(job) }
@@ -213,14 +212,31 @@ class AbilityHelper (
         multimap.putAll(entity.uniqueId, jobList.filter { it.isActive })
     }
 
-    private fun makeArcherTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
-        val speed = abilityConfig.get<Double>(AbilityConfigKeys.ARCHER_ARROW_SPEED)
-        val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).getRandomBetween()
-        val delay = abilityConfig.get<Double>(AbilityConfigKeys.ARCHER_ARROW_DELAY).toLongDelay()
+    private fun makeThiefTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+        val recheckDelay = abilityConfig.getRecheckDelay(Abilities.ARCHER, 4.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.ARCHER, 0.05)
 
         while(isActive && !isInvalid(entity, target)) {
-            delay(1000)
+            delay(recheckDelay)
+            if(random.nextDouble() > chance) continue
+
+            val item = target.equipment?.itemInMainHand?.takeUnless { it.type.isAir } ?: continue
+            target.equipment?.setItemInMainHand(ItemStack(Material.AIR))
+            entity.world.dropItemNaturally(entity.location, item)
+            (target as? Player)?.updateInventory()
+        }
+        multimap.remove(entity.uniqueId, coroutineContext.job)
+    }
+
+    private fun makeArcherTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+        val speed = abilityConfig.getProjectileSpeed(Abilities.ARCHER, 2.2)
+        val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).getRandomBetween()
+        val delay = abilityConfig.get<Double>(AbilityConfigKeys.ARCHER_ARROW_DELAY).toLongDelay()
+        val recheckDelay = abilityConfig.getRecheckDelay(Abilities.ARCHER, 1.0).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Abilities.ARCHER, 0.04)
+
+        while(isActive && !isInvalid(entity, target)) {
+            delay(recheckDelay)
             if(random.nextDouble() > chance) continue
 
             for (i in 1..amount) {
@@ -233,6 +249,64 @@ class AbilityHelper (
                 delay(delay)
             }
         }
+        multimap.remove(entity.uniqueId, coroutineContext.job)
+    }
+
+    private fun makeCallTheGangTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+        val recheckDelay = abilityConfig.getRecheckDelay(Abilities.CALL_THE_GANG, 2.0).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Abilities.CALL_THE_GANG, 0.025)
+        val amount = abilityConfig.getIntAmounts(Abilities.CALL_THE_GANG, 2).getRandomBetween()
+
+        while(isActive && !isInvalid(entity, target)) {
+            delay(recheckDelay)
+            if(random.nextDouble() > chance) continue
+            runSync(plugin) {
+                repeat(amount) {
+                    entity.world.spawnEntity(entity.location, entity.type, SpawnReason.CUSTOM) {
+                        (it as? Mob)?.target = target
+                        (it as? LivingEntity)?.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 12, 1, false, true, false))
+                    }
+                }
+                particlesHelper.sendParticle(entity, Particle.TOTEM, entity.width + 1, 30)
+            }
+        }
+        multimap.remove(entity.uniqueId, coroutineContext.job)
+    }
+
+    private fun makeGhastlyTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+        val recheckDelay = abilityConfig.getRecheckDelay(Abilities.GHASTLY, 1.5).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Abilities.GHASTLY, 0.25)
+        val speed = abilityConfig.getProjectileSpeed(Abilities.GHASTLY, 1.5)
+
+        while(isActive && !isInvalid(entity, target)) {
+            delay(recheckDelay)
+            if(random.nextDouble() > chance) continue
+
+            val dir = entity.shootDirection()?.multiply(speed) ?: run {
+                multimap.remove(entity.uniqueId, coroutineContext.job)
+                return@launch
+            }
+            entity.shootProjectile(dir, Fireball::class.java)
+        }
+        multimap.remove(entity.uniqueId, coroutineContext.job)
+    }
+
+    private fun makeNecromancerTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+        val recheckDelay = abilityConfig.getRecheckDelay(Abilities.GHASTLY, 2.5).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Abilities.GHASTLY, 0.25)
+        val speed = abilityConfig.getProjectileSpeed(Abilities.GHASTLY, 2.0)
+
+        while(isActive && !isInvalid(entity, target)) {
+            delay(recheckDelay)
+            if(random.nextDouble() > chance) continue
+
+            val dir = entity.shootDirection()?.multiply(speed) ?: run {
+                multimap.remove(entity.uniqueId, coroutineContext.job)
+                return@launch
+            }
+            entity.shootProjectile(dir, WitherSkull::class.java)
+        }
+        multimap.remove(entity.uniqueId, coroutineContext.job)
     }
 
     private fun makeWebberTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
@@ -244,16 +318,7 @@ class AbilityHelper (
             if(random.nextDouble() > chance) continue
             launchCobweb(target)
         }
-    }
-
-    private fun <T : Projectile> LivingEntity.shootProjectile(dir: Vector, proj: Class<out T>) {
-        val loc = eyeLocation.apply { y -= height / 12 }
-        runSync(plugin) {
-            world.spawn(loc, proj, SpawnReason.CUSTOM) {
-                it.velocity = dir
-                (it as Projectile).shooter = this
-            }
-        }
+        multimap.remove(entity.uniqueId, coroutineContext.job)
     }
 
     private fun launchCobweb(target: LivingEntity) {
@@ -266,6 +331,16 @@ class AbilityHelper (
         CoroutineScope(Dispatchers.Default).launch {
             delay(duration)
             runSync(plugin) { blockMod.unmake() }
+        }
+    }
+
+    private fun <T : Projectile> LivingEntity.shootProjectile(dir: Vector, proj: Class<out T>) {
+        val loc = eyeLocation.apply { y -= height / 12 }
+        runSync(plugin) {
+            world.spawn(loc, proj, SpawnReason.CUSTOM) {
+                it.velocity = dir
+                (it as Projectile).shooter = this
+            }
         }
     }
 

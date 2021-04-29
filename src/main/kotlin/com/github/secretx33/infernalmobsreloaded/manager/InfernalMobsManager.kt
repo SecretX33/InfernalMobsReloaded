@@ -120,7 +120,7 @@ class InfernalMobsManager (
     private fun startParticleEmissionTask(entity: LivingEntity, infernalType: InfernalMobType) {
         val delay = delayBetweenParticleEmission
         val job = CoroutineScope(Dispatchers.Default).launch {
-            runSync(plugin) { particlesHelper.sendParticle(entity, Particle.LAVA, 2.0) }
+            runSync(plugin) { particlesHelper.sendParticle(entity, Particle.LAVA, particleSpread) }
             delay(delay)
         }
         infernalMobPeriodicTasks.put(entity.uniqueId, job)
@@ -128,6 +128,9 @@ class InfernalMobsManager (
 
     private val delayBetweenParticleEmission
         get() = (max(0.01, config.get(ConfigKeys.DELAY_BETWEEN_INFERNO_PARTICLES)) * 1000.0).toLong()
+
+    private val particleSpread
+        get() = config.get<Double>(ConfigKeys.INFERNO_PARTICLES_SPREAD)
 
     fun unloadInfernalMob(entity: LivingEntity) {
         cancelAllInfernalTasks(entity)
