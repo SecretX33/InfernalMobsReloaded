@@ -143,7 +143,7 @@ class InfernalMobsManager (
 
     fun triggerOnDamageDoneAbilities(event: InfernalDamageDoneEvent)
 
-    fun triggerOnDamageTakenAbilities(event: InfernalDamageTakenEvent)
+    fun triggerOnDamageTakenAbilities(event: InfernalDamageTakenEvent) = abilityHelper.triggerOnDamageTakenAbilities(event)
 
     fun triggerOnDeathAbilities(entity: LivingEntity) = abilityHelper.triggerOnDeathAbilities(entity)
 

@@ -4,6 +4,7 @@ import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
+import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageTakenEvent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.model.Abilities
 import com.github.secretx33.infernalmobsreloaded.model.BlockModification
@@ -27,6 +28,7 @@ import org.bukkit.block.Block
 import org.bukkit.entity.*
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityTargetEvent.*
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent
 import org.bukkit.inventory.EquipmentSlot
@@ -62,6 +64,8 @@ class AbilityHelper (
     fun removeAbilityEffects(entity: LivingEntity) {
         TODO("revert all attributes and chances and convert it back to a normal entity")
     }
+
+    // abilities that are applied when mob spawns
 
     fun addAbilityEffects(entity: LivingEntity, infernalType: InfernalMobType) {
         val abilitySet = entity.getAbilities() ?: return
@@ -207,6 +211,8 @@ class AbilityHelper (
         addPotionEffect(PotionEffect(effectType, Int.MAX_VALUE, amplifier, isAmbient, emitParticles))
     }
 
+    // periodic tasks that require a target
+
     fun startTargetTasks(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) {
         val abilities = entity.getAbilities() ?: return
 
@@ -251,9 +257,9 @@ class AbilityHelper (
                 }
                 entity.remove()
             }
-            multimap.remove(entity.uniqueId, coroutineContext.job)
-            return@launch
+            cancel()
         }
+        multimap.remove(entity.uniqueId, coroutineContext.job)
     }
 
     private fun makeArcherTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
@@ -374,7 +380,7 @@ class AbilityHelper (
 
     private fun launchCobweb(target: LivingEntity) {
         val trapDensity = abilityConfig.getDouble(AbilityConfigKeys.WEBBER_TRAP_DENSITY, maxValue = 1.0)
-        val duration = abilityConfig.getDuration(Abilities.WEBBER, 5.0, minValue = 0.1).toLongDelay()
+        val duration = abilityConfig.getDuration(Abilities.WEBBER, 5.0, minValue = 0.1).getRandomBetween().toLongDelay()
         val blocks = target.makeCuboidAround().blockList().filter { random.nextDouble() <= trapDensity && it.canMobGrief() }
         val blockMod = BlockModification(blocks, blockModifications, blocksBlackList) { list -> list.forEach { it.type = Material.COBWEB } }
         blocksBlackList.addAll(blockMod.blockLocations)
@@ -439,11 +445,14 @@ class AbilityHelper (
 
     private fun isInvalid(entity: LivingEntity, target: LivingEntity) = entity.isDead || !entity.isValid  || target.isDead || !target.isValid || (entity is Mob && entity.target?.uniqueId != target.uniqueId)
 
+
+    // trigger on death abilities
+
     fun triggerOnDeathAbilities(entity: LivingEntity) {
         val abilities = entity.getAbilities() ?: return
         abilities.forEach {
             when(it) {
-                Abilities.GHOST ->
+                Abilities.GHOST -> entity.triggerGhost()
                 Abilities.KAMIKAZE -> entity.triggerKamizake()
                 else -> {}
             }
@@ -485,6 +494,60 @@ class AbilityHelper (
 
         location.createExplosion(this, power, setFire, breakBlocks)
     }
+
+    // abilities that are triggered when an infernal takes damage
+
+    fun triggerOnDamageTakenAbilities(event: InfernalDamageTakenEvent) {
+        val abilities = event.entity.getAbilities() ?: return
+
+        abilities.forEach {
+            when(it) {
+                Abilities.BERSERK -> {
+                    val bonus = abilityConfig.getDoublePair(AbilityConfigKeys.BERSERK_RECEIVED_DAMAGE_BONUS)
+                    event.damageMulti = bonus.getRandomBetween()
+                }
+                Abilities.FIREWORK -> TODO()
+                Abilities.MOLTEN -> event.triggerMolten()
+                Abilities.POISONOUS -> event.triggerPoisonous()
+                Abilities.THORNMAIL -> event.triggerThornmail()
+                else -> {}
+            }
+        }
+    }
+
+    private fun InfernalDamageTakenEvent.triggerPoisonous() {
+        if(cause.isNotMelee()) return
+        val chance = abilityConfig.getAbilityChanceOnDamageTaken(Abilities.POISONOUS, 0.2)
+        if(random.nextDouble() > chance) return
+
+        // poisons the attacker
+        val potency = max(0, abilityConfig.getAbilityPotency(Abilities.POISONOUS, 7) - 1)
+        val duration = abilityConfig.getDuration(Abilities.POISONOUS, 7.0).getRandomBetween()
+        attacker.addPotionEffect(PotionEffect(PotionEffectType.POISON, (duration * 20.0).toInt(), potency, true, true))
+    }
+
+    private fun InfernalDamageTakenEvent.triggerMolten() {
+        if(cause.isNotMelee()) return
+        val chance = abilityConfig.getAbilityChanceOnDamageTaken(Abilities.MOLTEN, 0.4)
+        if(random.nextDouble() > chance) return
+
+        // sets the attacker on fire
+        val duration = abilityConfig.getDuration(Abilities.MOLTEN, 8.0).getRandomBetween()
+        attacker.fireTicks = (duration * 20.0).toInt()
+    }
+
+    private fun EntityDamageEvent.DamageCause.isNotMelee() = this != EntityDamageEvent.DamageCause.ENTITY_ATTACK && this != EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK && this != EntityDamageEvent.DamageCause.CONTACT && this != EntityDamageEvent.DamageCause.CRAMMING && this != EntityDamageEvent.DamageCause.THORNS
+
+    private fun InfernalDamageTakenEvent.triggerThornmail() {
+        val chance = abilityConfig.getAbilityChance(Abilities.THORNMAIL, 0.6)
+        if (random.nextDouble() > chance) return
+
+        // reflect part of the damage to the attacker
+        val reflectAmount = abilityConfig.getDoublePair(AbilityConfigKeys.THORMAIL_REFLECTED_AMOUNT).getRandomBetween()
+        attacker.damage(damage * reflectAmount, entity)
+    }
+
+    // utility functions
 
     private fun Double.toLongDelay() = (this * 1000.0).toLong()
 

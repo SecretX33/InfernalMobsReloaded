@@ -27,7 +27,7 @@ class EntityDamageEntityListener(plugin: Plugin, private val mobsManager: Infern
         if(!entity.isInfernalMob()) return
 
         val infernalType = mobsManager.getInfernalTypeOrNull(entity) ?: return
-        val event = InfernalDamageTakenEvent(entity, attacker, infernalType)
+        val event = InfernalDamageTakenEvent(entity, attacker, damage, cause, infernalType)
         Bukkit.getPluginManager().callEvent(event)
         if(event.isCancelled) isCancelled = true
         damage *= event.damageMulti
@@ -42,7 +42,7 @@ class EntityDamageEntityListener(plugin: Plugin, private val mobsManager: Infern
         if(!entity.isInfernalMob()) return
 
         val infernalType = mobsManager.getInfernalTypeOrNull(entity) ?: return
-        val event = InfernalDamageDoneEvent(entity, defender, infernalType)
+        val event = InfernalDamageDoneEvent(entity, defender, damage, cause, infernalType)
         Bukkit.getPluginManager().callEvent(event)
         if(event.isCancelled) isCancelled = true
         damage *= event.damageMulti

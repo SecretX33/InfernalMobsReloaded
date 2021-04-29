@@ -63,14 +63,23 @@ class AbilityConfig (
     fun getAbilityChance(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.chance", default, minValue, maxValue)
 
+    fun getAbilityChanceOnDamageDone(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+        = getDouble("${ability.configEntry}.chance-on-damage-done", default, minValue, maxValue)
+
+    fun getAbilityChanceOnDamageTaken(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+        = getDouble("${ability.configEntry}.chance-on-damage-taken", default, minValue, maxValue)
+
     fun getRecheckDelay(ability: Abilities, default: Double, minValue: Double = 0.01, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.recheck-delay", default, minValue, maxValue)
 
     fun getDuration(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
-        = getDouble("${ability.configEntry}.duration", default, minValue, maxValue)
+        = getDoublePair("${ability.configEntry}.duration", default, minValue, maxValue)
 
     fun getProjectileSpeed(ability: Abilities, default: Double, minValue: Double = 0.05, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.projectile-speed", default, minValue, maxValue)
+
+    fun getAbilityPotency(ability: Abilities, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE)
+        = getInt("${ability.configEntry}.potency", default, minValue, maxValue)
 
     fun getNearbyRange(default: Double = 3.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble("nearby-entities-range", default, minValue, maxValue)
@@ -103,21 +112,21 @@ class AbilityConfig (
         } as Pair<Int, Int>
     }
 
-    fun getIntPair(key: AbilityConfigKeys, default: Int = key.defaultValue as Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Pair<Int, Int>
+    fun getIntPair(key: AbilityConfigKeys, default: Int = key.defaultValue as Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE)
         = getIntPair(key.configEntry, default, minValue, maxValue)
 
     // returns a pair of doubles containing the <Min, Max> value of that property
     @Suppress("UNCHECKED_CAST")
-    fun getDoublePair(key: AbilityConfigKeys, default: Double = key.defaultValue as Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Pair<Double, Double> {
-        return cache.getOrPut(key.configEntry) {
-            val amounts = (manager.getString(key.configEntry) ?: "").split('-', limit = 2)
+    fun getDoublePair(key: String, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Pair<Double, Double> {
+        return cache.getOrPut(key) {
+            val amounts = (manager.getString(key) ?: "").split('-', limit = 2)
 
             // if there's no amount field, use default value
             if (amounts[0].isBlank()) return@getOrPut Pair(default, default)
 
             // if typed amount is not an integer
             val minAmount = amounts[0].toDoubleOrNull()?.let { max(minValue, min(maxValue, it)) } ?: run {
-                log.severe("Oops, while trying to get ability '${key.configEntry}' value, could not parse '${amounts[0]}' because it's not a double, please fix your configurations and reload. Defaulting '${key.configEntry}' value to $default.")
+                log.severe("Oops, while trying to get ability '${key}' value, could not parse '${amounts[0]}' because it's not a double, please fix your configurations and reload. Defaulting '${key}' value to $default.")
                 return Pair(default, default)
             }
 
@@ -125,12 +134,15 @@ class AbilityConfig (
             if (amounts.size < 2 || amounts[1].isBlank()) return@getOrPut Pair(minAmount, minAmount)
 
             val maxAmount = amounts[1].toDoubleOrNull()?.let { max(minAmount, min(maxValue, it)) } ?: run {
-                log.severe("Max value '${amounts[1]}' provided for entry '${key.configEntry}' is not a double, please fix the typo and reload the configurations. Defaulting '${key.configEntry}' max value to its minimum amount, which is $minAmount.")
+                log.severe("Max value '${amounts[1]}' provided for entry '${key}' is not a double, please fix the typo and reload the configurations. Defaulting '${key}' max value to its minimum amount, which is $minAmount.")
                 minAmount
             }
             Pair(minAmount, maxAmount)
         } as Pair<Double, Double>
     }
+
+    fun getDoublePair(key: AbilityConfigKeys, default: Double = key.defaultValue as Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+        = getDoublePair(key.configEntry, default, minValue, maxValue)
 
     fun reload() {
         manager.reload()
@@ -138,6 +150,9 @@ class AbilityConfig (
 }
 
 enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
+    THORMAIL_REFLECTED_AMOUNT("${Abilities.THORNMAIL.configEntry}.reflected-amount", 0.5),
+    BERSERK_CAUSED_DAMAGE_BONUS("${Abilities.BERSERK.configEntry}.damage-caused-bonus", 1.3),
+    BERSERK_RECEIVED_DAMAGE_BONUS("${Abilities.BERSERK.configEntry}.damage-caused-bonus", 1.25),
     GHOST_EVIL_CHANCE("${Abilities.GHOST.configEntry}.evil-chance", 0.3),
     GHOST_ITEM_DROP_CHANCE("${Abilities.GHOST.configEntry}.item-drop-chance", 0.2),
     MORPH_KEEP_HP_PERCENTAGE("${Abilities.MORPH.configEntry}.keep-hp-percentage", true),
