@@ -16,7 +16,9 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import org.bukkit.Particle
-import org.bukkit.entity.*
+import org.bukkit.entity.Entity
+import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Monster
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension

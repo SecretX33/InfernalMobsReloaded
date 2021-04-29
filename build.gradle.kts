@@ -46,7 +46,7 @@ dependencies {
     implementation("me.mattstudios:triumph-msg-adventure:2.2.4-SNAPSHOT")
 //    compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0")
 //    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.5")
-//    compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.4")
+    compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.4")
 }
 
 tasks.test {

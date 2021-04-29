@@ -5,22 +5,23 @@ import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.Abilities
+import com.github.secretx33.infernalmobsreloaded.model.BlockModification
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
-import com.github.secretx33.infernalmobsreloaded.utils.pdc
-import com.github.secretx33.infernalmobsreloaded.utils.runSync
-import com.github.secretx33.infernalmobsreloaded.utils.toUuid
+import com.github.secretx33.infernalmobsreloaded.utils.*
 import com.google.common.collect.Multimap
+import com.google.common.collect.Sets
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import org.bukkit.DyeColor
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.World
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
+import org.bukkit.block.Block
 import org.bukkit.entity.*
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent.*
@@ -32,15 +33,11 @@ import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.Vector
-import org.jetbrains.annotations.NotNull
 import org.koin.core.component.KoinApiExtension
 import java.lang.StrictMath.pow
 import java.lang.reflect.Type
 import java.util.*
-import kotlin.math.atan
-import kotlin.math.atan2
-import kotlin.math.max
-import kotlin.math.sqrt
+import kotlin.math.*
 
 @KoinApiExtension
 class AbilityHelper (
@@ -49,7 +46,11 @@ class AbilityHelper (
     private val keyChain: KeyChain,
     private val abilityConfig: AbilityConfig,
     private val lootItemsRepo: LootItemsRepo,
+    private val wgChecker: WorldGuardChecker,
 ){
+
+    private val blockModifications = Sets.newConcurrentHashSet<BlockModification>()
+    private val blocksBlackList = Sets.newConcurrentHashSet<Location>()
 
     fun removeAbilityEffects(entity: LivingEntity) {
         TODO("revert all attributes and chances and convert it back to a normal entity")
@@ -105,15 +106,6 @@ class AbilityHelper (
         return true
     }
 
-    private fun addHeavyAbility(entity: LivingEntity) {
-        entity.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.apply {
-            val resistAmount = abilityConfig.getDoublePair(AbilityConfigKeys.HEAVY_RESIST_PERCENTAGE).getRandomBetween()
-            val mod = AttributeModifier(knockbackResistUID, Abilities.HEAVY.name, resistAmount, AttributeModifier.Operation.ADD_SCALAR)
-            removeModifier(mod)
-            addModifier(mod)
-        }
-    }
-
     private fun addFlyingAbility(entity: LivingEntity) {
         val bat = entity.world.spawn(entity.location, Bat::class.java, SpawnReason.CUSTOM) {
             turnIntoMount(it, keyChain.infernalBatMountKey, false)
@@ -125,6 +117,19 @@ class AbilityHelper (
         bat.addPassenger(entity)
         // TODO("Remove bat entity when its 'master' dies")
     }
+
+    private fun addHeavyAbility(entity: LivingEntity) {
+        entity.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.apply {
+            val resistAmount = abilityConfig.getDoublePair(AbilityConfigKeys.HEAVY_RESIST_PERCENTAGE).getRandomBetween()
+            val mod = AttributeModifier(knockbackResistUID, Abilities.HEAVY.name, resistAmount, AttributeModifier.Operation.ADD_SCALAR)
+            removeModifier(mod)
+            addModifier(mod)
+        }
+    }
+
+    private fun addInvisibleAbility(entity: LivingEntity) = entity.addPermanentPotion(PotionEffectType.INVISIBILITY, Abilities.INVISIBLE)
+
+    private fun addMoltenAbility(entity: LivingEntity) = entity.addPermanentPotion(PotionEffectType.FIRE_RESISTANCE, Abilities.MOLTEN)
 
     private fun addMountedAbility(entity: LivingEntity) {
         entity.vehicle?.apply {
@@ -183,10 +188,6 @@ class AbilityHelper (
         movSpeed.addModifier(mod)
     }
 
-    private fun addInvisibleAbility(entity: LivingEntity) = entity.addPermanentPotion(PotionEffectType.INVISIBILITY, Abilities.INVISIBLE)
-
-    private fun addMoltenAbility(entity: LivingEntity) = entity.addPermanentPotion(PotionEffectType.FIRE_RESISTANCE, Abilities.MOLTEN)
-
     private fun LivingEntity.addPermanentPotion(effectType: PotionEffectType, ability: Abilities, amplifier: Int = 0) {
         addPotionEffect(PotionEffect(effectType, Int.MAX_VALUE, amplifier, abilityConfig.getPotionIsAmbient(ability), abilityConfig.getPotionEmitParticles(ability), false))
     }
@@ -198,14 +199,14 @@ class AbilityHelper (
         abilities.forEach {
             when(it) {
                 Abilities.ARCHER -> makeArcherTask(entity, target, multimap)
-                Abilities.CALL_THE_GANG -> TODO()
+                Abilities.CALL_THE_GANG -> makeCallTheGangTask()
                 Abilities.GHASTLY -> TODO()
                 Abilities.GHOST -> TODO()
                 Abilities.MORPH -> TODO()
                 Abilities.NECROMANCER -> TODO()
                 Abilities.POTIONS -> TODO()
                 Abilities.THIEF -> TODO()
-                Abilities.WEBBER -> TODO()
+                Abilities.WEBBER -> makeWebberTask(entity, target, multimap)
                 else -> null
             }?.let { job -> jobList.add(job) }
         }
@@ -215,7 +216,7 @@ class AbilityHelper (
     private fun makeArcherTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
         val speed = abilityConfig.get<Double>(AbilityConfigKeys.ARCHER_ARROW_SPEED)
         val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).getRandomBetween()
-        val delay = (abilityConfig.get<Double>(AbilityConfigKeys.ARCHER_ARROW_SPEED) * 1000.0).toLong()
+        val delay = abilityConfig.get<Double>(AbilityConfigKeys.ARCHER_ARROW_DELAY).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.ARCHER, 0.05)
 
         while(isActive && !isInvalid(entity, target)) {
@@ -234,6 +235,17 @@ class AbilityHelper (
         }
     }
 
+    private fun makeWebberTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+        val chance = abilityConfig.getAbilityChance(Abilities.WEBBER, 0.05)
+        val recheckDelay = abilityConfig.getRecheckDelay(Abilities.WEBBER, 2.0).toLongDelay()
+
+        while(isActive && !isInvalid(entity, target)) {
+            delay(recheckDelay)
+            if(random.nextDouble() > chance) continue
+            launchCobweb(target)
+        }
+    }
+
     private fun <T : Projectile> LivingEntity.shootProjectile(dir: Vector, proj: Class<out T>) {
         val loc = eyeLocation.apply { y -= height / 12 }
         runSync(plugin) {
@@ -242,6 +254,35 @@ class AbilityHelper (
                 (it as Projectile).shooter = this
             }
         }
+    }
+
+    private fun launchCobweb(target: LivingEntity) {
+        val duration = max(100, abilityConfig.getDuration(Abilities.WEBBER, 5.0).toLongDelay())
+        val blocks = target.makeCuboidAround().blockList().filter { random.nextDouble() <= 0.6 && it.canMobGrief() }
+        val blockMod = BlockModification(blocks, blocksBlackList) { list -> list.forEach { it.type = Material.COBWEB } }
+        blockModifications.add(blockMod)
+
+        runSync(plugin) { blockMod.make() }
+        CoroutineScope(Dispatchers.Default).launch {
+            delay(duration)
+            runSync(plugin) { blockMod.unmake() }
+        }
+    }
+
+    private fun Block.canMobGrief(): Boolean = type != Material.BEDROCK && !blocksBlackList.contains(location) && wgChecker.canMobGriefBlock(this)
+
+    private fun LivingEntity.makeCuboidAround(): Cuboid {
+        val lowerBound = location.apply {
+            x -= ceil(width)
+            y -= 1
+            z -= ceil(width)
+        }
+        val upperBound = location.apply {
+            x += ceil(width) + 2
+            y += ceil(height) + 1
+            z += ceil(width) + 2
+        }
+        return Cuboid(lowerBound, upperBound)
     }
 
     private fun LivingEntity.shootDirection(): Vector? {
@@ -265,6 +306,8 @@ class AbilityHelper (
     }
 
     private fun isInvalid(entity: LivingEntity, target: LivingEntity) = entity.isDead || !entity.isValid  || target.isDead || !target.isValid || (entity is Mob && entity.target?.uniqueId != target.uniqueId)
+
+    private fun Double.toLongDelay() = (this * 1000.0).toLong()
 
     private fun Pair<Int, Int>.getRandomBetween(): Int {
         val (minValue, maxValue) = this
@@ -290,6 +333,11 @@ class AbilityHelper (
     private fun LivingEntity.getAbilities(): Set<Abilities>? = pdc.get(keyChain.abilityListKey, PersistentDataType.STRING)?.toAbilitySet()
 
     private fun String.toAbilitySet() = gson.fromJson<Set<Abilities>>(this, infernalAbilityListToken)
+
+    fun revertPendingBlockModifications() {
+        blockModifications.forEach { it.unmake() }
+        blockModifications.clear()
+    }
 
     private companion object {
         val random = Random()

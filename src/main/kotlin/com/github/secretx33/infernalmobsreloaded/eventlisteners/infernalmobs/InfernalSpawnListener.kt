@@ -13,7 +13,6 @@ import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
 import kotlin.math.max
-import kotlin.math.min
 
 @KoinApiExtension
 class InfernalSpawnListener (

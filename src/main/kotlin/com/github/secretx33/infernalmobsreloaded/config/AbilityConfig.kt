@@ -22,7 +22,7 @@ class AbilityConfig (
         return cache.getOrPut(key) {
             manager.get(key, default)
         } as? T ?: run {
-            log.severe("On config key $key, expected value of type ${default!!::class.java.simpleName} but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+            log.severe("On ability entry $key, expected value of type ${default!!::class.java.simpleName} but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
             default
         }
     }
@@ -38,6 +38,10 @@ class AbilityConfig (
 
     fun getAbilityChance(ability: Abilities, default: Double) = get("${ability.configEntry}.chance", default)
 
+    fun getRecheckDelay(ability: Abilities, default: Double) = get("${ability.configEntry}.recheck-delay", default)
+
+    fun getDuration(ability: Abilities, default: Double) = get("${ability.configEntry}.duration", default)
+
     // returns a pair of ints containing the <Min, Max> value of that property
     @Suppress("UNCHECKED_CAST")
     fun getIntPair(key: AbilityConfigKeys, default: Int = key.defaultValue as Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Pair<Int, Int> {
@@ -49,7 +53,7 @@ class AbilityConfig (
 
             // if typed amount is not an integer
             val minAmount = amounts[0].toIntOrNull()?.let { max(minValue, min(maxValue, it)) } ?: run {
-                log.severe("Oops, while trying to get '${key.configEntry}' value, could not parse '${amounts[0]}' because it's not an integer, please fix your configurations and reload. Defaulting '${key.configEntry}' value to $default.")
+                log.severe("Oops, while trying to get ability '${key.configEntry}' value, could not parse '${amounts[0]}' because it's not an integer, please fix your configurations and reload. Defaulting '${key.configEntry}' value to $default.")
                 return Pair(default, default)
             }
 
@@ -57,7 +61,7 @@ class AbilityConfig (
             if (amounts.size < 2 || amounts[1].isBlank()) return@getOrPut Pair(minAmount, minAmount)
 
             val maxAmount = amounts[1].toIntOrNull()?.let { max(minAmount, min(maxValue, it)) } ?: run {
-                log.severe("Max value '${amounts[1]}' provided for entry '${key.configEntry}' is not an integer, please fix the typo and reload the configurations. Defaulting '${key.configEntry}' max value to its minimum amount, which is $minAmount.")
+                log.severe("Max value '${amounts[1]}' provided for ability entry '${key.configEntry}' is not an integer, please fix the typo and reload the configurations. Defaulting '${key.configEntry}' max value to its minimum amount, which is $minAmount.")
                 minAmount
             }
             Pair(minAmount, maxAmount)
@@ -75,7 +79,7 @@ class AbilityConfig (
 
             // if typed amount is not an integer
             val minAmount = amounts[0].toDoubleOrNull()?.let { max(minValue, min(maxValue, it)) } ?: run {
-                log.severe("Oops, while trying to get '${key.configEntry}' value, could not parse '${amounts[0]}' because it's not a double, please fix your configurations and reload. Defaulting '${key.configEntry}' value to $default.")
+                log.severe("Oops, while trying to get ability '${key.configEntry}' value, could not parse '${amounts[0]}' because it's not a double, please fix your configurations and reload. Defaulting '${key.configEntry}' value to $default.")
                 return Pair(default, default)
             }
 

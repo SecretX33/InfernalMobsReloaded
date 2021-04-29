@@ -2,7 +2,6 @@ package com.github.secretx33.infernalmobsreloaded.manager
 
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
-import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.entity.LivingEntity

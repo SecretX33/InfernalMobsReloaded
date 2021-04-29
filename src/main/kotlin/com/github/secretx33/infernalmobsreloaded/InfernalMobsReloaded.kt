@@ -5,9 +5,10 @@ import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkLoadListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkUnloadListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalSpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.NaturalEntitySpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalDeathListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalSpawnListener
+import com.github.secretx33.infernalmobsreloaded.manager.AbilityHelper
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.manager.ParticlesHelper
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
@@ -65,6 +66,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
     }
 
     override fun onDisable() {
+        get<AbilityHelper>().revertPendingBlockModifications()
         unloadKoinModules(mod)
         stopKoin()
     }

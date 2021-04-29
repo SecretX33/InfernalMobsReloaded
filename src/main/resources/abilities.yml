@@ -43,4 +43,7 @@ tosser:
 vengeance:
 weakness:
 webber:
+  recheck-delay: 2.0          # in seconds, each 2 seconds it'll run the random chance to see if it's going to spawn a web on player's feet
+  chance: 0.05                # every 'recheck-delay' seconds, it'll run the random chance that will have 5% of spawning a web on the player's feet
+  duration: 5.0               # in seconds, how many seconds the cobweb will stay there
 withering:
