@@ -54,7 +54,7 @@ class InfernalMobsManager (
         val infernalType = event.infernalType
 
         addCustomNameToInfernal(entity, infernalType)
-        addPdcKeysToInfernal(entity, infernalType)
+        addPdcKeysToInfernal(entity, infernalType, event)
         abilityHelper.addAbilityEffects(entity, infernalType)
     }
 
@@ -67,8 +67,8 @@ class InfernalMobsManager (
         }
     }
 
-    private fun addPdcKeysToInfernal(entity: LivingEntity, infernalType: InfernalMobType) {
-        val abilitySet = Abilities.random(infernalType.getAbilityNumber()).filterConflicts()
+    private fun addPdcKeysToInfernal(entity: LivingEntity, infernalType: InfernalMobType, event: InfernalSpawnEvent) {
+        val abilitySet = event.abilitySet?.toMutableSet()?.filterConflicts() ?: Abilities.random(infernalType.getAbilityNumber()).filterConflicts()
         val livesNumber = if(abilitySet.contains(Abilities.SECOND_WING)) 2 else 1
 
         entity.pdc.apply {

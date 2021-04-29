@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.events
 
+import com.github.secretx33.infernalmobsreloaded.model.Abilities
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.Cancellable
@@ -8,7 +9,8 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 class InfernalSpawnEvent (
     entity: LivingEntity,
     infernalType: InfernalMobType,
-    val spawnReason: SpawnReason,
+    val spawnReason: SpawnReason = SpawnReason.CUSTOM,
+    val abilitySet: Set<Abilities>? = null,
 ) : InfernalEntityEvent(entity, infernalType), Cancellable {
 
     private var isCancelled = false

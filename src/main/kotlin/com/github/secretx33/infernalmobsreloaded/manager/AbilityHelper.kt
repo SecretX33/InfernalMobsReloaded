@@ -23,13 +23,11 @@ import org.bukkit.*
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.block.Block
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.*
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.material.Colorable
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
@@ -63,20 +61,24 @@ class AbilityHelper (
     }
 
     fun addAbilityEffects(entity: LivingEntity, infernalType: InfernalMobType) {
-        val abilityList = entity.getAbilities() ?: return
-        abilityList.forEach {
+        val abilitySet = entity.getAbilities() ?: return
+        entity.addAbilities(abilitySet)
+        entity.multiplyMaxHp(infernalType.getHealthMulti())
+    }
+
+    private fun LivingEntity.addAbilities(abilitySet: Set<Abilities>) {
+        abilitySet.forEach {
             when(it) {
-                Abilities.ARMOURED -> entity.addArmouredAbility()
-                Abilities.FLYING -> entity.addFlyingAbility()
-                Abilities.HEAVY -> entity.addHeavyAbility()
-                Abilities.INVISIBLE -> entity.addInvisibleAbility()
-                Abilities.MOLTEN -> entity.addMoltenAbility()
-                Abilities.MOUNTED -> entity.addMountedAbility()
-                Abilities.SPEEDY -> entity.addSpeedyAbility()
+                Abilities.ARMOURED -> addArmouredAbility()
+                Abilities.FLYING -> addFlyingAbility()
+                Abilities.HEAVY -> addHeavyAbility()
+                Abilities.INVISIBLE -> addInvisibleAbility()
+                Abilities.MOLTEN -> addMoltenAbility()
+                Abilities.MOUNTED -> addMountedAbility()
+                Abilities.SPEEDY -> addSpeedyAbility()
                 else -> {}
             }
         }
-        entity.multiplyMaxHp(infernalType.getHealthMulti())
     }
 
     private fun LivingEntity.addArmouredAbility() {
@@ -215,6 +217,8 @@ class AbilityHelper (
         val evilPrefix = if(evil) "evil_" else ""
         val itemDropChance = abilityConfig.getDouble(AbilityConfigKeys.GHOST_ITEM_DROP_CHANCE, maxValue = 1.0).toFloat()
 
+        val abilitySet = if(evil) setOf(Abilities.BLINDING, Abilities.NECROMANCER, Abilities.WITHERING) else setOf(Abilities.CONFUSING, Abilities.GHASTLY, Abilities.SAPPER)
+
         val ghost = world.spawn(location, Zombie::class.java, SpawnReason.CUSTOM) {
             it.addPermanentPotion(PotionEffectType.INVISIBILITY, Abilities.GHOST, isAmbient = true, emitParticles = true)
             it.canPickupItems = false
@@ -229,34 +233,17 @@ class AbilityHelper (
                 boots = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_boots")?.makeItem()
                 setItemInMainHand(lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_weapon")?.makeItem())
             }
+            it.addAbilities(abilitySet)
         }
 
-        if(evil) particlesHelper.sendParticle(ghost, Particle.SMOKE_LARGE, 2.25, 50)
-        else particlesHelper.sendParticle(ghost, Particle.CLOUD, 1.25, 25)
-
-        if (evil) {
-            aList.add("necromancer")
-            aList.add("withering")
-            aList.add("blinding")
-        } else {
-            aList.add("ghastly")
-            aList.add("sapper")
-            aList.add("confusing")
-        }
-        val newMob: InfernalMob
-        if (evil) {
-            newMob = InfernalMob(g, g.uniqueId, false, aList, 1, "smoke:2:12")
-        } else {
-            newMob = InfernalMob(g, g.uniqueId, false, aList, 1, "cloud:0:8")
-        }
-        this.infernalList.add(newMob)
+        if(evil) particlesHelper.sendParticle(ghost, Particle.SMOKE_LARGE, 3.5, 60)
+        else particlesHelper.sendParticle(ghost, Particle.CLOUD, 2.0, 25)
     }
 
 
     private fun LivingEntity.triggerKamizake() {
         TODO("Not yet implemented")
     }
-
 
     fun startTargetTasks(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) {
         val abilities = entity.getAbilities() ?: return
