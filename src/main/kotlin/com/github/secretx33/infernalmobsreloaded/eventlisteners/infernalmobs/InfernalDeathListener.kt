@@ -38,6 +38,7 @@ class InfernalDeathListener (
             mobsManager.setLives(entity, lives - 1)
             return
         }
+        mobsManager.triggerOnDeathAbilities(entity)
         mobsManager.unloadInfernalMob(entity)
         // drop infernal rewards on infernal mob's body (along with normal mob loot)
         infernalType.getLoots().forEach {

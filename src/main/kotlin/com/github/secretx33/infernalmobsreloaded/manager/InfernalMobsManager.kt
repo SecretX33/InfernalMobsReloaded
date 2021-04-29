@@ -2,6 +2,8 @@ package com.github.secretx33.infernalmobsreloaded.manager
 
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
+import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageDoneEvent
+import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageTakenEvent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.model.Abilities
 import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
@@ -139,7 +141,11 @@ class InfernalMobsManager (
         cancelAllInfernalTasks(entity)
     }
 
-    fun triggerOnDeathAbilities(entity: LivingEntity) = abilityHelper.triggerOnDeathAbilities()
+    fun triggerOnDamageDoneAbilities(event: InfernalDamageDoneEvent)
+
+    fun triggerOnDamageTakenAbilities(event: InfernalDamageTakenEvent)
+
+    fun triggerOnDeathAbilities(entity: LivingEntity) = abilityHelper.triggerOnDeathAbilities(entity)
 
     private fun cancelAllInfernalTasks(entity: LivingEntity) {
         infernalMobPeriodicTasks[entity.uniqueId].forEach { it.cancel() }

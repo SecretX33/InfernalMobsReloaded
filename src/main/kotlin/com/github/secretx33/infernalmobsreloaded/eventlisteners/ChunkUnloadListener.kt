@@ -18,8 +18,7 @@ class ChunkUnloadListener(plugin: Plugin, private val mobsManager: InfernalMobsM
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun ChunkUnloadEvent.onInfernalMobsDespawn() {
-        chunk.entities.asSequence()
-            .filter { it.isInfernalMob() }
+        chunk.entities.filter { it.isInfernalMob() }
             .forEach { mobsManager.unloadInfernalMob(it as LivingEntity) }
     }
 

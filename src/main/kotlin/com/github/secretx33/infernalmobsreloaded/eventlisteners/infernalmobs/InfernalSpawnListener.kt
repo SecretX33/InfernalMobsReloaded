@@ -28,7 +28,6 @@ class InfernalSpawnListener (
     private fun InfernalSpawnEvent.onInfernalSpawn() {
         mobsManager.makeInfernalMob(this)
         mobsManager.loadInfernalMob(entity)
-        // TODO("Apply the right effects to this mob and start all its scheduled tasks")
         sendSpawnMessage()
     }
 
@@ -41,12 +40,7 @@ class InfernalSpawnListener (
         }
     }
 
-    private val spawnMessageEnabled
-        get() = config.get<Boolean>(ConfigKeys.ENABLE_INFERNO_SPAWN_MESSAGE)
-
-    private val spawnMessages
-        get() = messages.getList(MessageKeys.INFERNAL_MOB_SPAWN_MESSAGES)
-
-    private val messageRange
-        get() = config.get<Int>(ConfigKeys.INFERNO_SPAWN_MESSAGE_RADIUS)
+    private val spawnMessageEnabled get() = config.get<Boolean>(ConfigKeys.ENABLE_INFERNO_SPAWN_MESSAGE)
+    private val spawnMessages get() = messages.getList(MessageKeys.INFERNAL_MOB_SPAWN_MESSAGES)
+    private val messageRange get() = config.get<Int>(ConfigKeys.INFERNO_SPAWN_MESSAGE_RADIUS)
 }

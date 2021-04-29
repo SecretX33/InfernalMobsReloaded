@@ -5,7 +5,7 @@ import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkLoadListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkUnloadListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.EntitySpawnListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntitySpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalDeathListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalSpawnListener
 import com.github.secretx33.infernalmobsreloaded.manager.*

@@ -18,8 +18,7 @@ class ChunkLoadListener(plugin: Plugin, private val mobsManager: InfernalMobsMan
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun ChunkLoadEvent.onInfernalMobsRespawn() {
-        chunk.entities.asSequence()
-            .filter { it.isPossibleInfernalMob() }
+        chunk.entities.filter { it.isPossibleInfernalMob() }
             .forEach { mobsManager.loadInfernalMob(it as LivingEntity) }
     }
 

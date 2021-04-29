@@ -1,4 +1,4 @@
-package com.github.secretx33.infernalmobsreloaded.eventlisteners
+package com.github.secretx33.infernalmobsreloaded.eventlisteners.entity
 
 import com.github.secretx33.infernalmobsreloaded.events.InfernalDeathEvent
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
@@ -12,10 +12,7 @@ import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
 
 @KoinApiExtension
-class EntityDeathListener (
-    plugin: Plugin,
-    private val mobsManager: InfernalMobsManager,
-): Listener {
+class EntityDeathListener(plugin: Plugin, private val mobsManager: InfernalMobsManager): Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 

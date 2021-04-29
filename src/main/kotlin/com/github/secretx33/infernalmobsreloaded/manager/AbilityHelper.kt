@@ -4,6 +4,7 @@ import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
+import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.model.Abilities
 import com.github.secretx33.infernalmobsreloaded.model.BlockModification
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
@@ -26,6 +27,8 @@ import org.bukkit.block.Block
 import org.bukkit.entity.*
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
+import org.bukkit.event.entity.EntityTargetEvent.*
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Colorable
@@ -204,53 +207,6 @@ class AbilityHelper (
         addPotionEffect(PotionEffect(effectType, Int.MAX_VALUE, amplifier, isAmbient, emitParticles))
     }
 
-    fun triggerOnDeathAbilities(entity: LivingEntity) {
-        val abilities = entity.getAbilities() ?: return
-        abilities.forEach {
-            when(it) {
-                Abilities.GHOST -> entity.triggerGhost()
-                Abilities.KAMIKAZE -> entity.triggerKamizake()
-                else -> {}
-            }
-        }
-    }
-    private fun LivingEntity.triggerGhost() {
-        val evil = random.nextDouble() <= abilityConfig.getDouble(AbilityConfigKeys.GHOST_EVIL_CHANCE)
-        val evilPrefix = if(evil) "evil_" else ""
-        val itemDropChance = abilityConfig.getDouble(AbilityConfigKeys.GHOST_ITEM_DROP_CHANCE, maxValue = 1.0).toFloat()
-
-        val abilitySet = if(evil) setOf(Abilities.BLINDING, Abilities.NECROMANCER, Abilities.WITHERING) else setOf(Abilities.CONFUSING, Abilities.GHASTLY, Abilities.SAPPER)
-
-        val ghost = world.spawn(location, Zombie::class.java, SpawnReason.CUSTOM) {
-            it.addPermanentPotion(PotionEffectType.INVISIBILITY, Abilities.GHOST, isAmbient = true, emitParticles = true)
-            it.canPickupItems = false
-
-            val equip = it.equipment
-            EquipmentSlot.values().forEach { slot -> equip?.setDropChance(slot, itemDropChance) }
-
-            equip?.apply {
-                helmet = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_helmet")?.makeItem()
-                chestplate = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_chestplate")?.makeItem()
-                leggings = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_leggings")?.makeItem()
-                boots = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_boots")?.makeItem()
-                setItemInMainHand(lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_weapon")?.makeItem())
-            }
-            it.addAbilities(abilitySet)
-        }
-
-        if(evil) particlesHelper.sendParticle(ghost, Particle.SMOKE_LARGE, 3.5, 60)
-        else particlesHelper.sendParticle(ghost, Particle.CLOUD, 2.0, 25)
-    }
-
-
-    private fun LivingEntity.triggerKamizake() {
-        val power = abilityConfig.getDouble(AbilityConfigKeys.KAMIZAZE_EXPLOSION_POWER).toFloat()
-        val setFire = abilityConfig.get<Boolean>(AbilityConfigKeys.KAMIZAZE_SET_ON_FIRE)
-        val breakBlocks = abilityConfig.get<Boolean>(AbilityConfigKeys.KAMIZAZE_BREAK_BLOCKS)
-
-        location.createExplosion(this, power, setFire, breakBlocks)
-    }
-
     fun startTargetTasks(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) {
         val abilities = entity.getAbilities() ?: return
 
@@ -280,10 +236,24 @@ class AbilityHelper (
             if(random.nextDouble() > chance) continue
             val newType = infernalMobTypesRepo.getRandomInfernalType()
             val keepHpPercent = abilityConfig.get<Boolean>(AbilityConfigKeys.MORPH_KEEP_HP_PERCENTAGE)
-            entity.remove()
-            entity.world.spawn(entity.location, newType.entityClass, SpawnReason.CUSTOM)
+            val targetReason = if(target is Player) TargetReason.CLOSEST_PLAYER else TargetReason.CLOSEST_ENTITY
+
+            runSync(plugin) {
+                entity.world.spawn(entity.location, newType.entityClass, SpawnReason.CUSTOM) {
+                    Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(it as LivingEntity, newType))
+                    if (keepHpPercent) it.copyHpPercentage(entity)
+
+                    if (it !is Mob) return@spawn
+                    EntityTargetLivingEntityEvent(it, target, targetReason).let { event ->
+                        Bukkit.getPluginManager().callEvent(event)
+                        if (!event.isCancelled) it.target = target
+                    }
+                }
+                entity.remove()
+            }
+            multimap.remove(entity.uniqueId, coroutineContext.job)
+            return@launch
         }
-        multimap.remove(entity.uniqueId, coroutineContext.job)
     }
 
     private fun makeArcherTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
@@ -384,7 +354,7 @@ class AbilityHelper (
 
             val item = target.equipment?.itemInMainHand?.takeUnless { it.type.isAir } ?: continue
             target.equipment?.setItemInMainHand(ItemStack(Material.AIR))
-            entity.world.dropItemNaturally(entity.location, item)
+            runSync(plugin) { entity.world.dropItemNaturally(entity.location, item) }
             (target as? Player)?.updateInventory()
         }
         multimap.remove(entity.uniqueId, coroutineContext.job)
@@ -469,6 +439,53 @@ class AbilityHelper (
 
     private fun isInvalid(entity: LivingEntity, target: LivingEntity) = entity.isDead || !entity.isValid  || target.isDead || !target.isValid || (entity is Mob && entity.target?.uniqueId != target.uniqueId)
 
+    fun triggerOnDeathAbilities(entity: LivingEntity) {
+        val abilities = entity.getAbilities() ?: return
+        abilities.forEach {
+            when(it) {
+                Abilities.GHOST ->
+                Abilities.KAMIKAZE -> entity.triggerKamizake()
+                else -> {}
+            }
+        }
+    }
+
+    private fun LivingEntity.triggerGhost() {
+        val evil = random.nextDouble() <= abilityConfig.getDouble(AbilityConfigKeys.GHOST_EVIL_CHANCE)
+        val evilPrefix = if(evil) "evil_" else ""
+        val itemDropChance = abilityConfig.getDouble(AbilityConfigKeys.GHOST_ITEM_DROP_CHANCE, maxValue = 1.0).toFloat()
+
+        val abilitySet = if(evil) setOf(Abilities.BLINDING, Abilities.NECROMANCER, Abilities.WITHERING) else setOf(Abilities.CONFUSING, Abilities.GHASTLY, Abilities.SAPPER)
+
+        val ghost = world.spawn(location, Zombie::class.java, SpawnReason.CUSTOM) {
+            it.addPermanentPotion(PotionEffectType.INVISIBILITY, Abilities.GHOST, isAmbient = true, emitParticles = true)
+            it.canPickupItems = false
+
+            val equip = it.equipment
+            EquipmentSlot.values().forEach { slot -> equip?.setDropChance(slot, itemDropChance) }
+
+            equip?.apply {
+                helmet = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_helmet")?.makeItem()
+                chestplate = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_chestplate")?.makeItem()
+                leggings = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_leggings")?.makeItem()
+                boots = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_boots")?.makeItem()
+                setItemInMainHand(lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_weapon")?.makeItem())
+            }
+            it.addAbilities(abilitySet)
+        }
+
+        if(evil) particlesHelper.sendParticle(ghost, Particle.SMOKE_LARGE, 3.5, 60)
+        else particlesHelper.sendParticle(ghost, Particle.CLOUD, 2.0, 25)
+    }
+
+    private fun LivingEntity.triggerKamizake() {
+        val power = abilityConfig.getDouble(AbilityConfigKeys.KAMIZAZE_EXPLOSION_POWER).toFloat()
+        val setFire = abilityConfig.get<Boolean>(AbilityConfigKeys.KAMIZAZE_SET_ON_FIRE)
+        val breakBlocks = abilityConfig.get<Boolean>(AbilityConfigKeys.KAMIZAZE_BREAK_BLOCKS)
+
+        location.createExplosion(this, power, setFire, breakBlocks)
+    }
+
     private fun Double.toLongDelay() = (this * 1000.0).toLong()
 
     private fun Pair<Int, Int>.getRandomBetween(): Int {
@@ -487,7 +504,14 @@ class AbilityHelper (
         val percentHP = health / hp.value
         hp.removeModifier(hpMod)
         hp.addModifier(hpMod)
-        health = hp.value * percentHP // Preserve the entity HP percentage when modifying HP
+        health = hp.value * percentHP  // Preserve the entity HP percentage when modifying HP
+    }
+
+    private fun LivingEntity.copyHpPercentage(entity: LivingEntity) {
+        val oldHp = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
+        val oldPercentHp = entity.health / oldHp.value
+        val newHp = getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
+        health = newHp.value * oldPercentHp
     }
 
     private fun LivingEntity.doesFly() = this is Bee || this is Parrot
