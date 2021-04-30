@@ -79,7 +79,7 @@ class AbilityConfig (
         = getDouble("${ability.configEntry}.projectile-speed", default, minValue, maxValue)
 
     fun getAbilityPotency(ability: Abilities, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE)
-        = getInt("${ability.configEntry}.potency", default, minValue, maxValue)
+        = getIntPair("${ability.configEntry}.potency", default, minValue, maxValue)
 
     fun getNearbyRange(default: Double = 3.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble("nearby-entities-range", default, minValue, maxValue)
