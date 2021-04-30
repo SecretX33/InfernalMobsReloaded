@@ -28,7 +28,7 @@ data class LootItem (
 
     fun makeItem() = ItemBuilder.from(material)
         .displayName(displayName)
-        .amount(random.nextInt(maxAmount - minAmount) + minAmount)
+        .amount(random.nextInt(maxAmount - minAmount + 1) + minAmount)
         .setLore(lore)
         .color(color)
         .dyeColor(dyeColor)

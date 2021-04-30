@@ -39,7 +39,7 @@ data class InfernalMobType (
 
     fun getDrops() = loots.filterValues { random.nextDouble() <= it }.keys
 
-    fun getAbilityNumber() = random.nextInt(maxAbilities - minAbilities) + minAbilities
+    fun getAbilityNumber() = random.nextInt(maxAbilities - minAbilities + 1) + minAbilities
 
     fun getHealthMulti() = minHealthMulti + (maxHealthMulti - minHealthMulti) * random.nextDouble()
 

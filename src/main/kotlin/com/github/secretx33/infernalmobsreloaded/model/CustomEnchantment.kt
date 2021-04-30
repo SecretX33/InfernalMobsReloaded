@@ -19,7 +19,7 @@ data class CustomEnchantment (
     fun get(): Optional<Pair<Enchantment, Int>> {
         // returns empty optional if the 'try' for get the enchantment is not successful
         if(random.nextDouble() > chance) return Optional.empty()
-        val level = random.nextInt(maxLevel - minLevel) + minLevel
+        val level = random.nextInt(maxLevel - minLevel + 1) + minLevel
         return Optional.of(Pair(type, level))
     }
 

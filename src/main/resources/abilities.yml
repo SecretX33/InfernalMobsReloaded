@@ -40,13 +40,16 @@ berserk:
 blinding:
 
 call_the_gang:
-  recheck-delay: 2.0           # in seconds, every 2 second it'll run the random chance to see if it's going to spawn a "gang" of babies of its type
-  chance: 0.025                # in percentage, will have 2.5% chance of calling the "gang" every 'recheck-delay' seconds
-  amount: 2-4                  # will call between 2 and 4 mobs of its type
+  recheck-delay: 2.0            # in seconds, every 2 second it'll run the random chance to see if it's going to spawn a "gang" of babies of its type
+  chance: 0.025                 # in percentage, will have 2.5% chance of calling the "gang" every 'recheck-delay' seconds
+  amount: 2-4                   # will call between 2 and 4 mobs of its type
 
 confusing:
 
+# Firework ability
+# Each attack received may cause a firework to spawn on the feet of the attacker entity, annoyance at its finest
 firework:
+  chance-on-damage-taken: 0.25   # in percentage, the chance of spawning a firework on top of the entity when receiving damage from it
 
 flying:
 

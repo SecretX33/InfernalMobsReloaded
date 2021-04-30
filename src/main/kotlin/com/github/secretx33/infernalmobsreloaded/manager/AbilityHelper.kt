@@ -502,17 +502,49 @@ class AbilityHelper (
 
         abilities.forEach {
             when(it) {
-                Abilities.BERSERK -> {
-                    val bonus = abilityConfig.getDoublePair(AbilityConfigKeys.BERSERK_RECEIVED_DAMAGE_BONUS)
-                    event.damageMulti = bonus.getRandomBetween()
-                }
-                Abilities.FIREWORK -> TODO()
+                Abilities.BERSERK -> event.triggerBerserk()
+                Abilities.FIREWORK -> event.triggerFirework()
                 Abilities.MOLTEN -> event.triggerMolten()
                 Abilities.POISONOUS -> event.triggerPoisonous()
                 Abilities.THORNMAIL -> event.triggerThornmail()
                 else -> {}
             }
         }
+    }
+
+    private fun InfernalDamageTakenEvent.triggerFirework() {
+        val chance = abilityConfig.getAbilityChanceOnDamageTaken(Abilities.FIREWORK, 0.25)
+        if(random.nextDouble() > chance) return
+
+        world.spawn(attacker.location.apply {
+            x += random.nextDouble() - 0.5
+            y += random.nextDouble() * 0.25
+            z += random.nextDouble() - 0.5
+        }, Firework::class.java, SpawnReason.CUSTOM) { it.applyEffects() }.detonate()
+    }
+
+    private fun Firework.applyEffects() {
+        val meta = fireworkMeta
+        val effect = FireworkEffect.builder().with(FireworkEffect.Type.values().random())
+            .withColor(randomColor)
+            .flicker(true)
+            .trail(false)
+
+        // randomly add more colors and fade effects
+        if(random.nextInt(2) == 0) effect.withColor(randomColor)
+        if(random.nextInt(2) == 0) effect.withFade(randomColor)
+        if(random.nextInt(2) == 0) effect.withFade(randomColor)
+
+        meta.clearEffects()
+        meta.addEffect(effect.build())
+        fireworkMeta = meta
+    }
+
+    private val randomColor get() = Color.fromRGB(random.nextInt(255), random.nextInt(255), random.nextInt(255))
+
+    private fun InfernalDamageTakenEvent.triggerBerserk() {
+        val bonus = abilityConfig.getDoublePair(AbilityConfigKeys.BERSERK_RECEIVED_DAMAGE_BONUS)
+        damageMulti = bonus.getRandomBetween()
     }
 
     private fun InfernalDamageTakenEvent.triggerPoisonous() {
@@ -553,7 +585,7 @@ class AbilityHelper (
 
     private fun Pair<Int, Int>.getRandomBetween(): Int {
         val (minValue, maxValue) = this
-        return random.nextInt(maxValue - minValue) + minValue
+        return random.nextInt(maxValue - minValue + 1) + minValue
     }
 
     private fun Pair<Double, Double>.getRandomBetween(): Double {
