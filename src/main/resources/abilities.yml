@@ -74,7 +74,11 @@ kamikaze:
   set-on-fire: true            # if the explosion should set things on fire
   break-blocks: true           # if the explosion should break blocks
 
+# Levitate ability
+# On damage, have a chance of making the victim fluctuate in the air for some time, aka "transform them into piñata"
 levitate:
+  chance-on-damage-done: 0.4   # in percentage, the chance that the infernal mob with molten ability will have to set the attacked entity on fire
+  duration: 7.0-10.0            # in seconds, the duration of the levitate effect
 
 lifesteal:
 
@@ -111,7 +115,11 @@ quicksand:
 
 resilient:
 
+# Rust ability
+# Each attack of infernal with this ability has a chance of damaging the item the target is currently holding
 rust:
+  chance-on-damage-done: 0.4      # in percentage, the chance that the infernal mob with rust ability will have to damage the tool of the attacked entity
+  damage-amount: 0.075-0.20       # in percentage, will reduce between 7.5% and 20% the durability of the tool being held by the victim when triggered
 
 sapper:
 

@@ -150,6 +150,7 @@ class AbilityConfig (
 }
 
 enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
+    RUST_DAMAGE_AMOUNT("${Abilities.RUST.configEntry}.damage-amount", 0.15),
     THORMAIL_REFLECTED_AMOUNT("${Abilities.THORNMAIL.configEntry}.reflected-amount", 0.5),
     BERSERK_CAUSED_DAMAGE_BONUS("${Abilities.BERSERK.configEntry}.damage-caused-bonus", 1.3),
     BERSERK_RECEIVED_DAMAGE_BONUS("${Abilities.BERSERK.configEntry}.damage-caused-bonus", 1.25),

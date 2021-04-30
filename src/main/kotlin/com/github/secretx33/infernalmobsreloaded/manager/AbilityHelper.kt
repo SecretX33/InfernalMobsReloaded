@@ -4,6 +4,7 @@ import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
+import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageDoneEvent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageTakenEvent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.model.Abilities
@@ -33,6 +34,7 @@ import org.bukkit.event.entity.EntityTargetEvent.*
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.Damageable
 import org.bukkit.material.Colorable
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
@@ -495,6 +497,85 @@ class AbilityHelper (
         location.createExplosion(this, power, setFire, breakBlocks)
     }
 
+    // abilities that are triggered when an infernal causes damage
+
+    fun triggerOnDamageDoneAbilities(event: InfernalDamageDoneEvent) {
+        val abilities = event.entity.getAbilities() ?: return
+
+        abilities.forEach {
+            when(it) {
+                Abilities.BERSERK -> event.triggerBerserk()
+                Abilities.CONFUSING -> event.triggerConfusing()
+                Abilities.LEVITATE -> event.triggerLevitate()
+                Abilities.LIFESTEAL -> event.triggerLifesteal()
+                Abilities.LIGHTNING -> event.triggerLightning()
+                Abilities.MOLTEN -> event.triggerMolten()
+                Abilities.POISONOUS -> event.triggerPoisonous()
+                Abilities.SLOWNESS -> event.triggerSlowness()
+                Abilities.RUST -> event.triggerRust()
+                Abilities.SAPPER -> event.triggerSapper()
+                Abilities.TOSSER -> event.triggerTosser()
+                Abilities.WEAKNESS -> event.triggerWeakeness()
+                Abilities.WITHERING -> event.triggerWithering()
+                else -> {}
+            }
+        }
+    }
+
+    private fun InfernalDamageDoneEvent.triggerRust() {
+        val damageAmount = abilityConfig.getDoublePair(AbilityConfigKeys.RUST_DAMAGE_AMOUNT).getRandomBetween()
+        val chance = abilityConfig.getAbilityChanceOnDamageDone(Abilities.RUST, 0.4)
+        if(random.nextDouble() > chance) return
+
+        defender.equipment?.apply {
+            setItemInMainHand(itemInMainHand.damageToolBy(damageAmount))
+            setItemInOffHand(itemInOffHand.damageToolBy(damageAmount))
+        }
+        (defender as? Player)?.updateInventory()
+    }
+
+    private fun ItemStack.damageToolBy(damageAmount: Double): ItemStack {
+        val meta = itemMeta
+        if(type.isAir || (meta as? Damageable) == null) return this
+        val damage = type.maxDurability * damageAmount
+        meta.damage = max(0, (meta.damage - damage).toInt())
+        itemMeta = meta
+        return this
+    }
+
+    private fun InfernalDamageDoneEvent.triggerLevitate() {
+        val chance = abilityConfig.getAbilityChanceOnDamageDone(Abilities.LEVITATE, 0.4)
+        if(random.nextDouble() > chance) return
+
+        // makes the defender levitate for some time
+        val duration = abilityConfig.getDuration(Abilities.POISONOUS, 7.0).getRandomBetween()
+        defender.addPotionEffect(PotionEffect(PotionEffectType.LEVITATION, (duration * 20.0).toInt(), 0, true, true))
+    }
+
+    private fun InfernalDamageDoneEvent.triggerBerserk() {
+        val bonus = abilityConfig.getDoublePair(AbilityConfigKeys.BERSERK_CAUSED_DAMAGE_BONUS)
+        damageMulti = bonus.getRandomBetween()
+    }
+
+    private fun InfernalDamageDoneEvent.triggerPoisonous() {
+        val chance = abilityConfig.getAbilityChanceOnDamageDone(Abilities.POISONOUS, 0.8)
+        if(random.nextDouble() > chance) return
+
+        // poisons the defender
+        val potency = max(0, abilityConfig.getAbilityPotency(Abilities.POISONOUS, 7) - 1)
+        val duration = abilityConfig.getDuration(Abilities.POISONOUS, 7.0).getRandomBetween()
+        defender.addPotionEffect(PotionEffect(PotionEffectType.POISON, (duration * 20.0).toInt(), potency, true, true))
+    }
+
+    private fun InfernalDamageDoneEvent.triggerMolten() {
+        val chance = abilityConfig.getAbilityChanceOnDamageDone(Abilities.MOLTEN, 0.6)
+        if(random.nextDouble() > chance) return
+
+        // sets the attacker on defender
+        val duration = abilityConfig.getDuration(Abilities.MOLTEN, 8.0).getRandomBetween()
+        defender.fireTicks = (duration * 20.0).toInt()
+    }
+
     // abilities that are triggered when an infernal takes damage
 
     fun triggerOnDamageTakenAbilities(event: InfernalDamageTakenEvent) {
@@ -510,6 +591,11 @@ class AbilityHelper (
                 else -> {}
             }
         }
+    }
+
+    private fun InfernalDamageTakenEvent.triggerBerserk() {
+        val bonus = abilityConfig.getDoublePair(AbilityConfigKeys.BERSERK_RECEIVED_DAMAGE_BONUS)
+        damageMulti = bonus.getRandomBetween()
     }
 
     private fun InfernalDamageTakenEvent.triggerFirework() {
@@ -542,9 +628,14 @@ class AbilityHelper (
 
     private val randomColor get() = Color.fromRGB(random.nextInt(255), random.nextInt(255), random.nextInt(255))
 
-    private fun InfernalDamageTakenEvent.triggerBerserk() {
-        val bonus = abilityConfig.getDoublePair(AbilityConfigKeys.BERSERK_RECEIVED_DAMAGE_BONUS)
-        damageMulti = bonus.getRandomBetween()
+    private fun InfernalDamageTakenEvent.triggerMolten() {
+        if(cause.isNotMelee()) return
+        val chance = abilityConfig.getAbilityChanceOnDamageTaken(Abilities.MOLTEN, 0.4)
+        if(random.nextDouble() > chance) return
+
+        // sets the attacker on fire
+        val duration = abilityConfig.getDuration(Abilities.MOLTEN, 8.0).getRandomBetween()
+        attacker.fireTicks = (duration * 20.0).toInt()
     }
 
     private fun InfernalDamageTakenEvent.triggerPoisonous() {
@@ -558,18 +649,6 @@ class AbilityHelper (
         attacker.addPotionEffect(PotionEffect(PotionEffectType.POISON, (duration * 20.0).toInt(), potency, true, true))
     }
 
-    private fun InfernalDamageTakenEvent.triggerMolten() {
-        if(cause.isNotMelee()) return
-        val chance = abilityConfig.getAbilityChanceOnDamageTaken(Abilities.MOLTEN, 0.4)
-        if(random.nextDouble() > chance) return
-
-        // sets the attacker on fire
-        val duration = abilityConfig.getDuration(Abilities.MOLTEN, 8.0).getRandomBetween()
-        attacker.fireTicks = (duration * 20.0).toInt()
-    }
-
-    private fun EntityDamageEvent.DamageCause.isNotMelee() = this != EntityDamageEvent.DamageCause.ENTITY_ATTACK && this != EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK && this != EntityDamageEvent.DamageCause.CONTACT && this != EntityDamageEvent.DamageCause.CRAMMING && this != EntityDamageEvent.DamageCause.THORNS
-
     private fun InfernalDamageTakenEvent.triggerThornmail() {
         val chance = abilityConfig.getAbilityChance(Abilities.THORNMAIL, 0.6)
         if (random.nextDouble() > chance) return
@@ -578,6 +657,8 @@ class AbilityHelper (
         val reflectAmount = abilityConfig.getDoublePair(AbilityConfigKeys.THORMAIL_REFLECTED_AMOUNT).getRandomBetween()
         attacker.damage(damage * reflectAmount, entity)
     }
+
+    private fun EntityDamageEvent.DamageCause.isNotMelee() = this != EntityDamageEvent.DamageCause.ENTITY_ATTACK && this != EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK && this != EntityDamageEvent.DamageCause.CONTACT && this != EntityDamageEvent.DamageCause.CRAMMING && this != EntityDamageEvent.DamageCause.THORNS
 
     // utility functions
 
