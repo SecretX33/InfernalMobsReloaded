@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.utils
 
+import kotlinx.coroutines.delay
 import org.apache.commons.lang.WordUtils
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -13,6 +14,10 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataHolder
 import org.bukkit.plugin.Plugin
 import java.util.*
+import java.util.concurrent.Callable
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionStage
+import java.util.concurrent.Future
 
 fun String.capitalizeFully(): String = WordUtils.capitalizeFully(this)
 
@@ -22,6 +27,15 @@ fun runSync(plugin: Plugin, delay: Long = 0L, block: () -> Unit) {
     if(delay < 0) return
     if(delay == 0L) Bukkit.getScheduler().runTask(plugin, Runnable { block() })
     else Bukkit.getScheduler().runTaskLater(plugin, Runnable { block() }, delay / 50L)
+}
+
+suspend fun <T> futureSync(plugin: Plugin, callable: Callable<T>): T = Bukkit.getScheduler().callSyncMethod(plugin, callable).await()
+
+suspend fun <T> Future<T>.await(): T {
+    while(!isDone)
+        delay(25) // or whatever you want your polling frequency to be
+    @Suppress("BlockingMethodInNonBlockingContext")
+    return get()
 }
 
 fun Block.isAir() = type.isAir

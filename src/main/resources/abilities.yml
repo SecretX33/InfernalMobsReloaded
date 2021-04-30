@@ -18,7 +18,7 @@
 # Shoots a volley of arrows on the target and nearby entities
 archer:
   nearby-entities-range: 4.0        # in blocks, how close the entity has to be of the main target to also be affected by it; if you don't want abilities to be able to affect multiple targets, set its value to 0.0
-  projectile-speed: 2.2             # honestly, this speed is in vector, so you can think in it like m/s or something
+  projectile-speed: 1.4             # honestly, this speed is in vector, so you can think in it like m/s or something
   arrow-amount: 8-15                # how many arrows are going to be shot, in default configuration it is 8-15
   arrow-delay: 0.2                  # in seconds, the delay between each arrow launch
   recheck-delay: 1.0                # in seconds, every 1 second it'll run the random chance to see if it's going to spawn shoot the arrows

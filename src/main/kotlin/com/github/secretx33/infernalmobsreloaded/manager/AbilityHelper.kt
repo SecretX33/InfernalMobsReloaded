@@ -239,10 +239,7 @@ class AbilityHelper (
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
-            val victims = target.location.getNearbyLivingEntities(nearbyRange)
-            // TODO("Remove this check after I confirm the returning list never contain its target")
-            if(victims.contains(target)) throw IllegalStateException("Nearby entities function return a list contains self")
-            victims.add(target)
+            val victims = target.getValidNearbyTargetsAsync(nearbyRange)
 
             for (i in 1..amount) {
                 victims.forEach {
@@ -291,7 +288,7 @@ class AbilityHelper (
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
 
-            val victims = target.getValidNearbyTargets(nearbyRange)
+            val victims = target.getValidNearbyTargetsAsync(nearbyRange)
             victims.forEach {
                 val dir = entity.shootDirection(it).multiply(speed)
                 entity.shootProjectile(dir, Fireball::class.java)
@@ -338,7 +335,7 @@ class AbilityHelper (
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
 
-            val victims = target.getValidNearbyTargets(nearbyRange)
+            val victims = target.getValidNearbyTargetsAsync(nearbyRange)
             victims.forEach {
                 val dir = entity.shootDirection(it).multiply(speed)
                 entity.shootProjectile(dir, WitherSkull::class.java)
@@ -459,9 +456,9 @@ class AbilityHelper (
     }
 
     private fun LivingEntity.shootDirection(target: LivingEntity): Vector {
-        val src = eyeLocation.apply { y -= height / 12 }
+        val src = eyeLocation
         val dest = target.location.apply {
-            y += target.height * 0.75
+            y += target.height
         }
         val difX = dest.x - src.x
         val difZ = dest.z - src.z
@@ -797,7 +794,9 @@ class AbilityHelper (
         return minValue + (maxValue - minValue) * random.nextDouble()
     }
 
-    private fun LivingEntity.getValidNearbyTargets(range: Double) = location.getNearbyLivingEntities(range) { !it.isDead && it.isValid } + this
+    private fun LivingEntity.getValidNearbyTargets(range: Double) = location.getNearbyLivingEntities(range) { !it.isDead && it.isValid }
+
+    private suspend fun LivingEntity.getValidNearbyTargetsAsync(range: Double) = futureSync(plugin) { getValidNearbyTargets(range) }
 
     private fun LivingEntity.multiplyMaxHp(percentage: Double) {
         val hp = getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
