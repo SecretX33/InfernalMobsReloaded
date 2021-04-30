@@ -13,8 +13,7 @@ import org.koin.core.component.KoinApiExtension
 @KoinApiExtension
 class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
 
-    private val subcommands: List<SubCommand> = listOf(
-        ReloadCommand(),)
+    private val subcommands: List<SubCommand> = listOf(ReloadCommand())
 
     init {
         plugin.getCommand("infernalmobsreloaded")?.let { cmd ->
@@ -38,7 +37,7 @@ class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
     }
 
     override fun onTabComplete(sender: CommandSender, command: Command, alias: String, strings: Array<String>): List<String> {
-        // magicwands <subcommand> <args>
+        // mobs <subcommand> <args>
         if(strings.size == 1) {
             return subcommands.asSequence()
                 .filter { cmd -> cmd.hasPermission(sender) && cmd.name.startsWith(strings[0], ignoreCase = true)}

@@ -14,6 +14,6 @@ abstract class SubCommand {
     abstract fun onCommandByConsole(sender: CommandSender, alias: String, strings: Array<String>)
     abstract fun getCompletor(sender: CommandSender, length: Int, hint: String, strings: Array<String>): List<String>
 
-    fun hasPermission(sender: Permissible): Boolean = sender.hasPermission("magicwands.$permission")
+    fun hasPermission(sender: Permissible): Boolean = sender.hasPermission("imr.$permission")
 }
 

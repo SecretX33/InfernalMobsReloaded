@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded
 
+import com.github.secretx33.infernalmobsreloaded.commands.Commands
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.Messages
@@ -56,6 +57,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { LightningDamageWorkaroundListener(get(), get()) }
         single { ChunkUnloadListener(get(), get()) }
         single { ChunkLoadListener(get(), get()) }
+        single { Commands(get()) }
         single<WorldGuardChecker> { WorldGuardCheckerDummy() }
     }
 
@@ -85,6 +87,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<LightningDamageWorkaroundListener>()
         get<ChunkUnloadListener>()
         get<ChunkLoadListener>()
+        get<Commands>()
     }
 
     override fun onDisable() {

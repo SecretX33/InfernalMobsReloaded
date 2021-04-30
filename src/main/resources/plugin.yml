@@ -15,13 +15,13 @@ commands:
 
 permissions:
 
-  infernalmobsreloaded.*:
+  imr.*:
     description: Gives access to all ${name} commands. Default to players with op.
     default: op
     children:
-      herbalism.reload: true
+      imr.reload: true
 
-  herbalism.reload:
+  imr.reload:
     description: Allows one to reload all plugin configurations.
     default: false
 #
