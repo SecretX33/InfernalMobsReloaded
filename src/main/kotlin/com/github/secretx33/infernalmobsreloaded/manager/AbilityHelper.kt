@@ -29,6 +29,8 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityTargetEvent.*
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent
+import org.bukkit.event.player.PlayerTeleportEvent
+import org.bukkit.event.player.PlayerTeleportEvent.*
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
@@ -43,7 +45,6 @@ import java.lang.StrictMath.pow
 import java.lang.reflect.Type
 import java.util.*
 import kotlin.math.*
-
 
 @KoinApiExtension
 class AbilityHelper (
@@ -220,40 +221,13 @@ class AbilityHelper (
                 Abilities.MORPH -> makeMorphTask(entity, target, multimap)
                 Abilities.NECROMANCER -> makeNecromancerTask(entity, target, multimap)
                 Abilities.POTIONS -> TODO()
+                Abilities.TELEPORT -> makeTeleportTask(entity, target, multimap)
                 Abilities.THIEF -> makeThiefTask(entity, target, multimap)
                 Abilities.WEBBER -> makeWebberTask(entity, target, multimap)
                 else -> null
             }?.let { job -> jobList.add(job) }
         }
         multimap.putAll(entity.uniqueId, jobList.filter { it.isActive })
-    }
-
-    private fun makeMorphTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
-        val recheckDelay = abilityConfig.getRecheckDelay(Abilities.MORPH, 1.0).toLongDelay()
-        val chance = abilityConfig.getAbilityChance(Abilities.MORPH, 0.01)
-
-        while(isActive && !isInvalid(entity, target)) {
-            delay(recheckDelay)
-            if(random.nextDouble() > chance) continue
-            val newType = infernalMobTypesRepo.getRandomInfernalType()
-            val keepHpPercent = abilityConfig.get<Boolean>(AbilityConfigKeys.MORPH_KEEP_HP_PERCENTAGE)
-
-            runSync(plugin) {
-                entity.world.spawn(entity.location, newType.entityClass, SpawnReason.CUSTOM) {
-                    Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(it as LivingEntity, newType))
-                    if (keepHpPercent) it.copyHpPercentage(entity)
-                    if (it !is Mob) return@spawn
-
-                    EntityTargetLivingEntityEvent(it, target, TargetReason.REINFORCEMENT_TARGET).let { event ->
-                        Bukkit.getPluginManager().callEvent(event)
-                        if (!event.isCancelled) it.target = target
-                    }
-                }
-                entity.remove()
-            }
-            cancel()
-        }
-        multimap.remove(entity.uniqueId, coroutineContext.job)
     }
 
     private fun makeArcherTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
@@ -327,6 +301,34 @@ class AbilityHelper (
         multimap.remove(entity.uniqueId, coroutineContext.job)
     }
 
+    private fun makeMorphTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+        val recheckDelay = abilityConfig.getRecheckDelay(Abilities.MORPH, 1.0).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Abilities.MORPH, 0.01)
+
+        while(isActive && !isInvalid(entity, target)) {
+            delay(recheckDelay)
+            if(random.nextDouble() > chance) continue
+            val newType = infernalMobTypesRepo.getRandomInfernalType()
+            val keepHpPercent = abilityConfig.get<Boolean>(AbilityConfigKeys.MORPH_KEEP_HP_PERCENTAGE)
+
+            runSync(plugin) {
+                entity.world.spawn(entity.location, newType.entityClass, SpawnReason.CUSTOM) {
+                    Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(it as LivingEntity, newType))
+                    if (keepHpPercent) it.copyHpPercentage(entity)
+                    if (it !is Mob) return@spawn
+
+                    EntityTargetLivingEntityEvent(it, target, TargetReason.REINFORCEMENT_TARGET).let { event ->
+                        Bukkit.getPluginManager().callEvent(event)
+                        if (!event.isCancelled) it.target = target
+                    }
+                }
+                entity.remove()
+            }
+            cancel()
+        }
+        multimap.remove(entity.uniqueId, coroutineContext.job)
+    }
+
     private fun makeNecromancerTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.GHASTLY, 2.5).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.GHASTLY, 0.25)
@@ -341,6 +343,31 @@ class AbilityHelper (
                 return@launch
             }
             entity.shootProjectile(dir, WitherSkull::class.java)
+        }
+        multimap.remove(entity.uniqueId, coroutineContext.job)
+    }
+
+    private fun makeTeleportTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+        val recheckDelay = abilityConfig.getRecheckDelay(Abilities.TELEPORT, 2.5).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Abilities.TELEPORT, 0.3)
+
+        while(isActive && !isInvalid(entity, target)) {
+            delay(recheckDelay)
+            if(random.nextDouble() > chance) continue
+
+            val world = entity.world
+            val dest = target.location.apply {
+                x += random.nextDouble() * 2 - 1
+                y += 0.2
+                z += random.nextDouble() * 2 - 1
+            }
+            // if the block that the entity will teleport at won't make it suffocate
+            if(world.getBlockAt(dest).isPassable && (entity.height <= 1 || world.getBlockAt(dest.clone().apply { y += 1 }).isPassable)) {
+                entity.teleportAsync(dest)
+                continue
+            }
+            // else just teleport the entity right on the target's feet
+            entity.teleportAsync(target.location)
         }
         multimap.remove(entity.uniqueId, coroutineContext.job)
     }
@@ -506,7 +533,7 @@ class AbilityHelper (
     fun triggerOnDamageDoneAbilities(event: InfernalDamageDoneEvent) {
         val abilities = event.entity.getAbilities() ?: return
 
-        abilities.forEach {
+        abilities.filter { it.chance() }.forEach {
             when(it) {
                 Abilities.BERSERK -> event.triggerBerserk()
                 Abilities.CONFUSION -> event.triggerConfusion()
@@ -630,20 +657,21 @@ class AbilityHelper (
         // gives slow effect to the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Abilities.SLOWNESS, 3).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Abilities.SLOWNESS, 6.0).getRandomBetween()
-        defender.addPotionEffect(PotionEffect(PotionEffectType.SLOW, (duration * 20.0).toInt(), potency, true, true))
+        defender.addPotion(PotionEffectType.WEAKNESS, Abilities.WEAKNESS, duration, amplifier = potency)
     }
 
     private fun InfernalDamageDoneEvent.triggerTosser() {
-        val nearbyRange = abilityConfig.getNearbyRange(Abilities.TOSSER)
+        val nearbyRange = abilityConfig.getNearbyRange(Abilities.TOSSER, 4.0)
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Abilities.TOSSER, 0.4)
         if(random.nextDouble() > chance) return
 
         val victims = entity.location.getNearbyLivingEntities(nearbyRange).apply { add(entity) }
 
+        // toss victim and all nearby entities
         victims.forEach {
-            val x = abilityConfig.getDistanceMultiplier(Abilities.TOSSER) * random.nextDouble()
+            val x = abilityConfig.getDistanceMultiplier(Abilities.TOSSER) * (random.nextDouble() * 2 - 1)
             val y = abilityConfig.getHeightMultiplier(Abilities.TOSSER) * random.nextDouble()
-            val z = abilityConfig.getDistanceMultiplier(Abilities.TOSSER) * random.nextDouble()
+            val z = abilityConfig.getDistanceMultiplier(Abilities.TOSSER) * (random.nextDouble() * 2 - 1)
             it.velocity = Vector(x, y, z)
         }
     }
@@ -655,7 +683,7 @@ class AbilityHelper (
         // gives weakness effect to the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Abilities.WEAKNESS, 1, minValue = 1).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Abilities.WEAKNESS, 6.0).getRandomBetween()
-        defender.addPotionEffect(PotionEffect(PotionEffectType.WEAKNESS, (duration * 20.0).toInt(), potency, true, true))
+        defender.addPotion(PotionEffectType.WEAKNESS, Abilities.WEAKNESS, duration, amplifier = potency)
     }
 
     private fun InfernalDamageDoneEvent.triggerWithering() {
@@ -665,7 +693,7 @@ class AbilityHelper (
         // gives wither effect to the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Abilities.WITHERING, 3).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Abilities.WITHERING, 6.0).getRandomBetween()
-        defender.addPotionEffect(PotionEffect(PotionEffectType.WITHER, (duration * 20.0).toInt(), potency, true, true))
+        defender.addPotion(PotionEffectType.WITHER, Abilities.WITHERING, duration, amplifier = potency)
     }
 
     // abilities that are triggered when an infernal takes damage

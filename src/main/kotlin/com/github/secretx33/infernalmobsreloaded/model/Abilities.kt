@@ -43,6 +43,7 @@ enum class Abilities {
 
     companion object {
         val values = values().toList()
+        val lowercasedValues = values().map { it.name.toLowerCase(Locale.US) }
 
         fun random(number: Int): MutableSet<Abilities> {
             require(number >= 0) { "number cannot be lower than 0, number = $number" }

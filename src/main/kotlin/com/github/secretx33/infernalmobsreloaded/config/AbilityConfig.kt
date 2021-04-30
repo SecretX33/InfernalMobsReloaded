@@ -87,7 +87,7 @@ class AbilityConfig (
 
     fun getAffectsOnlyPlayers(ability: Abilities, default: Boolean) = get("${ability.configEntry}.affect-only-players", default)
 
-    fun getNearbyRange(ability: Abilities, default: Double = 3.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+    fun getNearbyRange(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.nearby-entities-range", default, minValue, maxValue)
 
     fun getDistanceMultiplier(ability: Abilities, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)

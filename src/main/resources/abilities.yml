@@ -159,14 +159,20 @@ slowness:
   chance-on-damage-done: 0.7         # in percentage, the chance that the infernal mob with slowness ability will have to slow the attacked entity
   potency: 2-4                       # what potency of slow should the entity be affected, the potency of slow is 15% * level
   duration: 5.0-7.0                  # in seconds, the duration of the slow
+  potion-emit-particles: true        # if entities affected by slowness should emit slow effect particles
+  potion-is-ambient: true            # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
 speedy:
   bonus: 1.5-2.5                     # any mob with this effect will have between 1.5 and 2.5 times its normal speed
 
+# Teleport ability
+# Periodically, while fighting against a target, a infernal mob with teleport ability will have a chance of teleporting next to its target. Spooky, Scary, Skeletons...
 teleport:
+  recheck-delay: 2.5                 # in seconds, each 2 seconds it'll have the chance below of teleport nearby its target
+  chance: 0.3                        # every 'recheck-delay' seconds, it'll, at a 30% chance of happening, teleport nearby its target
 
 # Thief ability
-# Every certain amount of time, all infernal mobs with thief ability will have a chance of stealing one part of the target's set or equipped weapons, randomly
+# Every certain amount of time, a infernal mob with thief ability will have a chance of stealing one part of the target's set or equipped weapons, randomly
 thief:
   recheck-delay: 3.0                 # in seconds, each 3 seconds it'll run the random chance to see if it's going to steal a piece of target's equipment
   chance: 0.05                       # every 'recheck-delay' seconds, it'll, at a 5% chance of happening, steal one of the equipped items of the target
@@ -182,7 +188,7 @@ thornmail:
 # Tosser ability
 # Each damage the infernal mob causes may cause the target and nearby entities to be tossed around in a random direction
 tosser:
-  nearby-entities-range: 3.0             # in blocks, how close the entity has to be of the main target to also be affected by it
+  nearby-entities-range: 4.0             # in blocks, how close the entity has to be of the main target to also be affected by it
   chance-on-damage-done: 0.4             # in percentage, the chance that the infernal mob will have to weaken its target
   sneaking-mitigation-percentage: 0.5    # if the target is sneaking, the tosses will be take 50% less effective on it
   distance-multiplier: 1.2               # you can increase the maximum distance the target will be tossed at by increasing this multiplier
@@ -194,6 +200,8 @@ weakness:
   chance-on-damage-done: 0.5         # in percentage, the chance that the infernal mob will have to weaken its target
   potency: 1                         # what potency of weakness should the entity be affected
   duration: 4.0-6.0                  # in seconds, the duration of the weakness effect
+  potion-emit-particles: true        # if entities affected by withering should emit weakness effect particles
+  potion-is-ambient: true            # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
 # Webber ability
 # Periodically, when in combat, the infernal mob will have a chance of spawning a cage of cobweb around its victim, turning the flee of any prey a nightmare... <3
@@ -209,3 +217,5 @@ withering:
   chance-on-damage-done: 0.7         # in percentage, the chance that the infernal mob will have to apply wither to their target
   potency: 2-3                       # what potency of wither should the entity be affected, check the damages here https://minecraft.fandom.com/wiki/Wither_(effect) , valid values for potency are 1 up until 32
   duration: 18.0-30.0                # in seconds, the duration of the wither effect
+  potion-emit-particles: true        # if entities affected by withering should emit wither effect particles
+  potion-is-ambient: false           # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
