@@ -206,10 +206,6 @@ class AbilityHelper (
         movSpeed.addModifier(mod)
     }
 
-    private fun LivingEntity.addPermanentPotion(effectType: PotionEffectType, ability: Abilities, amplifier: Int = 0, isAmbient: Boolean = abilityConfig.getPotionIsAmbient(ability), emitParticles: Boolean = abilityConfig.getPotionEmitParticles(ability)) {
-        addPotionEffect(PotionEffect(effectType, Int.MAX_VALUE, amplifier, isAmbient, emitParticles))
-    }
-
     // periodic tasks that require a target
 
     fun startTargetTasks(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) {
@@ -540,8 +536,9 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // makes the defender levitate for some time
-        val duration = abilityConfig.getDuration(Abilities.POISONOUS, 7.0).getRandomBetween()
-        defender.addPotionEffect(PotionEffect(PotionEffectType.LEVITATION, (duration * 20.0).toInt(), 0, true, true))
+        val potency = max(0, abilityConfig.getAbilityPotency(Abilities.LEVITATE, 6).getRandomBetween() - 1)
+        val duration = abilityConfig.getDuration(Abilities.LEVITATE, 6.0).getRandomBetween()
+        defender.addPotion(PotionEffectType.LEVITATION, Abilities.LEVITATE, duration, amplifier = potency)
     }
 
     private fun InfernalDamageDoneEvent.triggerLightning() {
@@ -566,9 +563,9 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // poisons the defender
-        val potency = max(0, abilityConfig.getAbilityPotency(Abilities.POISONOUS, 7).getRandomBetween() - 1)
-        val duration = abilityConfig.getDuration(Abilities.POISONOUS, 7.0).getRandomBetween()
-        defender.addPotionEffect(PotionEffect(PotionEffectType.POISON, (duration * 20.0).toInt(), potency, false, true))
+        val potency = max(0, abilityConfig.getAbilityPotency(Abilities.POISONOUS, 6).getRandomBetween() - 1)
+        val duration = abilityConfig.getDuration(Abilities.POISONOUS, 8.0).getRandomBetween()
+        defender.addPotion(PotionEffectType.POISON, Abilities.POISONOUS, duration, amplifier = potency)
     }
 
     private fun InfernalDamageDoneEvent.triggerRust() {
@@ -694,9 +691,9 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // poisons the attacker
-        val potency = max(0, abilityConfig.getAbilityPotency(Abilities.POISONOUS, 7).getRandomBetween() - 1)
-        val duration = abilityConfig.getDuration(Abilities.POISONOUS, 7.0).getRandomBetween()
-        attacker.addPotionEffect(PotionEffect(PotionEffectType.POISON, (duration * 20.0).toInt(), potency, false, true))
+        val potency = max(0, abilityConfig.getAbilityPotency(Abilities.POISONOUS, 6).getRandomBetween() - 1)
+        val duration = abilityConfig.getDuration(Abilities.POISONOUS, 8.0).getRandomBetween()
+        attacker.addPotion(PotionEffectType.POISON, Abilities.POISONOUS, duration, amplifier = potency)
     }
 
     private fun InfernalDamageTakenEvent.triggerThornmail() {
@@ -738,6 +735,28 @@ class AbilityHelper (
         val oldPercentHp = entity.health / oldHp.value
         val newHp = getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
         health = newHp.value * oldPercentHp
+    }
+
+    /**
+     * Add a potion effect to an entity with given duration, automatically gathering all
+     * the necessary information and parameters from the abilities.yml file
+     *
+     * @receiver [LivingEntity] The entity that will get the potion effect applied
+     * @param effectType [PotionEffectType] What type of potion will be applied to it
+     * @param ability [Abilities] What is the ability behind the potion application
+     * @param duration [Double] In seconds, the effect desired duration
+     * @param amplifier [Int] The amplifier of the potion effect, starting from 0
+     * @param isAmbient [Boolean] If isAmbient attribute should be turned on
+     * @param emitParticles [Boolean] If potion should have visible particles
+     */
+    private fun LivingEntity.addPotion(effectType: PotionEffectType, ability: Abilities, duration: Double, amplifier: Int = 0, isAmbient: Boolean = abilityConfig.getPotionIsAmbient(ability), emitParticles: Boolean = abilityConfig.getPotionEmitParticles(ability)) {
+        // add a temporary potion effect to the living entity
+        addPotionEffect(PotionEffect(effectType, (duration * 20.0).toInt(), amplifier, isAmbient, emitParticles))
+    }
+
+    private fun LivingEntity.addPermanentPotion(effectType: PotionEffectType, ability: Abilities, amplifier: Int = 0, isAmbient: Boolean = abilityConfig.getPotionIsAmbient(ability), emitParticles: Boolean = abilityConfig.getPotionEmitParticles(ability)) {
+        // add a permanent potion effect to the living entity
+        addPotionEffect(PotionEffect(effectType, Int.MAX_VALUE, amplifier, isAmbient, emitParticles))
     }
 
     private fun LivingEntity.doesFly() = this is Bee || this is Parrot

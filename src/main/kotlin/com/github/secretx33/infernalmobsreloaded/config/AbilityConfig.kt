@@ -56,9 +56,9 @@ class AbilityConfig (
     fun getDouble(key: AbilityConfigKeys, default: Double = key.defaultValue as Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble(key.configEntry, default, minValue, maxValue)
 
-    fun getPotionIsAmbient(ability: Abilities) = get("${ability.configEntry}.is-ambient", true)
+    fun getPotionIsAmbient(ability: Abilities) = get("${ability.configEntry}.potion-is-ambient", true)
 
-    fun getPotionEmitParticles(ability: Abilities) = get("${ability.configEntry}.emit-particles", true)
+    fun getPotionEmitParticles(ability: Abilities) = get("${ability.configEntry}.potion-emit-particles", true)
 
     fun getAbilityChance(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.chance", default, minValue, maxValue)

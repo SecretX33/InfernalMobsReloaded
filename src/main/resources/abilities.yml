@@ -66,8 +66,8 @@ heavy:
   knockback-resist-percentage: 0.3-0.45     # The scale of the amount of knockback resisted from attacks and projectiles, does not affect explosions; 0.0 value means 0% resistance, 0.5 means 50% resistance and 1.0 means 100% resistance added (meaning fully invincible against knockbacks)
 
 invisible:
-  is-ambient: true               # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
-  emit-particles: true           # if invisible mobs should emit invisible particles as if they had used a potion of invisibility
+  potion-is-ambient: true               # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
+  potion-emit-particles: true           # if invisible mobs should emit invisible particles as if they had used a potion of invisibility
 
 kamikaze:
   explosion-power: 3.0           # the power of the explosion, where 4.0 is equals to a explosion TNT
@@ -82,40 +82,47 @@ lightning:
 # Levitate ability
 # On damage, have a chance of making the victim fluctuate in the air for some time, aka "transform them into piñata"
 levitate:
-  chance-on-damage-done: 0.4     # in percentage, the chance that the infernal mob with molten ability will have to set the attacked entity on fire
-  duration: 7.0-10.0             # in seconds, the duration of the levitate effect
+  chance-on-damage-done: 0.4         # in percentage, the chance that the infernal mob with molten ability will have to set the attacked entity on fire
+  duration: 6.0-8.0                  # in seconds, the duration of the levitate effect
+  potency: 1-2                       # what potency of levitation should the entity be affected by, each level increase the floating rate by 0.9 blocks per second, valid values: 1-127, more info here https://minecraft.fandom.com/wiki/Levitation
+  potion-emit-particles: true        # if entities affected by levitate should emit levitation effect particles
+  potion-is-ambient: false           # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
 lifesteal:
 
 molten:
-  is-ambient: true                # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
-  emit-particles: true            # if mobs with molten effect should emit particles as if they had used a potion of fire resistance
-  chance-on-damage-done: 0.6      # in percentage, the chance that the infernal mob with molten ability will have to set the attacked entity on fire
-  chance-on-damage-taken: 0.4     # in percentage, the chance that the entity that hit the infernal mob with molten ability will be set on fire (valid only for melee damage)
-  duration: 6.0-10.0              # in seconds, the duration of the fire
+  chance-on-damage-done: 0.6         # in percentage, the chance that the infernal mob with molten ability will have to set the attacked entity on fire
+  chance-on-damage-taken: 0.4        # in percentage, the chance that the entity that hit the infernal mob with molten ability will be set on fire (valid only for melee damage)
+  duration: 6.0-10.0                 # in seconds, the duration of the fire
+  potion-emit-particles: true        # if mobs with molten effect should emit particles as if they had used a potion of fire resistance
+  potion-is-ambient: true            # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
 morph:
-  keep-hp-percentage: true      # if true, the new morphed entity will have the same percentage HP as the previous one, else it'll be fully healed
-  recheck-delay: 4.0            # in seconds, every 4 seconds it'll run the random chance to see if it's going to morph into another entity
-  chance: 0.01                  # in percentage, every 'reckeck-delay' seconds, the morph will have 1% of happening
+  keep-hp-percentage: true           # if true, the new morphed entity will have the same percentage HP as the previous one, else it'll be fully healed
+  recheck-delay: 4.0                 # in seconds, every 4 seconds it'll run the random chance to see if it's going to morph into another entity
+  chance: 0.01                       # in percentage, every 'recheck-delay' seconds, the morph will have 1% of happening
 
 # Mounted ability
 # Gives a chance of a mob spawning mounted on another mob, currently has no configs
-mounted: []
+mounted:
 
 # Necromancer ability
 # Shoots a Wither Skull on the target and nearby entities
 necromancer:
   projectile-speed: 2.0
   recheck-delay: 2.5            # in seconds, every 2.5 seconds it'll run the random chance to see if it's going to spawn shoot the arrows
-  chance: 0.25                  # in percentage, every 'reckeck-delay' seconds, the power will have 25% chance of being triggered
+  chance: 0.25                  # in percentage, every 'recheck-delay' seconds, the power will have 25% chance of being triggered
 
 poisonous:
   chance-on-damage-done: 0.8      # in percentage, the chance that the infernal mob with poisonous ability will have to poison the attacked entity
   chance-on-damage-taken: 0.2     # in percentage, the chance that the entity that hit the infernal mob with poisonous ability will be poisoned (valid only for melee damage)
-  potency: 7                      # what potency of poison should the entity be affected, valid values: 1-31, by my tests around 7 to 8 is where the poison is stronger, because after 8 there's a grace period in which the player cannot take damage
-  duration: 7.0-11.0              # in seconds, the duration of the fire
+  duration: 8.0-12.0              # in seconds, the duration of the fire
+  potency: 6                      # what potency of poison should the entity be affected, valid values: 1-31, by my tests around 7 to 8 is where the poison is stronger, because after 8 there's a grace period in which the player cannot take damage
+  potion-emit-particles: true     # if entities affected by poisonous should emit poison effect particles
+  potion-is-ambient: false        # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
+# Potions ability
+# Periodically, while in combat, have a chance of throwing various potions on the target, currently has no configs
 potions:
 
 # Rust ability
