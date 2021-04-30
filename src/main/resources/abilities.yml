@@ -21,21 +21,21 @@ archer:
   arrow-amount: 8-15           # how many arrows are going to be shot, in default configuration it is 8-15
   arrow-delay: 0.2             # in seconds, the delay between each arrow launch
   recheck-delay: 1.0           # in seconds, every 1 second it'll run the random chance to see if it's going to spawn shoot the arrows
-  chance: 0.04                 # in percentage, every 'reckeck-delay' seconds, the power will have 5% chance of being triggered
+  chance: 0.05                 # in percentage, every 'recheck-delay' seconds, the power will have 5% chance of being triggered
 
 # Armoured ability
 # Makes the entity spawn with a beefy armor, or a damage reduction effect if it cannot wear armor
 armoured:
-  armor-drop-chance: 0.001     # armoured mobs will have 0.1% chance of dropping one of its special armor pieces or weapon
-  fallback-dmg-resist-potion-level: 1    # When the mob cannot wear armor, it'll instead gain the Resistance effect, and each level gives it + 20% damage reduction; level 1 will provide 20% damage reduction
+  armor-drop-chance: 0.001               # armoured mobs will have 0.1% chance of dropping one of its special armor pieces or weapon
+  fallback-dmg-resist-potion-level: 1    # When the mob cannot wear armor, it'll instead gain the Resistance effect; level 1 will provide 20% damage reduction, and subsequent level increase the protection by another 20% damage reduction
 
 # Berserk ability
 # The entity inflict more damage, but also receive more damage
 berserk:
-  damage-caused-bonus: 1.4-1.5        # multiplies all damage caused by this entity by a random value between 1.4 and 1.5
+  damage-caused-bonus: 1.4-1.5         # multiplies all damage caused by this entity by a random value between 1.4 and 1.5
   damage-received-bonus: 1.25-1.35     # multiplies all damage received by this entity by a random value between 1.25 and 1.35
 
-# Bliding ability
+# Blinding ability
 # Each of its attacks may cause blindness on whoever is unlucky enough to be fighting against it
 blinding:
 
@@ -56,7 +56,7 @@ flying:
 ghastly:
   projectile-speed: 1.5
   recheck-delay: 1.5            # in seconds, every 1.5 seconds it'll run the random chance to see if it's going to spawn shoot the arrows
-  chance: 0.25                  # every 'reckeck-delay' seconds, the power will have 25% chance of being triggered
+  chance: 0.25                  # every 'recheck-delay' seconds, the power will have 25% chance of being triggered
 
 ghost:
   evil-chance: 0.3              # in percentage, what chance they'll have of becoming "evil" ghosts
@@ -77,7 +77,7 @@ kamikaze:
 # Lightning ability
 # On damage, have a chance of making a lightning fall right on their target, poor them... At least they had an electrifying experience.
 lightning:
-  chance-on-damage-done: 0.2     # in percentage, the chance a lightning strike the attacked entity
+  chance-on-damage-done: 0.2     # in percentage, the chance of a lightning strike the attacked entity
 
 # Levitate ability
 # On damage, have a chance of making the victim fluctuate in the air for some time, aka "transform them into piñata"
@@ -99,7 +99,9 @@ morph:
   recheck-delay: 4.0            # in seconds, every 4 seconds it'll run the random chance to see if it's going to morph into another entity
   chance: 0.01                  # in percentage, every 'reckeck-delay' seconds, the morph will have 1% of happening
 
-mounted:
+# Mounted ability
+# Gives a chance of a mob spawning mounted on another mob, currently has no configs
+mounted: []
 
 # Necromancer ability
 # Shoots a Wither Skull on the target and nearby entities
@@ -115,10 +117,6 @@ poisonous:
   duration: 7.0-11.0              # in seconds, the duration of the fire
 
 potions:
-
-quicksand:
-
-resilient:
 
 # Rust ability
 # Each attack of infernal with this ability has a chance of damaging the item the target is currently holding
@@ -141,8 +139,6 @@ slowness:
 speedy:
   bonus: 1.5-2.5                  # any mob with this effect will have between 1.5 and 2.5 times its normal speed
 
-storm:
-
 teleport:
 
 thief:
@@ -150,14 +146,12 @@ thief:
   chance: 0.05                    # every 'recheck-delay' seconds, it'll run the random chance that will have 5% of spawning a web on the player's feet
 
 # Thornmail ability
-# Has a chance of reflecting part (or total) of the damage received
+# Has a chance of partially (or fully) reflect the damage received
 thornmail:
   chance: 0.6                      # in percentage, will have 60% chance of triggering a reflect
   reflected-amount: 0.25-0.75      # the amount of damage reflected will be between 25% and 75% of the damage received; may be any value >= 0
 
 tosser:
-
-vengeance:
 
 # Weakness ability
 # Each attack of the infernal mob with weakness ability will have a chance of applying the weakness effect. Weakness decreases attack power. Melee damage inflicted by the affected entity is reduced by 4 hearts of damage PER LEVEL, so keep the potency low (around 1, maybe 2, or 3 only if they got OP equipment), otherwise they won't be able to cause damage

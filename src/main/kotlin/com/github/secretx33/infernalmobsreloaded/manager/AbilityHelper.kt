@@ -269,7 +269,7 @@ class AbilityHelper (
         val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).getRandomBetween()
         val delay = abilityConfig.getDouble(AbilityConfigKeys.ARCHER_ARROW_DELAY, minValue = 0.001).toLongDelay()
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.ARCHER, 1.0).toLongDelay()
-        val chance = abilityConfig.getAbilityChance(Abilities.ARCHER, 0.04)
+        val chance = abilityConfig.getAbilityChance(Abilities.ARCHER, 0.05)
 
         while(isActive && !isInvalid(entity, target)) {
             delay(recheckDelay)
