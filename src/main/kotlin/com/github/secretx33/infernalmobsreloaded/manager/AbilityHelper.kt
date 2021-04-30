@@ -13,10 +13,7 @@ import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
-import com.github.secretx33.infernalmobsreloaded.utils.Cuboid
-import com.github.secretx33.infernalmobsreloaded.utils.pdc
-import com.github.secretx33.infernalmobsreloaded.utils.runSync
-import com.github.secretx33.infernalmobsreloaded.utils.toUuid
+import com.github.secretx33.infernalmobsreloaded.utils.*
 import com.google.common.collect.Multimap
 import com.google.common.collect.Sets
 import com.google.gson.Gson
@@ -306,6 +303,7 @@ class AbilityHelper (
                 repeat(amount) {
                     entity.world.spawnEntity(entity.location, entity.type, SpawnReason.CUSTOM) {
                         (it as? Mob)?.target = target
+                        (it as? Ageable)?.setBaby()
                         (it as? LivingEntity)?.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 12, 1, false, true, false))
                     }
                 }
@@ -352,15 +350,26 @@ class AbilityHelper (
     }
 
     private fun makeThiefTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
-        val recheckDelay = abilityConfig.getRecheckDelay(Abilities.ARCHER, 4.0).toLongDelay()
-        val chance = abilityConfig.getAbilityChance(Abilities.ARCHER, 0.05)
+        // if thief ability should affect only players and target is not one, return
+        val affectOnlyPlayers = abilityConfig.getAffectsOnlyPlayers(Abilities.THIEF, true)
+        if(affectOnlyPlayers && entity.type != EntityType.PLAYER || target.equipment == null) return@launch
+
+        val recheckDelay = abilityConfig.getRecheckDelay(Abilities.THIEF, 3.0).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Abilities.THIEF, 0.05)
 
         while(isActive && !isInvalid(entity, target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
 
-            val item = target.equipment?.itemInMainHand?.takeUnless { it.type.isAir } ?: continue
-            target.equipment?.setItemInMainHand(ItemStack(Material.AIR))
+            val equip = target.equipment ?: return@launch
+            // slot chosen to have its equipment stolen, skipping this interaction if there's none
+            val chosenSlot = EquipmentSlot.values().filter { slot -> equip.getItem(slot).let { !it.isAir() } }.randomOrNull() ?: continue
+            val durabilityLoss = abilityConfig.getDurabilityLoss(Abilities.THIEF, 0.04, maxValue = 1.0).getRandomBetween()
+            val item = equip.getItem(chosenSlot).damageToolBy(durabilityLoss)
+
+            // set air in that slot, removing the item from player's inventory
+            equip.setItem(chosenSlot, ItemStack(Material.AIR))
+            // drop the stolen item in the thief's feet
             runSync(plugin) { entity.world.dropItemNaturally(entity.location, item) }
             (target as? Player)?.updateInventory()
         }
@@ -563,13 +572,14 @@ class AbilityHelper (
     }
 
     private fun InfernalDamageDoneEvent.triggerRust() {
-        val damageAmount = abilityConfig.getDoublePair(AbilityConfigKeys.RUST_DAMAGE_AMOUNT).getRandomBetween()
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Abilities.RUST, 0.6)
         if(random.nextDouble() > chance) return
+        val mhDurabilityLoss = abilityConfig.getDurabilityLoss(Abilities.RUST, 0.15).getRandomBetween()
+        val ohDurabilityLoss = abilityConfig.getDurabilityLoss(Abilities.RUST, 0.15).getRandomBetween()
 
         defender.equipment?.apply {
-            setItemInMainHand(itemInMainHand.damageToolBy(damageAmount))
-            setItemInOffHand(itemInOffHand.damageToolBy(damageAmount))
+            setItemInMainHand(itemInMainHand.damageToolBy(mhDurabilityLoss), true)
+            setItemInOffHand(itemInOffHand.damageToolBy(ohDurabilityLoss), true)
         }
         (defender as? Player)?.updateInventory()
     }
@@ -641,7 +651,7 @@ class AbilityHelper (
 
         world.spawn(attacker.location.apply {
             x += random.nextDouble() - 0.5
-            y += random.nextDouble() * 0.25
+            y += random.nextDouble() * 0.75
             z += random.nextDouble() - 0.5
         }, Firework::class.java, SpawnReason.CUSTOM) { it.prepareFirework(entity) }.detonate()
     }

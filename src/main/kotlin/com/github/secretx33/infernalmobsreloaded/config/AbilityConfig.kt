@@ -81,6 +81,11 @@ class AbilityConfig (
     fun getAbilityPotency(ability: Abilities, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE)
         = getIntPair("${ability.configEntry}.potency", default, minValue, maxValue)
 
+    fun getDurabilityLoss(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+        = getDoublePair("${ability.configEntry}.durability-loss", default, minValue, maxValue)
+
+    fun getAffectsOnlyPlayers(ability: Abilities, default: Boolean) = get("${ability.configEntry}.affect-only-players", default)
+
     fun getNearbyRange(default: Double = 3.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble("nearby-entities-range", default, minValue, maxValue)
 
@@ -150,7 +155,6 @@ class AbilityConfig (
 }
 
 enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
-    RUST_DAMAGE_AMOUNT("${Abilities.RUST.configEntry}.damage-amount", 0.15),
     THORMAIL_REFLECTED_AMOUNT("${Abilities.THORNMAIL.configEntry}.reflected-amount", 0.5),
     BERSERK_CAUSED_DAMAGE_BONUS("${Abilities.BERSERK.configEntry}.damage-caused-bonus", 1.3),
     BERSERK_RECEIVED_DAMAGE_BONUS("${Abilities.BERSERK.configEntry}.damage-caused-bonus", 1.25),

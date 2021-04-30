@@ -48,5 +48,5 @@ class EntityDamageEntityListener(plugin: Plugin, private val mobsManager: Infern
         damage *= event.damageMulti
     }
 
-    private fun Entity.isInfernalMob() = this is LivingEntity && mobsManager.isValidInfernalMob(this)
+    private fun LivingEntity.isInfernalMob() = mobsManager.isValidInfernalMob(this)
 }

@@ -27,7 +27,7 @@ archer:
 # Makes the entity spawn with a beefy armor, or a damage reduction effect if it cannot wear armor
 armoured:
   armor-drop-chance: 0.001               # armoured mobs will have 0.1% chance of dropping one of its special armor pieces or weapon
-  fallback-dmg-resist-potion-level: 1    # When the mob cannot wear armor, it'll instead gain the Resistance effect; level 1 will provide 20% damage reduction, and subsequent level increase the protection by another 20% damage reduction
+  fallback-dmg-resist-potion-level: 1    # When the mob cannot wear armor, it'll instead gain the Resistance effect; level 1 will provide 20% damage reduction, and each subsequent level increase the protection by another 20% damage reduction
 
 # Berserk ability
 # The entity inflict more damage, but also receive more damage
@@ -122,7 +122,7 @@ potions:
 # Each attack of infernal with this ability has a chance of damaging the item the target is currently holding
 rust:
   chance-on-damage-done: 0.6      # in percentage, the chance that the infernal mob with rust ability will have to damage the tool of the attacked entity
-  damage-amount: 0.075-0.15       # in percentage, will reduce between 7.5% and 15% the durability of the tool being held by the victim when triggered
+  durability-loss: 0.075-0.15     # in percentage, will reduce between 7.5% and 15% the durability of the tool being held by the victim when triggered
 
 sapper:
 
@@ -141,9 +141,13 @@ speedy:
 
 teleport:
 
+# Thief ability
+# Every certain amount of time, all infernal mobs with thief ability will have a chance of stealing one part of the target's set or equipped weapons, randomly
 thief:
-  recheck-delay: 4.0              # in seconds, each 4 seconds it'll run the random chance to see if it's going to steal what's on player hand
-  chance: 0.05                    # every 'recheck-delay' seconds, it'll run the random chance that will have 5% of spawning a web on the player's feet
+  recheck-delay: 3.0              # in seconds, each 3 seconds it'll run the random chance to see if it's going to steal a piece of target's equipment
+  chance: 0.05                    # every 'recheck-delay' seconds, it'll, at a 5% chance of happening, steal one of the equipped items of the target
+  durability-loss: 0.04-0.06      # in percentage, will reduce between 4% and 6% the durability of the equipment stolen from the victim
+  affect-only-players: true       # set to true by default to prevent exploits, people "storing" mobs with thief ability and make them fight against another infernal that has special, rare armor, in order to make them steal the rare equipment of that other infernal, which will be dropped at the thief's feet, and will make getting them much easier; you may set this to false if you don't care
 
 # Thornmail ability
 # Has a chance of partially (or fully) reflect the damage received
