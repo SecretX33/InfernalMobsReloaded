@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sqrt
 
 class AbilityConfig (
     plugin: Plugin,
@@ -86,8 +87,14 @@ class AbilityConfig (
 
     fun getAffectsOnlyPlayers(ability: Abilities, default: Boolean) = get("${ability.configEntry}.affect-only-players", default)
 
-    fun getNearbyRange(default: Double = 3.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
-        = getDouble("nearby-entities-range", default, minValue, maxValue)
+    fun getNearbyRange(ability: Abilities, default: Double = 3.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+        = getDouble("${ability.configEntry}.nearby-entities-range", default, minValue, maxValue)
+
+    fun getDistanceMultiplier(ability: Abilities, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+        = getDouble("${ability.configEntry}.distance-multiplier", default, minValue, maxValue).let { if(it <= 1.0) it else sqrt(it) }
+
+    fun getHeightMultiplier(ability: Abilities, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+        = getDouble("${ability.configEntry}.height-multiplier", default, minValue, maxValue).let { if(it <= 1.0) it else sqrt(it) }
 
     fun getIntAmounts(ability: Abilities, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE) = getIntPair("${ability.configEntry}.amount", default, minValue, maxValue)
 
@@ -155,6 +162,7 @@ class AbilityConfig (
 }
 
 enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
+    LIFESTEAL_HEALING_PERCENTAGE("${Abilities.LIFESTEAL.configEntry}.healing-percentage", 0.5),
     THORMAIL_REFLECTED_AMOUNT("${Abilities.THORNMAIL.configEntry}.reflected-amount", 0.5),
     BERSERK_CAUSED_DAMAGE_BONUS("${Abilities.BERSERK.configEntry}.damage-caused-bonus", 1.3),
     BERSERK_RECEIVED_DAMAGE_BONUS("${Abilities.BERSERK.configEntry}.damage-caused-bonus", 1.25),

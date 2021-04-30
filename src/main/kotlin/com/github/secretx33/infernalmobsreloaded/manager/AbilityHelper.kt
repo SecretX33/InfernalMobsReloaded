@@ -470,7 +470,7 @@ class AbilityHelper (
         val evilPrefix = if(evil) "evil_" else ""
         val itemDropChance = abilityConfig.getDouble(AbilityConfigKeys.GHOST_ITEM_DROP_CHANCE, maxValue = 1.0).toFloat()
 
-        val abilitySet = if(evil) setOf(Abilities.BLINDING, Abilities.NECROMANCER, Abilities.WITHERING) else setOf(Abilities.CONFUSING, Abilities.GHASTLY, Abilities.SAPPER)
+        val abilitySet = if(evil) setOf(Abilities.BLINDING, Abilities.NECROMANCER, Abilities.WITHERING) else setOf(Abilities.CONFUSION, Abilities.GHASTLY, Abilities.HUNGER)
 
         val ghost = world.spawn(location, Zombie::class.java, SpawnReason.CUSTOM) {
             it.addPermanentPotion(PotionEffectType.INVISIBILITY, Abilities.GHOST, isAmbient = true, emitParticles = true)
@@ -509,7 +509,8 @@ class AbilityHelper (
         abilities.forEach {
             when(it) {
                 Abilities.BERSERK -> event.triggerBerserk()
-                Abilities.CONFUSING -> event.triggerConfusing()
+                Abilities.CONFUSION -> event.triggerConfusion()
+                Abilities.HUNGER -> event.triggerHunger()
                 Abilities.LEVITATE -> event.triggerLevitate()
                 Abilities.LIFESTEAL -> event.triggerLifesteal()
                 Abilities.LIGHTNING -> event.triggerLightning()
@@ -517,7 +518,6 @@ class AbilityHelper (
                 Abilities.POISONOUS -> event.triggerPoisonous()
                 Abilities.SLOWNESS -> event.triggerSlowness()
                 Abilities.RUST -> event.triggerRust()
-                Abilities.SAPPER -> event.triggerSapper()
                 Abilities.TOSSER -> event.triggerTosser()
                 Abilities.WEAKNESS -> event.triggerWeakness()
                 Abilities.WITHERING -> event.triggerWithering()
@@ -529,6 +529,25 @@ class AbilityHelper (
     private fun InfernalDamageDoneEvent.triggerBerserk() {
         val bonus = abilityConfig.getDoublePair(AbilityConfigKeys.BERSERK_CAUSED_DAMAGE_BONUS)
         damageMulti = bonus.getRandomBetween()
+    }
+
+    private fun InfernalDamageDoneEvent.triggerConfusion() {
+        val chance = abilityConfig.getAbilityChanceOnDamageDone(Abilities.CONFUSION, 0.4)
+        if(random.nextDouble() > chance) return
+
+        // makes the defender nauseated for some time
+        val duration = abilityConfig.getDuration(Abilities.CONFUSION, 8.0).getRandomBetween()
+        defender.addPotion(PotionEffectType.CONFUSION, Abilities.CONFUSION, duration)
+    }
+
+    private fun InfernalDamageDoneEvent.triggerHunger() {
+        val chance = abilityConfig.getAbilityChanceOnDamageDone(Abilities.HUNGER, 0.7)
+        if(random.nextDouble() > chance) return
+
+        // makes the defender hunger for some time
+        val potency = max(0, abilityConfig.getAbilityPotency(Abilities.HUNGER, 8).getRandomBetween() - 1)
+        val duration = abilityConfig.getDuration(Abilities.HUNGER, 30.0).getRandomBetween()
+        defender.addPotion(PotionEffectType.HUNGER, Abilities.HUNGER, duration, amplifier = potency)
     }
 
     private fun InfernalDamageDoneEvent.triggerLevitate() {
@@ -547,6 +566,20 @@ class AbilityHelper (
 
         val lightning = world.strikeLightning(defender.location)
         lightning.pdc.set(keyChain.lightningOwnerUuidKey, PersistentDataType.STRING, entity.uniqueId.toString())
+    }
+
+    private fun InfernalDamageDoneEvent.triggerLifesteal() {
+        val chance = abilityConfig.getAbilityChanceOnDamageDone(Abilities.LIFESTEAL, 0.75)
+        if(random.nextDouble() > chance) return
+
+        val healingAmount = abilityConfig.getDoublePair(AbilityConfigKeys.LIFESTEAL_HEALING_PERCENTAGE).getRandomBetween()
+        entity.heal(damage * healingAmount)
+        // TODO("Add particle effects to visually indicate the healing effect occurring")
+    }
+
+    private fun LivingEntity.heal(healingAmount: Double) {
+        val maxHp = getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: return
+        health = min(maxHp, health + healingAmount)
     }
 
     private fun InfernalDamageDoneEvent.triggerMolten() {
@@ -598,6 +631,21 @@ class AbilityHelper (
         val potency = max(0, abilityConfig.getAbilityPotency(Abilities.SLOWNESS, 3).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Abilities.SLOWNESS, 6.0).getRandomBetween()
         defender.addPotionEffect(PotionEffect(PotionEffectType.SLOW, (duration * 20.0).toInt(), potency, true, true))
+    }
+
+    private fun InfernalDamageDoneEvent.triggerTosser() {
+        val nearbyRange = abilityConfig.getNearbyRange(Abilities.TOSSER)
+        val chance = abilityConfig.getAbilityChanceOnDamageDone(Abilities.TOSSER, 0.4)
+        if(random.nextDouble() > chance) return
+
+        val victims = entity.location.getNearbyLivingEntities(nearbyRange).apply { add(entity) }
+
+        victims.forEach {
+            val x = abilityConfig.getDistanceMultiplier(Abilities.TOSSER) * random.nextDouble()
+            val y = abilityConfig.getHeightMultiplier(Abilities.TOSSER) * random.nextDouble()
+            val z = abilityConfig.getDistanceMultiplier(Abilities.TOSSER) * random.nextDouble()
+            it.velocity = Vector(x, y, z)
+        }
     }
 
     private fun InfernalDamageDoneEvent.triggerWeakness() {

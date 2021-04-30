@@ -146,7 +146,7 @@ abilities:
   blinding: true
   bullwark: true
   cloaked: true
-  confusing: true
+  confusion: true
   ender: true
   explode: true
   firework: true
@@ -167,7 +167,7 @@ abilities:
   potions: true
   quicksand: true
   rust: true
-  sapper: true
+  hunger: true
   # mob will spawn with a random speed boost
   speedy: true
   storm: true
