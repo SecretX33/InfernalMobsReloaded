@@ -7,26 +7,23 @@ description: Introduce Infernal Mobs, adding so much to any Survival Multiplayer
 website: https://github.com/SecretX33
 softdepend: [WorldGuard]
 
-#commands:
-#  herbalism:
-#    description: ${name}
-#    usage: /<command> <sub> [parameters]
-#    aliases: [herb]
-#
-#permissions:
-#
-#  herbalism.*:
-#    description: Gives access to all ${name} commands. Default to players with op.
-#    default: op
-#    children:
-#      herbalism.reload: true
-#      herbalism.create: true
-#      herbalism.destroybyplace: true
-#      herbalism.regen: true
-#
-#  herbalism.reload:
-#    description: Allows one to reload all plugin configurations.
-#    default: false
+commands:
+  infernalmobsreloaded:
+    description: ${name}
+    usage: /<command> <sub> [parameters]
+    aliases: [imr, imreloaded, mobs]
+
+permissions:
+
+  infernalmobsreloaded.*:
+    description: Gives access to all ${name} commands. Default to players with op.
+    default: op
+    children:
+      herbalism.reload: true
+
+  herbalism.reload:
+    description: Allows one to reload all plugin configurations.
+    default: false
 #
 #  herbalism.create:
 #    description: Allows one to create and destroy harvestable blocks, as well as use the selection stick.

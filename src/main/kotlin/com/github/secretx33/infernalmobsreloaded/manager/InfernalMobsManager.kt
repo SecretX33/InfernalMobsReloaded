@@ -16,9 +16,11 @@ import com.google.common.collect.Multimaps
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
+import org.bukkit.Bukkit
 import org.bukkit.Particle
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Mob
 import org.bukkit.entity.Monster
 import org.bukkit.persistence.PersistentDataType
 import org.koin.core.component.KoinApiExtension
@@ -136,6 +138,21 @@ class InfernalMobsManager (
 
     private val particleSpread
         get() = config.get<Double>(ConfigKeys.INFERNO_PARTICLES_SPREAD)
+
+    fun loadAllInfernals() {
+        Bukkit.getWorlds().forEach { world ->
+            world.livingEntities.filter { isValidInfernalMob(it) }.forEach {
+                loadInfernalMob(it)
+                (it as? Mob)?.target?.let { target -> startTargetTasks(it, target) }
+            }
+        }
+    }
+
+    fun unloadAllInfernals() {
+        Bukkit.getWorlds().forEach { world ->
+            world.livingEntities.filter { isValidInfernalMob(it) }.forEach { unloadInfernalMob(it) }
+        }
+    }
 
     fun unloadInfernalMob(entity: LivingEntity) {
         cancelAllInfernalTasks(entity)

@@ -7,8 +7,8 @@ import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkLoadListene
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkUnloadListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDamageEntityListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDeathListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.PlayerMoveListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntitySpawnListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.PlayerMoveListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.*
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.FireworkDamageWorkaroundListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.LightningDamageWorkaroundListener
