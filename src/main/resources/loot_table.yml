@@ -129,7 +129,7 @@ ghost_helmet:
 ghost_chestplate:
   name: "<#808080>Ghost Chestplate"
   material: "LEATHER_CHESTPLATE"
-  color: "WHITE"
+  color: "240, 240, 240"                 # RGB
   amount: 1
   enchants:
     - "protection_environmental:7-9"
@@ -154,7 +154,7 @@ evil_ghost_helmet:
 evil_ghost_chestplate:
   name: "<#808080>Evil Ghost Chestplate"
   material: "LEATHER_CHESTPLATE"
-  color: "BLACK"
+  color: "0, 0, 0"                       # RGB
   amount: 1
   enchants:
     - "protection_environmental:9-11"

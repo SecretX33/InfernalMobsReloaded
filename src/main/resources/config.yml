@@ -29,6 +29,11 @@ amount-infernal-particles: 10           # in particles
 # Display custom name mode, valid values are NONE, LOOKING_AT, ALWAYS; keep in mind that this option only affect new infernal mobs, the ones that already exist won't be affected by this change
 display-infernal-custom-name-mode: LOOKING_AT
 
+# If true, infernal mobs boss bar will be shown to the player's within configured range
+enable-boss-bars: true
+# Distance that the player has to be of an infernal mob in order to see its boss bar
+boss-bar-show-range: 35.0
+
 # If true, nearby players will be notified about the spawn of a new Infernal Mob with one of the spawn messages set on the `messages.yml` file
 enable-inferno-spawn-messages: true
 # The radius around the newly spawned infernal mob that a player has to be to receive the spawn message
@@ -54,7 +59,7 @@ spawn-reasons-which-infernal-mobs-can-spawn:
 # - DEFAULT                # When an entity is missing a SpawnReason
 # - DISPENSE_EGG           # When a creature is spawned by a dispenser dispensing an egg
   - DROWNED                # When a creature is spawned by another entity drowning
-# - EGG                    # When a creature spawns from an egg
+  - EGG                    # When a creature spawns from an egg
 # - ENDER_PEARL            # When an entity is spawned as a result of ender pearl usage
 # - EXPLOSION              # When eg an effect cloud is spawned as a result of a creeper exploding
   - INFECTION              # When a zombie infects a villager

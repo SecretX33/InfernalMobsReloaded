@@ -5,9 +5,13 @@ import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkLoadListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkUnloadListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDamageEntityListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDeathListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.PlayerMoveListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntitySpawnListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalDeathListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalSpawnListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.*
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.FireworkDamageWorkaroundListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.LightningDamageWorkaroundListener
 import com.github.secretx33.infernalmobsreloaded.manager.*
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
@@ -33,16 +37,25 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { Messages(get(), get()) }
         single { AbilityConfig(get(), get(), get()) }
         single { KeyChain(get()) }
+        single { BossBarManager(get(), get()) }
         single { ParticlesHelper(get(), get()) }
         single { LootItemsRepo(get(), get(), get()) }
-        single { AbilityHelper(get(),get(), get(), get(), get(), get(), get()) }
-        single { InfernalMobTypesRepo(get(), get(), get(), get()) }
-        single { InfernalMobsManager(get(), get(), get(), get(), get(), get()) }
-        single { InfernalDeathListener(get(), get(), get(), get()) }
+        single { AbilityHelper(get(),get(), get(), get(), get(), get(), get(), get()) }
+        single { InfernalMobTypesRepo(get(), get(), get(), get(), get()) }
+        single { InfernalMobsManager(get(), get(), get(), get(), get()) }
+        single { EntityDamageEntityListener(get(), get()) }
+        single { EntityDeathListener(get(), get()) }
+        single { PlayerMoveListener(get(), get(), get(), get()) }
+        single { EntitySpawnListener(get(), get(), get(), get()) }
+        single { InfernalDamageDoneListener(get(), get(), get(), get(), get()) }
+        single { InfernalDamageTakenListener(get(), get(), get(), get(), get()) }
+        single { InfernalDeathListener(get(), get(), get(), get(), get()) }
         single { InfernalSpawnListener(get(), get(), get(), get()) }
+        single { InfernalTargetListener(get(), get(), get(), get()) }
+        single { FireworkDamageWorkaroundListener(get(), get()) }
+        single { LightningDamageWorkaroundListener(get(), get()) }
         single { ChunkUnloadListener(get(), get()) }
         single { ChunkLoadListener(get(), get()) }
-        single { EntitySpawnListener(get(), get(), get(), get()) }
         single<WorldGuardChecker> { WorldGuardCheckerDummy() }
     }
 
@@ -59,11 +72,19 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
             printLogger(Level.ERROR)
             loadKoinModules(mod)
         }
+        get<EntityDamageEntityListener>()
+        get<EntityDeathListener>()
+        get<PlayerMoveListener>()
+        get<EntitySpawnListener>()
+        get<InfernalDamageDoneListener>()
+        get<InfernalDamageTakenListener>()
         get<InfernalDeathListener>()
         get<InfernalSpawnListener>()
+        get<InfernalTargetListener>()
+        get<FireworkDamageWorkaroundListener>()
+        get<LightningDamageWorkaroundListener>()
         get<ChunkUnloadListener>()
         get<ChunkLoadListener>()
-        get<EntitySpawnListener>()
     }
 
     override fun onDisable() {

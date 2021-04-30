@@ -27,10 +27,8 @@ import org.bukkit.entity.*
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.EntityTargetEvent.*
+import org.bukkit.event.entity.EntityTargetEvent.TargetReason
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent
-import org.bukkit.event.player.PlayerTeleportEvent
-import org.bukkit.event.player.PlayerTeleportEvent.*
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
@@ -231,14 +229,14 @@ class AbilityHelper (
     }
 
     private fun makeArcherTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
-        val nearbyRange = abilityConfig.getNearbyRange()
+        val nearbyRange = abilityConfig.getNearbyRange(Abilities.ARCHER, 4.0)
         val speed = abilityConfig.getProjectileSpeed(Abilities.ARCHER, 2.2)
         val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).getRandomBetween()
         val delay = abilityConfig.getDouble(AbilityConfigKeys.ARCHER_ARROW_DELAY, minValue = 0.001).toLongDelay()
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.ARCHER, 1.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.ARCHER, 0.05)
 
-        while(isActive && !isInvalid(entity, target)) {
+        while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
             val victims = target.location.getNearbyLivingEntities(nearbyRange)
@@ -249,7 +247,7 @@ class AbilityHelper (
             for (i in 1..amount) {
                 victims.forEach {
                     val dir = entity.shootDirection(it).multiply(speed)
-                    if (!isActive || isInvalid(entity, target)) {
+                    if (!isActive || entity.isNotTargeting(target)) {
                         multimap.remove(entity.uniqueId, coroutineContext.job)
                         return@launch
                     }
@@ -266,7 +264,7 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChance(Abilities.CALL_THE_GANG, 0.025)
         val amount = abilityConfig.getIntAmounts(Abilities.CALL_THE_GANG, 2).getRandomBetween()
 
-        while(isActive && !isInvalid(entity, target)) {
+        while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
             runSync(plugin) {
@@ -284,19 +282,20 @@ class AbilityHelper (
     }
 
     private fun makeGhastlyTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+        val nearbyRange = abilityConfig.getNearbyRange(Abilities.ARCHER, 4.0)
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.GHASTLY, 1.5).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.GHASTLY, 0.25)
         val speed = abilityConfig.getProjectileSpeed(Abilities.GHASTLY, 1.5)
 
-        while(isActive && !isInvalid(entity, target)) {
+        while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
 
-            val dir = entity.shootDirection()?.multiply(speed) ?: run {
-                multimap.remove(entity.uniqueId, coroutineContext.job)
-                return@launch
+            val victims = target.getValidNearbyTargets(nearbyRange)
+            victims.forEach {
+                val dir = entity.shootDirection(it).multiply(speed)
+                entity.shootProjectile(dir, Fireball::class.java)
             }
-            entity.shootProjectile(dir, Fireball::class.java)
         }
         multimap.remove(entity.uniqueId, coroutineContext.job)
     }
@@ -305,7 +304,7 @@ class AbilityHelper (
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.MORPH, 1.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.MORPH, 0.01)
 
-        while(isActive && !isInvalid(entity, target)) {
+        while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
             val newType = infernalMobTypesRepo.getRandomInfernalType()
@@ -330,19 +329,20 @@ class AbilityHelper (
     }
 
     private fun makeNecromancerTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+        val nearbyRange = abilityConfig.getNearbyRange(Abilities.GHASTLY, 4.0)
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.GHASTLY, 2.5).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.GHASTLY, 0.25)
         val speed = abilityConfig.getProjectileSpeed(Abilities.GHASTLY, 2.0)
 
-        while(isActive && !isInvalid(entity, target)) {
+        while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
 
-            val dir = entity.shootDirection()?.multiply(speed) ?: run {
-                multimap.remove(entity.uniqueId, coroutineContext.job)
-                return@launch
+            val victims = target.getValidNearbyTargets(nearbyRange)
+            victims.forEach {
+                val dir = entity.shootDirection(it).multiply(speed)
+                entity.shootProjectile(dir, WitherSkull::class.java)
             }
-            entity.shootProjectile(dir, WitherSkull::class.java)
         }
         multimap.remove(entity.uniqueId, coroutineContext.job)
     }
@@ -351,7 +351,7 @@ class AbilityHelper (
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.TELEPORT, 2.5).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.TELEPORT, 0.3)
 
-        while(isActive && !isInvalid(entity, target)) {
+        while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
 
@@ -380,7 +380,7 @@ class AbilityHelper (
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.THIEF, 3.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.THIEF, 0.05)
 
-        while(isActive && !isInvalid(entity, target)) {
+        while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
 
@@ -403,7 +403,7 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChance(Abilities.WEBBER, 0.05)
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.WEBBER, 2.0).toLongDelay()
 
-        while(isActive && !isInvalid(entity, target)) {
+        while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
             launchCobweb(target)
@@ -476,7 +476,7 @@ class AbilityHelper (
         return src.direction
     }
 
-    private fun isInvalid(entity: LivingEntity, target: LivingEntity) = entity.isDead || !entity.isValid  || target.isDead || !target.isValid || (entity is Mob && entity.target?.uniqueId != target.uniqueId)
+    private fun LivingEntity.isNotTargeting(target: LivingEntity) = isDead || !isValid  || target.isDead || !target.isValid || (this is Mob && this.target?.uniqueId != target.uniqueId)
 
 
     // trigger on death abilities
@@ -533,7 +533,7 @@ class AbilityHelper (
     fun triggerOnDamageDoneAbilities(event: InfernalDamageDoneEvent) {
         val abilities = event.entity.getAbilities() ?: return
 
-        abilities.filter { it.chance() }.forEach {
+        abilities.forEach {
             when(it) {
                 Abilities.BERSERK -> event.triggerBerserk()
                 Abilities.CONFUSION -> event.triggerConfusion()
@@ -665,7 +665,7 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Abilities.TOSSER, 0.4)
         if(random.nextDouble() > chance) return
 
-        val victims = entity.location.getNearbyLivingEntities(nearbyRange).apply { add(entity) }
+        val victims = entity.getValidNearbyTargets(nearbyRange)
 
         // toss victim and all nearby entities
         victims.forEach {
@@ -796,6 +796,8 @@ class AbilityHelper (
         val (minValue, maxValue) = this
         return minValue + (maxValue - minValue) * random.nextDouble()
     }
+
+    private fun LivingEntity.getValidNearbyTargets(range: Double) = location.getNearbyLivingEntities(range) { !it.isDead && it.isValid } + this
 
     private fun LivingEntity.multiplyMaxHp(percentage: Double) {
         val hp = getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return

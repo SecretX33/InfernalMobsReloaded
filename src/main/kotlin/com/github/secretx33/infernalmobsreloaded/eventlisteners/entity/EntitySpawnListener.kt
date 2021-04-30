@@ -45,11 +45,11 @@ class EntitySpawnListener (
 
     private fun SpawnReason.isAllowed() = validReasons.contains(this)
 
-    private fun World.isWhitelisted() = validWorlds.contains("<ALL>") || validWorlds.any { it.equals(name, ignoreCase = true) }
-
-    private val validReasons get() = config.getEnumSet(ConfigKeys.INFERNAL_ALLOWED_SPAWN_REASONS, SpawnReason::class.java)
+    private fun World.isWhitelisted() = validWorlds.let { worlds -> worlds.contains("<ALL>") || worlds.any { it.equals(name, ignoreCase = true) } }
 
     private val validWorlds get() = config.get<List<String>>(ConfigKeys.INFERNAL_ALLOWED_WORLDS)
+
+    private val validReasons get() = config.getEnumSet(ConfigKeys.INFERNAL_ALLOWED_SPAWN_REASONS, SpawnReason::class.java)
 
     private val blacklistedBabies get() = config.getEnumSet(ConfigKeys.INFERNAL_BLACKLISTED_BABY_MOBS, EntityType::class.java)
 

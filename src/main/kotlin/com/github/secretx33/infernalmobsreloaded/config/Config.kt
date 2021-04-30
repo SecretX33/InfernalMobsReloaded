@@ -75,7 +75,7 @@ class Config(plugin: Plugin, private val log: Logger) {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : Enum<T>> getEnumSet(key: ConfigKeys, clazz: Class<out Enum<T>>, filter: Predicate<T>? = null): Set<T> {
+    fun <T : Enum<T>> getEnumSet(key: ConfigKeys, clazz: Class<out Enum<T>>, predicate: Predicate<T>? = null): Set<T> {
         return cache.getOrPut(key.configEntry) {
             if(!manager.contains(key.configEntry)) return@getOrPut key.defaultValue
             manager.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
@@ -83,7 +83,7 @@ class Config(plugin: Plugin, private val log: Logger) {
                     log.severe("Error while trying to get config key '$key', value passed '${item.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the config.yml and reload the configs")
                     return@mapNotNullTo null
                 }
-                optional.get().takeIf { it != null && (filter == null || filter.apply(it as T)) }
+                optional.get().takeIf { it != null && (predicate == null || predicate.apply(it as T)) }
             }
         } as Set<T>
     }
@@ -106,6 +106,8 @@ class Config(plugin: Plugin, private val log: Logger) {
 }
 
 enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
+    ENABLE_BOSS_BARS("enable-boss-bars", true),
+    BOSS_BAR_SHOW_RANGE("boss-bar-show-range", 35.0),
     INFERNAL_ALLOWED_SPAWN_REASONS("spawn-reasons-which-infernal-mobs-can-spawn", setOf(CreatureSpawnEvent.SpawnReason.NATURAL)),
     INFERNAL_ALLOWED_WORLDS("worlds-in-which-infernal-mobs-can-spawn", emptyList<String>()),
     INFERNAL_BLACKLISTED_BABY_MOBS("blacklisted-baby-mob-types", emptySet<EntityType>()),

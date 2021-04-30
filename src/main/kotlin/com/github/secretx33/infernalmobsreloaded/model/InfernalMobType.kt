@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
+import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.Entity
@@ -10,6 +11,9 @@ data class InfernalMobType (
     val name: String,
     val displayName: Component,
     val bossBarName: Component,
+    val bossBarColor: BossBar.Color,
+    val bossBarOverlay: BossBar.Overlay,
+    val bossBarFlags: Set<BossBar.Flag>,
     val entityType: EntityType,
     val spawnChance: Double,
     private val minAbilities: Int,

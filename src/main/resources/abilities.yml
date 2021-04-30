@@ -5,7 +5,7 @@
 ############################################################
 
 # This is a global property used by all abilities that may affect multiple nearby targets, like the Archer ability; if you don't want abilities to be able to affect multiple targets, set its value to 0.0
-nearby-entities-range: 3.0     # in blocks, how close the entity has to be of the main target to also be affected by it
+# nearby-entities-range: 3.0     # in blocks, how close the entity has to be of the main target to also be affected by it
 
 
 ############################################################
@@ -17,11 +17,12 @@ nearby-entities-range: 3.0     # in blocks, how close the entity has to be of th
 # Archer ability
 # Shoots a volley of arrows on the target and nearby entities
 archer:
-  projectile-speed: 2.2        # honestly, this speed is in vector, so you can think in it like m/s or something
-  arrow-amount: 8-15           # how many arrows are going to be shot, in default configuration it is 8-15
-  arrow-delay: 0.2             # in seconds, the delay between each arrow launch
-  recheck-delay: 1.0           # in seconds, every 1 second it'll run the random chance to see if it's going to spawn shoot the arrows
-  chance: 0.05                 # in percentage, every 'recheck-delay' seconds, the power will have 5% chance of being triggered
+  nearby-entities-range: 4.0        # in blocks, how close the entity has to be of the main target to also be affected by it; if you don't want abilities to be able to affect multiple targets, set its value to 0.0
+  projectile-speed: 2.2             # honestly, this speed is in vector, so you can think in it like m/s or something
+  arrow-amount: 8-15                # how many arrows are going to be shot, in default configuration it is 8-15
+  arrow-delay: 0.2                  # in seconds, the delay between each arrow launch
+  recheck-delay: 1.0                # in seconds, every 1 second it'll run the random chance to see if it's going to spawn shoot the arrows
+  chance: 0.05                      # in percentage, every 'recheck-delay' seconds, the power will have 5% chance of being triggered
 
 # Armoured ability
 # Makes the entity spawn with a beefy armor, or a damage reduction effect if it cannot wear armor
@@ -60,7 +61,8 @@ firework:
 flying:
 
 ghastly:
-  projectile-speed: 1.5
+  nearby-entities-range: 4.0         # in blocks, how close the entity has to be of the main target to also be affected by it; if you don't want abilities to be able to affect multiple targets, set its value to 0.0
+  projectile-speed: 1.5              # speed is in vector, so you can think in it like m/s or something
   recheck-delay: 1.5                 # in seconds, every 1.5 seconds it'll run the random chance to see if it's going to spawn shoot the arrows
   chance: 0.25                       # every 'recheck-delay' seconds, the power will have 25% chance of being triggered
 
@@ -188,7 +190,7 @@ thornmail:
 # Tosser ability
 # Each damage the infernal mob causes may cause the target and nearby entities to be tossed around in a random direction
 tosser:
-  nearby-entities-range: 4.0             # in blocks, how close the entity has to be of the main target to also be affected by it
+  nearby-entities-range: 4.0             # in blocks, how close the entity has to be of the main target to also be affected by it; if you don't want abilities to be able to affect multiple targets, set its value to 0.0
   chance-on-damage-done: 0.4             # in percentage, the chance that the infernal mob will have to weaken its target
   sneaking-mitigation-percentage: 0.5    # if the target is sneaking, the tosses will be take 50% less effective on it
   distance-multiplier: 1.2               # you can increase the maximum distance the target will be tossed at by increasing this multiplier

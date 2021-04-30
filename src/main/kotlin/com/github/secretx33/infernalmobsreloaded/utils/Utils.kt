@@ -4,8 +4,10 @@ import org.apache.commons.lang.WordUtils
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.attribute.Attribute
 import org.bukkit.block.Block
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataHolder
@@ -42,4 +44,8 @@ fun Player.isInventoryFull() = inventory.firstEmpty() == -1
 
 val PersistentDataHolder.pdc
     get() = persistentDataContainer
+
+fun LivingEntity.getCurrentHpPercent() = getAttribute(Attribute.GENERIC_MAX_HEALTH)?.let { health / it.value }?.toFloat() ?: 1f
+
+fun LivingEntity.getValidNearbyEntities(range: Double) = location.getNearbyLivingEntities(range) { !it.isDead && it.isValid }
 

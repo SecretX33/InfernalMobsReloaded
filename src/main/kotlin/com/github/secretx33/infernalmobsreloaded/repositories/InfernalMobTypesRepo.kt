@@ -1,5 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.repositories
 
+import com.github.secretx33.infernalmobsreloaded.config.Config
+import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.LootItem
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
@@ -7,18 +9,22 @@ import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
 import com.google.common.collect.ImmutableSet
 import com.google.common.collect.ImmutableSetMultimap
 import me.mattstudios.msg.adventure.AdventureMessage
+import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.EntityType
 import org.bukkit.plugin.Plugin
+import org.koin.core.component.KoinApiExtension
 import java.util.*
 import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.min
 
+@KoinApiExtension
 class InfernalMobTypesRepo (
     plugin: Plugin,
     private val log: Logger,
+    private val config: Config,
     private val adventureMessage: AdventureMessage,
     private val lootItemsRepo: LootItemsRepo,
 ) {
@@ -70,6 +76,9 @@ class InfernalMobTypesRepo (
         val type = getMobType(name)
         val displayName = getMobDisplayName(name, type)
         val bossBarName = getMobBossBarName(name, type)
+        val bossBarColor = getMobBossBarColor(name)
+        val bossBarOverlay = getMobBossBarOverlay(name)
+        val bossBarFlags = getMobBossBarFlags(name)
         val spawnChance = getMobSpawnChance(name)
         // TODO("Add the spawner and spawner drop chance")
         val abilityAmounts = getAbilityAmounts(name)
@@ -78,6 +87,9 @@ class InfernalMobTypesRepo (
         return InfernalMobType(name,
             displayName = displayName,
             bossBarName = bossBarName,
+            bossBarColor = bossBarColor,
+            bossBarOverlay = bossBarOverlay,
+            bossBarFlags = bossBarFlags,
             entityType = type,
             spawnChance = spawnChance,
             minAbilities = abilityAmounts.first,
@@ -114,13 +126,58 @@ class InfernalMobTypesRepo (
     }
 
     private fun getMobBossBarName(name: String, type: EntityType): Component {
-        val displayName = manager.getString("$name.boss-bar-name") ?: ""
+        val displayName = manager.getString("$name.boss-bar-text") ?: ""
 
+        // if boss bar name is absent or blank, fallback to entity type
         if(displayName.isBlank()) {
-            log.warning("You must provide a boss bar name for the mob category '$name'! Defaulting $name display name to its type.")
+            if(bossBarEnabled) log.warning("You must provide a boss bar name for the mob category '$name'! Defaulting $name display name to its type.")
             return Component.text(type.formattedTypeName())
         }
         return adventureMessage.parse(displayName)
+    }
+
+    private fun getMobBossBarColor(name: String): BossBar.Color {
+        val barColor = manager.getString("$name.boss-bar-color") ?: ""
+
+        // if boss bar color is absent or blank, fallback to PURPLE
+        if(barColor.isBlank()) {
+            if(bossBarEnabled) log.warning("You must provide a boss bar color for the mob category '$name'! Defaulting $name boss bar color to Purple.")
+            return BossBar.Color.PURPLE
+        }
+
+        return BossBar.Color.values().firstOrNull { it.name.equals(barColor, ignoreCase = true) } ?: run {
+            log.warning("Inside mob category '$name', boss bar color named '$barColor' is invalid or doesn't exist, please fix your mobs configurations. Defaulting $name boss bar color to Purple.")
+            BossBar.Color.PURPLE
+        }
+    }
+
+    private fun getMobBossBarOverlay(name: String): BossBar.Overlay {
+        val bossBarOverlay = manager.getString("$name.boss-bar-overlay") ?: ""
+
+        // if boss bar overlay style is absent or blank, fallback to NOTCHED_12
+        if(bossBarOverlay.isBlank()) {
+            if(bossBarEnabled) log.warning("You must provide a boss bar overlay style for the mob category '$name'! Defaulting $name boss bar overlay style to NOTCHED_12.")
+            return BossBar.Overlay.NOTCHED_12
+        }
+
+        return BossBar.Overlay.values().firstOrNull { it.name.equals(bossBarOverlay, ignoreCase = true) } ?: run {
+            log.warning("Inside mob category '$name', boss bar overlay style named '$bossBarOverlay' is invalid or doesn't exist, please fix your mobs configurations. Defaulting $name boss bar overlay style to NOTCHED_12.")
+            BossBar.Overlay.NOTCHED_12
+        }
+    }
+
+    private fun getMobBossBarFlags(name: String): Set<BossBar.Flag> {
+        val bossBarFlags = manager.getStringList("$name.boss-bar-flags")
+
+        // if there's no flag set or boss bars are disabled, return empty set
+        if(bossBarFlags.isEmpty() || !bossBarEnabled) return emptySet()
+
+        return bossBarFlags.mapNotNullTo(HashSet()) { line ->
+            BossBar.Flag.values().firstOrNull { it.name.equals(line, ignoreCase = true) } ?: run {
+                log.warning("Inside mob category '$name', boss bar flag named '$line' is invalid or doesn't exist, please fix your mobs configurations.")
+                null
+            }
+        }
     }
 
     private fun getMobSpawnChance(name: String): Double {
@@ -211,4 +268,6 @@ class InfernalMobTypesRepo (
         }
         return lootItems
     }
+
+    private val bossBarEnabled get() = config.get<Boolean>(ConfigKeys.ENABLE_BOSS_BARS)
 }
