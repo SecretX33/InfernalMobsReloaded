@@ -1,9 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.manager
 
-import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
-import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
-import com.github.secretx33.infernalmobsreloaded.config.Config
-import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
+import com.github.secretx33.infernalmobsreloaded.config.*
 import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageDoneEvent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageTakenEvent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
@@ -47,6 +44,7 @@ import kotlin.math.*
 class AbilityHelper (
     private val plugin: Plugin,
     private val config: Config,
+    private val messages: Messages,
     private val keyChain: KeyChain,
     private val abilityConfig: AbilityConfig,
     private val lootItemsRepo: LootItemsRepo,
@@ -366,25 +364,34 @@ class AbilityHelper (
 
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.THIEF, 3.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.THIEF, 0.05)
-        val requireLoS = abilityConfig.doesRequireLineOfSight(Abilities.THIEF, true)
+        val requireLoS = abilityConfig.doesRequireLineOfSight(Abilities.THIEF)
+        val sendMessage = abilityConfig.getSendMessage(Abilities.THIEF)
 
         while(isActive && !entity.isNotTargeting(target)) {
-            println("Thief scheduled, target is ${target.name}, chance = $chance, recheckDelay = $recheckDelay, durability loss = ${abilityConfig.getDurabilityLoss(Abilities.THIEF, 0.04, maxValue = 1.0).getRandomBetween()}, affectOnlyPlayers = $affectOnlyPlayers, requireLoS = $requireLoS")
             delay(recheckDelay)
             if(random.nextDouble() > chance || (requireLoS && !entity.hasLineOfSight(target))) continue
-            println("Stealing entity")
 
             val equip = target.equipment ?: return@launch
-            // slot chosen to have its equipment stolen, skipping this interaction if there's none (and yeah EntityEquipment#getItem returned null even if its annotated with @NonNull)
+            // slot chosen to have its equipment stolen, skipping this interaction if there's none (and yeah EntityEquipment#getItem returns null even if its annotated with @NonNull)
             val chosenSlot = EquipmentSlot.values().filter { slot -> equip.getItem(slot).let { it != null && !it.isAir() } }.randomOrNull() ?: continue
-            val durabilityLoss = abilityConfig.getDurabilityLoss(Abilities.THIEF, 0.04, maxValue = 1.0).getRandomBetween()
-            val item = equip.getItem(chosenSlot).damageToolBy(durabilityLoss)
+            val durabilityLoss = abilityConfig.getDurabilityLoss(Abilities.THIEF, 0.04).getRandomBetween()
+            val item = equip.getItem(chosenSlot)
+            val damagedItem = item.damageItemBy(durabilityLoss)
 
             // set air in that slot, removing the item from player's inventory
             equip.setItem(chosenSlot, ItemStack(Material.AIR))
-            // drop the stolen item in the thief's feet
-            runSync(plugin) { entity.world.dropItemNaturally(entity.location, item) }
-            (target as? Player)?.updateInventory()
+            // drop the stolen item in the thief's feet if its not broken
+            if(!damagedItem.isAir()) runSync(plugin) { entity.world.dropItem(entity.location, damagedItem) }
+
+            (target as? Player)?.apply {
+                updateInventory()
+                // send message to player warning the fact, if this option is enabled
+                if(!sendMessage) return@apply
+                val message = if(!damagedItem.isAir()) messages.get(MessageKeys.THIEF_MESSAGE_TO_TARGET) else messages.get(MessageKeys.THIEF_MESSAGE_TO_TARGET_ITEM_BROKE)
+                target.sendMessage(message
+                    .replace("<entity>", entity.displayName)
+                    .replace("<item>", item.displayName))
+            }
         }
     }
 
@@ -623,17 +630,20 @@ class AbilityHelper (
         val ohDurabilityLoss = abilityConfig.getDurabilityLoss(Abilities.RUST, 0.15).getRandomBetween()
 
         defender.equipment?.apply {
-            setItemInMainHand(itemInMainHand.damageToolBy(mhDurabilityLoss), true)
-            setItemInOffHand(itemInOffHand.damageToolBy(ohDurabilityLoss), true)
+            setItemInMainHand(itemInMainHand.damageItemBy(mhDurabilityLoss), true)
+            setItemInOffHand(itemInOffHand.damageItemBy(ohDurabilityLoss), true)
         }
         (defender as? Player)?.updateInventory()
     }
 
-    private fun ItemStack.damageToolBy(damageAmount: Double): ItemStack {
+    private fun ItemStack.damageItemBy(damageAmount: Double): ItemStack {
         val meta = itemMeta
-        if(type.isAir || (meta as? Damageable) == null) return this
-        val damage = type.maxDurability * damageAmount
-        meta.damage = max(0, (meta.damage - damage).toInt())
+        // don't damage the item if it's air or if it's non damageable (0 durability)
+        if(type.isAir || type.maxDurability == 0.toShort() || (meta as? Damageable) == null) return this
+        val damage = (type.maxDurability * damageAmount).toInt()
+        meta.damage = min(type.maxDurability.toInt(), meta.damage + damage)
+        // if item broke while damaging it, return air
+        if(meta.damage >= type.maxDurability) return ItemStack(Material.AIR)
         itemMeta = meta
         return this
     }

@@ -2,7 +2,6 @@ package com.github.secretx33.infernalmobsreloaded.config
 
 import com.github.secretx33.infernalmobsreloaded.model.Abilities
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
-import me.mattstudios.msg.adventure.AdventureMessage
 import org.bukkit.plugin.Plugin
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
@@ -86,7 +85,7 @@ class AbilityConfig (
     fun getAbilityPotency(ability: Abilities, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE)
         = getIntPair("${ability.configEntry}.potency", default, minValue, maxValue)
 
-    fun getDurabilityLoss(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+    fun getDurabilityLoss(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = 1.0)
         = getDoublePair("${ability.configEntry}.durability-loss", default, minValue, maxValue)
 
     fun getAffectsOnlyPlayers(ability: Abilities, default: Boolean) = get("${ability.configEntry}.affect-only-players", default)
@@ -100,7 +99,9 @@ class AbilityConfig (
     fun getHeightMultiplier(ability: Abilities, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.height-multiplier", default, minValue, maxValue).let { if(it <= 1.0) it else sqrt(it) }
 
-    fun doesRequireLineOfSight(ability: Abilities, default: Boolean) = get("${ability.configEntry}.require-line-of-sight", default)
+    fun doesRequireLineOfSight(ability: Abilities, default: Boolean = true) = get("${ability.configEntry}.require-line-of-sight", default)
+
+    fun getSendMessage(ability: Abilities, default: Boolean = true) = get("${ability.configEntry}.send-message-to-player", default)
 
     fun getIntAmounts(ability: Abilities, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE) = getIntPair("${ability.configEntry}.amount", default, minValue, maxValue)
 

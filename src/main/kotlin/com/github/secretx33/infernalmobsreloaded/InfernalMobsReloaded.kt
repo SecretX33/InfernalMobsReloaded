@@ -43,10 +43,10 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { BossBarManager(get(), get()) }
         single { ParticlesHelper(get(), get()) }
         single { LootItemsRepo(get(), get(), get()) }
-        single { AbilityHelper(get(),get(), get(), get(), get(), get(), get(), get()) }
+        single { AbilityHelper(get(),get(), get(), get(), get(), get(), get(), get(), get()) }
         single { InfernalMobTypesRepo(get(), get(), get(), get(), get()) }
         single { InfernalMobsManager(get(), get(), get(), get(), get()) }
-        single { EntityDamageEntityListener(get(), get()) }
+        single { EntityDamageEntityListener(get(), get(), get()) }
         single { EntityDeathListener(get(), get()) }
         single { EntitySpawnListener(get(), get(), get(), get()) }
         single { InfernalDamageDoneListener(get(), get()) }

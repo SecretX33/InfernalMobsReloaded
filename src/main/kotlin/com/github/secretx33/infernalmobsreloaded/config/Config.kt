@@ -107,6 +107,7 @@ class Config(plugin: Plugin, private val log: Logger) {
 }
 
 enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
+    INFERNALS_CANNOT_DAMAGE_THEMSELVES("infernals-cannot-damage-themselves", true),
     BOSS_BAR_SHOW_RANGE("boss-bar-show-range", 25.0),
     DELAY_BETWEEN_INFERNAL_PARTICLES("delay-between-infernal-particles", 1.5),
     DISPLAY_INFERNAL_NAME_MODE("display-infernal-custom-name-mode", DisplayCustomNameMode.LOOKING_AT),

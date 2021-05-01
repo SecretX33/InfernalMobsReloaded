@@ -1,6 +1,8 @@
 package com.github.secretx33.infernalmobsreloaded.utils
 
+import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import kotlinx.coroutines.delay
+import net.kyori.adventure.text.Component
 import org.apache.commons.lang.WordUtils
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -51,11 +53,15 @@ fun Block.formattedTypeName(): String = type.formattedTypeName()
 
 fun ItemStack.formattedTypeName(): String = type.formattedTypeName()
 
-fun ItemStack.formattedItemName(): String = itemMeta?.displayName()?.toString()?.takeIf { it.isNotBlank() } ?: formattedTypeName()
+val ItemStack.displayName: Component
+    get() = itemMeta?.displayName()?.takeIf { it.toString().isNotBlank() } ?: formattedTypeName().toComponent()
 
 fun EntityType.formattedTypeName(): String = name.replace('_', ' ').capitalizeFully()
 
 fun Entity.formattedTypeName(): String = type.formattedTypeName()
+
+val Entity.displayName: Component
+    get() = customName() ?: type.formattedTypeName().toComponent()
 
 fun Player.isInventoryFull() = inventory.firstEmpty() == -1
 

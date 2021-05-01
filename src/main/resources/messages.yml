@@ -13,4 +13,5 @@ infernal-mob-death-messages:
   - '&cplayer&c''s weapon &ckilled an mob&c!'
   - '&cAn mob &cwas killed by player &cusing a weapon&c!'
 
-thief-message: ""
+
+thief-message-to-target: "<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <item>."

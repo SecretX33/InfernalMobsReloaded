@@ -181,6 +181,7 @@ thief:
   durability-loss: 0.04-0.06         # in percentage, will reduce between 4% and 6% the durability of the equipment stolen from the victim
   affect-only-players: true          # set to true by default to prevent exploits, people "storing" mobs with thief ability and make them fight against another infernal that has special, rare armor, in order to make them steal the rare equipment of that other infernal, which will be dropped at the thief's feet, and will make getting them much easier; you may set this to false if you don't care
   require-line-of-sight: true        # if true, the ability will only trigger if the infernal mob has line of sight of the victim
+  send-message-to-player: true       # if true, will send the message 'thief-message-to-target' warning him that he got stolen (recommended)
 
 # Thornmail ability
 # Has a chance of partially (or fully, or even multiply) reflect the damage received
