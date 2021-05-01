@@ -38,6 +38,7 @@ class Messages(plugin: Plugin, private val adventureMessage: AdventureMessage) {
 }
 
 enum class MessageKeys(val default: Any) {
+    RUST_CORRODE_TOOLS_MESSAGE("<#c27c21>You feel your tools corroding at your hands."),
     THIEF_MESSAGE_TO_TARGET("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item>."),
     THIEF_MESSAGE_TO_TARGET_ITEM_BROKE("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item><#55FFFF>, and unfortunately it broke in the process."),
     ABILITY_DOESNT_EXIST("Sorry, there is no ability named <ability>, please type a valid ability.".toComponent(NamedTextColor.RED)),

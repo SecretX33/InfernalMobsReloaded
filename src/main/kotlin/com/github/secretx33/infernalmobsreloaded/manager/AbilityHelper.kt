@@ -628,18 +628,34 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
         val mhDurabilityLoss = abilityConfig.getDurabilityLoss(Abilities.RUST, 0.15).getRandomBetween()
         val ohDurabilityLoss = abilityConfig.getDurabilityLoss(Abilities.RUST, 0.15).getRandomBetween()
+        val sendMessage = abilityConfig.getSendMessage(Abilities.RUST)
 
+        var corrodedSomething = false  // to prevent message being sent if no tools got corroded
+        val randomNum = random.nextInt(3) // 0 = mh, 1 = oh, 2 = both hands
         defender.equipment?.apply {
-            setItemInMainHand(itemInMainHand.damageItemBy(mhDurabilityLoss), true)
-            setItemInOffHand(itemInOffHand.damageItemBy(ohDurabilityLoss), true)
+            // damaged when 0 or 2
+            if(randomNum != 1) {
+                val item = itemInMainHand.damageItemBy(mhDurabilityLoss)
+                if(item.isDamageable()) corrodedSomething = true
+                setItemInMainHand(item, true)
+            }
+            // damaged when 1 or 2
+            if(randomNum != 0) {
+                val item = itemInOffHand.damageItemBy(ohDurabilityLoss)
+                if(item.isDamageable()) corrodedSomething = true
+                setItemInOffHand(item, true)
+            }
         }
-        (defender as? Player)?.updateInventory()
+        (defender as? Player)?.apply {
+            updateInventory()
+            if(sendMessage && corrodedSomething) sendMessage(messages.get(MessageKeys.RUST_CORRODE_TOOLS_MESSAGE))
+        }
     }
 
     private fun ItemStack.damageItemBy(damageAmount: Double): ItemStack {
         val meta = itemMeta
-        // don't damage the item if it's air or if it's non damageable (0 durability)
-        if(type.isAir || type.maxDurability == 0.toShort() || (meta as? Damageable) == null) return this
+        // return the unmodified item if the item is not damageable (second check for Damageable is for the auto cast)
+        if(!isDamageable() || meta !is Damageable) return this
         val damage = (type.maxDurability * damageAmount).toInt()
         meta.damage = min(type.maxDurability.toInt(), meta.damage + damage)
         // if item broke while damaging it, return air
@@ -647,6 +663,8 @@ class AbilityHelper (
         itemMeta = meta
         return this
     }
+
+    private fun ItemStack.isDamageable() = !isAir() && type.maxDurability > 0.toShort() && itemMeta.let { it != null && it is Damageable }
 
     private fun InfernalDamageDoneEvent.triggerSlowness() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Abilities.SLOWNESS, 0.7)

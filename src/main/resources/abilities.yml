@@ -147,10 +147,11 @@ poisonous:
 potions:
 
 # Rust ability
-# Each attack of infernal with this ability has a chance of damaging the item the target is currently holding
+# Each attack of infernal with this ability has a chance of damaging the any items the target is currently holding (main hand only, off hand only, or both, picked at random)
 rust:
-  chance-on-damage-done: 0.6         # in percentage, the chance that the infernal mob with rust ability will have to damage the tool of the attacked entity
+  chance-on-damage-done: 0.6         # in percentage, the chance that the infernal mob with rust ability will have to damage the tools of the attacked entity
   durability-loss: 0.075-0.15        # in percentage, will reduce between 7.5% and 15% the durability of the tool being held by the victim when triggered
+  send-message-to-player: true       # if true, will send a message to player warning him that his tools got corroded by the infernal
 
 second_wing:
   particle-effect: ""
@@ -181,7 +182,7 @@ thief:
   durability-loss: 0.04-0.06         # in percentage, will reduce between 4% and 6% the durability of the equipment stolen from the victim
   affect-only-players: true          # set to true by default to prevent exploits, people "storing" mobs with thief ability and make them fight against another infernal that has special, rare armor, in order to make them steal the rare equipment of that other infernal, which will be dropped at the thief's feet, and will make getting them much easier; you may set this to false if you don't care
   require-line-of-sight: true        # if true, the ability will only trigger if the infernal mob has line of sight of the victim
-  send-message-to-player: true       # if true, will send the message 'thief-message-to-target' warning him that he got stolen (recommended)
+  send-message-to-player: true       # if true, will send a message to player warning him that he got stolen (recommended)
 
 # Thornmail ability
 # Has a chance of partially (or fully, or even multiply) reflect the damage received
