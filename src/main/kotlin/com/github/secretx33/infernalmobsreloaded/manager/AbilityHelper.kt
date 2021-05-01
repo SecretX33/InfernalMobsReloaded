@@ -89,9 +89,7 @@ class AbilityHelper (
         addArmouredPotionEffect()
     }
 
-    private fun LivingEntity.addArmouredPotionEffect() {
-        addPotionEffect(PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Int.MAX_VALUE, max(0, abilityConfig.get<Int>(AbilityConfigKeys.ARMOURED_POTION_LEVEL) - 1), false, false, false))
-    }
+    private fun LivingEntity.addArmouredPotionEffect() = addPermanentPotion(PotionEffectType.DAMAGE_RESISTANCE, Abilities.ARMOURED, amplifier = max(0, abilityConfig.get<Int>(AbilityConfigKeys.ARMOURED_POTION_LEVEL) - 1))
 
     /**
      * Tries to equip default armor on entity, returning false if it cannot wear armor.
@@ -100,6 +98,7 @@ class AbilityHelper (
      * @return Boolean returns true if entity was successfully equipped with armor
      */
     private fun LivingEntity.equipWithArmor(): Boolean {
+        if(!canWearArmor()) return false
         val equip = equipment ?: return false
         val dropChance = abilityConfig.getDouble(AbilityConfigKeys.ARMOURED_ARMOR_DROP_CHANCE).toFloat()
         EquipmentSlot.values().forEach { equip.setDropChance(it, dropChance) }
@@ -117,6 +116,8 @@ class AbilityHelper (
         }
         return true
     }
+
+    private fun LivingEntity.canWearArmor() = config.getEnumSet(ConfigKeys.MOB_TYPES_THAT_CAN_WEAR_ARMOR, EntityType::class.java).contains(type)
 
     private fun LivingEntity.addFlyingAbility() {
         val bat = world.spawn(location, Bat::class.java, SpawnReason.CUSTOM) {
@@ -186,7 +187,7 @@ class AbilityHelper (
             }
         }
         // add armoured resistance potion to make the mount more resilient
-        addArmouredPotionEffect()
+        addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 2, enablePotionParticles, enablePotionParticles, false))
         // give speed potion to make the mount a bit faster
         addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 0, enablePotionParticles, enablePotionParticles, false))
         // and mark it as mount in its pdc, so I can check on the spawn event and death event for it

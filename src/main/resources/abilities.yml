@@ -19,16 +19,18 @@
 archer:
   nearby-entities-range: 4.0        # in blocks, how close the entity has to be of the main target to also be affected by it; if you don't want abilities to be able to affect multiple targets, set its value to 0.0
   projectile-speed: 1.4             # honestly, this speed is in vector, so you can think in it like m/s or something
-  arrow-amount: 8-15                # how many arrows are going to be shot, in default configuration it is 8-15
+  arrow-amount: 8-12                # how many arrows are going to be shot, in default configuration it is 8-12
   arrow-delay: 0.2                  # in seconds, the delay between each arrow launch
   recheck-delay: 1.5                # in seconds, every 1.5 seconds it'll run the random chance to see if it's going to spawn shoot the arrows
-  chance: 0.1                       # in percentage, every 'recheck-delay' seconds, the power will have 10% chance of being triggered
+  chance: 0.15                      # in percentage, every 'recheck-delay' seconds, the power will have 15% chance of being triggered
 
 # Armoured ability
 # Makes the entity spawn with a beefy armor, or a damage reduction effect if it cannot wear armor
 armoured:
   armor-drop-chance: 0.001               # armoured mobs will have 0.1% chance of dropping one of its special armor pieces or weapon
   fallback-dmg-resist-potion-level: 1    # When the mob cannot wear armor, it'll instead gain the Resistance effect; level 1 will provide 20% damage reduction, and each subsequent level increase the protection by another 20% damage reduction
+  potion-emit-particles: false           # if entities affected by the fallback damage resist should emit damage resist potion effect particles
+  potion-is-ambient: true                # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles (only makes sense if you have the particles on, otherwise does nothing)
 
 # Berserk ability
 # The entity inflict more damage, but also receive more damage

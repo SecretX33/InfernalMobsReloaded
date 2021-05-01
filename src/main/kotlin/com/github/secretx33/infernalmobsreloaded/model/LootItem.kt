@@ -11,7 +11,7 @@ data class LootItem (
     val name: String,
     val displayName: Component,
     val material: Material,
-    val color: Color,
+    val color: Color?,
     val dyeColor: DyeColor,
     val minAmount: Int,
     val maxAmount: Int,

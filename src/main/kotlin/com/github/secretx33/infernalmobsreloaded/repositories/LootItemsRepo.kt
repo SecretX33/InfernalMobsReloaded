@@ -81,10 +81,10 @@ class LootItemsRepo (
         )
     }
 
-    private fun getItemColor(name: String): Color {
+    private fun getItemColor(name: String): Color? {
         val colorRGB = manager.getString("$name.color") ?: ""
         // if color name is absent or blank
-        if(colorRGB.isBlank()) return Color.WHITE
+        if(colorRGB.isBlank()) return null
         return colorRGB.toColor()
     }
 

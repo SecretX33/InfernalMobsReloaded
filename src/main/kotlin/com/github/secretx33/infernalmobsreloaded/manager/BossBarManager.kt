@@ -53,6 +53,14 @@ class BossBarManager (
 
     private fun LivingEntity.getNearbyInfernals() = location.getNearbyLivingEntities(bossBarShowRange) { !it.isDead && it.isValid && it.isInfernalMob() }
 
+    fun showBossBarForNearbyPlayers(entity: LivingEntity) {
+        if(!bossBarEnabled) return
+        val bossBar = entity.getBossBar() ?: return
+        entity.location.getNearbyPlayers(bossBarShowRange) { !it.isDead && it.isValid }.forEach {
+            it.showBossBar(bossBar)
+        }
+    }
+
     private fun LivingEntity.isInfernalMob() = mobsManager.isValidInfernalMob(this)
 
     fun showBarsOfNearbyInfernalsForAllPlayers() {

@@ -44,7 +44,7 @@ class ItemBuilder private constructor(material: Material) {
         return this
     }
 
-    fun color(color: Color): ItemBuilder {
+    fun color(color: Color?): ItemBuilder {
         (meta as? LeatherArmorMeta)?.setColor(color)
         return this
     }

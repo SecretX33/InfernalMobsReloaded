@@ -138,6 +138,25 @@ infernal-mobs-that-can-be-rided-by-another-infernal:
   - ZOGLIN
   - ZOMBIE_HORSE
 
+# This list is used to check if a mob can wear armor for the Armoured ability, or if it cannot then it got a fallback potion effect
+# Please keep it up to date with your minecraft version. I could have hardcoded that, but them the plugin wouldn't be future-proof, and I want you to be able to add more mobs that can wear armor as they got released by Mojang
+mob-types-that-can-wear-armor:
+  - DROWNED
+  - EVOKER
+  - GIANT
+  - HUSK
+  - PIGLIN
+  - PIGLIN
+  - PIGLIN_BRUTE
+  - PILLAGER
+  - SKELETON
+  - STRAY
+  - VINDICATOR
+  - WITHER_SKELETON
+  - ZOMBIE
+  - ZOMBIE_VILLAGER
+  - ZOMBIFIED_PIGLIN
+
 ############################################################
 # +------------------------------------------------------+ #
 # |                     Mob Abilities                    | #

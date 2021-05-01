@@ -11,6 +11,7 @@ import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.component.KoinApiExtension
+import java.util.*
 
 @KoinApiExtension
 class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
@@ -31,7 +32,7 @@ class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
     override fun onCommand(sender: CommandSender, command: Command, alias: String, strings: Array<String>): Boolean {
         if (strings.isEmpty()) return true
 
-        val sub = strings[0]
+        val sub = strings[0].toLowerCase(Locale.US)
         subcommands.firstOrNull { it.hasPermission(sender) && (it.name == sub || it.aliases.contains(sub)) }?.let { cmd ->
             if(sender is Player) {
                 cmd.onCommandByPlayer(sender, alias, strings)

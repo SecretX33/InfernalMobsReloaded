@@ -4,6 +4,7 @@ import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
+import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.model.Abilities
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.utils.CustomKoinComponent
@@ -25,6 +26,7 @@ class SpawnCommand: SubCommand(), CustomKoinComponent {
 
     private val messages by inject<Messages>()
     private val infernalMobTypesRepo by inject<InfernalMobTypesRepo>()
+    private val bossBarManager by inject<BossBarManager>()
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
         if(strings.size < 2) {
@@ -56,6 +58,7 @@ class SpawnCommand: SubCommand(), CustomKoinComponent {
         player.world.spawnEntity(block.location.add(0.5, 1.2, 0.5), infernalType.entityType, SpawnReason.CUSTOM) { entity ->
             if(entity !is LivingEntity) return@spawnEntity
             Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(entity, infernalType, randomAbilities = abilities.isEmpty(), abilitySet = abilities))
+            bossBarManager.showBossBarForNearbyPlayers(entity)
         }
     }
 
