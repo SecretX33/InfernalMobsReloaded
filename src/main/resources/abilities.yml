@@ -153,7 +153,7 @@ rust:
   durability-loss: 0.075-0.15        # in percentage, will reduce between 7.5% and 15% the durability of the tool being held by the victim when triggered
   send-message-to-player: true       # if true, will send a message to player warning him that his tools got corroded by the infernal
 
-second_wing:
+second_wind:
   particle-effect: ""
 
 # Slowness ability

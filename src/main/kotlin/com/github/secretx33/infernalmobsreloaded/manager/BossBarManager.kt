@@ -2,7 +2,7 @@ package com.github.secretx33.infernalmobsreloaded.manager
 
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
-import com.github.secretx33.infernalmobsreloaded.utils.getCurrentHpPercent
+import com.github.secretx33.infernalmobsreloaded.utils.getHealthPercent
 import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
@@ -18,15 +18,15 @@ class BossBarManager (
 
     private val bossBarMap = HashMap<UUID, BossBar>()
 
-    fun updateBossBar(entity: LivingEntity) {
+    fun updateBossBar(entity: LivingEntity, newHealth: Float) {
         if(!bossBarEnabled) return
-        entity.getBossBar()?.progress(entity.getCurrentHpPercent())
+        entity.getBossBar()?.progress(newHealth.toFloat())
     }
 
     private fun LivingEntity.getBossBar(): BossBar? {
         val infernalType = mobsManager.getInfernalTypeOrNull(this) ?: return null
         return bossBarMap.getOrPut(uniqueId) {
-            BossBar.bossBar(infernalType.bossBarName, getCurrentHpPercent(), infernalType.bossBarColor, infernalType.bossBarOverlay, infernalType.bossBarFlags)
+            BossBar.bossBar(infernalType.bossBarName, getHealthPercent(), infernalType.bossBarColor, infernalType.bossBarOverlay, infernalType.bossBarFlags)
         }
     }
 

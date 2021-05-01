@@ -21,7 +21,7 @@ class SpawnCommand: SubCommand(), CustomKoinComponent {
 
     override val name: String = "spawn"
     override val permission: String = "spawn"
-    override val aliases: List<String> = listOf(name, "spaw", "sp", "s")
+    override val aliases: List<String> = listOf(name, "summon", "sum", "spaw", "sp", "s")
 
     private val messages by inject<Messages>()
     private val infernalMobTypesRepo by inject<InfernalMobTypesRepo>()

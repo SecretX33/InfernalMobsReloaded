@@ -29,7 +29,7 @@ enum class Abilities {
     POISONOUS,
     POTIONS,
     RUST,
-    SECOND_WING,
+    SECOND_WIND,
     SLOWNESS,
     SPEEDY,
     TELEPORT,

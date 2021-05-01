@@ -36,7 +36,7 @@ class ParticlesHelper(private val config: Config, private val log: Logger) {
     fun sendParticle(entity: LivingEntity, ability: Abilities) {
         CoroutineScope(Dispatchers.Default).launch {
             when(ability) {
-                Abilities.SECOND_WING -> XParticle.circle(entity.width * 1.2, entity.width * 1.5, 0.5, 1.0, 2.0, ParticleDisplay(Particle.TOTEM, entity.location, 1, 0.25, 0.25, 0.25))
+                Abilities.SECOND_WIND -> XParticle.circle(entity.width * 1.2, entity.width * 1.5, 0.5, 1.0, 2.0, ParticleDisplay(Particle.TOTEM, entity.location, 1, 0.25, 0.25, 0.25))
                 else -> {}
             }
         }
