@@ -30,10 +30,8 @@ class InfernalTargetListener  (
         if(!entity.isInfernalMob()) return
         val entity = entity as LivingEntity
         mobsManager.cancelTargetTasks(entity)
-        println("Cancelled target tasks of ${entity.type.formattedTypeName()}")
         val target = target ?: return
         mobsManager.startTargetTasks(entity, target)
-        println("Start target tasks of ${entity.type.formattedTypeName()} to ${target.type.formattedTypeName()}")
     }
 
     private fun Entity.isInfernalMob() = this is LivingEntity && mobsManager.isValidInfernalMob(this)

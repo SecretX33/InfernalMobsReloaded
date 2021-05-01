@@ -51,5 +51,7 @@ enum class Abilities {
             require(number >= 0) { "number cannot be lower than 0, number = $number" }
             return values.subList(0, min(values.size, number)).toMutableSet()
         }
+
+        fun getOrNull(name: String) = values.firstOrNull { it.name.equals(name, ignoreCase = true) }
     }
 }

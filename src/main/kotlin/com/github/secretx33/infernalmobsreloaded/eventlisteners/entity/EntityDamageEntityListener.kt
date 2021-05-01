@@ -21,12 +21,12 @@ class EntityDamageEntityListener(plugin: Plugin, private val mobsManager: Infern
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun EntityDamageByEntityEvent.onInfernalDamageTaken() {
-        val entity = entity as? LivingEntity ?: return
+        val infernal = entity as? LivingEntity ?: return
         val attacker = damager as? LivingEntity ?: return
-        if(!entity.isInfernalMob()) return
+        if(!infernal.isInfernalMob()) return
 
-        val infernalType = mobsManager.getInfernalTypeOrNull(entity) ?: return
-        val event = InfernalDamageTakenEvent(entity, attacker, damage, cause, infernalType)
+        val infernalType = mobsManager.getInfernalTypeOrNull(infernal) ?: return
+        val event = InfernalDamageTakenEvent(infernal, attacker, damage, cause, infernalType)
         Bukkit.getPluginManager().callEvent(event)
         if(event.isCancelled) isCancelled = true
         damage *= event.damageMulti
@@ -36,12 +36,14 @@ class EntityDamageEntityListener(plugin: Plugin, private val mobsManager: Infern
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun EntityDamageByEntityEvent.onInfernalDamageDone() {
-        val entity = damager as? LivingEntity ?: return
+        val infernal = damager as? LivingEntity ?: return
         val defender = entity as? LivingEntity ?: return
-        if(!entity.isInfernalMob()) return
+        println("${infernal.type} is attacking ${defender.name}")
+        if(!infernal.isInfernalMob()) return
+        println("1")
 
-        val infernalType = mobsManager.getInfernalTypeOrNull(entity) ?: return
-        val event = InfernalDamageDoneEvent(entity, defender, damage, cause, infernalType)
+        val infernalType = mobsManager.getInfernalTypeOrNull(infernal) ?: return
+        val event = InfernalDamageDoneEvent(infernal, defender, damage, cause, infernalType)
         Bukkit.getPluginManager().callEvent(event)
         if(event.isCancelled) isCancelled = true
         damage *= event.damageMulti

@@ -49,6 +49,8 @@ class InfernalMobTypesRepo (
 
     fun isValidInfernalType(name: String) = infernalTypeCache.containsKey(name.toLowerCase(Locale.US))
 
+    fun getAllInfernalTypeNames() = infernalTypeNames
+
     // weighted by mob type, so it won't produce more than one type of entity vs another
     fun getRandomInfernalType() = infernalTypeMultimap[infernalTypeMultimap.keys().random()].random()
 

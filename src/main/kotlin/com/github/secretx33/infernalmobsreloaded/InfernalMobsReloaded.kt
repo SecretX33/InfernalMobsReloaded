@@ -49,7 +49,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { EntityDamageEntityListener(get(), get()) }
         single { EntityDeathListener(get(), get()) }
         single { EntitySpawnListener(get(), get(), get(), get()) }
-        single { InfernalDamageDoneListener(get(), get(), get(), get(), get()) }
+        single { InfernalDamageDoneListener(get(), get()) }
         single { InfernalDamageTakenListener(get(), get(), get()) }
         single { InfernalDeathListener(get(), get(), get(), get(), get(), get()) }
         single { InfernalSpawnListener(get(), get(), get(), get()) }

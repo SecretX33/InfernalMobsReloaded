@@ -378,8 +378,10 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChance(Abilities.THIEF, 0.05)
 
         while(isActive && !entity.isNotTargeting(target)) {
+            println("Thief scheduled, target is ${target.name}")
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
+            println("Stealing entity")
 
             val equip = target.equipment ?: return@launch
             // slot chosen to have its equipment stolen, skipping this interaction if there's none

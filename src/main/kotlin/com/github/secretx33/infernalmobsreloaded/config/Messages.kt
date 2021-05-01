@@ -38,6 +38,8 @@ class Messages(plugin: Plugin, private val adventureMessage: AdventureMessage) {
 }
 
 enum class MessageKeys(val default: Any) {
+    ABILITY_DOESNT_EXIST("Sorry, there is no ability named <ability>, please type a valid ability.".toComponent(NamedTextColor.RED)),
+    INFERNAL_MOB_TYPE_DOESNT_EXIST("Sorry, the infernal type <type> doesn't exist in your mobs.yml file, please type a valid name.".toComponent(NamedTextColor.RED)),
     NOT_TARGETING_LIVING_ENTITY("You are not targeting an entity, please aim to an entity and try again.".toComponent(NamedTextColor.RED)),
     NOT_TARGETING_INFERNAl("The entity you're currently targeting is not an Infernal Mob, please target an Infernal Mob and try again.".toComponent(NamedTextColor.RED)),
     NOT_TARGETING_VALID_INFERNAl("The entity you're currently targeting was an Infernal Mob from mob category <group>, but this mob category is not present on your mobs.yml file, so it's not currently considered an Infernal Mob.".toComponent(NamedTextColor.RED)),

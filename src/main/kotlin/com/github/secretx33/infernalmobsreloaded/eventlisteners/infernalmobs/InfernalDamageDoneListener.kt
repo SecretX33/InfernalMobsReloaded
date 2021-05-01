@@ -15,9 +15,6 @@ import org.koin.core.component.KoinApiExtension
 @KoinApiExtension
 class InfernalDamageDoneListener (
     plugin: Plugin,
-    private val config: Config,
-    private val messages: Messages,
-    private val particlesHelper: ParticlesHelper,
     private val mobsManager: InfernalMobsManager,
 ): Listener {
 

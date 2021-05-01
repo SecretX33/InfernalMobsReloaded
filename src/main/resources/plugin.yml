@@ -21,6 +21,7 @@ permissions:
     children:
       imr.reload: true
       imr.inspect: true
+      imr.spawn: true
 
   imr.reload:
     description: Allows one to reload all plugin configurations.
@@ -30,14 +31,6 @@ permissions:
     description: Allows one to inspect all entities and see what abilities they have.
     default: false
 
-#  herbalism.create:
-#    description: Allows one to create and destroy harvestable blocks, as well as use the selection stick.
-#    default: false
-#
-#  herbalism.destroybyplace:
-#    description: Allows one to destroy harvestable blocks by placing other block inside it.
-#    default: false
-#
-#  herbalism.regen:
-#    description: Allows one to use 'regen' and 'regenall' commands to regen the harvest blocks.
-#    default: false
+  imr.spawn:
+    description: Allows one to spawn infernal mobs, optionally with specified abilities.
+    default: false
