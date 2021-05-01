@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
+import com.github.secretx33.infernalmobsreloaded.utils.capitalizeFully
 import java.util.*
 import kotlin.math.min
 
@@ -40,6 +41,7 @@ enum class Abilities {
     WITHERING;
 
     val configEntry = name.toLowerCase(Locale.US).replace('_', '-')
+    val displayName = name.replace('_', ' ').capitalizeFully()
 
     companion object {
         val values = values().toList()

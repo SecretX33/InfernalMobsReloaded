@@ -3,6 +3,7 @@ package com.github.secretx33.infernalmobsreloaded.config
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import me.mattstudios.msg.adventure.AdventureMessage
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.ChatColor
 import org.bukkit.plugin.Plugin
 import java.util.*
@@ -15,13 +16,13 @@ class Messages(plugin: Plugin, private val adventureMessage: AdventureMessage) {
 
     fun get(key: MessageKeys, default: String? = null): Component {
         return stringCache.getOrPut(key) {
-            (manager.getString(key.configEntry) ?: default ?: key.default).toComponent()
+            manager.getString(key.configEntry)?.parse() ?: default?.parse() ?: (key.default as? Component) ?: (key.default as String).parse()
         }
     }
 
     fun getList(key: MessageKeys): List<Component> {
         return listCache.getOrPut(key) {
-            manager.getStringList(key.configEntry).map { it.toComponent() }
+            manager.getStringList(key.configEntry).map { it.parse() }
         }
     }
 
@@ -31,30 +32,24 @@ class Messages(plugin: Plugin, private val adventureMessage: AdventureMessage) {
         manager.reload()
     }
 
-    private fun String.toComponent(): Component = adventureMessage.parse(this)
+    private fun String.parse(): Component = adventureMessage.parse(this)
 
     private fun String.correctColorCodes(): String = ChatColor.translateAlternateColorCodes('&', this)
 }
 
-enum class MessageKeys(val default: String) {
+enum class MessageKeys(val default: Any) {
+    NOT_TARGETING_LIVING_ENTITY("You are not targeting an entity, please aim to an entity and try again.".toComponent(NamedTextColor.RED)),
+    NOT_TARGETING_INFERNAl("The entity you're currently targeting is not an Infernal Mob, please target an Infernal Mob and try again.".toComponent(NamedTextColor.RED)),
+    NOT_TARGETING_VALID_INFERNAl("The entity you're currently targeting was an Infernal Mob from mob category <group>, but this mob category is not present on your mobs.yml file, so it's not currently considered an Infernal Mob.".toComponent(NamedTextColor.RED)),
+    TARGETING_INFERNAL("<#55FF55>The <#00AA00><entity> <#55FF55>you're currently targeting has the following abilities: <#ffb319><abilities>."),
     INFERNAL_MOB_SPAWN_MESSAGES(""),
     INFERNAL_MOB_DEATH_MESSAGES(""),
     CONFIGS_RELOADED("${ChatColor.GREEN}Reloaded configs."),
-    CONSOLE_CANNOT_USE("${ChatColor.RED}Sorry, the console cannot use this command."),
-    HARVEST_BAR_TEXT("${ChatColor.DARK_GREEN}Harvest: ${ChatColor.DARK_GRAY}[<bar>${ChatColor.DARK_GRAY}]"),
-    HARVEST_CANCELLED_ANOTHER_PLAYER_FINISHED_FIRST("${ChatColor.RED}Oops, seems like <player> was faster this time."),
-    HARVEST_CANCELLED_BLOCK_REMOVED("${ChatColor.RED}The block you were harvesting was removed."),
-    HARVEST_CANCELLED_DUE_TO_MOVEMENT("${ChatColor.RED}The action was cancelled due to movement."),
-    HARVEST_FINISHED("${ChatColor.GREEN}You just harvested a <item>."),
-    MARKED_HARVEST_BLOCK("${ChatColor.GREEN}Added block <type> to harvest group <group>."),
-    PLACED_BLOCK_BROKE_HARVEST_BLOCK("${ChatColor.RED}The block you placed broke the harvest block that was there."),
-    RECEIVED_WAND("${ChatColor.GREEN}You received a selection wand."),
-    REGEN_ALL_BLOCKS("${ChatColor.GREEN}Regenerated all blocks."),
-    REGEN_BLOCKS_OF_TYPE("${ChatColor.GREEN}Regenerated all <group> blocks."),
-    TYPED_GROUP_IS_INVALID("${ChatColor.RED}Sorry, there is no group named <group>, please correct the group name and try again."),
-    UNMARKED_HARVEST_BLOCK("${ChatColor.YELLOW}Removed block <type> from harvest group <group>, it is a normal block now."),
-    UPDATED_HARVEST_BLOCK("${ChatColor.LIGHT_PURPLE}Block <type> now belongs to harvest group <group>."),
-    YOU_BROKE_A_HARVEST_BLOCK("${ChatColor.RED}You broke a harvest block.");
+    CONSOLE_CANNOT_USE("${ChatColor.RED}Sorry, the console cannot use this command.");
 
     val configEntry = name.toLowerCase(Locale.US).replace('_','-')
 }
+
+fun String.toComponent(r: Int, g: Int, b: Int) = Component.text(this, NamedTextColor.GREEN)
+
+fun String.toComponent(color: NamedTextColor? = null) = if(color == null) Component.text(this) else Component.text(this, color)

@@ -44,6 +44,10 @@ class InfernalMobsManager (
 
     fun isPossibleInfernalMob(entity: LivingEntity) = entity.pdc.has(keyChain.infernalCategoryKey, PersistentDataType.STRING)
 
+    fun getInfernalGroupNameOrNull(entity: LivingEntity) = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)
+
+    fun getInfernalAbilities(entity: LivingEntity) = entity.getAbilities() ?: throw IllegalStateException("Queried for infernal mob abilities but it doesn't have any")
+
     fun isMountOfAnotherInfernal(entity: Entity) = entity.pdc.has(keyChain.infernalMountKey, PersistentDataType.SHORT) || entity.pdc.has(keyChain.infernalBatMountKey, PersistentDataType.SHORT)
 
     fun getInfernalTypeOrNull(entity: LivingEntity) = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)
@@ -127,8 +131,11 @@ class InfernalMobsManager (
     private fun startParticleEmissionTask(entity: LivingEntity, infernalType: InfernalMobType) {
         val delay = delayBetweenParticleEmission
         val job = CoroutineScope(Dispatchers.Default).launch {
-            particlesHelper.sendParticle(entity, Particle.LAVA, particleSpread)
-            delay(delay)
+            println("particleSpread = $particleSpread, delayBetweenParticleEmission = $delayBetweenParticleEmission, particleAmount = ${config.get<Int>(ConfigKeys.infernal_PARTICLES_AMOUNT)}")
+            while(isActive) {
+                particlesHelper.sendParticle(entity, Particle.LAVA, particleSpread)
+                delay(delay)
+            }
         }
         infernalMobPeriodicTasks.put(entity.uniqueId, job)
     }
@@ -178,7 +185,11 @@ class InfernalMobsManager (
         infernalMobTargetTasks.removeAll(entity.uniqueId)
     }
 
+    private fun LivingEntity.getAbilities(): Set<Abilities>? = pdc.get(keyChain.abilityListKey, PersistentDataType.STRING)?.toAbilitySet()
+
     private fun Set<Abilities>.toJson() = gson.toJson(this, infernalAbilitySetToken)
+
+    private fun String.toAbilitySet() = gson.fromJson<Set<Abilities>>(this, infernalAbilitySetToken)
 
     private companion object {
         val gson = Gson()

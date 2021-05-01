@@ -7,6 +7,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.block.Block
+import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -15,9 +16,9 @@ import org.bukkit.persistence.PersistentDataHolder
 import org.bukkit.plugin.Plugin
 import java.util.*
 import java.util.concurrent.Callable
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CompletionStage
 import java.util.concurrent.Future
+
+fun Player.getTarget(range: Int): LivingEntity? = (world.rayTraceEntities(eyeLocation, eyeLocation.direction, range.toDouble()) { it is LivingEntity && type != EntityType.ENDER_DRAGON && it.uniqueId != uniqueId }?.hitEntity as? LivingEntity)?.takeIf { hasLineOfSight(it) }
 
 fun String.capitalizeFully(): String = WordUtils.capitalizeFully(this)
 
@@ -53,6 +54,8 @@ fun ItemStack.formattedTypeName(): String = type.formattedTypeName()
 fun ItemStack.formattedItemName(): String = itemMeta?.displayName()?.toString()?.takeIf { it.isNotBlank() } ?: formattedTypeName()
 
 fun EntityType.formattedTypeName(): String = name.replace('_', ' ').capitalizeFully()
+
+fun Entity.formattedTypeName(): String = type.formattedTypeName()
 
 fun Player.isInventoryFull() = inventory.firstEmpty() == -1
 

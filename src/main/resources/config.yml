@@ -24,7 +24,7 @@ delay-between-infernal-particles: 1.5   # in seconds
 # Spread of infernal particles
 infernal-particles-spread: 2.0          # in blocks
 # Amount of particles spawned, this number greatly varies per particle, so I suggest you test it and manually adjust it to a balanced amount
-amount-infernal-particles: 10           # in particles
+infernal-particles-amount: 10           # in particles
 
 # Display custom name mode, valid values are NONE, LOOKING_AT, ALWAYS; keep in mind that this option only affect new infernal mobs, the ones that already exist won't be affected by this change
 display-infernal-custom-name-mode: LOOKING_AT

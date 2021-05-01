@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.commands
 
+import com.github.secretx33.infernalmobsreloaded.commands.subcommands.InspectCommand
 import com.github.secretx33.infernalmobsreloaded.commands.subcommands.ReloadCommand
 import com.github.secretx33.infernalmobsreloaded.commands.subcommands.SubCommand
 import org.bukkit.command.Command
@@ -13,7 +14,10 @@ import org.koin.core.component.KoinApiExtension
 @KoinApiExtension
 class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
 
-    private val subcommands: List<SubCommand> = listOf(ReloadCommand())
+    private val subcommands: List<SubCommand> = listOf(
+        InspectCommand(),
+        ReloadCommand(),
+    )
 
     init {
         plugin.getCommand("infernalmobsreloaded")?.let { cmd ->

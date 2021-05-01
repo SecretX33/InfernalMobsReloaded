@@ -20,11 +20,16 @@ permissions:
     default: op
     children:
       imr.reload: true
+      imr.inspect: true
 
   imr.reload:
     description: Allows one to reload all plugin configurations.
     default: false
-#
+
+  imr.inspect:
+    description: Allows one to inspect all entities and see what abilities they have.
+    default: false
+
 #  herbalism.create:
 #    description: Allows one to create and destroy harvestable blocks, as well as use the selection stick.
 #    default: false

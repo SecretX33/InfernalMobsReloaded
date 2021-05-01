@@ -3,6 +3,7 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
+import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
@@ -29,8 +30,10 @@ class InfernalTargetListener  (
         if(!entity.isInfernalMob()) return
         val entity = entity as LivingEntity
         mobsManager.cancelTargetTasks(entity)
+        println("Cancelled target tasks of ${entity.type.formattedTypeName()}")
         val target = target ?: return
         mobsManager.startTargetTasks(entity, target)
+        println("Start target tasks of ${entity.type.formattedTypeName()} to ${target.type.formattedTypeName()}")
     }
 
     private fun Entity.isInfernalMob() = this is LivingEntity && mobsManager.isValidInfernalMob(this)
