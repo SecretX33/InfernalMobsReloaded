@@ -33,11 +33,10 @@ class Messages(plugin: Plugin, private val adventureMessage: AdventureMessage) {
     }
 
     private fun String.parse(): Component = adventureMessage.parse(this)
-
-    private fun String.correctColorCodes(): String = ChatColor.translateAlternateColorCodes('&', this)
 }
 
 enum class MessageKeys(val default: Any) {
+    THIEF_MESSAGE_TO_TARGET("<#FF55FF>Woah, beware! <entity> <#FF55FF>stole your <item>."),
     ABILITY_DOESNT_EXIST("Sorry, there is no ability named <ability>, please type a valid ability.".toComponent(NamedTextColor.RED)),
     INFERNAL_MOB_TYPE_DOESNT_EXIST("Sorry, the infernal type <type> doesn't exist in your mobs.yml file, please type a valid name.".toComponent(NamedTextColor.RED)),
     NOT_TARGETING_LIVING_ENTITY("You are not targeting an entity, please aim to an entity and try again.".toComponent(NamedTextColor.RED)),

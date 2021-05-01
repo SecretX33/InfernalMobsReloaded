@@ -23,6 +23,11 @@ class Config(plugin: Plugin, private val log: Logger) {
     private val manager = YamlManager(plugin, "config")
     private val cache = ConcurrentHashMap<String, Any>()
 
+    fun reload() {
+        cache.clear()
+        manager.reload()
+    }
+
     @Suppress("UNCHECKED_CAST")
     fun <T> get(key: String, default: T): T {
         return cache.getOrPut(key) {
@@ -97,11 +102,6 @@ class Config(plugin: Plugin, private val log: Logger) {
     }
 
     fun set(key: ConfigKeys, value: Any) = set(key.configEntry, value)
-
-    fun reload() {
-        cache.clear()
-        manager.reload()
-    }
 
     fun save() = manager.save()
 }

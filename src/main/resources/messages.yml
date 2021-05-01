@@ -12,3 +12,5 @@ infernal-mob-death-messages:
   - '&cAn mob &cwas beheaded by player&c''s weapon!'
   - '&cplayer&c''s weapon &ckilled an mob&c!'
   - '&cAn mob &cwas killed by player &cusing a weapon&c!'
+
+thief-message: ""

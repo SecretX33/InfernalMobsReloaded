@@ -13,10 +13,14 @@ import kotlin.math.sqrt
 class AbilityConfig (
     plugin: Plugin,
     private val log: Logger,
-    private val adventureMessage: AdventureMessage,
 ) {
     private val manager = YamlManager(plugin, "abilities")
     private val cache = ConcurrentHashMap<String, Any>()
+
+    fun reload() {
+        cache.clear()
+        manager.reload()
+    }
 
     @Suppress("UNCHECKED_CAST")
     fun <T> get(key: String, default: T): T {
@@ -96,6 +100,8 @@ class AbilityConfig (
     fun getHeightMultiplier(ability: Abilities, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.height-multiplier", default, minValue, maxValue).let { if(it <= 1.0) it else sqrt(it) }
 
+    fun doesRequireLineOfSight(ability: Abilities, default: Boolean) = get("${ability.configEntry}.require-line-of-sight", default)
+
     fun getIntAmounts(ability: Abilities, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE) = getIntPair("${ability.configEntry}.amount", default, minValue, maxValue)
 
     // returns a pair of ints containing the <Min, Max> value of that property
@@ -155,10 +161,6 @@ class AbilityConfig (
 
     fun getDoublePair(key: AbilityConfigKeys, default: Double = key.defaultValue as Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDoublePair(key.configEntry, default, minValue, maxValue)
-
-    fun reload() {
-        manager.reload()
-    }
 }
 
 enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {

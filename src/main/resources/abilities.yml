@@ -21,8 +21,8 @@ archer:
   projectile-speed: 1.4             # honestly, this speed is in vector, so you can think in it like m/s or something
   arrow-amount: 8-15                # how many arrows are going to be shot, in default configuration it is 8-15
   arrow-delay: 0.2                  # in seconds, the delay between each arrow launch
-  recheck-delay: 1.0                # in seconds, every 1 second it'll run the random chance to see if it's going to spawn shoot the arrows
-  chance: 0.05                      # in percentage, every 'recheck-delay' seconds, the power will have 5% chance of being triggered
+  recheck-delay: 1.5                # in seconds, every 1.5 seconds it'll run the random chance to see if it's going to spawn shoot the arrows
+  chance: 0.1                       # in percentage, every 'recheck-delay' seconds, the power will have 10% chance of being triggered
 
 # Armoured ability
 # Makes the entity spawn with a beefy armor, or a damage reduction effect if it cannot wear armor
@@ -174,12 +174,13 @@ teleport:
   chance: 0.3                        # every 'recheck-delay' seconds, it'll, at a 30% chance of happening, teleport nearby its target
 
 # Thief ability
-# Every certain amount of time, a infernal mob with thief ability will have a chance of stealing one part of the target's set or equipped weapons, randomly
+# Every certain amount of time, a infernal mob with thief ability will have a chance of steal one part of the target's set or equipped weapons, randomly
 thief:
   recheck-delay: 3.0                 # in seconds, each 3 seconds it'll run the random chance to see if it's going to steal a piece of target's equipment
   chance: 0.05                       # every 'recheck-delay' seconds, it'll, at a 5% chance of happening, steal one of the equipped items of the target
   durability-loss: 0.04-0.06         # in percentage, will reduce between 4% and 6% the durability of the equipment stolen from the victim
   affect-only-players: true          # set to true by default to prevent exploits, people "storing" mobs with thief ability and make them fight against another infernal that has special, rare armor, in order to make them steal the rare equipment of that other infernal, which will be dropped at the thief's feet, and will make getting them much easier; you may set this to false if you don't care
+  require-line-of-sight: true        # if true, the ability will only trigger if the infernal mob has line of sight of the victim
 
 # Thornmail ability
 # Has a chance of partially (or fully, or even multiply) reflect the damage received

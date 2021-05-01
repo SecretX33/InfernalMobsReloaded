@@ -38,7 +38,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { AdventureMessage.create() }
         single { Config(get(), get()) }
         single { Messages(get(), get()) }
-        single { AbilityConfig(get(), get(), get()) }
+        single { AbilityConfig(get(), get()) }
         single { KeyChain(get()) }
         single { BossBarManager(get(), get()) }
         single { ParticlesHelper(get(), get()) }

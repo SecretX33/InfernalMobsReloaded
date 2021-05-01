@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.commands.subcommands
 
+import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
@@ -22,6 +23,7 @@ class ReloadCommand : SubCommand(), CustomKoinComponent {
 
     private val config by inject<Config>()
     private val messages by inject<Messages>()
+    private val abilityConfig by inject<AbilityConfig>()
     private val infernalMobTypesRepo by inject<InfernalMobTypesRepo>()
     private val lootItemsRepo by inject<LootItemsRepo>()
     private val infernalMobsManager by inject<InfernalMobsManager>()
@@ -36,6 +38,7 @@ class ReloadCommand : SubCommand(), CustomKoinComponent {
         bossBarManager.hideAllBarsFromAllPlayers()
         config.reload()
         messages.reload()
+        abilityConfig.reload()
         infernalMobTypesRepo.reload()
         lootItemsRepo.reload()
         infernalMobsManager.loadAllInfernals()

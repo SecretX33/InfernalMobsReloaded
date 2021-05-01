@@ -230,7 +230,6 @@ class AbilityHelper (
     private fun makeArcherTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val nearbyRange = abilityConfig.getNearbyRange(Abilities.ARCHER, 4.0)
         val speed = abilityConfig.getProjectileSpeed(Abilities.ARCHER, 2.2)
-        val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).getRandomBetween()
         val delay = abilityConfig.getDouble(AbilityConfigKeys.ARCHER_ARROW_DELAY, minValue = 0.001).toLongDelay()
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.ARCHER, 1.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.ARCHER, 0.05)
@@ -238,6 +237,7 @@ class AbilityHelper (
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
+            val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).getRandomBetween()
             val victims = target.getValidNearbyTargetsAsync(nearbyRange)
 
             for (i in 1..amount) {
@@ -366,11 +366,12 @@ class AbilityHelper (
 
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.THIEF, 3.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.THIEF, 0.05)
+        val requireLoS = abilityConfig.doesRequireLineOfSight(Abilities.THIEF, true)
 
         while(isActive && !entity.isNotTargeting(target)) {
-            println("Thief scheduled, target is ${target.name}, chance = $chance, recheckDelay = $recheckDelay, durability loss = ${abilityConfig.getDurabilityLoss(Abilities.THIEF, 0.04, maxValue = 1.0).getRandomBetween()}")
+            println("Thief scheduled, target is ${target.name}, chance = $chance, recheckDelay = $recheckDelay, durability loss = ${abilityConfig.getDurabilityLoss(Abilities.THIEF, 0.04, maxValue = 1.0).getRandomBetween()}, affectOnlyPlayers = $affectOnlyPlayers, requireLoS = $requireLoS")
             delay(recheckDelay)
-            if(random.nextDouble() > chance) continue
+            if(random.nextDouble() > chance || (requireLoS && !entity.hasLineOfSight(target))) continue
             println("Stealing entity")
 
             val equip = target.equipment ?: return@launch
@@ -448,7 +449,7 @@ class AbilityHelper (
     private fun LivingEntity.shootDirection(target: LivingEntity): Vector {
         val src = eyeLocation
         val dest = target.location.apply {
-            y += target.height
+            y += target.height + 0.1
         }
         val difX = dest.x - src.x
         val difZ = dest.z - src.z
