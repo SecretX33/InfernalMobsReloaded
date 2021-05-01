@@ -121,30 +121,32 @@ class InfernalMobsManager (
         val savedType = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING) ?: return
 
         // is type of that infernal is missing, convert it back to a normal entity
-        val infernalType = infernalMobTypesRepo.getInfernalTypeOrNull(savedType) ?: run {
+        if(!infernalMobTypesRepo.isValidInfernalType(savedType)) {
             unmakeInfernalMob(entity)
             return
         }
-        startParticleEmissionTask(entity, infernalType)
+        startParticleEmissionTask(entity)
     }
 
-    private fun startParticleEmissionTask(entity: LivingEntity, infernalType: InfernalMobType) {
+    private fun startParticleEmissionTask(entity: LivingEntity) {
+        val particleType = particleType
+        val particleSpread = particleSpread
         val delay = delayBetweenParticleEmission
+
         val job = CoroutineScope(Dispatchers.Default).launch {
-            println("particleSpread = $particleSpread, delayBetweenParticleEmission = $delayBetweenParticleEmission, particleAmount = ${config.get<Int>(ConfigKeys.INFERNAL_PARTICLES_AMOUNT)}")
             while(isActive) {
-                particlesHelper.sendParticle(entity, Particle.LAVA, particleSpread)
+                particlesHelper.sendParticle(entity, particleType, particleSpread)
                 delay(delay)
             }
         }
         infernalMobPeriodicTasks.put(entity.uniqueId, job)
     }
 
-    private val delayBetweenParticleEmission
-        get() = (max(0.01, config.get(ConfigKeys.DELAY_BETWEEN_INFERNAL_PARTICLES)) * 1000.0).toLong()
+    private val particleType get() = config.getEnum<Particle>(ConfigKeys.INFERNAL_PARTICLE_TYPE)
 
-    private val particleSpread
-        get() = config.get<Double>(ConfigKeys.INFERNAL_PARTICLES_SPREAD)
+    private val delayBetweenParticleEmission get() = (max(0.01, config.get(ConfigKeys.DELAY_BETWEEN_INFERNAL_PARTICLES)) * 1000.0).toLong()
+
+    private val particleSpread get() = config.get<Double>(ConfigKeys.INFERNAL_PARTICLES_SPREAD)
 
     fun loadAllInfernals() {
         Bukkit.getWorlds().forEach { world ->

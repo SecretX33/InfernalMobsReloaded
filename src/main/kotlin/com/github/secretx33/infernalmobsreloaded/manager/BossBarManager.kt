@@ -20,8 +20,7 @@ class BossBarManager (
 
     fun updateBossBar(entity: LivingEntity) {
         if(!bossBarEnabled) return
-        val bossBar = entity.getBossBar() ?: return
-        bossBar.progress(entity.getCurrentHpPercent())
+        entity.getBossBar()?.progress(entity.getCurrentHpPercent())
     }
 
     private fun LivingEntity.getBossBar(): BossBar? {
@@ -47,6 +46,7 @@ class BossBarManager (
     }
 
     fun showBarOfNearbyInfernals(player: Player) {
+        if(!bossBarEnabled) return
         val nearbyInfernals = player.getNearbyInfernals().takeIf { it.isNotEmpty() } ?: return
         manageInfernalBossBarsVisibility(player, nearbyInfernals)
     }
@@ -56,6 +56,7 @@ class BossBarManager (
     private fun LivingEntity.isInfernalMob() = mobsManager.isValidInfernalMob(this)
 
     fun showBarsOfNearbyInfernalsForAllPlayers() {
+        if(!bossBarEnabled) return
         Bukkit.getOnlinePlayers().forEach { showBarOfNearbyInfernals(it) }
     }
 

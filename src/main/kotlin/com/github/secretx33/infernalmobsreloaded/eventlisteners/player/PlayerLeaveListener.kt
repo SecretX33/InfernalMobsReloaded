@@ -12,7 +12,7 @@ import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
 
 @KoinApiExtension
-class PlayerLogoutListener (
+class PlayerLeaveListener (
     plugin: Plugin,
     private val barManager: BossBarManager,
 ): Listener {
@@ -21,6 +21,6 @@ class PlayerLogoutListener (
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun PlayerQuitEvent.onPlayerQuit() {
-        barManager.hideAllBossBarsFor(player)
+//        barManager.hideAllBossBarsFor(player)
     }
 }

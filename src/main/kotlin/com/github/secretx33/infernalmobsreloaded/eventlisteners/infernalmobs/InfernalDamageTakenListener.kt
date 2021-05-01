@@ -25,6 +25,7 @@ class InfernalDamageTakenListener (
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun InfernalDamageTakenEvent.onInfernalDamageTaken() {
         mobsManager.triggerOnDamageTakenAbilities(this)
+        println("${attacker.name} attacked infernal ${entity.name} (${infernalType.name}), was event cancelled = $isCancelled")
         if(!isCancelled) bossBarManager.updateBossBar(entity)
     }
 }

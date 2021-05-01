@@ -11,7 +11,8 @@ import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDea
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntitySpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerMoveListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.*
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerLogoutListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerJoinListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerLeaveListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.FireworkDamageWorkaroundListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.LightningDamageWorkaroundListener
 import com.github.secretx33.infernalmobsreloaded.manager.*
@@ -53,7 +54,8 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { InfernalDeathListener(get(), get(), get(), get(), get(), get()) }
         single { InfernalSpawnListener(get(), get(), get(), get()) }
         single { InfernalTargetListener(get(), get(), get(), get()) }
-        single { PlayerLogoutListener(get(), get()) }
+        single { PlayerJoinListener(get(), get()) }
+        single { PlayerLeaveListener(get(), get()) }
         single { PlayerMoveListener(get(), get(), get(), get()) }
         single { FireworkDamageWorkaroundListener(get(), get()) }
         single { LightningDamageWorkaroundListener(get(), get()) }
@@ -84,7 +86,8 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<InfernalDeathListener>()
         get<InfernalSpawnListener>()
         get<InfernalTargetListener>()
-        get<PlayerLogoutListener>()
+        get<PlayerJoinListener>()
+        get<PlayerLeaveListener>()
         get<PlayerMoveListener>()
         get<FireworkDamageWorkaroundListener>()
         get<LightningDamageWorkaroundListener>()
@@ -92,11 +95,13 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<ChunkLoadListener>()
         get<Commands>()
         get<InfernalMobsManager>().loadAllInfernals()
+        get<BossBarManager>().showBarsOfNearbyInfernalsForAllPlayers()
     }
 
     override fun onDisable() {
         get<AbilityHelper>().revertPendingBlockModifications()
         get<InfernalMobsManager>().unloadAllInfernals()
+        get<BossBarManager>().hideAllBarsFromAllPlayers()
         unloadKoinModules(mod)
         stopKoin()
     }

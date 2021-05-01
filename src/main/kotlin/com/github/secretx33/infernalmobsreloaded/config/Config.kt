@@ -4,6 +4,7 @@ import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.google.common.base.Enums
 import com.google.common.base.Predicate
+import org.bukkit.Particle
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.plugin.Plugin
@@ -119,6 +120,7 @@ enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
     INFERNAL_DEATH_MESSAGE_RADIUS("infernal-death-message-radius", 20),
     INFERNAL_MOBS_THAT_CAN_BE_RIDED_BY_ANOTHER("infernal-mobs-that-can-be-rided-by-another-infernal", emptySet<EntityType>()),
     INFERNAL_MOBS_THAT_CAN_SPAWN_MOUNTED("infernal-mobs-that-can-spawn-mounted", emptySet<EntityType>()),
+    INFERNAL_PARTICLE_TYPE("infernal-particle-type", Particle.LAVA),
     INFERNAL_PARTICLES_AMOUNT("infernal-particles-amount", 10),
     INFERNAL_PARTICLES_SPREAD("infernal-particles-spread", 2.0),
     INFERNAL_SPAWN_MESSAGE_RADIUS("infernal-spawn-message-radius", 30),
