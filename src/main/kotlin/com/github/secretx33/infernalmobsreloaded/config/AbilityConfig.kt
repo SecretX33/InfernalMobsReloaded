@@ -168,7 +168,7 @@ enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
     LIFESTEAL_HEALING_PERCENTAGE("${Abilities.LIFESTEAL.configEntry}.healing-percentage", 0.5),
     THORMAIL_REFLECTED_AMOUNT("${Abilities.THORNMAIL.configEntry}.reflected-amount", 0.5),
     BERSERK_CAUSED_DAMAGE_BONUS("${Abilities.BERSERK.configEntry}.damage-caused-bonus", 1.3),
-    BERSERK_RECEIVED_DAMAGE_BONUS("${Abilities.BERSERK.configEntry}.damage-caused-bonus", 1.25),
+    BERSERK_RECEIVED_DAMAGE_BONUS("${Abilities.BERSERK.configEntry}.damage-received-bonus", 1.25),
     GHOST_EVIL_CHANCE("${Abilities.GHOST.configEntry}.evil-chance", 0.3),
     GHOST_ITEM_DROP_CHANCE("${Abilities.GHOST.configEntry}.item-drop-chance", 0.2),
     MORPH_KEEP_HP_PERCENTAGE("${Abilities.MORPH.configEntry}.keep-hp-percentage", true),

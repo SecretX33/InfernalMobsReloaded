@@ -28,6 +28,6 @@ class InfernalDamageTakenListener (
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun InfernalDamageTakenEvent.updateBossBarHealth() {
-        bossBarManager.updateBossBar(entity, entity.getHealthPercent(damage))
+        bossBarManager.updateBossBar(entity, entity.getHealthPercent(finalDamage))
     }
 }

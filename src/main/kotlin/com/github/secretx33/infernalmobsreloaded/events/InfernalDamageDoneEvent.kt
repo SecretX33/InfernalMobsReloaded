@@ -15,6 +15,9 @@ class InfernalDamageDoneEvent (
 
     var damageMulti: Double = 1.0
 
+    val finalDamage: Double
+        get() = damage * damageMulti
+
     private var isCancelled = false
 
     override fun isCancelled(): Boolean = isCancelled
