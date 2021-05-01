@@ -165,6 +165,7 @@ class AbilityConfig (
 }
 
 enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
+    FIREWORK_DAMAGE_MULTIPLIER("${Abilities.FIREWORK.configEntry}.damage-multiplier", 1.0),
     LIFESTEAL_HEALING_PERCENTAGE("${Abilities.LIFESTEAL.configEntry}.healing-percentage", 0.5),
     THORMAIL_REFLECTED_AMOUNT("${Abilities.THORNMAIL.configEntry}.reflected-amount", 0.5),
     BERSERK_CAUSED_DAMAGE_BONUS("${Abilities.BERSERK.configEntry}.damage-caused-bonus", 1.3),

@@ -750,11 +750,12 @@ class AbilityHelper (
 
     private fun InfernalDamageTakenEvent.triggerFirework() {
         val chance = abilityConfig.getAbilityChanceOnDamageTaken(Abilities.FIREWORK, 0.25)
+        println("Firework chance = $chance")
         if(random.nextDouble() > chance) return
 
         world.spawn(attacker.location.apply {
             x += random.nextDouble() - 0.5
-            y += random.nextDouble() * 0.75
+            y += random.nextDouble()
             z += random.nextDouble() - 0.5
         }, Firework::class.java, SpawnReason.CUSTOM) { it.prepareFirework(entity) }.detonate()
     }
@@ -764,12 +765,14 @@ class AbilityHelper (
         val effect = FireworkEffect.builder().with(FireworkEffect.Type.values().random())
             .withColor(randomColor)
             .flicker(true)
-            .trail(false)
+            .trail(random.nextBoolean())
 
         // randomly add more colors and fade effects
-        if(random.nextInt(2) == 0) effect.withColor(randomColor)
-        if(random.nextInt(2) == 0) effect.withFade(randomColor)
-        if(random.nextInt(2) == 0) effect.withFade(randomColor)
+        if(random.nextBoolean()) effect.withColor(randomColor)
+        if(random.nextInt(3) == 0) effect.withColor(randomColor)
+        if(random.nextBoolean()) effect.withFade(randomColor)
+        if(random.nextBoolean()) effect.withFade(randomColor)
+        if(random.nextInt(3) == 0) effect.withFade(randomColor)
 
         meta.clearEffects()
         meta.addEffect(effect.build())

@@ -6,6 +6,7 @@ import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkLoadListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkUnloadListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.FireworkDamageIncreaseListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDamageEntityListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDeathListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntitySpawnListener
@@ -46,6 +47,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { AbilityHelper(get(),get(), get(), get(), get(), get(), get(), get(), get()) }
         single { InfernalMobTypesRepo(get(), get(), get(), get(), get()) }
         single { InfernalMobsManager(get(), get(), get(), get(), get()) }
+        single { FireworkDamageIncreaseListener(get(), get(), get()) }
         single { EntityDamageEntityListener(get(), get(), get()) }
         single { EntityDeathListener(get(), get()) }
         single { EntitySpawnListener(get(), get(), get(), get()) }
@@ -78,6 +80,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
             printLogger(Level.ERROR)
             loadKoinModules(mod)
         }
+        get<FireworkDamageIncreaseListener>()
         get<EntityDamageEntityListener>()
         get<EntityDeathListener>()
         get<EntitySpawnListener>()

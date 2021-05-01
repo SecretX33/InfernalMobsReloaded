@@ -19,7 +19,7 @@ import org.koin.core.component.KoinApiExtension
 class EntityDamageEntityListener (
     plugin: Plugin,
     private val config: Config,
-    private val mobsManager: InfernalMobsManager
+    private val mobsManager: InfernalMobsManager,
 ): Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
