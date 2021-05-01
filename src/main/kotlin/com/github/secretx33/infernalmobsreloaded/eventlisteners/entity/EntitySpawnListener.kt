@@ -33,10 +33,10 @@ class EntitySpawnListener (
     private fun CreatureSpawnEvent.onNaturalEntitySpawn() {
         val world = entity.world
         if(!spawnReason.isAllowed() || entity.cannotBeInfernal() || entity.alreadyIsInfernal() || !world.isWhitelisted()) return
-        val infernoType = infernalTypesRepo.getInfernalTypes(entityType).firstOrNull { random.nextDouble() <= it.spawnChance } ?: return
+        val infernalType = infernalTypesRepo.getInfernalTypes(entityType).firstOrNull { random.nextDouble() <= it.spawnChance } ?: return
 
         // fire event InfernalMobSpawnEvent to spawn a new infernal
-        Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(entity, infernoType, spawnReason))
+        Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(entity, infernalType, spawnReason))
     }
 
     private fun LivingEntity.cannotBeInfernal() = !infernalTypesRepo.canTypeBecomeInfernal(type) || (this is Ageable && !isAdult && blacklistedBabies.contains(type)) || infernalManager.isMountOfAnotherInfernal(this)

@@ -32,16 +32,16 @@ display-infernal-custom-name-mode: LOOKING_AT
 # If true, infernal mobs boss bar will be shown to the player's within configured range
 enable-boss-bars: true
 # Distance that the player has to be of an infernal mob in order to see its boss bar
-boss-bar-show-range: 35.0
+boss-bar-show-range: 25.0
 
 # If true, nearby players will be notified about the spawn of a new Infernal Mob with one of the spawn messages set on the `messages.yml` file
-enable-inferno-spawn-messages: true
+enable-infernal-spawn-messages: true
 # The radius around the newly spawned infernal mob that a player has to be to receive the spawn message
-inferno-spawn-message-radius: 30       # in blocks
+infernal-spawn-message-radius: 30       # in blocks
 # If true, nearby players will be notified about the death of a Infernal Mob with one of the spawn messages set on the `messages.yml` file
-enable-inferno-death-messages: true
+enable-infernal-death-messages: true
 # The radius around the dead infernal mob that a player has to be to receive the death message
-inferno-death-message-radius: 20       # in blocks
+infernal-death-message-radius: 20       # in blocks
 
 # Worlds in which mobs will have a chance of becoming infernal mobs; <ALL> is a special tag, it will allow the spawn of infernal mobs on ALL worlds; to prevent the spawn of infernals everywhere, just delete all the items and insert empty square brackets instead
 worlds-in-which-infernal-mobs-can-spawn:

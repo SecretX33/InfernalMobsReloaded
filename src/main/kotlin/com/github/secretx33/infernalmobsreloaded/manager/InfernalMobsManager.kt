@@ -131,7 +131,7 @@ class InfernalMobsManager (
     private fun startParticleEmissionTask(entity: LivingEntity, infernalType: InfernalMobType) {
         val delay = delayBetweenParticleEmission
         val job = CoroutineScope(Dispatchers.Default).launch {
-            println("particleSpread = $particleSpread, delayBetweenParticleEmission = $delayBetweenParticleEmission, particleAmount = ${config.get<Int>(ConfigKeys.infernal_PARTICLES_AMOUNT)}")
+            println("particleSpread = $particleSpread, delayBetweenParticleEmission = $delayBetweenParticleEmission, particleAmount = ${config.get<Int>(ConfigKeys.INFERNAL_PARTICLES_AMOUNT)}")
             while(isActive) {
                 particlesHelper.sendParticle(entity, Particle.LAVA, particleSpread)
                 delay(delay)
@@ -141,10 +141,10 @@ class InfernalMobsManager (
     }
 
     private val delayBetweenParticleEmission
-        get() = (max(0.01, config.get(ConfigKeys.DELAY_BETWEEN_INFERNO_PARTICLES)) * 1000.0).toLong()
+        get() = (max(0.01, config.get(ConfigKeys.DELAY_BETWEEN_INFERNAL_PARTICLES)) * 1000.0).toLong()
 
     private val particleSpread
-        get() = config.get<Double>(ConfigKeys.INFERNO_PARTICLES_SPREAD)
+        get() = config.get<Double>(ConfigKeys.INFERNAL_PARTICLES_SPREAD)
 
     fun loadAllInfernals() {
         Bukkit.getWorlds().forEach { world ->

@@ -40,7 +40,7 @@ class InfernalSpawnListener (
         }
     }
 
-    private val spawnMessageEnabled get() = config.get<Boolean>(ConfigKeys.ENABLE_INFERNO_SPAWN_MESSAGE)
+    private val spawnMessageEnabled get() = config.get<Boolean>(ConfigKeys.ENABLE_INFERNAL_SPAWN_MESSAGE)
     private val spawnMessages get() = messages.getList(MessageKeys.INFERNAL_MOB_SPAWN_MESSAGES)
-    private val messageRange get() = config.get<Int>(ConfigKeys.INFERNO_SPAWN_MESSAGE_RADIUS)
+    private val messageRange get() = config.get<Int>(ConfigKeys.INFERNAL_SPAWN_MESSAGE_RADIUS)
 }

@@ -5,6 +5,7 @@ import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.events.InfernalDeathEvent
+import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.manager.ParticlesHelper
 import com.github.secretx33.infernalmobsreloaded.model.Abilities
@@ -24,6 +25,7 @@ class InfernalDeathListener (
     private val messages: Messages,
     private val particlesHelper: ParticlesHelper,
     private val mobsManager: InfernalMobsManager,
+    private val bossBarManager: BossBarManager,
 ): Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
@@ -40,6 +42,7 @@ class InfernalDeathListener (
         }
         mobsManager.triggerOnDeathAbilities(entity)
         mobsManager.unloadInfernalMob(entity)
+        bossBarManager.removeBossBar(entity)
         // drop infernal rewards on infernal mob's body (along with normal mob loot)
         infernalType.getLoots().forEach {
             world.dropItemNaturally(entity.location, it)
@@ -58,7 +61,7 @@ class InfernalDeathListener (
 
     private fun LivingEntity.getLives() = mobsManager.getLives(this)
 
-    private val deathMessageEnabled get() = config.get<Boolean>(ConfigKeys.ENABLE_INFERNO_DEATH_MESSAGE)
+    private val deathMessageEnabled get() = config.get<Boolean>(ConfigKeys.ENABLE_INFERNAL_DEATH_MESSAGE)
     private val deathMessages get() = messages.getList(MessageKeys.INFERNAL_MOB_DEATH_MESSAGES)
-    private val messageRange get() = config.getInt(ConfigKeys.INFERNO_DEATH_MESSAGE_RADIUS)
+    private val messageRange get() = config.getInt(ConfigKeys.INFERNAL_DEATH_MESSAGE_RADIUS)
 }

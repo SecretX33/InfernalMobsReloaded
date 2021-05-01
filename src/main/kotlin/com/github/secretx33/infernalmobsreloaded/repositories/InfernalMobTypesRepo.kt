@@ -29,9 +29,9 @@ class InfernalMobTypesRepo (
     private val lootItemsRepo: LootItemsRepo,
 ) {
     private val manager = YamlManager(plugin, "mobs")
-    private var infernoTypeNames = emptyList<String>()                    // original groupNames
-    private var infernoTypeCache = emptyMap<String, InfernalMobType>()    // lowercase groupName, infernoType
-    private var infernoTypeMultimap = ImmutableSetMultimap.of<EntityType, InfernalMobType>()  // entityType, set<infernoType>
+    private var infernalTypeNames = emptyList<String>()                    // original groupNames
+    private var infernalTypeCache = emptyMap<String, InfernalMobType>()    // lowercase groupName, infernalType
+    private var infernalTypeMultimap = ImmutableSetMultimap.of<EntityType, InfernalMobType>()  // entityType, set<infernalType>
 
     init { reload() }
 
@@ -41,16 +41,16 @@ class InfernalMobTypesRepo (
         loadMobTypes()
     }
 
-    fun canTypeBecomeInfernal(type: EntityType) = infernoTypeMultimap.containsKey(type)
+    fun canTypeBecomeInfernal(type: EntityType) = infernalTypeMultimap.containsKey(type)
 
-    fun getInfernalTypeOrNull(name: String) = infernoTypeCache[name.toLowerCase(Locale.US)]
+    fun getInfernalTypeOrNull(name: String) = infernalTypeCache[name.toLowerCase(Locale.US)]
 
-    fun getInfernalTypes(entityType: EntityType): ImmutableSet<InfernalMobType> = infernoTypeMultimap[entityType]
+    fun getInfernalTypes(entityType: EntityType): ImmutableSet<InfernalMobType> = infernalTypeMultimap[entityType]
 
-    fun isValidInfernalType(name: String) = infernoTypeCache.containsKey(name.toLowerCase(Locale.US))
+    fun isValidInfernalType(name: String) = infernalTypeCache.containsKey(name.toLowerCase(Locale.US))
 
     // weighted by mob type, so it won't produce more than one type of entity vs another
-    fun getRandomInfernalType() = infernoTypeMultimap[infernoTypeMultimap.keys().random()].random()
+    fun getRandomInfernalType() = infernalTypeMultimap[infernalTypeMultimap.keys().random()].random()
 
     private fun ensureUniqueKeys() {
         val duplicatedKeys = manager.getKeys(false).groupBy { it.toLowerCase(Locale.US) }.filterValues { it.size > 1 }
@@ -65,11 +65,11 @@ class InfernalMobTypesRepo (
     }
 
     private fun loadMobTypes() {
-        infernoTypeNames = manager.getKeys(false).sorted()
-        infernoTypeCache = infernoTypeNames.map { it.toLowerCase(Locale.US) }.associateWithTo(HashMap(infernoTypeNames.size)) { makeMobType(it) }
+        infernalTypeNames = manager.getKeys(false).sorted()
+        infernalTypeCache = infernalTypeNames.map { it.toLowerCase(Locale.US) }.associateWithTo(HashMap(infernalTypeNames.size)) { makeMobType(it) }
         val builder = ImmutableSetMultimap.builder<EntityType, InfernalMobType>()
-        infernoTypeCache.forEach { (_, infernoType) -> builder.put(infernoType.entityType, infernoType) }
-        infernoTypeMultimap = builder.build()
+        infernalTypeCache.forEach { (_, infernalType) -> builder.put(infernalType.entityType, infernalType) }
+        infernalTypeMultimap = builder.build()
     }
 
     private fun makeMobType(name: String): InfernalMobType {

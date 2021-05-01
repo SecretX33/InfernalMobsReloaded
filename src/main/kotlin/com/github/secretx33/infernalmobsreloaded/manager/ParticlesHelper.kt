@@ -46,5 +46,5 @@ class ParticlesHelper(private val config: Config, private val log: Logger) {
         get() = config.get<Boolean>(ConfigKeys.ENABLE_PARTICLE_EFFECTS)
 
     private val particleAmount
-        get() = config.get<Int>(ConfigKeys.INFERNO_PARTICLES_AMOUNT)
+        get() = config.get<Int>(ConfigKeys.INFERNAL_PARTICLES_AMOUNT)
 }
