@@ -47,9 +47,9 @@ enum class Abilities {
         val values = values().toList()
         val lowercasedValues = values().map { it.name.toLowerCase(Locale.US) }
 
-        fun random(number: Int): MutableSet<Abilities> {
+        fun random(number: Int): Set<Abilities> {
             require(number >= 0) { "number cannot be lower than 0, number = $number" }
-            return values.subList(0, min(values.size, number)).toMutableSet()
+            return values.shuffled().subList(0, min(values.size, number)).toSet()
         }
 
         fun getOrNull(name: String) = values.firstOrNull { it.name.equals(name, ignoreCase = true) }

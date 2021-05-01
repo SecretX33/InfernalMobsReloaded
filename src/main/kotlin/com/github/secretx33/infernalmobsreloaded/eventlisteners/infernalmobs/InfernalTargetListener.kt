@@ -1,9 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs
 
-import com.github.secretx33.infernalmobsreloaded.config.Config
-import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
-import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
@@ -14,12 +11,9 @@ import org.bukkit.event.entity.EntityTargetLivingEntityEvent
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
 
-
 @KoinApiExtension
 class InfernalTargetListener  (
     plugin: Plugin,
-    private val config: Config,
-    private val messages: Messages,
     private val mobsManager: InfernalMobsManager,
 ): Listener {
 
@@ -29,9 +23,9 @@ class InfernalTargetListener  (
     private fun EntityTargetLivingEntityEvent.onInfernalTarget() {
         if(!entity.isInfernalMob()) return
         val entity = entity as LivingEntity
-        mobsManager.cancelTargetTasks(entity)
+        mobsManager.cancelAbilityTasks(entity)
         val target = target ?: return
-        mobsManager.startTargetTasks(entity, target)
+        mobsManager.startTargetAbilityTasks(entity, target)
     }
 
     private fun Entity.isInfernalMob() = this is LivingEntity && mobsManager.isValidInfernalMob(this)

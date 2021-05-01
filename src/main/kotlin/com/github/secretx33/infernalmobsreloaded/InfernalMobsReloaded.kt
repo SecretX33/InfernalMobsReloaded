@@ -9,10 +9,10 @@ import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkUnloadListe
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDamageEntityListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDeathListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntitySpawnListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerMoveListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.*
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerJoinListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerLeaveListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerMoveListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.FireworkDamageWorkaroundListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.LightningDamageWorkaroundListener
 import com.github.secretx33.infernalmobsreloaded.manager.*
@@ -53,7 +53,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { InfernalDamageTakenListener(get(), get(), get()) }
         single { InfernalDeathListener(get(), get(), get(), get(), get(), get()) }
         single { InfernalSpawnListener(get(), get(), get(), get()) }
-        single { InfernalTargetListener(get(), get(), get(), get()) }
+        single { InfernalTargetListener(get(), get()) }
         single { PlayerJoinListener(get(), get()) }
         single { PlayerLeaveListener(get(), get()) }
         single { PlayerMoveListener(get(), get(), get(), get()) }

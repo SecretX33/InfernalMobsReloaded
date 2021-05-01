@@ -35,8 +35,8 @@ dependencies {
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
-    compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT") // Spigot API dependency
-    compileOnly(fileTree("libs"))      // Spigot server dependency
+    compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT") // Paper API dependency
+    compileOnly(fileTree("libs"))      // Paper server dependency
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
     val koin_version = "2.2.2"
     implementation("org.koin:koin-core:$koin_version")

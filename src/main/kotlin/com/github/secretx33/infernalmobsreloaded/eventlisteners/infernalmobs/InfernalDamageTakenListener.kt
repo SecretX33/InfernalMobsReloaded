@@ -1,11 +1,8 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs
 
-import com.github.secretx33.infernalmobsreloaded.config.Config
-import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageTakenEvent
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
-import com.github.secretx33.infernalmobsreloaded.manager.ParticlesHelper
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority

@@ -9,10 +9,6 @@ import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRe
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.CustomKoinComponent
 import com.github.secretx33.infernalmobsreloaded.utils.inject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinApiExtension

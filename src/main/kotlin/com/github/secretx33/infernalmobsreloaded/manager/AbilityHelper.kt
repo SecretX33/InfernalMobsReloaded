@@ -14,9 +14,7 @@ import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.*
-import com.google.common.collect.Multimap
 import com.google.common.collect.Sets
-import com.google.common.collect.Table
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
@@ -208,28 +206,28 @@ class AbilityHelper (
 
     // periodic tasks that require a target
 
-    fun startTargetTasks(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) {
-        val abilities = entity.getAbilities() ?: return
+    fun startTargetAbilityTasks(entity: LivingEntity, target: LivingEntity): List<Job> {
+        val abilities = entity.getAbilities() ?: return emptyList()
 
         val jobList = ArrayList<Job>()
         abilities.forEach { // TODO("check if I need to pass multimap as parameter to these tasks, cause I'm not sure if the remove will even be called")
             when(it) {
-                Abilities.ARCHER -> makeArcherTask(entity, target, multimap)
-                Abilities.CALL_THE_GANG -> makeCallTheGangTask(entity, target, multimap)
-                Abilities.GHASTLY -> makeGhastlyTask(entity, target, multimap)
-                Abilities.MORPH -> makeMorphTask(entity, target, multimap)
-                Abilities.NECROMANCER -> makeNecromancerTask(entity, target, multimap)
-                Abilities.POTIONS -> TODO()
-                Abilities.TELEPORT -> makeTeleportTask(entity, target, multimap)
-                Abilities.THIEF -> makeThiefTask(entity, target, multimap)
-                Abilities.WEBBER -> makeWebberTask(entity, target, multimap)
+                Abilities.ARCHER -> makeArcherTask(entity, target)
+                Abilities.CALL_THE_GANG -> makeCallTheGangTask(entity, target)
+                Abilities.GHASTLY -> makeGhastlyTask(entity, target)
+                Abilities.MORPH -> makeMorphTask(entity, target)
+                Abilities.NECROMANCER -> makeNecromancerTask(entity, target)
+                Abilities.POTIONS -> null // TODO("Make a potion throw task")
+                Abilities.TELEPORT -> makeTeleportTask(entity, target)
+                Abilities.THIEF -> makeThiefTask(entity, target)
+                Abilities.WEBBER -> makeWebberTask(entity, target)
                 else -> null
             }?.let { job -> jobList.add(job) }
         }
-        multimap.putAll(entity.uniqueId, jobList.filter { it.isActive })
+        return jobList
     }
 
-    private fun makeArcherTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeArcherTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val nearbyRange = abilityConfig.getNearbyRange(Abilities.ARCHER, 4.0)
         val speed = abilityConfig.getProjectileSpeed(Abilities.ARCHER, 2.2)
         val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).getRandomBetween()
@@ -244,20 +242,16 @@ class AbilityHelper (
 
             for (i in 1..amount) {
                 victims.forEach {
+                    if(!isActive || entity.isNotTargeting(target)) return@launch
                     val dir = entity.shootDirection(it).multiply(speed)
-                    if (!isActive || entity.isNotTargeting(target)) {
-                        multimap.remove(entity.uniqueId, coroutineContext.job)
-                        return@launch
-                    }
                     entity.shootProjectile(dir, Arrow::class.java)
                 }
                 delay(delay)
             }
         }
-        multimap.remove(entity.uniqueId, coroutineContext.job)
     }
 
-    private fun makeCallTheGangTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeCallTheGangTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.CALL_THE_GANG, 2.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.CALL_THE_GANG, 0.025)
         val amount = abilityConfig.getIntAmounts(Abilities.CALL_THE_GANG, 2).getRandomBetween()
@@ -276,10 +270,9 @@ class AbilityHelper (
                 particlesHelper.sendParticle(entity, Particle.TOTEM, entity.width + 1, 30)
             }
         }
-        multimap.remove(entity.uniqueId, coroutineContext.job)
     }
 
-    private fun makeGhastlyTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeGhastlyTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val nearbyRange = abilityConfig.getNearbyRange(Abilities.ARCHER, 4.0)
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.GHASTLY, 1.5).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.GHASTLY, 0.25)
@@ -295,10 +288,9 @@ class AbilityHelper (
                 entity.shootProjectile(dir, Fireball::class.java)
             }
         }
-        multimap.remove(entity.uniqueId, coroutineContext.job)
     }
 
-    private fun makeMorphTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeMorphTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.MORPH, 1.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.MORPH, 0.01)
 
@@ -323,10 +315,9 @@ class AbilityHelper (
             }
             cancel()
         }
-        multimap.remove(entity.uniqueId, coroutineContext.job)
     }
 
-    private fun makeNecromancerTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeNecromancerTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val nearbyRange = abilityConfig.getNearbyRange(Abilities.GHASTLY, 4.0)
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.GHASTLY, 2.5).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.GHASTLY, 0.25)
@@ -342,10 +333,9 @@ class AbilityHelper (
                 entity.shootProjectile(dir, WitherSkull::class.java)
             }
         }
-        multimap.remove(entity.uniqueId, coroutineContext.job)
     }
 
-    private fun makeTeleportTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeTeleportTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.TELEPORT, 2.5).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.TELEPORT, 0.3)
 
@@ -367,10 +357,9 @@ class AbilityHelper (
             // else just teleport the entity right on the target's feet
             entity.teleportAsync(target.location)
         }
-        multimap.remove(entity.uniqueId, coroutineContext.job)
     }
 
-    private fun makeThiefTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeThiefTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         // if thief ability should affect only players and target is not one, return
         val affectOnlyPlayers = abilityConfig.getAffectsOnlyPlayers(Abilities.THIEF, true)
         if(affectOnlyPlayers && target.type != EntityType.PLAYER || target.equipment == null) return@launch
@@ -396,10 +385,9 @@ class AbilityHelper (
             runSync(plugin) { entity.world.dropItemNaturally(entity.location, item) }
             (target as? Player)?.updateInventory()
         }
-        multimap.remove(entity.uniqueId, coroutineContext.job)
     }
 
-    private fun makeWebberTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeWebberTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val chance = abilityConfig.getAbilityChance(Abilities.WEBBER, 0.05)
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.WEBBER, 2.0).toLongDelay()
 
@@ -408,7 +396,6 @@ class AbilityHelper (
             if(random.nextDouble() > chance) continue
             launchCobweb(target)
         }
-        multimap.remove(entity.uniqueId, coroutineContext.job)
     }
 
     private fun launchCobweb(target: LivingEntity) {

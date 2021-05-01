@@ -10,7 +10,8 @@ class InfernalSpawnEvent (
     entity: LivingEntity,
     infernalType: InfernalMobType,
     val spawnReason: SpawnReason = SpawnReason.CUSTOM,
-    val abilitySet: Set<Abilities>? = null,
+    val randomAbilities: Boolean = true,
+    val abilitySet: Set<Abilities> = emptySet(),
 ) : InfernalEntityEvent(entity, infernalType), Cancellable {
 
     private var isCancelled = false

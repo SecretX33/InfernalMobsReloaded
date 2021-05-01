@@ -12,7 +12,6 @@ import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.utils.pdc
 import com.google.common.collect.MultimapBuilder
-import com.google.common.collect.Multimaps
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
@@ -37,8 +36,8 @@ class InfernalMobsManager (
     private val abilityHelper: AbilityHelper,
 ) {
 
-    private val infernalMobPeriodicTasks = Multimaps.synchronizedListMultimap(MultimapBuilder.hashKeys().arrayListValues().build<UUID, Job>())
-    private val infernalMobTargetTasks = Multimaps.synchronizedListMultimap(MultimapBuilder.hashKeys().arrayListValues().build<UUID, Job>())
+    private val infernalMobParticleTasks = HashMap<UUID, Job>()   // stores the job currently emitting infernal particles
+    private val infernalMobAbilityTasks = MultimapBuilder.hashKeys().arrayListValues().build<UUID, Job>()  // for abilities that require a target
 
     fun isValidInfernalMob(entity: LivingEntity) = infernalMobTypesRepo.canTypeBecomeInfernal(entity.type) && entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)?.let { infernalMobTypesRepo.isValidInfernalType(it) } == true
 
@@ -76,7 +75,7 @@ class InfernalMobsManager (
     }
 
     private fun addPdcKeysToInfernal(entity: LivingEntity, infernalType: InfernalMobType, event: InfernalSpawnEvent) {
-        val abilitySet = event.abilitySet?.toMutableSet()?.filterConflicts() ?: Abilities.random(infernalType.getAbilityNumber()).filterConflicts()
+        val abilitySet = (event.abilitySet.takeIf { !event.randomAbilities } ?: Abilities.random(infernalType.getAbilityNumber())).filterConflicts()
         val livesNumber = if(abilitySet.contains(Abilities.SECOND_WING)) 2 else 1
 
         entity.pdc.apply {
@@ -86,13 +85,14 @@ class InfernalMobsManager (
         }
     }
 
-    private fun MutableSet<Abilities>.filterConflicts(): MutableSet<Abilities> {
+    private fun Set<Abilities>.filterConflicts(): Set<Abilities> {
+        val newSet = HashSet(this)
         if(contains(Abilities.FLYING) && contains(Abilities.MOUNTED)) {
-            if(random.nextInt(2) == 0) remove(Abilities.FLYING)
-            else remove(Abilities.MOUNTED)
-            add(Abilities.values.filter { it != Abilities.FLYING && it != Abilities.MOUNTED }.random())
+            if(random.nextInt(2) == 0) newSet.remove(Abilities.FLYING)
+            else newSet.remove(Abilities.MOUNTED)
+            newSet.add(Abilities.values.filter { it != Abilities.FLYING && it != Abilities.MOUNTED }.random())
         }
-        return this
+        return newSet
     }
 
     private fun unmakeInfernalMob(entity: LivingEntity) {
@@ -126,9 +126,12 @@ class InfernalMobsManager (
             return
         }
         startParticleEmissionTask(entity)
+        val target = (entity as? Mob)?.target ?: return
+        startTargetAbilityTasks(entity, target)
     }
 
     private fun startParticleEmissionTask(entity: LivingEntity) {
+        cancelParticleTask(entity) // for safety
         val particleType = particleType
         val particleSpread = particleSpread
         val delay = delayBetweenParticleEmission
@@ -139,20 +142,22 @@ class InfernalMobsManager (
                 delay(delay)
             }
         }
-        infernalMobPeriodicTasks.put(entity.uniqueId, job)
+        infernalMobParticleTasks[entity.uniqueId] = job
     }
 
-    private val particleType get() = config.getEnum<Particle>(ConfigKeys.INFERNAL_PARTICLE_TYPE)
+    private val particleType
+        get() = config.getEnum<Particle>(ConfigKeys.INFERNAL_PARTICLE_TYPE)
 
-    private val delayBetweenParticleEmission get() = (max(0.01, config.get(ConfigKeys.DELAY_BETWEEN_INFERNAL_PARTICLES)) * 1000.0).toLong()
+    private val delayBetweenParticleEmission
+        get() = (max(0.01, config.get(ConfigKeys.DELAY_BETWEEN_INFERNAL_PARTICLES)) * 1000.0).toLong()
 
-    private val particleSpread get() = config.get<Double>(ConfigKeys.INFERNAL_PARTICLES_SPREAD)
+    private val particleSpread
+        get() = config.get<Double>(ConfigKeys.INFERNAL_PARTICLES_SPREAD)
 
     fun loadAllInfernals() {
         Bukkit.getWorlds().forEach { world ->
             world.livingEntities.filter { isValidInfernalMob(it) }.forEach {
                 loadInfernalMob(it)
-                (it as? Mob)?.target?.let { target -> startTargetTasks(it, target) }
             }
         }
     }
@@ -167,6 +172,8 @@ class InfernalMobsManager (
         cancelAllInfernalTasks(entity)
     }
 
+    fun startTargetAbilityTasks(entity: LivingEntity, target: LivingEntity) = infernalMobAbilityTasks.putAll(entity.uniqueId, abilityHelper.startTargetAbilityTasks(entity, target))
+
     fun triggerOnDamageDoneAbilities(event: InfernalDamageDoneEvent) = abilityHelper.triggerOnDamageDoneAbilities(event)
 
     fun triggerOnDamageTakenAbilities(event: InfernalDamageTakenEvent) = abilityHelper.triggerOnDamageTakenAbilities(event)
@@ -174,17 +181,15 @@ class InfernalMobsManager (
     fun triggerOnDeathAbilities(entity: LivingEntity) = abilityHelper.triggerOnDeathAbilities(entity)
 
     private fun cancelAllInfernalTasks(entity: LivingEntity) {
-        infernalMobPeriodicTasks[entity.uniqueId].forEach { it.cancel() }
-        infernalMobPeriodicTasks.removeAll(entity.uniqueId)
-        infernalMobTargetTasks[entity.uniqueId].forEach { it.cancel() }
-        infernalMobTargetTasks.removeAll(entity.uniqueId)
+        cancelParticleTask(entity) // cancel particle task
+        cancelAbilityTasks(entity) // cancel all currently running ability tasks
     }
 
-    fun startTargetTasks(entity: LivingEntity, target: LivingEntity) = abilityHelper.startTargetTasks(entity, target, infernalMobTargetTasks)
+    private fun cancelParticleTask(entity: LivingEntity) = infernalMobParticleTasks.remove(entity.uniqueId)?.cancel()
 
-    fun cancelTargetTasks(entity: LivingEntity) {
-        infernalMobTargetTasks[entity.uniqueId].forEach { it.cancel() }
-        infernalMobTargetTasks.removeAll(entity.uniqueId)
+    fun cancelAbilityTasks(entity: LivingEntity) {
+        infernalMobAbilityTasks[entity.uniqueId].forEach { it.cancel() }
+        infernalMobAbilityTasks.removeAll(entity.uniqueId)
     }
 
     private fun LivingEntity.getAbilities(): Set<Abilities>? = pdc.get(keyChain.abilityListKey, PersistentDataType.STRING)?.toAbilitySet()

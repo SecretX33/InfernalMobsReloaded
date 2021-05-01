@@ -11,12 +11,10 @@ import com.github.secretx33.infernalmobsreloaded.utils.inject
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 import org.koin.core.component.KoinApiExtension
-import java.util.*
 
 @KoinApiExtension
 class SpawnCommand: SubCommand(), CustomKoinComponent {
@@ -41,11 +39,12 @@ class SpawnCommand: SubCommand(), CustomKoinComponent {
         }
         val abilities = HashSet<Abilities>()
 
-        // if specified infernal abilities
+        // if player specified infernal abilities in command
         if(strings.size > 2) {
             for(i in 2..strings.lastIndex) {
                 val ability = Abilities.getOrNull(strings[i]) ?: run {
-                    player.sendMessage(messages.get(MessageKeys.ABILITY_DOESNT_EXIST).replaceText { it.match("<ability>").replacement(strings[i]) })
+                    player.sendMessage(messages.get(MessageKeys.ABILITY_DOESNT_EXIST)
+                        .replaceText { it.match("<ability>").replacement(strings[i]) })
                     return
                 }
                 abilities.add(ability)
@@ -56,7 +55,7 @@ class SpawnCommand: SubCommand(), CustomKoinComponent {
         val block = player.getTargetBlock(null, 5)
         player.world.spawnEntity(block.location.add(0.5, 1.2, 0.5), infernalType.entityType, SpawnReason.CUSTOM) { entity ->
             if(entity !is LivingEntity) return@spawnEntity
-            Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(entity, infernalType, abilitySet = abilities.takeIf { it.isNotEmpty() }))
+            Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(entity, infernalType, randomAbilities = abilities.isEmpty(), abilitySet = abilities))
         }
     }
 
@@ -69,6 +68,6 @@ class SpawnCommand: SubCommand(), CustomKoinComponent {
 
         if(length == 2) return infernalMobTypesRepo.getAllInfernalTypeNames().filter { it.startsWith(hint, ignoreCase = true) }
 
-        return Abilities.values.filter { it.name.startsWith(hint, ignoreCase = true) }.map { it.name.toLowerCase(Locale.US) }
+        return Abilities.lowercasedValues.filter { it.startsWith(hint, ignoreCase = true) }
     }
 }
