@@ -23,6 +23,6 @@ class InfernalDamageDoneListener (
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun InfernalDamageDoneEvent.onInfernalDamageDone() {
         mobsManager.triggerOnDamageDoneAbilities(this)
-        println("${defender.name} got attacked by infernal ${entity.name} (${infernalType.name}), was event cancelled = $isCancelled")
+//        println("${defender.name} got attacked by infernal ${entity.name} (${infernalType.name}), was event cancelled = $isCancelled")
     }
 }

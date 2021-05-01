@@ -16,6 +16,7 @@ import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.*
 import com.google.common.collect.Multimap
 import com.google.common.collect.Sets
+import com.google.common.collect.Table
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
@@ -372,20 +373,20 @@ class AbilityHelper (
     private fun makeThiefTask(entity: LivingEntity, target: LivingEntity, multimap: Multimap<UUID, Job>) = CoroutineScope(Dispatchers.Default).launch {
         // if thief ability should affect only players and target is not one, return
         val affectOnlyPlayers = abilityConfig.getAffectsOnlyPlayers(Abilities.THIEF, true)
-        if(affectOnlyPlayers && entity.type != EntityType.PLAYER || target.equipment == null) return@launch
+        if(affectOnlyPlayers && target.type != EntityType.PLAYER || target.equipment == null) return@launch
 
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.THIEF, 3.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.THIEF, 0.05)
 
         while(isActive && !entity.isNotTargeting(target)) {
-            println("Thief scheduled, target is ${target.name}")
+            println("Thief scheduled, target is ${target.name}, chance = $chance, recheckDelay = $recheckDelay, durability loss = ${abilityConfig.getDurabilityLoss(Abilities.THIEF, 0.04, maxValue = 1.0).getRandomBetween()}")
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
             println("Stealing entity")
 
             val equip = target.equipment ?: return@launch
-            // slot chosen to have its equipment stolen, skipping this interaction if there's none
-            val chosenSlot = EquipmentSlot.values().filter { slot -> equip.getItem(slot).let { !it.isAir() } }.randomOrNull() ?: continue
+            // slot chosen to have its equipment stolen, skipping this interaction if there's none (and yeah EntityEquipment#getItem returned null even if its annotated with @NonNull)
+            val chosenSlot = EquipmentSlot.values().filter { slot -> equip.getItem(slot).let { it != null && !it.isAir() } }.randomOrNull() ?: continue
             val durabilityLoss = abilityConfig.getDurabilityLoss(Abilities.THIEF, 0.04, maxValue = 1.0).getRandomBetween()
             val item = equip.getItem(chosenSlot).damageToolBy(durabilityLoss)
 
