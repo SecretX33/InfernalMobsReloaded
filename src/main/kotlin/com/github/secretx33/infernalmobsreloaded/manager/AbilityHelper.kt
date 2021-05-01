@@ -532,6 +532,7 @@ class AbilityHelper (
         abilities.forEach {
             when(it) {
                 Abilities.BERSERK -> event.triggerBerserk()
+                Abilities.BLINDING -> event.triggerBlinding()
                 Abilities.CONFUSION -> event.triggerConfusion()
                 Abilities.HUNGER -> event.triggerHunger()
                 Abilities.LEVITATE -> event.triggerLevitate()
@@ -552,6 +553,15 @@ class AbilityHelper (
     private fun InfernalDamageDoneEvent.triggerBerserk() {
         val bonus = abilityConfig.getDoublePair(AbilityConfigKeys.BERSERK_CAUSED_DAMAGE_BONUS)
         damageMulti = bonus.getRandomBetween()
+    }
+
+    private fun InfernalDamageDoneEvent.triggerBlinding() {
+        val chance = abilityConfig.getAbilityChanceOnDamageDone(Abilities.BLINDING, 0.75)
+        if(random.nextDouble() > chance) return
+
+        // blinds the defender for some time
+        val duration = abilityConfig.getDuration(Abilities.BLINDING, 7.0).getRandomBetween()
+        defender.addPotion(PotionEffectType.BLINDNESS, Abilities.BLINDING, duration)
     }
 
     private fun InfernalDamageDoneEvent.triggerConfusion() {
