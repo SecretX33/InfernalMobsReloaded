@@ -253,17 +253,20 @@ class AbilityHelper (
     private fun makeCallTheGangTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val recheckDelay = abilityConfig.getRecheckDelay(Abilities.CALL_THE_GANG, 2.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Abilities.CALL_THE_GANG, 0.025)
-        val amount = abilityConfig.getIntAmounts(Abilities.CALL_THE_GANG, 2).getRandomBetween()
 
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
+            val amount = abilityConfig.getIntAmounts(Abilities.CALL_THE_GANG, 2).getRandomBetween()
+            val potency = abilityConfig.getAbilityPotency(Abilities.CALL_THE_GANG, 3).getRandomBetween()
+            val potionDuration = abilityConfig.getDuration(Abilities.CALL_THE_GANG, 8.0).getRandomBetween()
+
             runSync(plugin) {
                 repeat(amount) {
                     entity.world.spawnEntity(entity.location, entity.type, SpawnReason.CUSTOM) {
                         (it as? Mob)?.target = target
                         (it as? Ageable)?.setBaby()
-                        (it as? LivingEntity)?.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 12, 1, false, true, false))
+                        (it as? LivingEntity)?.addPotion(PotionEffectType.SPEED, Abilities.CALL_THE_GANG, amplifier = potency, duration = potionDuration)
                     }
                 }
                 particlesHelper.sendParticle(entity, Particle.TOTEM, entity.width + 1, 30)
