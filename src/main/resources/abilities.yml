@@ -51,18 +51,18 @@ call-the-gang:
   chance: 0.025                      # in percentage, will have 2.5% chance of calling the "gang" every 'recheck-delay' seconds
   amount: 2-4                        # will call between 2 and 4 mobs of its type
   # All the reinforcements spawned by Call the Gang gain potion of speed, you can change the potency of the effect, its duration and particle properties below
-  potency: 3-5                      # what potency of speed should the reinforcements be affected by; level 1 will provide 20% speed bonus, and each subsequent level increase the speed by another 20%
-  duration: 8.0-11.0                  # in seconds, the duration of the speed effect
+  potency: 3-5                       # what potency of speed should the reinforcements be affected by; level 1 will provide 20% speed bonus, and each subsequent level increase the speed by another 20%
+  duration: 8.0-11.0                 # in seconds, the duration of the speed effect
   potion-emit-particles: true        # if entities affected by potion of speed should emit speed effect particles
-  potion-is-ambient: false            # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
+  potion-is-ambient: false           # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
 # Confusion ability
 # Each of its attacks may confuse on their targets (nausea), warping and wobbling the target's vision similarly to a nether portal, side effects: their target may puke
 confusion:
-  chance-on-damage-done: 0.4         # in percentage, the chance that the infernal mob with poisonous ability will have to poison the attacked entity
-  duration: 8.0-10.0                 # in seconds, the duration of the confusion effect
+  chance-on-damage-done: 0.5         # in percentage, the chance that the infernal mob with poisonous ability will have to poison the attacked entity
+  duration: 10.0-12.0                # in seconds, the duration of the confusion effect
   potion-emit-particles: true        # if entities affected by confusion should emit confusion effect particles
-  potion-is-ambient: false           # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
+  potion-is-ambient: true            # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
 # Firework ability
 # Each attack received may cause a firework to spawn on the feet of the attacker entity, annoyance at its finest
