@@ -807,11 +807,12 @@ class AbilityHelper (
 
     private fun InfernalDamageTakenEvent.triggerThornmail() {
         val chance = abilityConfig.getAbilityChance(Abilities.THORNMAIL, 0.6)
-        if (random.nextDouble() > chance) return
+        if(random.nextDouble() > chance) return
 
         // reflect part of the damage to the attacker
-        val reflectAmount = abilityConfig.getDoublePair(AbilityConfigKeys.THORMAIL_REFLECTED_AMOUNT).getRandomBetween()
-        attacker.damage(damage * reflectAmount, entity)
+        val reflectPercentage = abilityConfig.getDoublePair(AbilityConfigKeys.THORMAIL_REFLECTED_AMOUNT).getRandomBetween()
+        particlesHelper.sendParticle(entity, Abilities.THORNMAIL)
+        attacker.damage(damage * reflectPercentage, entity)
     }
 
     private fun EntityDamageEvent.DamageCause.isNotMelee() = this != EntityDamageEvent.DamageCause.ENTITY_ATTACK && this != EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK && this != EntityDamageEvent.DamageCause.CONTACT && this != EntityDamageEvent.DamageCause.CRAMMING && this != EntityDamageEvent.DamageCause.THORNS

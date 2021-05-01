@@ -132,6 +132,7 @@ class InfernalMobsManager (
 
     private fun startParticleEmissionTask(entity: LivingEntity) {
         cancelParticleTask(entity) // for safety
+        if(!infernalParticlesEnabled) return
         val particleType = particleType
         val particleSpread = particleSpread
         val delay = delayBetweenParticleEmission
@@ -144,6 +145,9 @@ class InfernalMobsManager (
         }
         infernalMobParticleTasks[entity.uniqueId] = job
     }
+
+    private val infernalParticlesEnabled
+        get() = config.get<Boolean>(ConfigKeys.ENABLE_INFERNAL_PARTICLES)
 
     private val particleType
         get() = config.getEnum<Particle>(ConfigKeys.INFERNAL_PARTICLE_TYPE)

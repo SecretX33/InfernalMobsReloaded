@@ -36,14 +36,15 @@ class ParticlesHelper(private val config: Config, private val log: Logger) {
     fun sendParticle(entity: LivingEntity, ability: Abilities) {
         CoroutineScope(Dispatchers.Default).launch {
             when(ability) {
-                Abilities.SECOND_WIND -> XParticle.circle(entity.width * 1.2, entity.width * 1.5, 0.5, 1.0, 2.0, ParticleDisplay(Particle.TOTEM, entity.location, 1, 0.25, 0.25, 0.25))
+                Abilities.SECOND_WIND -> XParticle.circle(entity.width * 1.2, entity.width * 1.5, 0.5, 1.0, 2.0, ParticleDisplay(Particle.TOTEM, entity.location, 20, 0.25, 0.25, 0.25))
+                Abilities.THORNMAIL -> XParticle.filledCircle(1.0, 0.5, 0.5, ParticleDisplay(Particle.WARPED_SPORE, entity.location.add(0.0, entity.height * 0.5, 0.0), 100, 0.25, 0.25, 0.25))
                 else -> {}
             }
         }
     }
 
     private val globalEffectsEnabled
-        get() = config.get<Boolean>(ConfigKeys.ENABLE_PARTICLE_EFFECTS)
+        get() = config.get<Boolean>(ConfigKeys.ENABLE_GLOBAL_PARTICLE_EFFECTS)
 
     private val particleAmount
         get() = config.get<Int>(ConfigKeys.INFERNAL_PARTICLES_AMOUNT)

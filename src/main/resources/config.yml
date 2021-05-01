@@ -19,6 +19,8 @@
 
 # If false, particles effects for ALL things will be disabled GLOBALLY
 enable-particle-effects: true
+# If true, all infernals will have a periodic particle effect
+enable-infernal-particles: true
 # What particle effect will be expelled from all infernals every certain amount of time
 infernal-particle-type: LAVA            # list with all possible particles can be found here: https://papermc.io/javadocs/paper/1.16/org/bukkit/Particle.html , make sure to check it out and choose the one that suits your taste
 # Delay between infernal particles
