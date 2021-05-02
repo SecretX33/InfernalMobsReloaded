@@ -134,7 +134,7 @@ class AbilityHelper (
     private fun LivingEntity.addHeavyAbility() {
         getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.apply {
             val resistAmount = abilityConfig.getDoublePair(AbilityConfigKeys.HEAVY_RESIST_PERCENTAGE).getRandomBetween()
-            val mod = AttributeModifier(knockbackResistUID, Abilities.HEAVY.name, resistAmount, AttributeModifier.Operation.ADD_SCALAR)
+            val mod = AttributeModifier(knockbackResistUID, Abilities.HEAVY.name, resistAmount, AttributeModifier.Operation.ADD_NUMBER)
             removeModifier(mod)
             addModifier(mod)
         }

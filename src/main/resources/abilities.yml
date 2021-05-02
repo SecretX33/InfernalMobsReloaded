@@ -82,8 +82,10 @@ ghost:
   evil-chance: 0.3                   # in percentage, what chance they'll have of becoming "evil" ghosts
   item-drop-chance: 0.2              # what chance each of its items will have of being dropped upon death
 
+# Heavy ability
+# Any infernal with this effect will be considerably heavier, receiving much, much less knockback from incoming attacks
 heavy:
-  knockback-resist-percentage: 0.3-0.45     # The scale of the amount of knockback resisted from attacks and projectiles, does not affect explosions; 0.0 value means 0% resistance, 0.5 means 50% resistance and 1.0 means 100% resistance added (meaning fully invincible against knockbacks)
+  knockback-resist-percentage: 0.45-0.75     # The scale of the amount of knockback resisted from attacks and projectiles, does not affect explosions; 0.0 value means 0% resistance, 0.5 means 50% resistance and 1.0 means 100% resistance added (meaning fully invincible against knockbacks)
 
 # Hunger ability
 # When applied, causes the hunger bar to deplete faster than normal, and depending on the potency, making harder even to run, since the hunger bar will keep depleting fast, and if they don't eat they'll not be able to run plus start starving (taking periodic damage)
