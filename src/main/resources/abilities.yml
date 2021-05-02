@@ -73,8 +73,8 @@ firework:
 flying:
 
 ghastly:
-  nearby-entities-range: 4.0         # in blocks, how close the entity has to be of the main target to also be affected by it; if you don't want abilities to be able to affect multiple targets, set its value to 0.0
-  projectile-speed: 1.5              # speed is in vector, so you can think in it like m/s or something
+  nearby-entities-range: 4.0         # in blocks, how close the entity has to be of the main target to also be affected by it; if you don't want this ability to be able to affect multiple targets, set this value to 0.0
+  projectile-speed: 1.75             # speed is in vector, so you can think in it like m/s or something
   recheck-delay: 1.5                 # in seconds, every 1.5 seconds it'll run the random chance to see if it's going to spawn shoot the arrows
   chance: 0.25                       # every 'recheck-delay' seconds, the power will have 25% chance of being triggered
 
@@ -151,14 +151,15 @@ mounted:
 # Necromancer ability
 # Shoots a Wither Skull on the target and nearby entities
 necromancer:
-  projectile-speed: 2.0
-  recheck-delay: 2.5                 # in seconds, every 2.5 seconds it'll run the random chance to see if it's going to spawn shoot the arrows
+  nearby-entities-range: 4.0         # in blocks, how close the entity has to be of the main target to also be affected by it; if you don't want this ability to be able to affect multiple targets, set this value to 0.0
+  projectile-speed: 1.7
+  recheck-delay: 1.25                # in seconds, every 1.25 seconds it'll run the random chance to see if it's going to spawn shoot a wither skull
   chance: 0.25                       # in percentage, every 'recheck-delay' seconds, the power will have 25% chance of being triggered
 
 poisonous:
   chance-on-damage-done: 0.8         # in percentage, the chance that the infernal mob with poisonous ability will have to poison the attacked entity
   chance-on-damage-taken: 0.2        # in percentage, the chance that the entity that hit the infernal mob with poisonous ability will be poisoned (valid only for melee damage)
-  duration: 8.0-12.0                 # in seconds, the duration of the fire
+  duration: 8.0-12.0                 # in seconds, the duration of the poison
   potency: 6                         # what potency of poison should the entity be affected, valid values: 1-31, by my tests around 7 to 8 is where the poison is stronger, because after 8 there's a grace period in which the player cannot take damage
   potion-emit-particles: true        # if entities affected by poisonous should emit poison effect particles
   potion-is-ambient: false           # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles

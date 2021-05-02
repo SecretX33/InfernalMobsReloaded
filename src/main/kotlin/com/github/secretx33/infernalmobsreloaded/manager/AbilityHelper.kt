@@ -282,10 +282,10 @@ class AbilityHelper (
     }
 
     private fun makeGhastlyTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
-        val nearbyRange = abilityConfig.getNearbyRange(Ability.ARCHER, 4.0)
+        val nearbyRange = abilityConfig.getNearbyRange(Ability.GHASTLY, 4.0)
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.GHASTLY, 1.5).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.GHASTLY, 0.25)
-        val speed = abilityConfig.getProjectileSpeed(Ability.GHASTLY, 1.5)
+        val speed = abilityConfig.getProjectileSpeed(Ability.GHASTLY, 1.75)
 
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
@@ -327,10 +327,11 @@ class AbilityHelper (
     }
 
     private fun makeNecromancerTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
-        val nearbyRange = abilityConfig.getNearbyRange(Ability.GHASTLY, 4.0)
-        val recheckDelay = abilityConfig.getRecheckDelay(Ability.GHASTLY, 2.5).toLongDelay()
-        val chance = abilityConfig.getAbilityChance(Ability.GHASTLY, 0.25)
-        val speed = abilityConfig.getProjectileSpeed(Ability.GHASTLY, 2.0)
+        val nearbyRange = abilityConfig.getNearbyRange(Ability.NECROMANCER, 4.0)
+        val recheckDelay = abilityConfig.getRecheckDelay(Ability.NECROMANCER, 1.25).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Ability.NECROMANCER, 0.25)
+        val speed = abilityConfig.getProjectileSpeed(Ability.NECROMANCER, 1.7)
+        println("nearbyRange = $nearbyRange, recheckDelay = $recheckDelay, chance = $chance, speed = $speed")
 
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
@@ -468,12 +469,12 @@ class AbilityHelper (
     private fun LivingEntity.shootDirection(target: LivingEntity): Vector {
         val src = eyeLocation
         val dest = target.location.apply {
-            y += target.height + 0.1
+            y += target.height * 0.75
         }
         val difX = dest.x - src.x
         val difZ = dest.z - src.z
-        val difY = dest.y - src.y
         val difXZ = sqrt(pow(difX, 2.0) + pow(difZ, 2.0))
+        val difY = (dest.y - src.y) * min(1.5, max(1.0, 0.3 + difXZ / 19))
         // mobs usually don't have rotating heads, so we gotta calculate pitch manually (pitch is the angle)
         val pitch = Math.toDegrees(atan(-difY / difXZ))
         // yaw is because mobs are not very precise with their yaw direction (its like the angle, but rotated 90 degrees sideways)
@@ -860,7 +861,7 @@ class AbilityHelper (
         return minValue + (maxValue - minValue) * random.nextDouble()
     }
 
-    private fun LivingEntity.getValidNearbyTargets(range: Double) = location.getNearbyLivingEntities(range) { !it.isDead && it.isValid }
+    private fun LivingEntity.getValidNearbyTargets(range: Double) = location.getNearbyLivingEntities(range) { !it.isDead && it.isValid }.takeUnless { it.isEmpty() } ?: listOf(this)
 
     private suspend fun LivingEntity.getValidNearbyTargetsAsync(range: Double) = futureSync(plugin) { getValidNearbyTargets(range) }
 
