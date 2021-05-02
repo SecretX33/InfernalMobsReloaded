@@ -121,7 +121,7 @@ enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
     INFERNAL_ALLOWED_WORLDS("worlds-in-which-infernal-mobs-can-spawn", emptyList<String>()),
     INFERNAL_BLACKLISTED_BABY_MOBS("blacklisted-baby-mob-types", emptySet<EntityType>()),
     INFERNAL_DEATH_MESSAGE_RADIUS("infernal-death-message-radius", 20),
-    INFERNAL_MOBS_THAT_CAN_BE_RIDED_BY_ANOTHER("infernal-mobs-that-can-be-rided-by-another-infernal", emptySet<EntityType>()),
+    MOBS_THAT_CAN_BE_RIDED_BY_MOUNTED_INFERNALS("mobs-that-can-be-rided-by-mounted-infernals", emptySet<EntityType>()),
     INFERNAL_MOBS_THAT_CAN_SPAWN_MOUNTED("infernal-mobs-that-can-spawn-mounted", emptySet<EntityType>()),
     INFERNAL_PARTICLE_TYPE("infernal-particle-type", Particle.LAVA),
     INFERNAL_PARTICLES_AMOUNT("infernal-particles-amount", 10),

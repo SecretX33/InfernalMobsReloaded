@@ -168,7 +168,7 @@ class AbilityHelper (
     }
 
     private val rideableMounts
-        get() = config.getEnumSet(ConfigKeys.INFERNAL_MOBS_THAT_CAN_BE_RIDED_BY_ANOTHER, EntityType::class.java) { it != null && it.isSpawnable && it.entityClass is LivingEntity && it.entityClass !is ComplexLivingEntity }
+        get() = config.getEnumSet(ConfigKeys.MOBS_THAT_CAN_BE_RIDED_BY_MOUNTED_INFERNALS, EntityType::class.java) { it != null && it.isSpawnable && !ComplexLivingEntity::class.java.isAssignableFrom(it.entityClass as Class<*>) && LivingEntity::class.java.isAssignableFrom(it.entityClass as Class<*>) }
 
     private fun LivingEntity.turnIntoMount(tag: NamespacedKey, enablePotionParticles: Boolean = true) {
         // if entity that will be turned into a mount spawns mounted on something, remove that mount

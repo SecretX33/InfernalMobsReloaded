@@ -118,7 +118,7 @@ infernal-mobs-that-can-spawn-mounted:
 
 # Which types of mobs can become a mount for a mounted infernal mob; to disable all the mounts, just delete all the items and insert empty square brackets instead
 # Full list of mobs can be found here https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/EntityType.html , Ctrl + F
-infernal-mobs-that-can-be-rided-by-another-infernal:
+mobs-that-can-be-rided-by-mounted-infernals:
   - CHICKEN
   - COW
   - DONKEY
