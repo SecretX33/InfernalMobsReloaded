@@ -19,14 +19,15 @@ class BlockModification (
 
     // blockModificationList and blockBlacklist additions are ALL responsibility of the caller,
     // this class will only be responsible for removing them, when the changes are reverted
-    fun make() {
+    fun make(): Boolean {
         // don't try to modify the blocks if they already got "reverted" back
-        if(unmade.get()) return
+        if(unmade.get()) return false
         blocks.forEach {
             (blockState as? InventoryHolder)?.inventory?.clear()
             it.type = Material.AIR
         }
         makeTask(blocks)
+        return true
     }
 
     fun unmake(){

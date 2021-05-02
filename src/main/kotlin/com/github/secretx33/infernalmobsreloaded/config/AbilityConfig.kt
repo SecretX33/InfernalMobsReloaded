@@ -183,6 +183,7 @@ enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
     ARMOURED_POTION_LEVEL("${Ability.ARMOURED.configEntry}.fallback-dmg-resist-potion-level", 1),
     HEAVY_RESIST_PERCENTAGE("${Ability.HEAVY.configEntry}.knockback-resist-percentage", 0.4),
     WEBBER_TRAP_DENSITY("${Ability.WEBBER.configEntry}.trap-density", 0.6),
+    WEBBER_MAX_RADIUS("${Ability.WEBBER.configEntry}.max-radius", 1),
     KAMIZAZE_EXPLOSION_POWER("${Ability.KAMIKAZE.configEntry}.explosion-power", 3.0),
     KAMIZAZE_SET_ON_FIRE("${Ability.KAMIKAZE.configEntry}.set-on-fire", true),
     KAMIZAZE_BREAK_BLOCKS("${Ability.KAMIKAZE.configEntry}.break-blocks", true),

@@ -232,10 +232,11 @@ weakness:
 # Webber ability
 # Periodically, when in combat, the infernal mob will have a chance of spawning a cage of cobweb around its victim, turning the flee of any prey a nightmare... <3
 webber:
-  recheck-delay: 2.0                 # in seconds, each 2 seconds it'll run the random chance to see if it's going to spawn a web on player's feet
-  chance: 0.05                       # every 'recheck-delay' seconds, it'll run the random chance that will have 5% of spawning a web on the player's feet
-  duration: 4.0-8.0                  # in seconds, how many seconds the cobweb will stay there, by default the time is random between 4 and 8 seconds
-  trap-density: 0.6                  # how "dense" the spawned cage will be, or in other words, what's the chance of each block around the target being temporally transformed into cobweb
+  recheck-delay: 1.5                 # in seconds, each 1.5 seconds it'll run the random chance to see if it's going to spawn a web on player's feet
+  chance: 0.08                       # every 'recheck-delay' seconds, it'll run the random chance that will have 8% of spawning a web on the player's feet
+  duration: 4.0-6.0                  # in seconds, how many seconds the cobweb will stay there, by default the time is random between 4 and 8 seconds
+  trap-density: 0.15-0.20            # how "dense" the spawned cage will be, or in other words, what's the chance of each block around the target being temporally transformed into cobweb
+  max-radius: 0-1                    # in blocks, the radius of the trap - 2, so a max radius of 0 will make a 3x3 cube around the target, max radius 1 will make a 5x5 cube around the target, and so on...
 
 # Withering ability
 # Each attack of the infernal with withering ability will have a chance of applying wither effect to the target; Wither is a status effect that inflicts damage over time. Unlike Poison, it can affect undead mobs, and can kill. It is usually difficult for the player to see how much health they have left, as it turns the player's health bar black.

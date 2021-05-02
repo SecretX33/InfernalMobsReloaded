@@ -407,8 +407,9 @@ class AbilityHelper (
     }
 
     private fun makeWebberTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
-        val chance = abilityConfig.getAbilityChance(Ability.WEBBER, 0.05)
-        val recheckDelay = abilityConfig.getRecheckDelay(Ability.WEBBER, 2.0).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Ability.WEBBER, 0.08)
+        val recheckDelay = abilityConfig.getRecheckDelay(Ability.WEBBER, 1.5).toLongDelay()
+        println("started webber task, chance = $chance, recheckDelay = $recheckDelay")
 
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
@@ -418,7 +419,7 @@ class AbilityHelper (
     }
 
     private fun launchCobweb(target: LivingEntity) {
-        val trapDensity = abilityConfig.getDouble(AbilityConfigKeys.WEBBER_TRAP_DENSITY, maxValue = 1.0)
+        val trapDensity = abilityConfig.getDoublePair(AbilityConfigKeys.WEBBER_TRAP_DENSITY, maxValue = 1.0).getRandomBetween()
         val duration = abilityConfig.getDuration(Ability.WEBBER, 5.0, minValue = 0.1).getRandomBetween().toLongDelay()
         val blocks = target.makeCuboidAround().blockList().filter { random.nextDouble() <= trapDensity && it.canMobGrief() }
         val blockMod = BlockModification(blocks, blockModifications, blocksBlackList) { list -> list.forEach { it.type = Material.COBWEB } }
@@ -432,18 +433,18 @@ class AbilityHelper (
         }
     }
 
-    private fun Block.canMobGrief(): Boolean = type != Material.BEDROCK && !blocksBlackList.contains(location) && wgChecker.canMobGriefBlock(this)
+    private fun Block.canMobGrief(): Boolean = type != Material.BEDROCK && isPassable && !blocksBlackList.contains(location) && wgChecker.canMobGriefBlock(this)
 
     private fun LivingEntity.makeCuboidAround(): Cuboid {
+        val maxRadius = abilityConfig.getIntPair(AbilityConfigKeys.WEBBER_MAX_RADIUS).getRandomBetween()
         val lowerBound = location.apply {
-            x -= ceil(width)
-            y -= 1
-            z -= ceil(width)
+            x -= ceil(width) + 1 + maxRadius
+            z -= ceil(width) + 1 + maxRadius
         }
         val upperBound = location.apply {
-            x += ceil(width) + 2
-            y += ceil(height) + 1
-            z += ceil(width) + 2
+            x += ceil(width) + 1 + maxRadius
+            y += floor(height) + 1 + max(0, maxRadius - 1)
+            z += ceil(width) + 1 + maxRadius
         }
         return Cuboid(lowerBound, upperBound)
     }
