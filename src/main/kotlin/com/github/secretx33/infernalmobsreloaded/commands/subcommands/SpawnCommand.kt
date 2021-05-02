@@ -2,6 +2,7 @@ package com.github.secretx33.infernalmobsreloaded.commands.subcommands
 
 import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
+import com.github.secretx33.infernalmobsreloaded.config.replace
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
@@ -36,7 +37,7 @@ class SpawnCommand: SubCommand(), CustomKoinComponent {
 
         // if infernal type doesn't exist
         val infernalType = infernalMobTypesRepo.getInfernalTypeOrNull(strings[1]) ?: run {
-            player.sendMessage(messages.get(MessageKeys.INFERNAL_MOB_TYPE_DOESNT_EXIST).replaceText { it.match("<type>").replacement(strings[1]) })
+            player.sendMessage(messages.get(MessageKeys.INFERNAL_MOB_TYPE_DOESNT_EXIST).replace("<type>", strings[1].toComponent(NamedTextColor.GOLD)))
             return
         }
         val abilities = HashSet<Ability>()
@@ -45,8 +46,7 @@ class SpawnCommand: SubCommand(), CustomKoinComponent {
         if(strings.size > 2) {
             for(i in 2..strings.lastIndex) {
                 val ability = Ability.getOrNull(strings[i]) ?: run {
-                    player.sendMessage(messages.get(MessageKeys.ABILITY_DOESNT_EXIST)
-                        .replaceText { it.match("<ability>").replacement(strings[i]) })
+                    player.sendMessage(messages.get(MessageKeys.ABILITY_DOESNT_EXIST).replace("<ability>", strings[i].toComponent(NamedTextColor.GOLD)))
                     return
                 }
                 abilities.add(ability)

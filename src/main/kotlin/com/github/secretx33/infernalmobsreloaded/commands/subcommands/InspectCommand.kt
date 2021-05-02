@@ -2,6 +2,7 @@ package com.github.secretx33.infernalmobsreloaded.commands.subcommands
 
 import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
+import com.github.secretx33.infernalmobsreloaded.config.replace
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.utils.CustomKoinComponent
@@ -39,15 +40,15 @@ class InspectCommand : SubCommand(), CustomKoinComponent {
 
         // if targeted entity is not an infernal entity
         if(!mobsManager.isValidInfernalMob(target)) {
-            player.sendMessage(messages.get(MessageKeys.NOT_TARGETING_VALID_INFERNAl).replaceText { it.match("<group>").replacement(group) })
+            player.sendMessage(messages.get(MessageKeys.NOT_TARGETING_VALID_INFERNAl).replace("<group>", group))
             return
         }
         val abilitiesString = mobsManager.getInfernalAbilities(target).joinToString { it.displayName }.takeIf { it.isNotBlank() }?.toComponent() ?: "<none>".toComponent(NamedTextColor.GRAY)
 
         // send the list of abilities the mob he's targeting has
         player.sendMessage(messages.get(MessageKeys.TARGETING_INFERNAL)
-            .replaceText { it.match("<entity>").replacement(target.formattedTypeName()) }
-            .replaceText { it.match("<abilities>").replacement(abilitiesString) })
+            .replace("<entity>", target.formattedTypeName())
+            .replace("<abilities>", abilitiesString))
     }
 
     override fun onCommandByConsole(sender: CommandSender, alias: String, strings: Array<String>) {

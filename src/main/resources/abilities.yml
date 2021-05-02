@@ -96,15 +96,19 @@ hunger:
   potion-emit-particles: true        # if entities affected by levitate should emit hunger effect particles
   potion-is-ambient: true            # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
+# Invisible ability
+# Mobs with this ability will be completely invisible and silent, things can become really interesting if a creeper had spawns with this ability-, wait, this gave an idea...
 invisible:
   disable-equipment-visibility: true   # if enabled, the entity will be made fully invisible, including their armor and weapon (note that it'll only work if you have ProtocolLib, otherwise the plugin will automatically fallback to false); if disabled, only potion will be used to make the entity invisible, so its armor and weapons will still be visible
-  disable-entity-sounds: true          # can make the infernal spookier, but at the same time may frustrate players a bit because they will get no sound feedback from the entity when hitting it, the choice is yours
+  disable-entity-sounds: true          # can make the infernal spookier, but at the same time may frustrate players a bit because they will get no sound feedback from the entity when hitting it, the choice is yours; only affect new generated infernals
   disable-infernal-particles: true     # if infernal particles should NOT be emitted by invisible infernals, probably a good idea to keep it enabled if you want spookier invisible infernals
   potion-emit-particles: false         # if invisible mobs should emit invisible particles as if they had used a potion of invisibility
   potion-is-ambient: false             # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
+# Kamikaze ability
+# Explode on death, simple, yet super effective. "Sometimes, the best tools are the simpler ones".
 kamikaze:
-  explosion-power: 3.0               # the power of the explosion, where 4.0 is equals to a explosion TNT
+  explosion-power: 3.0               # the power of the explosion, where 4.0 is equals to a explosion TNT; modifies both damage and range of the explosion; if set to 0.0, only the sound will be played
   set-on-fire: true                  # if the explosion should set things on fire
   break-blocks: true                 # if the explosion should break blocks
 
@@ -118,7 +122,7 @@ levitate:
   potion-is-ambient: false           # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
 # Lifesteal ability
-# For each damage the infernal mob cause, there'is a chance that it'll be healed by a certain amount of the damage inflicted upon his targets
+# For each damage the infernal mob cause, there's a chance that it'll be healed by a certain amount of the damage inflicted upon his targets
 lifesteal:
   chance: 0.75                       # in percentage, will have 75% chance of healing any damage caused by it
   healing-percentage: 0.5-0.8        # the amount of healing received will be between 50% and 80% of the damage received; may be any value >= 0
