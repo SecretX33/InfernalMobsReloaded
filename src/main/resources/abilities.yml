@@ -196,7 +196,7 @@ speedy:
 # Periodically, while fighting against a target, a infernal mob with teleport ability will have a chance of teleporting next to its target. Spooky, Scary, Skeletons...
 teleport:
   recheck-delay: 2.5                 # in seconds, each 2 seconds it'll have the chance below of teleport nearby its target
-  chance: 0.3                        # every 'recheck-delay' seconds, it'll, at a 30% chance of happening, teleport nearby its target
+  chance: 0.6                        # every 'recheck-delay' seconds, it'll, at a 30% chance of happening, teleport nearby its target
 
 # Thief ability
 # Every certain amount of time, a infernal mob with thief ability will have a chance of steal one part of the target's set or equipped weapons, randomly

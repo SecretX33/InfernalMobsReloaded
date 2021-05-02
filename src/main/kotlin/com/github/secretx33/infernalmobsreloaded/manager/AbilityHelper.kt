@@ -346,8 +346,7 @@ class AbilityHelper (
 
     private fun makeTeleportTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.TELEPORT, 2.5).toLongDelay()
-        val chance = abilityConfig.getAbilityChance(Ability.TELEPORT, 0.3)
-        println("recheckDelay = $recheckDelay, chance = $chance")
+        val chance = abilityConfig.getAbilityChance(Ability.TELEPORT, 0.6)
 
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
@@ -362,10 +361,12 @@ class AbilityHelper (
             // if the block that the entity will teleport at won't make it suffocate
             if(world.getBlockAt(dest).isPassable && (entity.height <= 1 || world.getBlockAt(dest.clone().apply { y += 1 }).isPassable)) {
                 entity.teleportAsync(dest)
+                world.playSound(dest, Sound.ENTITY_ENDERMAN_TELEPORT, 0.85f, random.nextFloat() * 0.7f + 0.8f)
                 continue
             }
             // else just teleport the entity right on the target's feet
             entity.teleportAsync(target.location)
+            world.playSound(target.location, Sound.ENTITY_ENDERMAN_TELEPORT, 0.85f, random.nextFloat() * 0.7f + 0.8f)
         }
     }
 
