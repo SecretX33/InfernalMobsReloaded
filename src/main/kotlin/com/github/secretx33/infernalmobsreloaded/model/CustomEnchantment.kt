@@ -10,8 +10,8 @@ data class CustomEnchantment (
     private val chance: Double,
 ) {
     init {
-        require(minLevel >= 0) { "minLevel has to be a number equal to or higher than 0, value passed was $minLevel" }
-        require(maxLevel >= 0) { "maxLevel has to be a number equal to or higher than 0, value passed was $maxLevel" }
+        require(minLevel >= 1) { "minLevel has to be a number equal to or higher than 1, value passed was $minLevel" }
+        require(maxLevel >= 1) { "maxLevel has to be a number equal to or higher than 1, value passed was $maxLevel" }
         require(minLevel <= maxLevel) { "minLevel cannot be higher than maxLevel, values passed minLevel = $minLevel and maxLevel = $maxLevel" }
         require(chance in 0.0..1.0) { "chance has to be a value between 0 and 1, but chance = $chance" }
     }

@@ -38,6 +38,7 @@ import org.koin.core.component.KoinApiExtension
 import java.lang.StrictMath.pow
 import java.lang.reflect.Type
 import java.util.*
+import java.util.logging.Logger
 import kotlin.math.*
 
 @KoinApiExtension
@@ -51,6 +52,7 @@ class AbilityHelper (
     private val wgChecker: WorldGuardChecker,
     private val particlesHelper: ParticlesHelper,
     private val infernalMobTypesRepo: InfernalMobTypesRepo,
+    private val logger: Logger,
 ){
 
     private val blockModifications = Sets.newConcurrentHashSet<BlockModification>()
@@ -101,7 +103,6 @@ class AbilityHelper (
         if(!canWearArmor()) return false
         val equip = equipment ?: return false
         val dropChance = abilityConfig.getDouble(AbilityConfigKeys.ARMOURED_ARMOR_DROP_CHANCE).toFloat()
-        EquipmentSlot.values().forEach { equip.setDropChance(it, dropChance) }
 
         equip.apply {
             helmet = lootItemsRepo.getLootItemOrNull("armoured_helmet")?.makeItem()
@@ -114,6 +115,7 @@ class AbilityHelper (
                 else -> lootItemsRepo.getLootItemOrNull("armoured_sword")?.makeItem()
             }
         }
+        EquipmentSlot.values().forEach { equip.setDropChance(it, dropChance) }
         return true
     }
 
@@ -497,31 +499,52 @@ class AbilityHelper (
     }
 
     private fun LivingEntity.triggerGhost() {
-        val evil = random.nextDouble() <= abilityConfig.getDouble(AbilityConfigKeys.GHOST_EVIL_CHANCE)
-        val evilPrefix = if(evil) "evil_" else ""
+        val target: LivingEntity? = (this as? Mob)?.target
+        val haunted = random.nextDouble() <= abilityConfig.getDouble(AbilityConfigKeys.GHOST_EVIL_CHANCE)
+        val hauntedPrefix = if(haunted) "haunted_" else ""
         val itemDropChance = abilityConfig.getDouble(AbilityConfigKeys.GHOST_ITEM_DROP_CHANCE, maxValue = 1.0).toFloat()
 
-        val abilitySet = if(evil) setOf(Ability.BLINDING, Ability.NECROMANCER, Ability.WITHERING) else setOf(Ability.CONFUSION, Ability.GHASTLY, Ability.HUNGER)
+        val infernalType = infernalMobTypesRepo.getInfernalTypeOrNull("${hauntedPrefix}ghost") ?: run {
+            logger.severe("Oops, seems like you have removed '${hauntedPrefix}ghost' from your mobs.yml configuration file, without it, the Ghost ability don't work, please re-add the missing ghost types and reload. If you prefer, you may also just delete your mobs.yml and let it regenerate automatically using the reload command.")
+            return
+        }
+
+        val abilitySet = if(haunted) setOf(Ability.BLINDING, Ability.FLYING, Ability.NECROMANCER, Ability.WITHERING) else setOf(Ability.CONFUSION, Ability.FLYING, Ability.GHASTLY, Ability.HUNGER)
 
         val ghost = world.spawn(location, Zombie::class.java, SpawnReason.CUSTOM) {
+            it.setAdult()
             it.addPermanentPotion(PotionEffectType.INVISIBILITY, Ability.GHOST, isAmbient = true, emitParticles = true)
             it.canPickupItems = false
 
             val equip = it.equipment
-            EquipmentSlot.values().forEach { slot -> equip?.setDropChance(slot, itemDropChance) }
-
             equip?.apply {
-                helmet = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_helmet")?.makeItem()
-                chestplate = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_chestplate")?.makeItem()
-                leggings = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_leggings")?.makeItem()
-                boots = lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_boots")?.makeItem()
-                setItemInMainHand(lootItemsRepo.getLootItemOrNull("${evilPrefix}ghost_weapon")?.makeItem())
+                helmet = lootItemsRepo.getLootItemOrNull("${hauntedPrefix}ghost_helmet")?.makeItem()
+                chestplate = lootItemsRepo.getLootItemOrNull("${hauntedPrefix}ghost_chestplate")?.makeItem()
+                leggings = lootItemsRepo.getLootItemOrNull("${hauntedPrefix}ghost_leggings")?.makeItem()
+                boots = lootItemsRepo.getLootItemOrNull("${hauntedPrefix}ghost_boots")?.makeItem()
+                setItemInMainHand(lootItemsRepo.getLootItemOrNull("${hauntedPrefix}ghost_weapon")?.makeItem())
             }
-            it.addAbilities(abilitySet)
+            EquipmentSlot.values().forEach { slot -> equip?.setDropChance(slot, itemDropChance) }
+            InfernalSpawnEvent(it, infernalType, randomAbilities = false, abilitySet = abilitySet).callEvent()
+            it.target = target
         }
 
-        if(evil) particlesHelper.sendParticle(ghost, Particle.SMOKE_LARGE, 3.5, 60)
-        else particlesHelper.sendParticle(ghost, Particle.CLOUD, 2.0, 25)
+        if(haunted) {
+            ghost.world.playSound(ghost.eyeLocation, Sound.ENTITY_ENDERMAN_SCREAM, 0.9f, 1f)
+            CoroutineScope(Dispatchers.Default).launch {
+                delay(300L)
+                ghost.world.playSound(ghost.eyeLocation, Sound.ENTITY_ENDERMAN_STARE, 0.6f, 1f)
+            }
+        }
+        else ghost.world.playSound(ghost.location, Sound.AMBIENT_CAVE, 1f, random.nextFloat() + 0.5f)
+
+        CoroutineScope(Dispatchers.Default).launch {
+            repeat(6) {
+                if(haunted) particlesHelper.sendParticle(ghost, Particle.SMOKE_LARGE, 2.5, 90)
+                else particlesHelper.sendParticle(ghost, Particle.CLOUD, 2.0, 35)
+                delay(150L)
+            }
+        }
     }
 
     private fun LivingEntity.triggerKamizake() {

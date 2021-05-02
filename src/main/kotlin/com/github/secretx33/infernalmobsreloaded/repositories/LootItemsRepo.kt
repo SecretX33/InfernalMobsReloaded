@@ -131,13 +131,13 @@ class LootItemsRepo (
                 log.warning("Inside item loot '$name', enchantment with name '${fields[0]}' doesn't exist, please fix your item loot configurations. Defaulting this enchantment to ${Enchantment.LUCK}.")
                 Enchantment.LUCK
             }!!
-            if(fields.size == 1) return@mapTo CustomEnchantment(type = enchant, minLevel = 0, maxLevel = 0, chance = 1.0)
+            if(fields.size == 1) return@mapTo CustomEnchantment(type = enchant, minLevel = 1, maxLevel = 1, chance = 1.0)
 
             // split the level section by '-' to get the enchant minLevel and maxLevel
             val levels = fields[1].split('-')
 
             // get the enchant minLevel and maxLevel as well, if present
-            val minLevel = levels[0].toIntOrNull()?.let { max(0, it - 1) } ?: run {
+            val minLevel = levels[0].toIntOrNull()?.let { max(1, it) } ?: run {
                 log.warning("Inside item loot '$name', level '${levels[0]}' for enchantment $enchant is not an integer. Defaulting $name's $enchant level to 1.")
                 1
             }

@@ -134,39 +134,40 @@ ghost_chestplate:
   enchants:
     - "protection_environmental:7-9"
 
+ghost_weapon:
+  name: "<#808080>Ghost Weapon"
+  material: "BOW"
+  amount: 1
+  enchants:
+    - "arrow_damage:3"
+
 # You may also want to implement these, just uncomment them and fill the necessary data
 
 # ghost_leggings:
 # ghost_boots:
 
-ghost_weapon:
-  name: "<#808080>Ghost Weapon"
-  material: "IRON_SWORD"
-  amount: 1
-  enchants:
-    - "damage_all"                       # sharpness
-
-evil_ghost_helmet:
-  name: "<#808080>Evil Ghost Head"
+haunted_ghost_helmet:
+  name: "<#808080>Haunted Ghost Head"
   material: "WITHER_SKELETON_SKULL"
   amount: 1
 
-evil_ghost_chestplate:
-  name: "<#808080>Evil Ghost Chestplate"
+haunted_ghost_chestplate:
+  name: "<#808080>Haunted Ghost Chestplate"
   material: "LEATHER_CHESTPLATE"
   color: "0, 0, 0"                       # RGB
   amount: 1
   enchants:
     - "protection_environmental:9-11"
 
-evil_ghost_weapon:
-  name: "<#808080>Evil Ghost Weapon"
-  material: "IRON_SWORD"
+haunted_ghost_weapon:
+  name: "<#808080>Haunted Ghost Weapon"
+  material: "BOW"
   amount: 1
   enchants:
-    - "damage_all"                       # sharpness
+    - "arrow_damage:4"
+    - "arrow_knockback"
 
 # You may also want to implement these, just uncomment them and fill the necessary data
 
-# evil_ghost_leggings:
-# evil_ghost_boots:
+# haunted_ghost_leggings:
+# haunted_ghost_boots:

@@ -63,3 +63,38 @@ scary_silverfish:
   health-multiplier: 2.0             # will have 2 times the normal health amount of a Creeper
   loot-table:
     - "silky:0.75"                   # will have 75% chance of dropping a 'silky'
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                      Ability Mobs                    | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Below are the mobs that are spawned by abilities, you may not remove or rename any of those since they're required to exist if their respective ability is enabled, although you may still chance their display names, boss bar style, loot table and multipliers
+
+# The mob spawned when an entity with Ghost ability dies (normal version)
+ghost:
+  display-name: "<#fafafa>**Ghost**"
+  boss-bar-text: "<#fafafa>**Ghost**"
+  boss-bar-color: "WHITE"           # valid colors: PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
+  boss-bar-overlay: "NOTCHED_10"    # valid overlays: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
+  type: "ZOMBIE"
+  spawn-chance: 0.0                  # no spawn chance for ghost, remember, it's not supposed to spawn naturally
+  mob-spawn-drop-chance: 0.0         # no spawn for ghost
+  ability-amount: 0                  # value ignored since ghost abilities are hardcoded
+  health-multiplier: 2.5
+  loot-table: []
+
+# The mob spawned when an entity with Ghost ability dies (haunted version)
+haunted_ghost:
+  display-name: "<#ff3d3d>Haunted <#fafafa>**Ghost**"
+  boss-bar-text: "<#ff3d3d>Haunted <#fafafa>**Ghost**"
+  boss-bar-color: "WHITE"           # valid colors: PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
+  boss-bar-overlay: "NOTCHED_10"    # valid overlays: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
+  type: "ZOMBIE"
+  spawn-chance: 0.0                  # no spawn chance for ghost, remember, it's not supposed to spawn naturally
+  mob-spawn-drop-chance: 0.0         # no spawn for ghost
+  ability-amount: 0                  # value ignored since ghost abilities are hardcoded
+  health-multiplier: 3.5
+  loot-table: []
