@@ -216,13 +216,13 @@ class AbilityHelper (
         val abilities = entity.getAbilities() ?: return emptyList()
 
         val jobList = ArrayList<Job>()
-        abilities.forEach { // TODO("check if I need to pass multimap as parameter to these tasks, cause I'm not sure if the remove will even be called")
+        abilities.forEach {
             when(it) {
                 Ability.ARCHER -> makeArcherTask(entity, target)
                 Ability.CALL_THE_GANG -> makeCallTheGangTask(entity, target)
-                Ability.GHASTLY -> makeGhastlyTask(entity, target)
+                Ability.GHASTLY -> makeGhastlyTask(entity, target) // TODO("Make a damage modifier listener for this task")
                 Ability.MORPH -> makeMorphTask(entity, target)
-                Ability.NECROMANCER -> makeNecromancerTask(entity, target)
+                Ability.NECROMANCER -> makeNecromancerTask(entity, target) // TODO("Make a damage modifier listener for this task")
                 Ability.POTIONS -> null // TODO("Make a potion throw task")
                 Ability.TELEPORT -> makeTeleportTask(entity, target)
                 Ability.THIEF -> makeThiefTask(entity, target)
@@ -306,7 +306,7 @@ class AbilityHelper (
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
-            val newType = infernalMobTypesRepo.getRandomInfernalType()
+            val newType = infernalMobTypesRepo.getRandomInfernalType(entity)
             val keepHpPercent = abilityConfig.get<Boolean>(AbilityConfigKeys.MORPH_KEEP_HP_PERCENTAGE)
 
             runSync(plugin) {
@@ -331,7 +331,6 @@ class AbilityHelper (
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.NECROMANCER, 1.25).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.NECROMANCER, 0.25)
         val speed = abilityConfig.getProjectileSpeed(Ability.NECROMANCER, 1.7)
-        println("nearbyRange = $nearbyRange, recheckDelay = $recheckDelay, chance = $chance, speed = $speed")
 
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
@@ -348,6 +347,7 @@ class AbilityHelper (
     private fun makeTeleportTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.TELEPORT, 2.5).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.TELEPORT, 0.3)
+        println("recheckDelay = $recheckDelay, chance = $chance")
 
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
@@ -410,7 +410,6 @@ class AbilityHelper (
     private fun makeWebberTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val chance = abilityConfig.getAbilityChance(Ability.WEBBER, 0.08)
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.WEBBER, 1.5).toLongDelay()
-        println("started webber task, chance = $chance, recheckDelay = $recheckDelay")
 
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
@@ -780,7 +779,6 @@ class AbilityHelper (
 
     private fun InfernalDamageTakenEvent.triggerFirework() {
         val chance = abilityConfig.getAbilityChanceOnDamageTaken(Ability.FIREWORK, 0.25)
-        println("Firework chance = $chance")
         if(random.nextDouble() > chance) return
 
         world.spawn(attacker.location.apply {

@@ -13,6 +13,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.LivingEntity
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
 import java.util.*
@@ -32,6 +33,7 @@ class InfernalMobTypesRepo (
     private var infernalTypeNames = emptyList<String>()                    // original groupNames
     private var infernalTypeCache = emptyMap<String, InfernalMobType>()    // lowercase groupName, infernalType
     private var infernalTypeMultimap = ImmutableSetMultimap.of<EntityType, InfernalMobType>()  // entityType, set<infernalType>
+    private var userDefinedInfernalTypes = emptyList<Pair<EntityType, InfernalMobType>>() // list containing all mobs types, except the internal ones like 'ghost' and 'evil_ghost', used as cache for the 'getRandomInfernalType' method
 
     init { reload() }
 
@@ -51,8 +53,8 @@ class InfernalMobTypesRepo (
 
     fun getAllInfernalTypeNames() = infernalTypeNames
 
-    // weighted by mob type, so it won't produce more than one type of entity vs another
-    fun getRandomInfernalType() = infernalTypeMultimap[infernalTypeMultimap.keys().random()].random()
+    // try to get another type of infernal, but if there's just a single type of mob, just return one of those as fallback
+    fun getRandomInfernalType(morphingEntity: LivingEntity) = userDefinedInfernalTypes.filter { morphingEntity.type != it.first }.randomOrNull()?.second ?: userDefinedInfernalTypes.random().second
 
     private fun ensureUniqueKeys() {
         val duplicatedKeys = manager.getKeys(false).groupBy { it.toLowerCase(Locale.US) }.filterValues { it.size > 1 }
@@ -72,6 +74,10 @@ class InfernalMobTypesRepo (
         val builder = ImmutableSetMultimap.builder<EntityType, InfernalMobType>()
         infernalTypeCache.forEach { (_, infernalType) -> builder.put(infernalType.entityType, infernalType) }
         infernalTypeMultimap = builder.build()
+        userDefinedInfernalTypes = infernalTypeMultimap.asMap()
+            .mapValues { (type, list) -> list.map { Pair(type, it) } }
+            .values.flatten()
+            .filter { (_, infernal) -> !infernal.name.equals("ghost", ignoreCase = true) && !infernal.name.equals("haunted_ghost", ignoreCase = true) }
     }
 
     private fun makeMobType(name: String): InfernalMobType {
