@@ -97,8 +97,11 @@ hunger:
   potion-is-ambient: true            # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
 invisible:
-  potion-emit-particles: true        # if invisible mobs should emit invisible particles as if they had used a potion of invisibility
-  potion-is-ambient: true            # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
+  disable-equipment-visibility: true   # if enabled, the entity will be made fully invisible, including their armor and weapon (note that it'll only work if you have ProtocolLib, otherwise the plugin will automatically fallback to false); if disabled, only potion will be used to make the entity invisible, so its armor and weapons will still be visible
+  disable-entity-sounds: true          # can make the infernal spookier, but at the same time may frustrate players a bit because they will get no sound feedback from the entity when hitting it, the choice is yours
+  disable-infernal-particles: true     # if infernal particles should NOT be emitted by invisible infernals, probably a good idea to keep it enabled if you want spookier invisible infernals
+  potion-emit-particles: false         # if invisible mobs should emit invisible particles as if they had used a potion of invisibility
+  potion-is-ambient: false             # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
 kamikaze:
   explosion-power: 3.0               # the power of the explosion, where 4.0 is equals to a explosion TNT

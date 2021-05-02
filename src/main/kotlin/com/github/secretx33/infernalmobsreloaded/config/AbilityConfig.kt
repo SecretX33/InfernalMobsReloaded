@@ -1,6 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
-import com.github.secretx33.infernalmobsreloaded.model.Abilities
+import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import org.bukkit.plugin.Plugin
 import java.util.concurrent.ConcurrentHashMap
@@ -60,50 +60,50 @@ class AbilityConfig (
     fun getDouble(key: AbilityConfigKeys, default: Double = key.defaultValue as Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble(key.configEntry, default, minValue, maxValue)
 
-    fun getPotionIsAmbient(ability: Abilities) = get("${ability.configEntry}.potion-is-ambient", true)
+    fun getPotionIsAmbient(ability: Ability) = get("${ability.configEntry}.potion-is-ambient", true)
 
-    fun getPotionEmitParticles(ability: Abilities) = get("${ability.configEntry}.potion-emit-particles", true)
+    fun getPotionEmitParticles(ability: Ability) = get("${ability.configEntry}.potion-emit-particles", true)
 
-    fun getAbilityChance(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+    fun getAbilityChance(ability: Ability, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.chance", default, minValue, maxValue)
 
-    fun getAbilityChanceOnDamageDone(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+    fun getAbilityChanceOnDamageDone(ability: Ability, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.chance-on-damage-done", default, minValue, maxValue)
 
-    fun getAbilityChanceOnDamageTaken(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+    fun getAbilityChanceOnDamageTaken(ability: Ability, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.chance-on-damage-taken", default, minValue, maxValue)
 
-    fun getRecheckDelay(ability: Abilities, default: Double, minValue: Double = 0.01, maxValue: Double = Double.MAX_VALUE)
+    fun getRecheckDelay(ability: Ability, default: Double, minValue: Double = 0.01, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.recheck-delay", default, minValue, maxValue)
 
-    fun getDuration(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+    fun getDuration(ability: Ability, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDoublePair("${ability.configEntry}.duration", default, minValue, maxValue)
 
-    fun getProjectileSpeed(ability: Abilities, default: Double, minValue: Double = 0.05, maxValue: Double = Double.MAX_VALUE)
+    fun getProjectileSpeed(ability: Ability, default: Double, minValue: Double = 0.05, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.projectile-speed", default, minValue, maxValue)
 
-    fun getAbilityPotency(ability: Abilities, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE)
+    fun getAbilityPotency(ability: Ability, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE)
         = getIntPair("${ability.configEntry}.potency", default, minValue, maxValue)
 
-    fun getDurabilityLoss(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = 1.0)
+    fun getDurabilityLoss(ability: Ability, default: Double, minValue: Double = 0.0, maxValue: Double = 1.0)
         = getDoublePair("${ability.configEntry}.durability-loss", default, minValue, maxValue)
 
-    fun getAffectsOnlyPlayers(ability: Abilities, default: Boolean) = get("${ability.configEntry}.affect-only-players", default)
+    fun getAffectsOnlyPlayers(ability: Ability, default: Boolean) = get("${ability.configEntry}.affect-only-players", default)
 
-    fun getNearbyRange(ability: Abilities, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+    fun getNearbyRange(ability: Ability, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.nearby-entities-range", default, minValue, maxValue)
 
-    fun getDistanceMultiplier(ability: Abilities, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+    fun getDistanceMultiplier(ability: Ability, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.distance-multiplier", default, minValue, maxValue).let { if(it <= 1.0) it else sqrt(it) }
 
-    fun getHeightMultiplier(ability: Abilities, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
+    fun getHeightMultiplier(ability: Ability, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDouble("${ability.configEntry}.height-multiplier", default, minValue, maxValue).let { if(it <= 1.0) it else sqrt(it) }
 
-    fun doesRequireLineOfSight(ability: Abilities, default: Boolean = true) = get("${ability.configEntry}.require-line-of-sight", default)
+    fun doesRequireLineOfSight(ability: Ability, default: Boolean = true) = get("${ability.configEntry}.require-line-of-sight", default)
 
-    fun getSendMessage(ability: Abilities, default: Boolean = true) = get("${ability.configEntry}.send-message-to-player", default)
+    fun getSendMessage(ability: Ability, default: Boolean = true) = get("${ability.configEntry}.send-message-to-player", default)
 
-    fun getIntAmounts(ability: Abilities, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE) = getIntPair("${ability.configEntry}.amount", default, minValue, maxValue)
+    fun getIntAmounts(ability: Ability, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE) = getIntPair("${ability.configEntry}.amount", default, minValue, maxValue)
 
     // returns a pair of ints containing the <Min, Max> value of that property
     @Suppress("UNCHECKED_CAST")
@@ -165,23 +165,26 @@ class AbilityConfig (
 }
 
 enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
-    FIREWORK_DAMAGE_MULTIPLIER("${Abilities.FIREWORK.configEntry}.damage-multiplier", 1.0),
-    LIFESTEAL_HEALING_PERCENTAGE("${Abilities.LIFESTEAL.configEntry}.healing-percentage", 0.5),
-    THORMAIL_REFLECTED_AMOUNT("${Abilities.THORNMAIL.configEntry}.reflected-amount", 0.5),
-    BERSERK_CAUSED_DAMAGE_BONUS("${Abilities.BERSERK.configEntry}.damage-caused-bonus", 1.3),
-    BERSERK_RECEIVED_DAMAGE_BONUS("${Abilities.BERSERK.configEntry}.damage-received-bonus", 1.25),
-    GHOST_EVIL_CHANCE("${Abilities.GHOST.configEntry}.evil-chance", 0.3),
-    GHOST_ITEM_DROP_CHANCE("${Abilities.GHOST.configEntry}.item-drop-chance", 0.2),
-    MORPH_KEEP_HP_PERCENTAGE("${Abilities.MORPH.configEntry}.keep-hp-percentage", true),
-    ARCHER_ARROW_AMOUNT("${Abilities.ARCHER.configEntry}.arrow-amount", 10),
-    ARCHER_ARROW_DELAY("${Abilities.ARCHER.configEntry}.arrow-delay", 0.2),
-    SPEEDY_BONUS("${Abilities.SPEEDY.configEntry}.bonus", 1.5),
-    ARMOURED_ARMOR_DROP_CHANCE("${Abilities.ARMOURED.configEntry}.armor-drop-chance", 0.001),
-    ARMOURED_POTION_LEVEL("${Abilities.ARMOURED.configEntry}.fallback-dmg-resist-potion-level", 1),
-    HEAVY_RESIST_PERCENTAGE("${Abilities.HEAVY.configEntry}.knockback-resist-percentage", 0.4),
-    WEBBER_TRAP_DENSITY("${Abilities.WEBBER.configEntry}.trap-density", 0.6),
-    KAMIZAZE_EXPLOSION_POWER("${Abilities.KAMIKAZE.configEntry}.explosion-power", 3.0),
-    KAMIZAZE_SET_ON_FIRE("${Abilities.KAMIKAZE.configEntry}.set-on-fire", true),
-    KAMIZAZE_BREAK_BLOCKS("${Abilities.KAMIKAZE.configEntry}.break-blocks", true),
+    INVISIBLE_DISABLE_ENTITY_SOUNDS("${Ability.INVISIBLE.configEntry}.disable-entity-sounds", true),
+    INVISIBLE_DISABLE_EQUIPMENT_VISIBLITY("${Ability.INVISIBLE.configEntry}.disable-equipment-visibility", true),
+    INVISIBLE_DISABLE_INFERNAL_PARTICLES("${Ability.INVISIBLE.configEntry}.disable-infernal-particles", true),
+    FIREWORK_DAMAGE_MULTIPLIER("${Ability.FIREWORK.configEntry}.damage-multiplier", 1.0),
+    LIFESTEAL_HEALING_PERCENTAGE("${Ability.LIFESTEAL.configEntry}.healing-percentage", 0.5),
+    THORMAIL_REFLECTED_AMOUNT("${Ability.THORNMAIL.configEntry}.reflected-amount", 0.5),
+    BERSERK_CAUSED_DAMAGE_BONUS("${Ability.BERSERK.configEntry}.damage-caused-bonus", 1.3),
+    BERSERK_RECEIVED_DAMAGE_BONUS("${Ability.BERSERK.configEntry}.damage-received-bonus", 1.25),
+    GHOST_EVIL_CHANCE("${Ability.GHOST.configEntry}.evil-chance", 0.3),
+    GHOST_ITEM_DROP_CHANCE("${Ability.GHOST.configEntry}.item-drop-chance", 0.2),
+    MORPH_KEEP_HP_PERCENTAGE("${Ability.MORPH.configEntry}.keep-hp-percentage", true),
+    ARCHER_ARROW_AMOUNT("${Ability.ARCHER.configEntry}.arrow-amount", 10),
+    ARCHER_ARROW_DELAY("${Ability.ARCHER.configEntry}.arrow-delay", 0.2),
+    SPEEDY_BONUS("${Ability.SPEEDY.configEntry}.bonus", 1.5),
+    ARMOURED_ARMOR_DROP_CHANCE("${Ability.ARMOURED.configEntry}.armor-drop-chance", 0.001),
+    ARMOURED_POTION_LEVEL("${Ability.ARMOURED.configEntry}.fallback-dmg-resist-potion-level", 1),
+    HEAVY_RESIST_PERCENTAGE("${Ability.HEAVY.configEntry}.knockback-resist-percentage", 0.4),
+    WEBBER_TRAP_DENSITY("${Ability.WEBBER.configEntry}.trap-density", 0.6),
+    KAMIZAZE_EXPLOSION_POWER("${Ability.KAMIKAZE.configEntry}.explosion-power", 3.0),
+    KAMIZAZE_SET_ON_FIRE("${Ability.KAMIKAZE.configEntry}.set-on-fire", true),
+    KAMIZAZE_BREAK_BLOCKS("${Ability.KAMIKAZE.configEntry}.break-blocks", true),
 }
 

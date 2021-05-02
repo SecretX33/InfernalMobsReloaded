@@ -44,7 +44,7 @@ dependencies {
     implementation("com.github.cryptomorin:XSeries:7.9.1.1")
 //    implementation("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
     implementation("me.mattstudios:triumph-msg-adventure:2.2.4-SNAPSHOT")
-//    compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0")
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0")
 //    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.5")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.4")
 }

@@ -19,6 +19,7 @@ import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitig
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.MountRemovalListener
 import com.github.secretx33.infernalmobsreloaded.manager.*
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
+import com.github.secretx33.infernalmobsreloaded.packetlisteners.InvisibleEntitiesEquipVanisherListener
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.*
@@ -47,7 +48,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { LootItemsRepo(get(), get(), get()) }
         single { AbilityHelper(get(),get(), get(), get(), get(), get(), get(), get(), get()) }
         single { InfernalMobTypesRepo(get(), get(), get(), get(), get()) }
-        single { InfernalMobsManager(get(), get(), get(), get(), get()) }
+        single { InfernalMobsManager(get(), get(), get(), get(), get(), get()) }
         single { FireworkDamageIncreaseListener(get(), get(), get()) }
         single { EntityDamageEntityListener(get(), get(), get()) }
         single { EntityDeathListener(get(), get()) }
@@ -65,6 +66,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { MountRemovalListener(get(), get()) }
         single { ChunkUnloadListener(get(), get()) }
         single { ChunkLoadListener(get(), get()) }
+        single { InvisibleEntitiesEquipVanisherListener(get(), get(), get()) }
         single { Commands(get()) }
         single<WorldGuardChecker> { WorldGuardCheckerDummy() }
     }
@@ -102,6 +104,8 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<Commands>()
         get<InfernalMobsManager>().loadAllInfernals()
         get<BossBarManager>().showBarsOfNearbyInfernalsForAllPlayers()
+        if(isProtocolLibEnabled)
+            get<InvisibleEntitiesEquipVanisherListener>()
     }
 
     override fun onDisable() {
@@ -114,4 +118,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
 
     private val isWorldGuardEnabled
         get() = Bukkit.getPluginManager().getPlugin("WorldGuard") != null
+
+    private val isProtocolLibEnabled
+        get() = Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")
 }

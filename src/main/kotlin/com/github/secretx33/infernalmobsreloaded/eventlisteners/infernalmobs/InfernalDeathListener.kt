@@ -8,7 +8,7 @@ import com.github.secretx33.infernalmobsreloaded.events.InfernalDeathEvent
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.manager.ParticlesHelper
-import com.github.secretx33.infernalmobsreloaded.model.Abilities
+import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
@@ -38,7 +38,7 @@ class InfernalDeathListener (
         if(lives > 1) {
             println("Second wind took place for entity ${entityType.formattedTypeName()}, reviving him")
             isCancelled = true
-            particlesHelper.sendParticle(entity, Abilities.SECOND_WIND)
+            particlesHelper.sendParticle(entity, Ability.SECOND_WIND)
             mobsManager.setLives(entity, lives - 1)
             bossBarManager.updateBossBar(entity, 1f)
             return

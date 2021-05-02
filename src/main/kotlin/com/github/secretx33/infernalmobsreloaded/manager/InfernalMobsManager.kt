@@ -1,11 +1,13 @@
 package com.github.secretx33.infernalmobsreloaded.manager
 
+import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
+import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageDoneEvent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageTakenEvent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
-import com.github.secretx33.infernalmobsreloaded.model.Abilities
+import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
@@ -31,6 +33,7 @@ import kotlin.math.max
 class InfernalMobsManager (
     private val config: Config,
     private val keyChain: KeyChain,
+    private val abilityConfig: AbilityConfig,
     private val infernalMobTypesRepo: InfernalMobTypesRepo,
     private val particlesHelper: ParticlesHelper,
     private val abilityHelper: AbilityHelper,
@@ -56,6 +59,8 @@ class InfernalMobsManager (
 
     fun setLives(entity: LivingEntity, lives: Int) = entity.pdc.set(keyChain.livesKey, PersistentDataType.INTEGER, lives)
 
+    fun hasAbility(entity: LivingEntity, ability: Ability) = entity.getAbilities()?.contains(ability) ?: false
+
     fun makeInfernalMob(event: InfernalSpawnEvent) {
         val entity = event.entity
         val infernalType = event.infernalType
@@ -75,8 +80,8 @@ class InfernalMobsManager (
     }
 
     private fun addPdcKeysToInfernal(entity: LivingEntity, infernalType: InfernalMobType, event: InfernalSpawnEvent) {
-        val abilitySet = (event.abilitySet.takeIf { !event.randomAbilities } ?: Abilities.random(infernalType.getAbilityNumber())).filterConflicts()
-        val livesNumber = if(abilitySet.contains(Abilities.SECOND_WIND)) 2 else 1
+        val abilitySet = (event.abilitySet.takeIf { !event.randomAbilities } ?: Ability.random(infernalType.getAbilityNumber())).filterConflicts()
+        val livesNumber = if(abilitySet.contains(Ability.SECOND_WIND)) 2 else 1
 
         entity.pdc.apply {
             set(keyChain.infernalCategoryKey, PersistentDataType.STRING, infernalType.name)
@@ -85,12 +90,12 @@ class InfernalMobsManager (
         }
     }
 
-    private fun Set<Abilities>.filterConflicts(): Set<Abilities> {
+    private fun Set<Ability>.filterConflicts(): Set<Ability> {
         val newSet = HashSet(this)
-        if(contains(Abilities.FLYING) && contains(Abilities.MOUNTED)) {
-            if(random.nextInt(2) == 0) newSet.remove(Abilities.FLYING)
-            else newSet.remove(Abilities.MOUNTED)
-            newSet.add(Abilities.values.filter { it != Abilities.FLYING && it != Abilities.MOUNTED }.random())
+        if(contains(Ability.FLYING) && contains(Ability.MOUNTED)) {
+            if(random.nextInt(2) == 0) newSet.remove(Ability.FLYING)
+            else newSet.remove(Ability.MOUNTED)
+            newSet.add(Ability.values.filter { it != Ability.FLYING && it != Ability.MOUNTED }.random())
         }
         return newSet
     }
@@ -132,7 +137,7 @@ class InfernalMobsManager (
 
     private fun startParticleEmissionTask(entity: LivingEntity) {
         cancelParticleTask(entity) // for safety
-        if(!infernalParticlesEnabled) return
+        if(!infernalParticlesEnabled || entity.disableInvisibleParticles()) return
         val particleType = particleType
         val particleSpread = particleSpread
         val delay = delayBetweenParticleEmission
@@ -148,6 +153,8 @@ class InfernalMobsManager (
 
     private val infernalParticlesEnabled
         get() = config.get<Boolean>(ConfigKeys.ENABLE_INFERNAL_PARTICLES)
+
+    private fun LivingEntity.disableInvisibleParticles() = abilityConfig.get(AbilityConfigKeys.INVISIBLE_DISABLE_INFERNAL_PARTICLES) && hasAbility(this, Ability.INVISIBLE)
 
     private val particleType
         get() = config.getEnum<Particle>(ConfigKeys.INFERNAL_PARTICLE_TYPE)
@@ -196,15 +203,15 @@ class InfernalMobsManager (
         infernalMobAbilityTasks.removeAll(entity.uniqueId)
     }
 
-    private fun LivingEntity.getAbilities(): Set<Abilities>? = pdc.get(keyChain.abilityListKey, PersistentDataType.STRING)?.toAbilitySet()
+    private fun LivingEntity.getAbilities(): Set<Ability>? = pdc.get(keyChain.abilityListKey, PersistentDataType.STRING)?.toAbilitySet()
 
-    private fun Set<Abilities>.toJson() = gson.toJson(this, infernalAbilitySetToken)
+    private fun Set<Ability>.toJson() = gson.toJson(this, infernalAbilitySetToken)
 
-    private fun String.toAbilitySet() = gson.fromJson<Set<Abilities>>(this, infernalAbilitySetToken)
+    private fun String.toAbilitySet() = gson.fromJson<Set<Ability>>(this, infernalAbilitySetToken)
 
     private companion object {
         val gson = Gson()
         val random = Random()
-        val infernalAbilitySetToken: Type = object : TypeToken<Set<Abilities>>() {}.type
+        val infernalAbilitySetToken: Type = object : TypeToken<Set<Ability>>() {}.type
     }
 }

@@ -23,7 +23,7 @@ class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
     )
 
     init {
-        plugin.getCommand("infernalmobsreloaded")?.let { cmd ->
+        plugin.getCommand("imr")?.let { cmd ->
             cmd.setExecutor(this)
             cmd.tabCompleter = this
         }

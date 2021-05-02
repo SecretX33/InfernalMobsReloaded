@@ -5,13 +5,13 @@ api-version: 1.16
 authors: [SecretX]
 description: Introduce Infernal Mobs, adding so much to any Survival Multiplayer experience.
 website: https://github.com/SecretX33
-softdepend: [WorldGuard]
+softdepend: [ProtocolLib, WorldGuard]
 
 commands:
-  infernalmobsreloaded:
+  imr:
     description: ${name}
     usage: /<command> <sub> [parameters]
-    aliases: [imr, imreloaded, mobs]
+    aliases: [infernalmobs, mobs]
 
 permissions:
 

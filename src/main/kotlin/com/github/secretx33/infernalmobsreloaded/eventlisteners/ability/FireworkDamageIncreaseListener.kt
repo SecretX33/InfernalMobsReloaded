@@ -2,17 +2,12 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners.ability
 
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
-import com.github.secretx33.infernalmobsreloaded.config.Config
-import com.github.secretx33.infernalmobsreloaded.manager.AbilityHelper
-import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.utils.pdc
-import com.github.secretx33.infernalmobsreloaded.utils.toUuid
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener

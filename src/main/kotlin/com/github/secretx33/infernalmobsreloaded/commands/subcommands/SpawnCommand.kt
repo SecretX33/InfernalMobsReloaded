@@ -5,7 +5,7 @@ import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
-import com.github.secretx33.infernalmobsreloaded.model.Abilities
+import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.utils.CustomKoinComponent
 import com.github.secretx33.infernalmobsreloaded.utils.inject
@@ -39,12 +39,12 @@ class SpawnCommand: SubCommand(), CustomKoinComponent {
             player.sendMessage(messages.get(MessageKeys.INFERNAL_MOB_TYPE_DOESNT_EXIST).replaceText { it.match("<type>").replacement(strings[1]) })
             return
         }
-        val abilities = HashSet<Abilities>()
+        val abilities = HashSet<Ability>()
 
         // if player specified infernal abilities in command
         if(strings.size > 2) {
             for(i in 2..strings.lastIndex) {
-                val ability = Abilities.getOrNull(strings[i]) ?: run {
+                val ability = Ability.getOrNull(strings[i]) ?: run {
                     player.sendMessage(messages.get(MessageKeys.ABILITY_DOESNT_EXIST)
                         .replaceText { it.match("<ability>").replacement(strings[i]) })
                     return
@@ -71,6 +71,6 @@ class SpawnCommand: SubCommand(), CustomKoinComponent {
 
         if(length == 2) return infernalMobTypesRepo.getAllInfernalTypeNames().filter { it.startsWith(hint, ignoreCase = true) }
 
-        return Abilities.lowercasedValues.filter { it.startsWith(hint, ignoreCase = true) }
+        return Ability.lowercasedValues.filter { it.startsWith(hint, ignoreCase = true) }
     }
 }

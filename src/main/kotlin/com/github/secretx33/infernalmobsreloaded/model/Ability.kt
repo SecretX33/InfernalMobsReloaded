@@ -4,7 +4,7 @@ import com.github.secretx33.infernalmobsreloaded.utils.capitalizeFully
 import java.util.*
 import kotlin.math.min
 
-enum class Abilities {
+enum class Ability {
     ARCHER,
     ARMOURED,
     BERSERK,
@@ -47,7 +47,7 @@ enum class Abilities {
         val values = values().toList()
         val lowercasedValues = values().map { it.name.toLowerCase(Locale.US) }
 
-        fun random(number: Int): Set<Abilities> {
+        fun random(number: Int): Set<Ability> {
             require(number >= 0) { "number cannot be lower than 0, number = $number" }
             return values.shuffled().subList(0, min(values.size, number)).toSet()
         }
