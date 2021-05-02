@@ -16,6 +16,7 @@ import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerLea
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerMoveListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.FireworkDamageWorkaroundListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.LightningDamageWorkaroundListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.MountRemovalListener
 import com.github.secretx33.infernalmobsreloaded.manager.*
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
@@ -61,6 +62,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { PlayerMoveListener(get(), get(), get(), get()) }
         single { FireworkDamageWorkaroundListener(get(), get()) }
         single { LightningDamageWorkaroundListener(get(), get()) }
+        single { MountRemovalListener(get(), get()) }
         single { ChunkUnloadListener(get(), get()) }
         single { ChunkLoadListener(get(), get()) }
         single { Commands(get()) }
@@ -94,6 +96,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<PlayerMoveListener>()
         get<FireworkDamageWorkaroundListener>()
         get<LightningDamageWorkaroundListener>()
+        get<MountRemovalListener>()
         get<ChunkUnloadListener>()
         get<ChunkLoadListener>()
         get<Commands>()

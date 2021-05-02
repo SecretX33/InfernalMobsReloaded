@@ -124,10 +124,9 @@ class Cuboid(point1: Location, point2: Location) {
 
     val randomLocation: Location
         get() {
-            val rand = Random()
-            val x: Double = rand.nextInt(abs(xMax - xMin) + 1).toDouble() + xMin
-            val y: Double = rand.nextInt(abs(yMax - yMin) + 1).toDouble() + yMin
-            val z: Double = rand.nextInt(abs(zMax - zMin) + 1).toDouble() + zMin
+            val x: Double = random.nextInt(abs(xMax - xMin) + 1).toDouble() + xMin
+            val y: Double = random.nextInt(abs(yMax - yMin) + 1).toDouble() + yMin
+            val z: Double = random.nextInt(abs(zMax - zMin) + 1).toDouble() + zMin
             return Location(world, x, y, z)
         }
     val totalBlockSize: Int
@@ -147,8 +146,10 @@ class Cuboid(point1: Location, point2: Location) {
         return this.isIn(player.location)
     }
 
-    fun isInWithMarge(loc: Location, marge: Double): Boolean {
-        return loc.world?.uid == world.uid && loc.x >= xMinCentered - marge && loc.x <= xMaxCentered + marge && loc.y >= yMinCentered - marge && loc
-            .getY() <= yMaxCentered + marge && loc.z >= zMinCentered - marge && loc.z <= zMaxCentered + marge
+    fun isInWithMarge(loc: Location, marge: Double): Boolean = loc.world?.uid == world.uid && loc.x >= xMinCentered - marge && loc.x <= xMaxCentered + marge && loc.y >= yMinCentered - marge && loc.y <= yMaxCentered + marge && loc.z >= zMinCentered - marge && loc.z <= zMaxCentered + marge
+
+
+    private companion object {
+        val random = Random()
     }
 }

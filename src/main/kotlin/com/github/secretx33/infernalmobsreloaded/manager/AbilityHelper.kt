@@ -122,14 +122,13 @@ class AbilityHelper (
     private fun LivingEntity.addFlyingAbility() {
         val bat = world.spawn(location, Bat::class.java, SpawnReason.CUSTOM) {
             it.turnIntoMount(keyChain.infernalBatMountKey, false)
-            it.addPotionEffect(PotionEffect(PotionEffectType.INVISIBILITY, Int.MAX_VALUE, 0,false, false, false))
+            it.addPermanentPotion(PotionEffectType.INVISIBILITY, Abilities.MOUNTED, isAmbient = false, emitParticles = false)
             // makes the newly spawned bat goes in a random x z direction, upwards
-            it.velocity = Vector(random.nextDouble() * 2 - 1, 1.0, random.nextDouble() * 2 - 1)
+            it.velocity = Vector(random.nextDouble() * 2 - 1.0, 1.0, random.nextDouble() * 2 - 1.0)
             it.isPersistent = true
             it.multiplyMaxHp(3.5)
         }
         bat.addPassenger(this)
-        // TODO("Remove bat entity when its 'master' dies")
     }
 
     private fun LivingEntity.addHeavyAbility() {
@@ -187,7 +186,7 @@ class AbilityHelper (
             }
         }
         // add armoured resistance potion to make the mount more resilient
-        addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 2, enablePotionParticles, enablePotionParticles, false))
+        addPotionEffect(PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Int.MAX_VALUE, 2, enablePotionParticles, enablePotionParticles, false))
         // give speed potion to make the mount a bit faster
         addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 0, enablePotionParticles, enablePotionParticles, false))
         // and mark it as mount in its pdc, so I can check on the spawn event and death event for it
