@@ -55,7 +55,7 @@ class InfernalDeathListener (
 
     private fun InfernalDeathEvent.sendDeathMessage() {
         if(!deathMessageEnabled) return
-        val msg = deathMessages.shuffled().firstOrNull() ?: return
+        val msg = deathMessages.randomOrNull() ?: return
         val range = max(0, messageRange).toDouble()
         entity.getNearbyEntities(range, range, range).forEach {
             it.sendMessage(msg)

@@ -9,6 +9,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinApiExtension
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 @KoinApiExtension
 class BossBarManager (
@@ -51,7 +52,7 @@ class BossBarManager (
         manageInfernalBossBarsVisibility(player, nearbyInfernals)
     }
 
-    private fun LivingEntity.getNearbyInfernals() = location.getNearbyLivingEntities(bossBarShowRange) { !it.isDead && it.isValid && it.isInfernalMob() }
+    private fun LivingEntity.getNearbyInfernals() = location.getNearbyLivingEntities(bossBarShowRange) { !it.isDead && it.isValid && mobsManager.isValidInfernalMob(it) }
 
     fun showBossBarForNearbyPlayers(entity: LivingEntity) {
         if(!bossBarEnabled) return
@@ -60,8 +61,6 @@ class BossBarManager (
             it.showBossBar(bossBar)
         }
     }
-
-    private fun LivingEntity.isInfernalMob() = mobsManager.isValidInfernalMob(this)
 
     fun showBarsOfNearbyInfernalsForAllPlayers() {
         if(!bossBarEnabled) return

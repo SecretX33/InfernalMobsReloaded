@@ -33,7 +33,7 @@ class InfernalSpawnListener (
 
     private fun InfernalSpawnEvent.sendSpawnMessage() {
         if(!spawnMessageEnabled) return
-        val msg = spawnMessages.shuffled().firstOrNull() ?: return
+        val msg = spawnMessages.randomOrNull() ?: return
         val range = max(0, messageRange).toDouble()
         entity.getNearbyEntities(range, range, range).forEach {
             it.sendMessage(msg)
