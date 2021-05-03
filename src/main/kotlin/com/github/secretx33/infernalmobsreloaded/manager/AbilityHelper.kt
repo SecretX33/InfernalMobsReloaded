@@ -732,7 +732,7 @@ class AbilityHelper (
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.SLOWNESS, 3).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.SLOWNESS, 6.0).getRandomBetween()
         println("Slowness: chance = $chance, potency = $potency, durantion = $duration")
-        defender.addPotion(PotionEffectType.WEAKNESS, Ability.WEAKNESS, duration, amplifier = potency)
+        defender.addPotion(PotionEffectType.SLOW, Ability.SLOWNESS, duration, amplifier = potency)
     }
 
     private fun InfernalDamageDoneEvent.triggerTosser() {
@@ -752,22 +752,22 @@ class AbilityHelper (
     }
 
     private fun InfernalDamageDoneEvent.triggerWeakness() {
-        val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.WEAKNESS, 0.5)
+        val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.WEAKNESS, 0.7)
         if(random.nextDouble() > chance) return
 
         // gives weakness effect to the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.WEAKNESS, 1, minValue = 1).getRandomBetween() - 1)
-        val duration = abilityConfig.getDuration(Ability.WEAKNESS, 6.0).getRandomBetween()
+        val duration = abilityConfig.getDuration(Ability.WEAKNESS, 5.0).getRandomBetween()
         println("Weakness: chance = $chance, potency = $potency, durantion = $duration")
         defender.addPotion(PotionEffectType.WEAKNESS, Ability.WEAKNESS, duration, amplifier = potency)
     }
 
     private fun InfernalDamageDoneEvent.triggerWithering() {
-        val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.WITHERING, 0.7)
+        val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.WITHERING, 0.65)
         if(random.nextDouble() > chance) return
 
         // gives wither effect to the defender
-        val potency = max(0, abilityConfig.getAbilityPotency(Ability.WITHERING, 3).getRandomBetween() - 1)
+        val potency = max(0, abilityConfig.getAbilityPotency(Ability.WITHERING, 1).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.WITHERING, 6.0).getRandomBetween()
         println("Withering: chance = $chance, potency = $potency, durantion = $duration")
         defender.addPotion(PotionEffectType.WITHER, Ability.WITHERING, duration, amplifier = potency)

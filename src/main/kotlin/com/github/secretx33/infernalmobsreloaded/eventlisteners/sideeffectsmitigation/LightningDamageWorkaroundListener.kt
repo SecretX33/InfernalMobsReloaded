@@ -26,7 +26,9 @@ class LightningDamageWorkaroundListener(plugin: Plugin, private val keyChain: Ke
     private fun EntityDamageByEntityEvent.onLightningFall() {
         if(!isLightningDamagingLivingEntity()) return
 
+        println("Strike")
         val ownerUuid = damager.pdc.get(keyChain.fireworkOwnerUuidKey, PersistentDataType.STRING)?.toUuid() ?: return
+        println("Special strike")
         // if the lightning was not fired by the damaged entity (or its rider), return
         if(!entity.isOwnerOrMountUuid(ownerUuid)) return
         // prevent the infernal mob, owner of that lightning, from damaging itself or its mount

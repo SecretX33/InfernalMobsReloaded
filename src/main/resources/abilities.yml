@@ -183,11 +183,11 @@ second_wind:
 # Slowness ability
 # Each attack of the infernal with slowness will have a chance of slowing (possibly massively) a target by a random amount of time
 slowness:
-  chance-on-damage-done: 0.7         # in percentage, the chance that the infernal mob with slowness ability will have to slow the attacked entity
+  chance-on-damage-done: 0.8         # in percentage, the chance that the infernal mob with slowness ability will have to slow the attacked entity
   potency: 2-4                       # what potency of slow should the entity be affected, the potency of slow is 15% * level
   duration: 5.0-7.0                  # in seconds, the duration of the slow
   potion-emit-particles: true        # if entities affected by slowness should emit slow effect particles
-  potion-is-ambient: true            # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
+  potion-is-ambient: false           # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
 speedy:
   bonus: 1.5-2.5                     # any mob with this effect will have between 1.5 and 2.5 times its normal speed
@@ -226,11 +226,11 @@ tosser:
 # Weakness ability
 # Each attack of the infernal mob with weakness ability will have a chance of applying the weakness effect. Weakness decreases attack power. Melee damage inflicted by the affected entity is reduced by 4 hearts of damage PER LEVEL, so keep the potency low (around 1, maybe 2, or 3 only if they got OP equipment), otherwise they won't be able to cause damage
 weakness:
-  chance-on-damage-done: 0.5         # in percentage, the chance that the infernal mob will have to weaken its target
+  chance-on-damage-done: 0.7         # in percentage, the chance that the infernal mob will have to weaken its target
   potency: 1                         # what potency of weakness should the entity be affected
   duration: 4.0-6.0                  # in seconds, the duration of the weakness effect
   potion-emit-particles: true        # if entities affected by withering should emit weakness effect particles
-  potion-is-ambient: true            # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
+  potion-is-ambient: false           # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
 # Webber ability
 # Periodically, when in combat, the infernal mob will have a chance of spawning a cage of cobweb around its victim, turning the flee of any prey a nightmare... <3
@@ -244,8 +244,8 @@ webber:
 # Withering ability
 # Each attack of the infernal with withering ability will have a chance of applying wither effect to the target; Wither is a status effect that inflicts damage over time. Unlike Poison, it can affect undead mobs, and can kill. It is usually difficult for the player to see how much health they have left, as it turns the player's health bar black.
 withering:
-  chance-on-damage-done: 0.7         # in percentage, the chance that the infernal mob will have to apply wither to their target
-  potency: 2-3                       # what potency of wither should the entity be affected, check the damages here https://minecraft.fandom.com/wiki/Wither_(effect) , valid values for potency are 1 up until 32
-  duration: 18.0-30.0                # in seconds, the duration of the wither effect
+  chance-on-damage-done: 0.65        # in percentage, the chance that the infernal mob will have to apply wither to their target
+  potency: 1                         # what potency of wither should the entity be affected, check the damages here https://minecraft.fandom.com/wiki/Wither_(effect) , valid values for potency are 1 up until 32; of course you can use random range here as well, I just didn't because the withering effect already strong enough at level 1
+  duration: 18.0-30.0                # in seconds, the duration of the wither effect; a
   potion-emit-particles: true        # if entities affected by withering should emit wither effect particles
   potion-is-ambient: false           # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
