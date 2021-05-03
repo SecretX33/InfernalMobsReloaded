@@ -59,7 +59,7 @@ call-the-gang:
 # Confusion ability
 # Each of its attacks may confuse on their targets (nausea), warping and wobbling the target's vision similarly to a nether portal, side effects: their target may puke
 confusion:
-  chance-on-damage-done: 0.5         # in percentage, the chance that the infernal mob with poisonous ability will have to poison the attacked entity
+  chance-on-damage-done: 0.5         # in percentage, the chance that the infernal mob with confusion ability will have to confuse the attacked entity
   duration: 10.0-12.0                # in seconds, the duration of the confusion effect
   potion-emit-particles: true        # if entities affected by confusion should emit confusion effect particles
   potion-is-ambient: true            # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
@@ -90,7 +90,7 @@ heavy:
 # Hunger ability
 # When applied, causes the hunger bar to deplete faster than normal, and depending on the potency, making harder even to run, since the hunger bar will keep depleting fast, and if they don't eat they'll not be able to run plus start starving (taking periodic damage)
 hunger:
-  chance-on-damage-done: 0.7         # in percentage, the chance that the infernal mob with molten ability will have to set the attacked entity on fire
+  chance-on-damage-done: 0.7         # in percentage, the chance that the infernal mob with hunger ability will have to apply hunger to the attacked entity
   duration: 30.0-45.0                # in seconds, the duration of the hunger effect
   potency: 8-12                      # what potency of hunger should the entity be affected by, each level increase the rate the hunger bar depletes by 40 / level per second, so hunger with potency 40 will depletes one "food" per second, potency 20 will depletes one "food" every 2 seconds, potency 10 will be every 4 seconds, and so on.
   potion-emit-particles: true        # if entities affected by levitate should emit hunger effect particles
@@ -115,7 +115,7 @@ kamikaze:
 # Levitate ability
 # On damage, have a chance of making the victim fluctuate in the air for some time, aka "transform them into piñata"
 levitate:
-  chance-on-damage-done: 0.5         # in percentage, the chance that the infernal mob with molten ability will have to set the attacked entity on fire
+  chance-on-damage-done: 0.5         # in percentage, the chance that the infernal mob with levitate ability will have to make the attacked entity levitate
   duration: 3.0-5.0                  # in seconds, the duration of the levitate effect
   potency: 1-2                       # what potency of levitation should the entity be affected by, each level increase the floating rate by 0.9 blocks per second, valid values: 1-127, more info here https://minecraft.fandom.com/wiki/Levitation
   potion-emit-particles: true        # if entities affected by levitate should emit levitation effect particles
@@ -132,12 +132,14 @@ lifesteal:
 lightning:
   chance-on-damage-done: 0.2         # in percentage, the chance of a lightning strike the attacked entity
 
+# Molten ability
+# Any infernal with this ability is immune to fire/lava. They set on fire entities that they attack and entities that attack them, it's basically a pyromaniac in disguise. "Set your life on fire. Seek those who fan your flames" - Rumi
 molten:
   chance-on-damage-done: 0.6         # in percentage, the chance that the infernal mob with molten ability will have to set the attacked entity on fire
   chance-on-damage-taken: 0.4        # in percentage, the chance that the entity that hit the infernal mob with molten ability will be set on fire (valid only for melee damage)
   duration: 6.0-10.0                 # in seconds, the duration of the fire
   potion-emit-particles: true        # if mobs with molten effect should emit particles as if they had used a potion of fire resistance
-  potion-is-ambient: true            # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
+  potion-is-ambient: false           # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
 # Morph ability
 # Every so often, while in combat, the infernal mob will have a chance of morphing into another infernal.
@@ -158,6 +160,8 @@ necromancer:
   recheck-delay: 1.25                # in seconds, every 1.25 seconds it'll run the random chance to see if it's going to spawn shoot a wither skull
   chance: 0.25                       # in percentage, every 'recheck-delay' seconds, the power will have 25% chance of being triggered
 
+# Poisonous ability
+# This kind of infernal has strong poison capabilities, anything that dares who hurt them or fool enough to let them be touched by it will suffer the consequences
 poisonous:
   chance-on-damage-done: 0.8         # in percentage, the chance that the infernal mob with poisonous ability will have to poison the attacked entity
   chance-on-damage-taken: 0.2        # in percentage, the chance that the entity that hit the infernal mob with poisonous ability will be poisoned (valid only for melee damage)
