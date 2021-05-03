@@ -115,8 +115,8 @@ kamikaze:
 # Levitate ability
 # On damage, have a chance of making the victim fluctuate in the air for some time, aka "transform them into piñata"
 levitate:
-  chance-on-damage-done: 0.4         # in percentage, the chance that the infernal mob with molten ability will have to set the attacked entity on fire
-  duration: 6.0-8.0                  # in seconds, the duration of the levitate effect
+  chance-on-damage-done: 0.5         # in percentage, the chance that the infernal mob with molten ability will have to set the attacked entity on fire
+  duration: 3.0-5.0                  # in seconds, the duration of the levitate effect
   potency: 1-2                       # what potency of levitation should the entity be affected by, each level increase the floating rate by 0.9 blocks per second, valid values: 1-127, more info here https://minecraft.fandom.com/wiki/Levitation
   potion-emit-particles: true        # if entities affected by levitate should emit levitation effect particles
   potion-is-ambient: false           # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
@@ -124,7 +124,7 @@ levitate:
 # Lifesteal ability
 # For each damage the infernal mob cause, there's a chance that it'll be healed by a certain amount of the damage inflicted upon his targets
 lifesteal:
-  chance: 0.75                       # in percentage, will have 75% chance of healing any damage caused by it
+  chance-on-damage-done: 0.75                       # in percentage, will have 75% chance of healing any damage caused by it
   healing-percentage: 0.5-0.8        # the amount of healing received will be between 50% and 80% of the damage received; may be any value >= 0
 
 # Lightning ability

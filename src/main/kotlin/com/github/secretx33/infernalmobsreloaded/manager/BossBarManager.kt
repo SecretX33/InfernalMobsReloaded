@@ -21,7 +21,7 @@ class BossBarManager (
 
     fun updateBossBar(entity: LivingEntity, newHealth: Float) {
         if(!bossBarEnabled) return
-        entity.getBossBar()?.progress(newHealth.toFloat())
+        entity.getBossBar()?.progress(newHealth)
     }
 
     private fun LivingEntity.getBossBar(): BossBar? {

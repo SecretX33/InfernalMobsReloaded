@@ -54,10 +54,11 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { EntityDeathListener(get(), get()) }
         single { EntitySpawnListener(get(), get(), get(), get()) }
         single { InfernalDamageDoneListener(get(), get()) }
-        single { InfernalDamageTakenListener(get(), get(), get()) }
+        single { InfernalDamageTakenListener(get(), get()) }
         single { InfernalDeathListener(get(), get(), get(), get(), get(), get()) }
         single { InfernalSpawnListener(get(), get(), get(), get()) }
         single { InfernalTargetListener(get(), get()) }
+        single { InfernalUpdateBossBarListener(get(), get(), get()) }
         single { PlayerJoinListener(get(), get()) }
         single { PlayerLeaveListener(get(), get()) }
         single { PlayerMoveListener(get(), get(), get(), get()) }
@@ -93,6 +94,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<InfernalDeathListener>()
         get<InfernalSpawnListener>()
         get<InfernalTargetListener>()
+        get<InfernalUpdateBossBarListener>()
         get<PlayerJoinListener>()
         get<PlayerLeaveListener>()
         get<PlayerMoveListener>()

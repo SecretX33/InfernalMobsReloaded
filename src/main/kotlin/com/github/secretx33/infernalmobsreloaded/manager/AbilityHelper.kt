@@ -3,6 +3,7 @@ package com.github.secretx33.infernalmobsreloaded.manager
 import com.github.secretx33.infernalmobsreloaded.config.*
 import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageDoneEvent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageTakenEvent
+import com.github.secretx33.infernalmobsreloaded.events.InfernalHealedEvent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.BlockModification
@@ -361,12 +362,12 @@ class AbilityHelper (
             // if the block that the entity will teleport at won't make it suffocate
             if(world.getBlockAt(dest).isPassable && (entity.height <= 1 || world.getBlockAt(dest.clone().apply { y += 1 }).isPassable)) {
                 entity.teleportAsync(dest)
-                world.playSound(dest, Sound.ENTITY_ENDERMAN_TELEPORT, 0.85f, random.nextFloat() * 0.7f + 0.8f)
+                world.playSound(dest, Sound.ENTITY_ENDERMAN_TELEPORT, 0.85f, random.nextFloat() * 0.8f + 0.7f)
                 continue
             }
             // else just teleport the entity right on the target's feet
             entity.teleportAsync(target.location)
-            world.playSound(target.location, Sound.ENTITY_ENDERMAN_TELEPORT, 0.85f, random.nextFloat() * 0.7f + 0.8f)
+            world.playSound(target.location, Sound.ENTITY_ENDERMAN_TELEPORT, 0.85f, random.nextFloat() * 0.8f + 0.7f)
         }
     }
 
@@ -570,7 +571,7 @@ class AbilityHelper (
                 Ability.HUNGER -> event.triggerHunger()
                 Ability.LEVITATE -> event.triggerLevitate()
                 Ability.LIFESTEAL -> event.triggerLifesteal()
-                Ability.LIGHTNING -> event.triggerLightning()
+                Ability.LIGHTNING -> event.triggerLightning()  // TODO("Add a damage multiplier)"
                 Ability.MOLTEN -> event.triggerMolten()
                 Ability.POISONOUS -> event.triggerPoisonous()
                 Ability.SLOWNESS -> event.triggerSlowness()
@@ -613,6 +614,7 @@ class AbilityHelper (
         // makes the defender hunger for some time
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.HUNGER, 8).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.HUNGER, 30.0).getRandomBetween()
+        println("Hunger: chance = $chance, potency = $potency, durantion = $duration")
         defender.addPotion(PotionEffectType.HUNGER, Ability.HUNGER, duration, amplifier = potency)
     }
 
@@ -623,12 +625,14 @@ class AbilityHelper (
         // makes the defender levitate for some time
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.LEVITATE, 6).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.LEVITATE, 6.0).getRandomBetween()
+        println("Levitate: chance = $chance, potency = $potency, durantion = $duration")
         defender.addPotion(PotionEffectType.LEVITATION, Ability.LEVITATE, duration, amplifier = potency)
     }
 
     private fun InfernalDamageDoneEvent.triggerLightning() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.LIGHTNING, 0.25)
         if(random.nextDouble() > chance) return
+        println("Lightning: chance = $chance")
 
         val lightning = world.strikeLightning(defender.location)
         lightning.pdc.set(keyChain.lightningOwnerUuidKey, PersistentDataType.STRING, entity.uniqueId.toString())
@@ -639,13 +643,21 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         val healingAmount = abilityConfig.getDoublePair(AbilityConfigKeys.LIFESTEAL_HEALING_PERCENTAGE).getRandomBetween()
-        entity.heal(damage * healingAmount)
+        val effectiveHealed = entity.heal(damage * healingAmount)
+        if(effectiveHealed <= 0.0) return
+
+        // notify that this entity has been healed so its boss bar can be updated
+        InfernalHealedEvent(entity, infernalType, effectiveHealed).callEvent()
+        println("Lifesteal: chance = $chance, healingAmount = $healingAmount")
         // TODO("Add particle effects to visually indicate the healing effect occurring")
     }
 
-    private fun LivingEntity.heal(healingAmount: Double) {
-        val maxHp = getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: return
+    // returns the effective health healed of this living entity
+    private fun LivingEntity.heal(healingAmount: Double): Double {
+        val maxHp = getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: return 0.0
+        val oldHp = health
         health = min(maxHp, health + healingAmount)
+        return health - oldHp
     }
 
     private fun InfernalDamageDoneEvent.triggerMolten() {
@@ -654,6 +666,7 @@ class AbilityHelper (
 
         // sets the attacker on defender
         val duration = abilityConfig.getDuration(Ability.MOLTEN, 8.0).getRandomBetween()
+        println("Molten (done): chance = $chance, durantion = $duration")
         defender.fireTicks = (duration * 20.0).toInt()
     }
 
@@ -664,6 +677,7 @@ class AbilityHelper (
         // poisons the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.POISONOUS, 6).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.POISONOUS, 8.0).getRandomBetween()
+        println("Posion (done): chance = $chance, potency = $potency, durantion = $duration")
         defender.addPotion(PotionEffectType.POISON, Ability.POISONOUS, duration, amplifier = potency)
     }
 
@@ -717,6 +731,7 @@ class AbilityHelper (
         // gives slow effect to the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.SLOWNESS, 3).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.SLOWNESS, 6.0).getRandomBetween()
+        println("Slowness: chance = $chance, potency = $potency, durantion = $duration")
         defender.addPotion(PotionEffectType.WEAKNESS, Ability.WEAKNESS, duration, amplifier = potency)
     }
 
@@ -743,6 +758,7 @@ class AbilityHelper (
         // gives weakness effect to the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.WEAKNESS, 1, minValue = 1).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.WEAKNESS, 6.0).getRandomBetween()
+        println("Weakness: chance = $chance, potency = $potency, durantion = $duration")
         defender.addPotion(PotionEffectType.WEAKNESS, Ability.WEAKNESS, duration, amplifier = potency)
     }
 
@@ -753,6 +769,7 @@ class AbilityHelper (
         // gives wither effect to the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.WITHERING, 3).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.WITHERING, 6.0).getRandomBetween()
+        println("Withering: chance = $chance, potency = $potency, durantion = $duration")
         defender.addPotion(PotionEffectType.WITHER, Ability.WITHERING, duration, amplifier = potency)
     }
 
@@ -820,6 +837,7 @@ class AbilityHelper (
 
         // sets the attacker on fire
         val duration = abilityConfig.getDuration(Ability.MOLTEN, 8.0).getRandomBetween()
+        println("Molten (taken): chance = $chance, durantion = $duration")
         attacker.fireTicks = (duration * 20.0).toInt()
     }
 
@@ -831,6 +849,7 @@ class AbilityHelper (
         // poisons the attacker
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.POISONOUS, 6).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.POISONOUS, 8.0).getRandomBetween()
+        println("Poison (taken): chance = $chance, potency = $potency, durantion = $duration")
         attacker.addPotion(PotionEffectType.POISON, Ability.POISONOUS, duration, amplifier = potency)
     }
 

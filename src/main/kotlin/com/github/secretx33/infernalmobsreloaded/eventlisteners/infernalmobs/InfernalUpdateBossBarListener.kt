@@ -1,6 +1,5 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs
 
-import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageTakenEvent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalHealedEvent
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
@@ -15,15 +14,25 @@ import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
 
 @KoinApiExtension
-class InfernalDamageTakenListener (
+class InfernalUpdateBossBarListener (
     plugin: Plugin,
     private val mobsManager: InfernalMobsManager,
+    private val bossBarManager: BossBarManager,
 ): Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    private fun InfernalDamageTakenEvent.onInfernalDamageTaken() {
-        mobsManager.triggerOnDamageTakenAbilities(this)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private fun EntityDamageEvent.updateBossBarHealth() {
+        val entity = entity
+        if(entity !is LivingEntity || !entity.isInfernalMob()) return
+        bossBarManager.updateBossBar(entity, entity.getHealthPercent(finalDamage))
     }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    private fun InfernalHealedEvent.updateBossBarHealth() {
+        bossBarManager.updateBossBar(entity, entity.getHealthPercent())
+    }
+
+    private fun LivingEntity.isInfernalMob() = mobsManager.isValidInfernalMob(this)
 }

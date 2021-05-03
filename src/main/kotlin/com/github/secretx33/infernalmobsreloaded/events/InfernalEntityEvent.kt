@@ -6,6 +6,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
 /**
+ * Represents any event that involves a infernal entity directly
  *
  * @property entity LivingEntity It's always an infernal mob
  * @property infernalType InfernalMobType What type the infernal entity is
