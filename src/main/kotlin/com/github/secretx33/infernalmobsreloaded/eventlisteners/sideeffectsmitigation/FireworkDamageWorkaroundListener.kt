@@ -1,5 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation
 
+import com.github.secretx33.infernalmobsreloaded.config.Config
+import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.utils.pdc
 import com.github.secretx33.infernalmobsreloaded.utils.toUuid
@@ -18,13 +20,13 @@ import org.koin.core.component.KoinApiExtension
 import java.util.*
 
 @KoinApiExtension
-class FireworkDamageWorkaroundListener(plugin: Plugin, private val keyChain: KeyChain): Listener {
+class FireworkDamageWorkaroundListener(plugin: Plugin, private val keyChain: KeyChain, private val config: Config): Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun EntityDamageByEntityEvent.onFireworkExplosion() {
-        if(!isFireworkDamagingLivingEntity()) return
+        if(!isFireworkDamagingLivingEntity() || !cannotDamageItself) return
 
         val ownerUuid = damager.pdc.get(keyChain.fireworkOwnerUuidKey, PersistentDataType.STRING)?.toUuid() ?: return
         // if the firework was not fired by the damaged entity (or its rider), return
@@ -37,4 +39,7 @@ class FireworkDamageWorkaroundListener(plugin: Plugin, private val keyChain: Key
     private fun Entity.isOwnerOrMountUuid(uuid: UUID) = uniqueId == uuid || passengers.any { it.uniqueId == uuid }
 
     private fun EntityDamageByEntityEvent.isFireworkDamagingLivingEntity() = damager.type == EntityType.FIREWORK && cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION && entity is LivingEntity
+
+    private val cannotDamageItself
+        get() = config.get<Boolean>(ConfigKeys.INFERNALS_CANNOT_DAMAGE_THEMSELVES)
 }

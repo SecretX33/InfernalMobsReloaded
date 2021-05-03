@@ -1,10 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.manager
 
 import com.github.secretx33.infernalmobsreloaded.config.*
-import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageDoneEvent
-import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageTakenEvent
-import com.github.secretx33.infernalmobsreloaded.events.InfernalHealedEvent
-import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
+import com.github.secretx33.infernalmobsreloaded.events.*
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.BlockModification
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
@@ -41,7 +38,6 @@ import java.lang.reflect.Type
 import java.util.*
 import java.util.logging.Logger
 import kotlin.math.*
-
 @KoinApiExtension
 class AbilityHelper (
     private val plugin: Plugin,
@@ -634,8 +630,10 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
         println("Lightning: chance = $chance")
 
-        val lightning = world.strikeLightning(defender.location)
-        lightning.pdc.set(keyChain.lightningOwnerUuidKey, PersistentDataType.STRING, entity.uniqueId.toString())
+        val strikeLocation = defender.location
+        InfernalLightningStrike(entity, infernalType, strikeLocation).callEvent()
+        world.strikeLightning(strikeLocation)
+        println("Fired a lightning strike!")
     }
 
     private fun InfernalDamageDoneEvent.triggerLifesteal() {
@@ -941,3 +939,4 @@ class AbilityHelper (
         val healthUID: UUID = "18f1d8fb-6fed-4d47-a69b-df5c76693ad5".toUuid()
     }
 }
+

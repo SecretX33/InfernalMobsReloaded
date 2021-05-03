@@ -9,7 +9,6 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinApiExtension
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 
 @KoinApiExtension
 class BossBarManager (

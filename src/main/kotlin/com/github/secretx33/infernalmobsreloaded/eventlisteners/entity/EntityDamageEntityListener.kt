@@ -26,7 +26,7 @@ class EntityDamageEntityListener (
 
     // When an infernal takes damage
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private fun EntityDamageByEntityEvent.onInfernalDamageTaken() {
         val infernal = entity as? LivingEntity ?: return
         val attacker = damager as? LivingEntity ?: (damager as? Projectile)?.shooter as? LivingEntity ?: return
@@ -41,7 +41,7 @@ class EntityDamageEntityListener (
 
     // When an infernal causes damage
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private fun EntityDamageByEntityEvent.onInfernalDamageDone() {
         val infernal = damager as? LivingEntity ?: (damager as? Projectile)?.shooter as? LivingEntity ?: return
         val defender = entity as? LivingEntity ?: return

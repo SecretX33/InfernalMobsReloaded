@@ -196,7 +196,7 @@ class YamlManager (
     override fun load(file: File) {
         try {
             FileInputStream(file).use { fis ->
-                this.load(InputStreamReader(fis, CHARSET))
+                super.load(InputStreamReader(fis, CHARSET))
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -206,8 +206,7 @@ class YamlManager (
     override fun save(file: File) {
         try {
             file.createParentDirs()
-            val data = this.saveToString()
-            file.writeText(data)
+            file.writeText(saveToString(), CHARSET)
         } catch (e: IOException) {
             e.printStackTrace()
         }
