@@ -31,11 +31,11 @@ class Config(plugin: Plugin, private val log: Logger) {
     @Suppress("UNCHECKED_CAST")
     fun <T> get(key: String, default: T): T {
         return cache.getOrPut(key) {
-            manager.get(key, default)
-        } as? T ?: run {
-            log.severe("On config key $key, expected value of type ${default!!::class.java.simpleName} but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your configuration file and reload")
-            default
-        }
+            manager.get(key, default) as? T ?: run {
+                log.severe("On config key $key, expected value of type ${default!!::class.java.simpleName} but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your configuration file and reload")
+                default
+            }
+        } as T
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -45,11 +45,11 @@ class Config(plugin: Plugin, private val log: Logger) {
 
     fun getInt(key: String, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Int {
         return cache.getOrPut(key) {
-            manager.get(key, default)?.let { (it as? Int)?.let { int -> max(minValue, min(maxValue, int)) } }
-        } as? Int ?: run {
-            log.severe("On config key $key, expected value of type Int but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
-            default
-        }
+            (manager.get(key, default) as? Int)?.let { int -> max(minValue, min(maxValue, int)) } ?: run {
+                log.severe("On config entry $key, expected value of type Int but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+                default
+            }
+        } as Int
     }
 
     fun getInt(key: ConfigKeys, default: Int = key.defaultValue as Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE)
@@ -57,11 +57,11 @@ class Config(plugin: Plugin, private val log: Logger) {
 
     fun getDouble(key: String, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Double {
         return cache.getOrPut(key) {
-            manager.get(key, default)?.let { (it as? Double)?.let { double -> max(minValue, min(maxValue, double)) } }
-        } as? Double ?: run {
-            log.severe("On config key $key, expected value of type Double but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
-            default
-        }
+            (manager.get(key, default) as? Double)?.let { double -> max(minValue, min(maxValue, double)) } ?: run {
+                log.severe("On config entry $key, expected value of type Double but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+                default
+            }
+        } as Double
     }
 
     fun getDouble(key: ConfigKeys, default: Double = key.defaultValue as Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)

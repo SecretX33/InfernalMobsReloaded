@@ -218,10 +218,12 @@ thornmail:
 # Each damage the infernal mob causes may cause the target and nearby entities to be tossed around in a random direction
 tosser:
   nearby-entities-range: 4.0             # in blocks, how close the entity has to be of the main target to also be affected by it; if you don't want abilities to be able to affect multiple targets, set its value to 0.0
-  chance-on-damage-done: 0.4             # in percentage, the chance that the infernal mob will have to weaken its target
-  sneaking-mitigation-percentage: 0.5    # if the target is sneaking, the tosses will be take 50% less effective on it
-  distance-multiplier: 1.2               # you can increase the maximum distance the target will be tossed at by increasing this multiplier
-  height-multiplier: 0.8                 # you can increase the maximum distance the target will be tossed at by increasing this multiplier
+  sneaking-multiplier-percentage: 0.65   # if the target is sneaking, the tosses will be multiplied by that percentage; the default value makes the it takes 30% less toss, but you can also increase this multiplier over 1 to increase the toss distance if they're sneaking, if you want
+  require-line-of-sight: true            # if true, the ability will only trigger if the infernal mob has line of sight of the victim
+  distance-multiplier: 1.0               # you can increase the maximum distance the target will be tossed at by increasing this multiplier
+  height-multiplier: 1.0                 # you can increase the maximum distance the target will be tossed at by increasing this multiplier
+  recheck-delay: 2.0                     # in seconds, every 2.0 seconds it'll run the random chance to see if it's going to spawn shoot the arrows
+  chance: 0.6                            # in percentage, every 'recheck-delay' seconds, the power will have 60% chance of being triggered
 
 # Weakness ability
 # Each attack of the infernal mob with weakness ability will have a chance of applying the weakness effect. Weakness decreases attack power. Melee damage inflicted by the affected entity is reduced by 4 hearts of damage PER LEVEL, so keep the potency low (around 1, maybe 2, or 3 only if they got OP equipment), otherwise they won't be able to cause damage

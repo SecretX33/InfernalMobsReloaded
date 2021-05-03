@@ -222,12 +222,38 @@ class AbilityHelper (
                 Ability.NECROMANCER -> makeNecromancerTask(entity, target) // TODO("Make a damage modifier listener for this task")
                 Ability.POTIONS -> null // TODO("Make a potion throw task")
                 Ability.TELEPORT -> makeTeleportTask(entity, target)
+                Ability.TOSSER -> makeTosserTask(entity, target)
                 Ability.THIEF -> makeThiefTask(entity, target)
                 Ability.WEBBER -> makeWebberTask(entity, target)
                 else -> null
             }?.let { job -> jobList.add(job) }
         }
         return jobList
+    }
+
+    private fun makeTosserTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+        val nearbyRange = abilityConfig.getNearbyRange(Ability.TOSSER, 4.0)
+        val recheckDelay = abilityConfig.getRecheckDelay(Ability.TOSSER, 1.5).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Ability.TOSSER, 0.5)
+        val requireLoS = abilityConfig.doesRequireLineOfSight(Ability.TOSSER)
+        val sneakerMultiplier = abilityConfig.getDouble(AbilityConfigKeys.TOSSER_SNEAK_MULTIPLIER_PERCENTAGE)
+
+        while(isActive && !entity.isNotTargeting(target)) {
+            delay(recheckDelay)
+            if(random.nextDouble() > chance || (requireLoS && !entity.hasLineOfSight(target))) continue
+
+            val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
+
+            // toss victim and all nearby entities
+            victims.forEach {
+                val x = 1.3 * abilityConfig.getDistanceMultiplier(Ability.TOSSER) * (random.nextDouble() * 2 - 1)
+                val y = 0.75 * abilityConfig.getHeightMultiplier(Ability.TOSSER) + (abilityConfig.getHeightMultiplier(Ability.TOSSER) * random.nextDouble() * 0.5).let { h -> if(h <= 1.0) h else sqrt(h) }
+                val z = 1.3 * abilityConfig.getDistanceMultiplier(Ability.TOSSER) * (random.nextDouble() * 2 - 1)
+
+                val victimMulti = if((it as? Player)?.isSneaking == true) sneakerMultiplier else 1.0
+                it.velocity = Vector(x, y, z).multiply(victimMulti)
+            }
+        }
     }
 
     private fun makeArcherTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
@@ -241,7 +267,7 @@ class AbilityHelper (
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
             val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).getRandomBetween()
-            val victims = target.getValidNearbyTargetsAsync(nearbyRange)
+            val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
 
             for (i in 1..amount) {
                 victims.forEach {
@@ -288,7 +314,7 @@ class AbilityHelper (
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
 
-            val victims = target.getValidNearbyTargetsAsync(nearbyRange)
+            val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
             victims.forEach {
                 val dir = entity.shootDirection(it).multiply(speed)
                 entity.shootProjectile(dir, Fireball::class.java)
@@ -333,7 +359,7 @@ class AbilityHelper (
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
 
-            val victims = target.getValidNearbyTargetsAsync(nearbyRange)
+            val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
             victims.forEach {
                 val dir = entity.shootDirection(it).multiply(speed)
                 entity.shootProjectile(dir, WitherSkull::class.java)
@@ -572,7 +598,6 @@ class AbilityHelper (
                 Ability.POISONOUS -> event.triggerPoisonous()
                 Ability.SLOWNESS -> event.triggerSlowness()
                 Ability.RUST -> event.triggerRust()
-                Ability.TOSSER -> event.triggerTosser()
                 Ability.WEAKNESS -> event.triggerWeakness()
                 Ability.WITHERING -> event.triggerWithering()
                 else -> {}
@@ -731,22 +756,6 @@ class AbilityHelper (
         val duration = abilityConfig.getDuration(Ability.SLOWNESS, 6.0).getRandomBetween()
         println("Slowness: chance = $chance, potency = $potency, durantion = $duration")
         defender.addPotion(PotionEffectType.SLOW, Ability.SLOWNESS, duration, amplifier = potency)
-    }
-
-    private fun InfernalDamageDoneEvent.triggerTosser() {
-        val nearbyRange = abilityConfig.getNearbyRange(Ability.TOSSER, 4.0)
-        val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.TOSSER, 0.4)
-        if(random.nextDouble() > chance) return
-
-        val victims = entity.getValidNearbyTargets(nearbyRange)
-
-        // toss victim and all nearby entities
-        victims.forEach {
-            val x = abilityConfig.getDistanceMultiplier(Ability.TOSSER) * (random.nextDouble() * 2 - 1)
-            val y = abilityConfig.getHeightMultiplier(Ability.TOSSER) * random.nextDouble()
-            val z = abilityConfig.getDistanceMultiplier(Ability.TOSSER) * (random.nextDouble() * 2 - 1)
-            it.velocity = Vector(x, y, z)
-        }
     }
 
     private fun InfernalDamageDoneEvent.triggerWeakness() {

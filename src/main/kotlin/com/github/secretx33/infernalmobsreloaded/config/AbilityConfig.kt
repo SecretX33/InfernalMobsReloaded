@@ -24,11 +24,11 @@ class AbilityConfig (
     @Suppress("UNCHECKED_CAST")
     fun <T> get(key: String, default: T): T {
         return cache.getOrPut(key) {
-            manager.get(key, default)
-        } as? T ?: run {
-            log.severe("On ability entry $key, expected value of type ${default!!::class.java.simpleName} but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
-            default
-        }
+            manager.get(key, default) as? T ?: run {
+                log.severe("On ability entry $key, expected value of type ${default!!::class.java.simpleName} but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+                default
+            }
+        } as T
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -38,11 +38,11 @@ class AbilityConfig (
 
     fun getInt(key: String, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Int {
         return cache.getOrPut(key) {
-            manager.get(key, default)?.let { (it as? Int)?.let { int -> max(minValue, min(maxValue, int)) } }
-        } as? Int ?: run {
-            log.severe("On ability entry $key, expected value of type Int but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
-            default
-        }
+            (manager.get(key, default) as? Int)?.let { int -> max(minValue, min(maxValue, int)) } ?: run {
+                log.severe("On ability entry $key, expected value of type Int but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+                default
+            }
+        } as Int
     }
 
     fun getInt(key: AbilityConfigKeys, default: Int = key.defaultValue as Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE)
@@ -50,11 +50,11 @@ class AbilityConfig (
 
     fun getDouble(key: String, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Double {
         return cache.getOrPut(key) {
-            manager.get(key, default)?.let { (it as? Double)?.let { double -> max(minValue, min(maxValue, double)) } }
-        } as? Double ?: run {
-            log.severe("On ability entry $key, expected value of type Double but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
-            default
-        }
+            (manager.get(key, default) as? Double)?.let { double -> max(minValue, min(maxValue, double)) } ?: run {
+                log.severe("On ability entry $key, expected value of type Double but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+                default
+            }
+        } as Double
     }
 
     fun getDouble(key: AbilityConfigKeys, default: Double = key.defaultValue as Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
@@ -165,6 +165,7 @@ class AbilityConfig (
 }
 
 enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
+    TOSSER_SNEAK_MULTIPLIER_PERCENTAGE("${Ability.TOSSER.configEntry}.sneaking-multiplier-percentage", 0.4),
     INVISIBLE_DISABLE_ENTITY_SOUNDS("${Ability.INVISIBLE.configEntry}.disable-entity-sounds", true),
     INVISIBLE_DISABLE_EQUIPMENT_VISIBLITY("${Ability.INVISIBLE.configEntry}.disable-equipment-visibility", true),
     INVISIBLE_DISABLE_INFERNAL_PARTICLES("${Ability.INVISIBLE.configEntry}.disable-infernal-particles", true),
