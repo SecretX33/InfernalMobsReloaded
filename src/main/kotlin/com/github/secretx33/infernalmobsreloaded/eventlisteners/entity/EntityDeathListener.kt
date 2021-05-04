@@ -21,8 +21,7 @@ class EntityDeathListener(plugin: Plugin, private val mobsManager: InfernalMobsM
         if(!entity.isInfernalMob()) return
         val infernalType = mobsManager.getInfernalTypeOrNull(entity) ?: return
         val event = InfernalDeathEvent(entity, infernalType)
-        Bukkit.getPluginManager().callEvent(event)
-        if(event.isCancelled) isCancelled = true
+        if(!event.callEvent()) isCancelled = true
     }
 
     private fun LivingEntity.isInfernalMob() = mobsManager.isValidInfernalMob(this)

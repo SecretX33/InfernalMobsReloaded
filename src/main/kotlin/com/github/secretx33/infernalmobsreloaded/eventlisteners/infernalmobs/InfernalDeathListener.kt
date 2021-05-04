@@ -9,14 +9,18 @@ import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.manager.ParticlesHelper
 import com.github.secretx33.infernalmobsreloaded.model.Ability
-import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
+import com.github.secretx33.infernalmobsreloaded.model.KeyChain
+import com.github.secretx33.infernalmobsreloaded.utils.turnIntoSpawner
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
+import java.util.*
 import kotlin.math.max
 
 @KoinApiExtension
@@ -27,6 +31,7 @@ class InfernalDeathListener (
     private val particlesHelper: ParticlesHelper,
     private val mobsManager: InfernalMobsManager,
     private val bossBarManager: BossBarManager,
+    private val keyChain: KeyChain,
 ): Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
@@ -36,21 +41,35 @@ class InfernalDeathListener (
         val lives = entity.getLives()
         // if entity got more than one life, cancel its death and subtract one life
         if(lives > 1) {
-            println("Second wind took place for entity ${entityType.formattedTypeName()}, reviving him")
             isCancelled = true
-            particlesHelper.sendParticle(entity, Ability.SECOND_WIND)
-            mobsManager.setLives(entity, lives - 1)
-            bossBarManager.updateBossBar(entity, 1f)
+            triggerSecondWind(lives)
             return
         }
         mobsManager.triggerOnDeathAbilities(entity)
         mobsManager.unloadInfernalMob(entity)
         bossBarManager.removeBossBar(entity)
         // drop infernal rewards on infernal mob's body (along with normal mob loot)
+        dropMobLoots()
+        dropMobSpawner()
+        sendDeathMessage()
+    }
+
+    private fun InfernalDeathEvent.triggerSecondWind(lives: Int) {
+        particlesHelper.sendParticle(entity, Ability.SECOND_WIND)
+        mobsManager.setLives(entity, lives - 1)
+        bossBarManager.updateBossBar(entity, 1f)
+    }
+
+    private fun InfernalDeathEvent.dropMobLoots() {
         infernalType.getLoots().forEach {
             world.dropItemNaturally(entity.location, it)
         }
-        sendDeathMessage()
+    }
+
+    private fun InfernalDeathEvent.dropMobSpawner() {
+        if(!dropSpawners || random.nextDouble() > infernalType.mobSpawnerDropChance) return
+        val spawner = ItemStack(Material.SPAWNER).turnIntoSpawner(infernalType)
+        world.dropItemNaturally(entity.location, spawner)
     }
 
     private fun InfernalDeathEvent.sendDeathMessage() {
@@ -64,7 +83,14 @@ class InfernalDeathListener (
 
     private fun LivingEntity.getLives() = mobsManager.getLives(this)
 
+    private val dropSpawners
+        get() = config.get<Boolean>(ConfigKeys.ENABLE_SPAWNER_DROPS)
+
     private val deathMessageEnabled get() = config.get<Boolean>(ConfigKeys.ENABLE_INFERNAL_DEATH_MESSAGE)
     private val deathMessages get() = messages.getList(MessageKeys.INFERNAL_MOB_DEATH_MESSAGES)
     private val messageRange get() = config.getInt(ConfigKeys.INFERNAL_DEATH_MESSAGE_RADIUS)
+
+    private companion object {
+        val random = Random()
+    }
 }

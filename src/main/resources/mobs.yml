@@ -3,6 +3,7 @@
 my_custom_skeleton:
   display-name: "<#828282>Infernal <#bfbfbf>**Skeleton**"
   boss-bar-text: "<#828282>Infernal <#bfbfbf>**Skeleton**"
+  mob-spawner-name: "Mob Spawner (<#828282>Infernal <#bfbfbf>**Skeleton**)"
   boss-bar-color: "PURPLE"           # valid colors: PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
   boss-bar-overlay: "NOTCHED_20"     # valid overlays: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
   boss-bar-flags:                    # valid flags (may use multiple): CREATE_WORLD_FOG, DARKEN_SCREEN, PLAY_BOSS_MUSIC
@@ -22,6 +23,7 @@ my_custom_skeleton:
 my_annoying_skeleton:
   display-name: "<#828282>Annoying <#bfbfbf>**Skeleton**"
   boss-bar-text: "<#828282>Annoying <#bfbfbf>**Skeleton**"
+  mob-spawner-name: "Mob Spawner (<#828282>Annoying <#bfbfbf>**Skeleton**)"
   boss-bar-color: "BLUE"             # valid colors: PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
   boss-bar-overlay: "NOTCHED_12"     # valid overlays: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
   boss-bar-flags:                    # valid flags (may use multiple): CREATE_WORLD_FOG, DARKEN_SCREEN, PLAY_BOSS_MUSIC
@@ -37,6 +39,7 @@ my_annoying_skeleton:
 infernal_creeper:
   display-name: "<#828282>Infernal <#38d411>**Creeper**"
   boss-bar-text: "<#828282>Infernal <#38d411>**Creeper**"
+  mob-spawner-name: "Mob Spawner (<#828282>Infernal <#38d411>**Creeper**)"
   boss-bar-color: "GREEN"            # valid colors: PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
   boss-bar-overlay: "NOTCHED_12"     # valid overlays: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
   boss-bar-flags:                    # valid flags (may use multiple): CREATE_WORLD_FOG, DARKEN_SCREEN, PLAY_BOSS_MUSIC
@@ -54,6 +57,7 @@ infernal_creeper:
 scary_silverfish:
   display-name: "<#828282>Scary <#f5f5f5>**Fishy**"
   boss-bar-text: "<#828282>Scary <#f5f5f5>**Fishy**"
+  mob-spawner-name: "Mob Spawner (<#828282>Scary <#f5f5f5>**Fishy**)"
   boss-bar-color: "YELLOW"           # valid colors: PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
   boss-bar-overlay: "PROGRESS"       # valid overlays: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
   type: "SILVERFISH"
@@ -77,8 +81,9 @@ scary_silverfish:
 ghost:
   display-name: "<#fafafa>**Ghost**"
   boss-bar-text: "<#fafafa>**Ghost**"
-  boss-bar-color: "WHITE"           # valid colors: PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
-  boss-bar-overlay: "NOTCHED_10"    # valid overlays: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
+  mob-spawner-name: ""               # no spawner name since it'll never drop a spawner
+  boss-bar-color: "WHITE"            # valid colors: PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
+  boss-bar-overlay: "NOTCHED_10"     # valid overlays: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
   type: "ZOMBIE"
   spawn-chance: 0.0                  # no spawn chance for ghost, remember, it's not supposed to spawn naturally
   mob-spawn-drop-chance: 0.0         # no spawn for ghost
@@ -90,8 +95,9 @@ ghost:
 haunted_ghost:
   display-name: "<#ff3d3d>Haunted <#fafafa>**Ghost**"
   boss-bar-text: "<#ff3d3d>Haunted <#fafafa>**Ghost**"
-  boss-bar-color: "WHITE"           # valid colors: PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
-  boss-bar-overlay: "NOTCHED_10"    # valid overlays: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
+  mob-spawner-name: ""               # no spawner name since it'll never drop a spawner
+  boss-bar-color: "WHITE"            # valid colors: PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
+  boss-bar-overlay: "NOTCHED_10"     # valid overlays: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
   type: "ZOMBIE"
   spawn-chance: 0.0                  # no spawn chance for ghost, remember, it's not supposed to spawn naturally
   mob-spawn-drop-chance: 0.0         # no spawn for ghost

@@ -88,6 +88,8 @@ class InfernalMobTypesRepo (
         val bossBarOverlay = getMobBossBarOverlay(name)
         val bossBarFlags = getMobBossBarFlags(name)
         val spawnChance = getMobSpawnChance(name)
+        val spawnerDropChance = getSpawnerDropChance(name)
+        val spawnerName = getSpawnerName(name, type, spawnerDropChance)
         // TODO("Add the spawner and spawner drop chance")
         val abilityAmounts = getAbilityAmounts(name)
         val hpMultiplierAmounts = getHealthMultiplierAmounts(name)
@@ -100,6 +102,8 @@ class InfernalMobTypesRepo (
             bossBarFlags = bossBarFlags,
             entityType = type,
             spawnChance = spawnChance,
+            mobSpawnerName = spawnerName,
+            mobSpawnerDropChance = spawnerDropChance,
             minAbilities = abilityAmounts.first,
             maxAbilities = abilityAmounts.second,
             minHealthMulti = hpMultiplierAmounts.first,
@@ -197,6 +201,26 @@ class InfernalMobTypesRepo (
             return 0.15
         }
         return max(0.0, min(1.0, spawnChance))
+    }
+
+    private fun getSpawnerDropChance(name: String): Double {
+        val spawnerDropChance = manager.getDouble("$name.mob-spawn-drop-chance", Double.MIN_VALUE)
+
+        // if user didn't insert the spawnerDropChance of that mob category, means he doesn't want that infernal to drop any spawner
+        if(spawnerDropChance == Double.MIN_VALUE) return 0.0
+
+        return max(0.0, min(1.0, spawnerDropChance))
+    }
+
+    private fun getSpawnerName(name: String, type: EntityType, dropChance: Double): Component {
+        val displayName = manager.getString("$name.mob-spawner-name") ?: ""
+
+        // if boss bar name is absent or blank, fallback to entity type
+        if(displayName.isBlank()) {
+            if(dropChance > 0) log.warning("You must provide a mob spawner name for the mob category '$name'! Defaulting $name mob spawner name to its type.")
+            return Component.text("Mob Spawner (${type.formattedTypeName()})")
+        }
+        return adventureMessage.parse(displayName)
     }
 
     // returns a pair with the <Min, Max> amount of abilities that that infernal mob will have

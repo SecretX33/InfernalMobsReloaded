@@ -1,6 +1,9 @@
 package com.github.secretx33.infernalmobsreloaded.utils
 
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
+import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
+import com.github.secretx33.infernalmobsreloaded.model.KeyChain
+import com.github.secretx33.infernalmobsreloaded.utils.Utils.keyChain
 import kotlinx.coroutines.delay
 import net.kyori.adventure.text.Component
 import org.apache.commons.lang.WordUtils
@@ -15,20 +18,38 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataHolder
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
+import org.koin.core.component.KoinApiExtension
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
 
-private object Utils {
+
+@KoinApiExtension
+private object Utils: CustomKoinComponent {
     val random = Random()
+    val keyChain by inject<KeyChain>()
 }
 
+@KoinApiExtension
+fun ItemStack.turnIntoSpawner(infernalType: InfernalMobType): ItemStack {
+    require(type == Material.SPAWNER) { "may only turn into spawn actual spawners, $type is not spawner" }
+   itemMeta.apply {
+        displayName(infernalType.mobSpawnerName)
+        pdc.set(keyChain.spawnerCategoryKey, PersistentDataType.STRING, infernalType.name)
+        itemMeta = this
+    }
+    return this
+}
+
+@KoinApiExtension
 fun Pair<Int, Int>.getRandomBetween(): Int {
     val (minValue, maxValue) = this
     return Utils.random.nextInt(maxValue - minValue + 1) + minValue
 }
 
+@KoinApiExtension
 fun Pair<Double, Double>.getRandomBetween(): Double {
     val (minValue, maxValue) = this
     return minValue + (maxValue - minValue) * Utils.random.nextDouble()

@@ -37,6 +37,13 @@ display-infernal-custom-name-mode: LOOKING_AT
 # Prevent infernals mobs from damaging itself, they literally cannot take damage of their own abilities, no matter what
 infernals-cannot-damage-themselves: true
 
+####################
+####  Spawners  ####
+####################
+
+# If disabled, no spawners will be dropped, no matter what chance you put on your `mobs.yml` file
+enable-spawner-drops: true
+
 #####################
 ### Lethal Poison ###
 #####################

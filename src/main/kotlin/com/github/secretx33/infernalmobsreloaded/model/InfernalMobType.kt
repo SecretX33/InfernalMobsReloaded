@@ -12,11 +12,13 @@ data class InfernalMobType (
     val name: String,
     val displayName: Component,
     val bossBarName: Component,
+    val mobSpawnerName: Component,
     val bossBarColor: BossBar.Color,
     val bossBarOverlay: BossBar.Overlay,
     val bossBarFlags: Set<BossBar.Flag>,
     val entityType: EntityType,
     val spawnChance: Double,
+    val mobSpawnerDropChance: Double,
     private val minAbilities: Int,
     private val maxAbilities: Int,
     private val minHealthMulti: Double,
@@ -27,6 +29,7 @@ data class InfernalMobType (
 
     init {
         require(spawnChance in 0.0..1.0) { "spawnChance needs to be within 0 and 1, spawnChance = $spawnChance" }
+        require(mobSpawnerDropChance in 0.0..1.0) { "mobSpawnerDropChance needs to be within 0 and 1, mobSpawnerDropChance = $mobSpawnerDropChance" }
         require(entityType.isSpawnable) { "entityType needs to be spawnable, $entityType is not" }
         require(entityClass !is ComplexLivingEntity) { "entityClass cannot be a ComplexLivingEntity" }
         require(loots.values.all { it in 0.0..1.0 }) { "all loot chances must be within 0 and 1, something inside the loop map was not, map = $loots"}

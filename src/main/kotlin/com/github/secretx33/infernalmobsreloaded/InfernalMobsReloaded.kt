@@ -13,6 +13,10 @@ import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntitySpa
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.*
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.LethalPoisonListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerMoveListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerBreakListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerInteractListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerPlaceListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerSpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.world.ChunkLoadListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.world.ChunkUnloadListener
 import com.github.secretx33.infernalmobsreloaded.manager.*
@@ -53,12 +57,16 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { EntitySpawnListener(get(), get(), get(), get()) }
         single { InfernalDamageDoneListener(get(), get()) }
         single { InfernalDamageTakenListener(get(), get()) }
-        single { InfernalDeathListener(get(), get(), get(), get(), get(), get()) }
+        single { InfernalDeathListener(get(), get(), get(), get(), get(), get(), get()) }
         single { InfernalSpawnListener(get(), get(), get(), get()) }
         single { InfernalTargetListener(get(), get()) }
         single { BossBarListener(get(), get(), get()) }
-        single { PlayerMoveListener(get(), get(), get()) }
         single { LethalPoisonListener(get(), get()) }
+        single { PlayerMoveListener(get(), get(), get()) }
+        single { SpawnerBreakListener(get(), get(), get(), get()) }
+        single { SpawnerInteractListener(get(), get(), get(), get()) }
+        single { SpawnerPlaceListener(get(), get(), get()) }
+        single { SpawnerSpawnListener(get(), get(), get()) }
         single { LightningAbilityListener(get(), get(), get()) }
         single { MountRemovalListener(get(), get()) }
         single { ChunkUnloadListener(get(), get(), get()) }
@@ -91,8 +99,12 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<InfernalSpawnListener>()
         get<InfernalTargetListener>()
         get<BossBarListener>()
-        get<PlayerMoveListener>()
         get<LethalPoisonListener>()
+        get<PlayerMoveListener>()
+        get<SpawnerBreakListener>()
+        get<SpawnerInteractListener>()
+        get<SpawnerPlaceListener>()
+        get<SpawnerSpawnListener>()
         get<LightningAbilityListener>()
         get<MountRemovalListener>()
         get<ChunkUnloadListener>()

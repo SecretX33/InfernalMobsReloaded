@@ -109,6 +109,7 @@ class Config(plugin: Plugin, private val log: Logger) {
 }
 
 enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
+    ENABLE_SPAWNER_DROPS("enable-spawner-drops", true),
     LETHAL_POISON_TARGETS("entities-killed-by-poison", KilledByPoison.NONE),
     DISABLED_ABILITIES("disabled-abilities", emptySet<Ability>()),
     BOSS_BAR_SHOW_RANGE_DISTANCE("boss-bar-show-range-distance", 25.0),
