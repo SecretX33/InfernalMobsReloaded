@@ -86,7 +86,7 @@ class Config(plugin: Plugin, private val log: Logger) {
             if(!manager.contains(key.configEntry)) return@getOrPut key.defaultValue
             manager.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
                 val optional = Enums.getIfPresent(clazz, item.toUpperCase(Locale.US)).takeIf { opt -> opt.isPresent } ?: run {
-                    log.severe("Error while trying to get config key '$key', value passed '${item.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the config.yml and reload the configs")
+                    log.severe("Error while trying to get config key '$key', value passed '${item.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the ${manager.fileName} and reload the configs")
                     return@mapNotNullTo null
                 }
                 optional.get().takeIf { it != null && (predicate == null || predicate.apply(it as T)) }

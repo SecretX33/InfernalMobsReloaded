@@ -2,7 +2,11 @@ package com.github.secretx33.infernalmobsreloaded.config
 
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
+import com.google.common.base.Enums
+import com.google.common.base.Predicate
 import org.bukkit.plugin.Plugin
+import org.bukkit.potion.PotionEffectType
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
 import kotlin.math.max
@@ -162,9 +166,25 @@ class AbilityConfig (
 
     fun getDoublePair(key: AbilityConfigKeys, default: Double = key.defaultValue as Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
         = getDoublePair(key.configEntry, default, minValue, maxValue)
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Enum<T>> getEnumSet(key: AbilityConfigKeys, clazz: Class<out Enum<T>>, predicate: Predicate<T>? = null): Set<T> {
+        return cache.getOrPut(key.configEntry) {
+            if(!manager.contains(key.configEntry)) return@getOrPut key.defaultValue
+            manager.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
+                val optional = Enums.getIfPresent(clazz, item.toUpperCase(Locale.US)).takeIf { opt -> opt.isPresent } ?: run {
+                    log.severe("Error while trying to get ability key '$key', value passed '${item.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the ${manager.fileName} and reload the configs")
+                    return@mapNotNullTo null
+                }
+                optional.get().takeIf { it != null && (predicate == null || predicate.apply(it as T)) }
+            }
+        } as Set<T>
+    }
 }
 
 enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
+    POTIONS_THROW_DELAY("${Ability.POTIONS.configEntry}.throw-delay", 0.35),
+    POTIONS_ENABLED_TYPES("${Ability.POTIONS.configEntry}.enabled-types", setOf(PotionEffectType.HARM, PotionEffectType.POISON, PotionEffectType.SLOW)),
     TOSSER_SNEAK_MULTIPLIER_PERCENTAGE("${Ability.TOSSER.configEntry}.sneaking-multiplier-percentage", 0.4),
     INVISIBLE_DISABLE_ENTITY_SOUNDS("${Ability.INVISIBLE.configEntry}.disable-entity-sounds", true),
     INVISIBLE_DISABLE_EQUIPMENT_VISIBLITY("${Ability.INVISIBLE.configEntry}.disable-equipment-visibility", true),

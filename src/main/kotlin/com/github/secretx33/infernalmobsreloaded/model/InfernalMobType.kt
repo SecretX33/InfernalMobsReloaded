@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
+import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.ComplexLivingEntity

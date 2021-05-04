@@ -3,7 +3,7 @@ package com.github.secretx33.infernalmobsreloaded.repositories
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
-import com.github.secretx33.infernalmobsreloaded.model.LootItem
+import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
 import com.google.common.collect.ImmutableSet

@@ -1,18 +1,10 @@
 ############################################################
 # +------------------------------------------------------+ #
-# |               General Abilities Settings             | #
+# |                   Abilities Settings                 | #
 # +------------------------------------------------------+ #
 ############################################################
 
-# This is a global property used by all abilities that may affect multiple nearby targets, like the Archer ability; if you don't want abilities to be able to affect multiple targets, set its value to 0.0
-# nearby-entities-range: 3.0     # in blocks, how close the entity has to be of the main target to also be affected by it
-
-
-############################################################
-# +------------------------------------------------------+ #
-# |              Specific Abilities Settings             | #
-# +------------------------------------------------------+ #
-############################################################
+# Below you'll find a list with all abilities, their settings and a explanation of what do they do and how they work
 
 # Archer ability
 # Shoots a volley of arrows on the target and nearby entities
@@ -149,8 +141,8 @@ morph:
   chance: 0.01                       # in percentage, every 'recheck-delay' seconds, the morph will have 1% of happening
 
 # Mounted ability
-# Gives a chance of a mob spawning mounted on another mob, currently has no configs
-mounted:
+# Gives a chance of a mob spawning mounted on another mob, currently all its configs are in config.yml
+#mounted:
 
 # Necromancer ability
 # Shoots a Wither Skull on the target and nearby entities
@@ -173,6 +165,17 @@ poisonous:
 # Potions ability
 # Periodically, while in combat, have a chance of throwing various potions on the target, currently has no configs
 potions:
+  enabled-types:                     # See all types here https://papermc.io/javadocs/paper/1.16/org/bukkit/potion/PotionEffectType.html
+  - HARM
+  - POISON
+  - SLOW
+  nearby-entities-range: 4.0         # in blocks, how close the entity has to be of the main target to also be target by a thrown; if you don't want this ability to be able to target multiple targets, set its value to 0.0
+  recheck-delay: 1.0                 # in seconds, every second it'll have a chance of throwing a random potion at the target
+  chance: 0.05                       # in percentage, will have 5% chance of calling the "gang" every 'recheck-delay' seconds
+  throw-delay: 0.3-0.4               # in seconds, the delay between each "potion volley"
+  amount: 1-2                        # amount of potion thrown, per target
+  potency: 2-4                       # what potency the potions thrown by the infernal should have
+  duration: 8.0-11.0                 # in seconds, the duration of the speed effect of the thrown potions
 
 # Rust ability
 # Each attack of infernal with this ability has a chance of damaging the any items the target is currently holding (main hand only, off hand only, or both, picked at random)
@@ -181,8 +184,9 @@ rust:
   durability-loss: 0.075-0.15        # in percentage, will reduce between 7.5% and 15% the durability of the tool being held by the victim when triggered
   send-message-to-player: true       # if true, will send a message to player warning him that his tools got corroded by the infernal
 
-second_wind:
-  particle-effect: ""
+# Second Wind ability
+# Revives on death, currently has no configs
+#second_wind:
 
 # Slowness ability
 # Each attack of the infernal with slowness will have a chance of slowing (possibly massively) a target by a random amount of time
@@ -193,8 +197,10 @@ slowness:
   potion-emit-particles: true        # if entities affected by slowness should emit slow effect particles
   potion-is-ambient: false           # if particle effect should have less apparent particles making them more transparent and less frequent. Kind of like a midpoint between full particles and no particles
 
+# Speedy ability
+# Increase the movement speed of any infernal with this ability by the value specified, making them faaast
 speedy:
-  bonus: 1.5-2.5                     # any mob with this effect will have between 1.5 and 2.5 times its normal speed
+  bonus: 2.0-3.0                     # any mob with this effect will have between 2 and 3 times its normal speed
 
 # Teleport ability
 # Periodically, while fighting against a target, a infernal mob with teleport ability will have a chance of teleporting next to its target. Spooky, Scary, Skeletons...

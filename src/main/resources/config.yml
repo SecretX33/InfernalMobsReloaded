@@ -89,7 +89,6 @@ spawn-reasons-which-infernal-mobs-can-spawn:
 # - VILLAGE_DEFENSE        # When an iron golem is spawned to defend a village
   - VILLAGE_INVASION       # When a zombie is spawned to invade a village
 
-
 # Baby form of the mobs inside this list won't become infernals; to disable this blacklist, just delete all the items and insert empty square brackets instead
 # Full list of mobs can be found here https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/EntityType.html , Ctrl + F
 blacklisted-baby-mob-types:
@@ -165,47 +164,40 @@ mob-types-that-can-wear-armor:
 # +------------------------------------------------------+ #
 ############################################################
 
-# disable abilities you don't want mobs to have here by changing their value to 'false'
+# Disable abilities you don't want mobs to have here by changing their value to 'false'
+# The file `abilities.yml` contain a full explanation of all abilities if you need it
 abilities:
-  # if the mob is killed for the first time, it'll will respawn
-  1up: true
   archer: true
-  # mobs may spawns with enchanted armor, or protection buffs in case they cannot wear armor
   armoured: true
   berserk: true
-  # mob hits may blind the player
   blinding: true
-  bullwark: true
-  cloaked: true
+  call_the_gang: true
   confusion: true
-  ender: true
-  explode: true
   firework: true
   flying: true
-  # shoots ghast fireballs
   ghastly: true
   ghost: true
-  gravity: true
+  heavy: true
+  hunger: true
+  invisible: true
+  kamikaze: true
+  levitate: true
   lifesteal: true
-  # mob have a small chance of spawning 3 babies next to it
-  mama: true
+  lightning: true
   molten: true
   morph: true
   mounted: true
   necromancer: true
-  # mob hits poisons the player
   poisonous: true
   potions: true
-  quicksand: true
   rust: true
-  hunger: true
-  # mob will spawn with a random speed boost
+  second_wind: true
+  slowness: true
   speedy: true
-  storm: true
+  teleport: true
   thief: true
+  thornmail: true
   tosser: true
-  vengeance: true
   weakness: true
   webber: true
-  # mob hits apply withering effect
   withering: true

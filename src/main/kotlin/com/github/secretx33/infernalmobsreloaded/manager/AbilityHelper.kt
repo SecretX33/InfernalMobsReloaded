@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.manager
 
+import com.cryptomorin.xseries.XPotion
 import com.github.secretx33.infernalmobsreloaded.config.*
 import com.github.secretx33.infernalmobsreloaded.events.*
 import com.github.secretx33.infernalmobsreloaded.model.Ability
@@ -26,6 +27,7 @@ import org.bukkit.event.entity.EntityTargetLivingEntityEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
+import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.material.Colorable
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
@@ -38,6 +40,7 @@ import java.lang.reflect.Type
 import java.util.*
 import java.util.logging.Logger
 import kotlin.math.*
+
 @KoinApiExtension
 class AbilityHelper (
     private val plugin: Plugin,
@@ -220,7 +223,7 @@ class AbilityHelper (
                 Ability.GHASTLY -> makeGhastlyTask(entity, target) // TODO("Make a damage modifier listener for this task")
                 Ability.MORPH -> makeMorphTask(entity, target)
                 Ability.NECROMANCER -> makeNecromancerTask(entity, target) // TODO("Make a damage modifier listener for this task")
-                Ability.POTIONS -> null // TODO("Make a potion throw task")
+                Ability.POTIONS -> makePotionsTasks(entity, target)
                 Ability.TELEPORT -> makeTeleportTask(entity, target)
                 Ability.TOSSER -> makeTosserTask(entity, target)
                 Ability.THIEF -> makeThiefTask(entity, target)
@@ -231,29 +234,58 @@ class AbilityHelper (
         return jobList
     }
 
-    private fun makeTosserTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
-        val nearbyRange = abilityConfig.getNearbyRange(Ability.TOSSER, 4.0)
-        val recheckDelay = abilityConfig.getRecheckDelay(Ability.TOSSER, 1.5).toLongDelay()
-        val chance = abilityConfig.getAbilityChance(Ability.TOSSER, 0.5)
-        val requireLoS = abilityConfig.doesRequireLineOfSight(Ability.TOSSER)
-        val sneakerMultiplier = abilityConfig.getDouble(AbilityConfigKeys.TOSSER_SNEAK_MULTIPLIER_PERCENTAGE)
+    private fun makePotionsTasks(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+        val nearbyRange = abilityConfig.getNearbyRange(Ability.POTIONS, 4.0)
+        val chance = abilityConfig.getAbilityChance(Ability.POTIONS, 0.05)
+        val recheckDelay = abilityConfig.getRecheckDelay(Ability.POTIONS, 1.0).toLongDelay()
 
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
-            if(random.nextDouble() > chance || (requireLoS && !entity.hasLineOfSight(target))) continue
-
+            if(random.nextDouble() > chance) continue
+            val amount = abilityConfig.getIntAmounts(Ability.POTIONS, 1, minValue = 1).getRandomBetween()
             val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
 
-            // toss victim and all nearby entities
-            victims.forEach {
-                val x = 1.3 * abilityConfig.getDistanceMultiplier(Ability.TOSSER) * (random.nextDouble() * 2 - 1)
-                val y = 0.75 * abilityConfig.getHeightMultiplier(Ability.TOSSER) + (abilityConfig.getHeightMultiplier(Ability.TOSSER) * random.nextDouble() * 0.5).let { h -> if(h <= 1.0) h else sqrt(h) }
-                val z = 1.3 * abilityConfig.getDistanceMultiplier(Ability.TOSSER) * (random.nextDouble() * 2 - 1)
+            for (i in 1..amount) {
+                victims.forEach { victim ->
+                    if (!isActive || entity.isNotTargeting(target)) return@launch
+                    // if potion type is invalid or empty, silently fail
+                    val type = abilityConfig.get(AbilityConfigKeys.POTIONS_ENABLED_TYPES, emptyList<String>())
+                        .randomOrNull()
+                        ?.let { name -> XPotion.matchXPotion(name).orElse(null)?.parsePotionEffectType() }
+                        ?: return@forEach
 
-                val victimMulti = if((it as? Player)?.isSneaking == true) sneakerMultiplier else 1.0
-                it.velocity = Vector(x, y, z).multiply(victimMulti)
+                    entity.throwPotion(victim, type)
+                }
+                val throwDelay = abilityConfig.getDoublePair(AbilityConfigKeys.POTIONS_THROW_DELAY).getRandomBetween().toLongDelay()
+                delay(throwDelay)
             }
         }
+    }
+
+    private fun LivingEntity.throwPotion(victim: LivingEntity, type: PotionEffectType) {
+        val duration = abilityConfig.getDuration(Ability.POTIONS, 2.0).getRandomBetween()
+        val potency = abilityConfig.getAbilityPotency(Ability.POTIONS, 2, minValue = 1).getRandomBetween() - 1
+        val dir = shootDirection(victim).normalize().apply { y += 0.1 }.multiply(random.nextDouble() * 0.6 + 1)
+
+        val potionItem = ItemStack(randomPotionMaterial).modifyPotion(type, duration, potency)
+
+        runSync(plugin) {
+            world.spawn(eyeLocation, ThrownPotion::class.java) { potion ->
+                potion.item = potionItem
+                potion.velocity = dir
+            }
+        }
+    }
+
+    private val randomPotionMaterial
+        get() = if(random.nextBoolean()) Material.LINGERING_POTION else Material.SPLASH_POTION
+
+    private fun ItemStack.modifyPotion(potionType: PotionEffectType, duration: Double, amplifier: Int): ItemStack {
+        require(type == Material.LINGERING_POTION || type == Material.SPLASH_POTION) { "ItemStack used as this for function modifyPotion needs to be lingering or splash potion, and $type is not" }
+        val meta = itemMeta as PotionMeta
+        meta.addCustomEffect(PotionEffect(potionType, (duration / 20).toInt().coerceAtLeast(0), amplifier), true)
+        itemMeta = meta
+        return this
     }
 
     private fun makeArcherTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
@@ -427,6 +459,31 @@ class AbilityHelper (
                 target.sendMessage(message
                     .replace("<entity>", entity.displayName)
                     .replace("<item>", item.displayName))
+            }
+        }
+    }
+
+    private fun makeTosserTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+        val nearbyRange = abilityConfig.getNearbyRange(Ability.TOSSER, 4.0)
+        val recheckDelay = abilityConfig.getRecheckDelay(Ability.TOSSER, 1.5).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Ability.TOSSER, 0.5)
+        val requireLoS = abilityConfig.doesRequireLineOfSight(Ability.TOSSER)
+        val sneakerMultiplier = abilityConfig.getDouble(AbilityConfigKeys.TOSSER_SNEAK_MULTIPLIER_PERCENTAGE)
+
+        while(isActive && !entity.isNotTargeting(target)) {
+            delay(recheckDelay)
+            if(random.nextDouble() > chance || (requireLoS && !entity.hasLineOfSight(target))) continue
+
+            val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
+
+            // toss victim and all nearby entities
+            victims.forEach {
+                val x = 1.3 * abilityConfig.getDistanceMultiplier(Ability.TOSSER) * (random.nextDouble() * 2 - 1)
+                val y = 0.75 * abilityConfig.getHeightMultiplier(Ability.TOSSER) + (abilityConfig.getHeightMultiplier(Ability.TOSSER) * random.nextDouble() * 0.5).let { h -> if(h <= 1.0) h else sqrt(h) }
+                val z = 1.3 * abilityConfig.getDistanceMultiplier(Ability.TOSSER) * (random.nextDouble() * 2 - 1)
+
+                val victimMulti = if((it as? Player)?.isSneaking == true) sneakerMultiplier else 1.0
+                it.velocity = Vector(x, y, z).multiply(victimMulti)
             }
         }
     }

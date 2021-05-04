@@ -1,5 +1,6 @@
-package com.github.secretx33.infernalmobsreloaded.model
+package com.github.secretx33.infernalmobsreloaded.model.items
 
+import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
 import com.github.secretx33.infernalmobsreloaded.utils.ItemBuilder
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
@@ -7,8 +8,8 @@ import org.bukkit.DyeColor
 import org.bukkit.Material
 import java.util.*
 
-data class LootItem (
-    val name: String,
+data class LootNormalItem (
+    override val name: String,
     val displayName: Component,
     val material: Material,
     val color: Color?,
@@ -17,7 +18,8 @@ data class LootItem (
     val maxAmount: Int,
     val lore: List<Component>,
     val enchants: Set<CustomEnchantment>,
-) {
+) : LootItem {
+
     init {
         require(name.isNotBlank()) { "LootItem name is invalid, it cannot be blank or empty" }
         require(material.isItem) { "material needs to be an item, and $material is not" }
@@ -26,7 +28,7 @@ data class LootItem (
         require(minAmount <= maxAmount) { "minAmount cannot be higher than maxAmount, values passed minAmount = $minAmount and maxAmount = $maxAmount" }
     }
 
-    fun makeItem() = ItemBuilder.from(material)
+    override fun makeItem() = ItemBuilder.from(material)
         .displayName(displayName)
         .amount(random.nextInt(maxAmount - minAmount + 1) + minAmount)
         .setLore(lore)

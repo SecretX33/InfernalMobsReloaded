@@ -3,7 +3,8 @@ package com.github.secretx33.infernalmobsreloaded.repositories
 import com.cryptomorin.xseries.XEnchantment
 import com.cryptomorin.xseries.XMaterial
 import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
-import com.github.secretx33.infernalmobsreloaded.model.LootItem
+import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
+import com.github.secretx33.infernalmobsreloaded.model.items.LootNormalItem
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
 import me.mattstudios.msg.adventure.AdventureMessage
@@ -61,7 +62,7 @@ class LootItemsRepo (
         lootItemCache = lootItemNames.map { it.toLowerCase(Locale.US) }.associateWithTo(HashMap(lootItemNames.size)) { makeLootItem(it) }
     }
 
-    private fun makeLootItem(name: String): LootItem {
+    private fun makeLootItem(name: String): LootNormalItem {
         val material = getItemMaterial(name)
         val displayName = parseDisplayName(name, material)
         val color = getItemColor(name)
@@ -69,7 +70,7 @@ class LootItemsRepo (
         val amounts = getAmounts(name)
         val lore = getItemLore(name)
         val enchants = getItemEnchants(name)
-        return LootItem(name,
+        return LootNormalItem(name,
             displayName = displayName,
             material = material,
             color = color,
