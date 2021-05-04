@@ -8,3 +8,7 @@ enum class DisplayCustomNameMode (
     LOOKING_AT(true, false),
     ALWAYS(true, true),
 }
+
+enum class KilledByPoison {
+    ALL, PLAYERS, MONSTERS, NONE
+}

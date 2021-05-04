@@ -1,4 +1,4 @@
-package com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation
+package com.github.secretx33.infernalmobsreloaded.eventlisteners.ability
 
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.utils.pdc

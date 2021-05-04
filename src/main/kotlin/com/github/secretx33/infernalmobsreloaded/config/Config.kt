@@ -2,6 +2,7 @@ package com.github.secretx33.infernalmobsreloaded.config
 
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
+import com.github.secretx33.infernalmobsreloaded.model.KilledByPoison
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.google.common.base.Enums
 import com.google.common.base.Predicate
@@ -108,6 +109,7 @@ class Config(plugin: Plugin, private val log: Logger) {
 }
 
 enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
+    LETHAL_POISON_TARGETS("entities-killed-by-poison", KilledByPoison.NONE),
     DISABLED_ABILITIES("disabled-abilities", emptySet<Ability>()),
     BOSS_BAR_SHOW_RANGE_DISTANCE("boss-bar-show-range-distance", 25.0),
     BOSS_BAR_SHOW_RANGE_HEIGHT("boss-bar-show-range-height", 15.0),

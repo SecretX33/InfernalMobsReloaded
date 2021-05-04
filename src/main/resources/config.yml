@@ -11,6 +11,7 @@
 
 # This file will NEVER get modified after being created, when updating the plugin please make sure you rename this one and let a new one be created, and copy your old configs to the new config file.
 
+
 ############################################################
 # +------------------------------------------------------+ #
 # |                   General Settings                   | #
@@ -33,17 +34,21 @@ infernal-particles-amount: 15           # in particles
 # Display custom name mode, valid values are NONE, LOOKING_AT, ALWAYS; keep in mind that this option only affect new infernal mobs, the ones that already exist won't be affected by this change
 display-infernal-custom-name-mode: LOOKING_AT
 
-# If true, infernal mobs boss bar will be shown to the player's within configured range
-enable-boss-bars: true
-# Max distance that the player can be before the boss bar is shown
-boss-bar-show-range-distance: 25.0
-# Max height that the player can be before the boss bar is shown
-boss-bar-show-range-height: 10.0
-# If enabled, the player will require line of sight of the infernal to display the bar, this prevents random boss bars from appearing to player that cannot even see the infernal mob; as side effect, if you use "world fog" as parameter in your boss bars, it might looks weird in certain cases because the fog might keep showing and hiding as the player tries to flee from an infernal mob
-boss-bar-require-line-of-sight: true
-
 # Prevent infernals mobs from damaging itself, they literally cannot take damage of their own abilities, no matter what
 infernals-cannot-damage-themselves: true
+
+#####################
+### Lethal Poison ###
+#####################
+
+# If set to any value other than NONE, that type of entity will be able to die from poison, similar to the wither effect; valid values: NONE, MONSTERS, PLAYERS, ALL
+entities-killed-by-poison: ALL
+
+############################################################
+# +------------------------------------------------------+ #
+# |                    Spawn messages                    | #
+# +------------------------------------------------------+ #
+############################################################
 
 # If true, nearby players will be notified about the spawn of a new Infernal Mob with one of the spawn messages set on the `messages.yml` file
 enable-infernal-spawn-messages: true
@@ -53,6 +58,27 @@ infernal-spawn-message-radius: 30       # in blocks
 enable-infernal-death-messages: true
 # The radius around the dead infernal mob that a player has to be to receive the death message
 infernal-death-message-radius: 20       # in blocks
+
+############################################################
+# +------------------------------------------------------+ #
+# |                       Boss Bars                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+# If true, infernal mobs boss bar will be shown to the player's within configured range
+enable-boss-bars: true
+# Max distance that the player can be before the boss bar is shown
+boss-bar-show-range-distance: 25.0
+# Max height that the player can be before the boss bar is shown
+boss-bar-show-range-height: 10.0
+# If enabled, the player will require line of sight of the infernal to display the bar, this prevents random boss bars from appearing to player that cannot even see the infernal mob; as side effect, if you use "world fog" as parameter in your boss bars, it might looks weird in certain cases because the fog might keep showing and hiding as the player tries to flee from an infernal mob
+boss-bar-require-line-of-sight: true
+
+############################################################
+# +------------------------------------------------------+ #
+# |                      Whitelists                      | #
+# +------------------------------------------------------+ #
+############################################################
 
 # Worlds in which mobs will have a chance of becoming infernal mobs; <ALL> is a special tag, it will allow the spawn of infernal mobs on ALL worlds; to prevent the spawn of infernals everywhere, just delete all the items and insert empty square brackets instead
 worlds-in-which-infernal-mobs-can-spawn:

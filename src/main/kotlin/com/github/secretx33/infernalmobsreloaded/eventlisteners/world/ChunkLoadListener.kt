@@ -1,4 +1,4 @@
-package com.github.secretx33.infernalmobsreloaded.eventlisteners
+package com.github.secretx33.infernalmobsreloaded.eventlisteners.world
 
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import org.bukkit.Bukkit

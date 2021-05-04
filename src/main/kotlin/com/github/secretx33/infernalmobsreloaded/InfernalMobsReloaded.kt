@@ -4,19 +4,17 @@ import com.github.secretx33.infernalmobsreloaded.commands.Commands
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.Messages
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkLoadListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkUnloadListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.FireworkDamageIncreaseListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.FireworkAbilityListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.LightningAbilityListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.MountRemovalListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDamageEntityListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDeathListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntitySpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.*
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerJoinListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerLeaveListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.LethalPoisonListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerMoveListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.FireworkDamageWorkaroundListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.MountRemovalListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.world.ChunkLoadListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.world.ChunkUnloadListener
 import com.github.secretx33.infernalmobsreloaded.manager.*
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.packetlisteners.InvisibleEntitiesEquipVanisherListener
@@ -49,7 +47,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { AbilityHelper(get(),get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         single { InfernalMobTypesRepo(get(), get(), get(), get(), get()) }
         single { InfernalMobsManager(get(), get(), get(), get(), get(), get()) }
-        single { FireworkDamageIncreaseListener(get(), get(), get()) }
+        single { FireworkAbilityListener(get(), get(), get(), get()) }
         single { EntityDamageEntityListener(get(), get(), get()) }
         single { EntityDeathListener(get(), get()) }
         single { EntitySpawnListener(get(), get(), get(), get()) }
@@ -58,14 +56,12 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { InfernalDeathListener(get(), get(), get(), get(), get(), get()) }
         single { InfernalSpawnListener(get(), get(), get(), get()) }
         single { InfernalTargetListener(get(), get()) }
-        single { InfernalUpdateBossBarListener(get(), get(), get()) }
-        single { PlayerJoinListener(get(), get()) }
-        single { PlayerLeaveListener(get(), get()) }
+        single { BossBarListener(get(), get(), get()) }
         single { PlayerMoveListener(get(), get(), get()) }
-        single { FireworkDamageWorkaroundListener(get(), get(), get()) }
+        single { LethalPoisonListener(get(), get()) }
         single { LightningAbilityListener(get(), get(), get()) }
         single { MountRemovalListener(get(), get()) }
-        single { ChunkUnloadListener(get(), get()) }
+        single { ChunkUnloadListener(get(), get(), get()) }
         single { ChunkLoadListener(get(), get()) }
         single { InvisibleEntitiesEquipVanisherListener(get(), get(), get()) }
         single { Commands(get()) }
@@ -85,7 +81,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
             printLogger(Level.ERROR)
             loadKoinModules(mod)
         }
-        get<FireworkDamageIncreaseListener>()
+        get<FireworkAbilityListener>()
         get<EntityDamageEntityListener>()
         get<EntityDeathListener>()
         get<EntitySpawnListener>()
@@ -94,11 +90,9 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<InfernalDeathListener>()
         get<InfernalSpawnListener>()
         get<InfernalTargetListener>()
-        get<InfernalUpdateBossBarListener>()
-        get<PlayerJoinListener>()
-        get<PlayerLeaveListener>()
+        get<BossBarListener>()
         get<PlayerMoveListener>()
-        get<FireworkDamageWorkaroundListener>()
+        get<LethalPoisonListener>()
         get<LightningAbilityListener>()
         get<MountRemovalListener>()
         get<ChunkUnloadListener>()
