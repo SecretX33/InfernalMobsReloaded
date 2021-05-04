@@ -33,7 +33,7 @@ class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
         if (strings.isEmpty()) return true
 
         val sub = strings[0].toLowerCase(Locale.US)
-        subcommands.firstOrNull { it.hasPermission(sender) && (it.name == sub || it.aliases.contains(sub)) }?.let { cmd ->
+        subcommands.firstOrNull { it.hasPermission(sender) && (sub == it.name || sub in it.aliases) }?.let { cmd ->
             if(sender is Player) {
                 cmd.onCommandByPlayer(sender, alias, strings)
             } else {

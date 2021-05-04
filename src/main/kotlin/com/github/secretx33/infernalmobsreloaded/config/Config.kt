@@ -109,7 +109,8 @@ class Config(plugin: Plugin, private val log: Logger) {
 
 enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
     DISABLED_ABILITIES("disabled-abilities", emptySet<Ability>()),
-    BOSS_BAR_SHOW_RANGE("boss-bar-show-range", 25.0),
+    BOSS_BAR_SHOW_RANGE_DISTANCE("boss-bar-show-range-distance", 25.0),
+    BOSS_BAR_SHOW_RANGE_HEIGHT("boss-bar-show-range-height", 15.0),
     DELAY_BETWEEN_INFERNAL_PARTICLES("delay-between-infernal-particles", 1.5),
     DISPLAY_INFERNAL_NAME_MODE("display-infernal-custom-name-mode", DisplayCustomNameMode.LOOKING_AT),
     ENABLE_BOSS_BARS("enable-boss-bars", true),
@@ -120,7 +121,7 @@ enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
     INFERNAL_ALLOWED_SPAWN_REASONS("spawn-reasons-which-infernal-mobs-can-spawn", setOf(CreatureSpawnEvent.SpawnReason.NATURAL)),
     INFERNAL_ALLOWED_WORLDS("worlds-in-which-infernal-mobs-can-spawn", emptyList<String>()),
     INFERNAL_BLACKLISTED_BABY_MOBS("blacklisted-baby-mob-types", emptySet<EntityType>()),
-    INFERNAL_BOSS_BAR_REQUIRE_LOS("boss-bar-require-los", true),
+    INFERNAL_BOSS_BAR_REQUIRE_LINE_OF_SIGHT("boss-bar-require-line-of-sight", true),
     INFERNAL_DEATH_MESSAGE_RADIUS("infernal-death-message-radius", 20),
     INFERNAL_MOBS_THAT_CAN_SPAWN_MOUNTED("infernal-mobs-that-can-spawn-mounted", emptySet<EntityType>()),
     INFERNAL_PARTICLE_TYPE("infernal-particle-type", Particle.LAVA),

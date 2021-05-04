@@ -31,6 +31,7 @@ class BossBarManager (
     }
 
     fun removeBossBar(entity: LivingEntity) {
+        if(!bossBarEnabled) return
         bossBarMap.remove(entity.uniqueId)?.let { bar ->
             entity.world.players.forEach { it.hideBossBar(bar) }
         }
@@ -40,7 +41,7 @@ class BossBarManager (
         if(!bossBarEnabled) return
         val infernalUuids = nearbyInfernals.map { it.uniqueId }
         // filter the infernals further away and hide their bar from the player
-        bossBarMap.filterKeys { !infernalUuids.contains(it) }.forEach { (_, bar) -> player.hideBossBar(bar) }
+        bossBarMap.filterKeys { it !in infernalUuids }.forEach { (_, bar) -> player.hideBossBar(bar) }
         // show only the bars from nearby infernals
         nearbyInfernals.mapNotNull { it.getBossBar() }.forEach { player.showBossBar(it) }
     }
@@ -51,12 +52,12 @@ class BossBarManager (
         manageInfernalBossBarsVisibility(player, nearbyInfernals)
     }
 
-    private fun Player.getNearbyInfernals() = location.getNearbyLivingEntities(bossBarShowRange) { !it.isDead && it.isValid && mobsManager.isValidInfernalMob(it) && (!bossBarRequireLos || hasLineOfSight(it)) }
+    private fun Player.getNearbyInfernals() = location.getNearbyLivingEntities(bossBarShowDistance, bossBarShowHeight, bossBarShowDistance) { !it.isDead && it.isValid && mobsManager.isValidInfernalMob(it) && (!bossBarRequireLineOfSight || hasLineOfSight(it)) }
 
     fun showBossBarForNearbyPlayers(entity: LivingEntity) {
         if(!bossBarEnabled) return
         val bossBar = entity.getBossBar() ?: return
-        entity.location.getNearbyPlayers(bossBarShowRange) { !it.isDead && it.isValid && (!bossBarRequireLos || it.hasLineOfSight(entity)) }.forEach {
+        entity.location.getNearbyPlayers(bossBarShowDistance, bossBarShowHeight, bossBarShowDistance) { !it.isDead && it.isValid && (!bossBarRequireLineOfSight || it.hasLineOfSight(entity)) }.forEach {
             it.showBossBar(bossBar)
         }
     }
@@ -77,8 +78,10 @@ class BossBarManager (
 
     private val bossBarEnabled get() = config.get<Boolean>(ConfigKeys.ENABLE_BOSS_BARS)
 
-    private val bossBarShowRange get() = config.getDouble(ConfigKeys.BOSS_BAR_SHOW_RANGE, maxValue = 256.0)
+    private val bossBarShowDistance get() = config.getDouble(ConfigKeys.BOSS_BAR_SHOW_RANGE_DISTANCE, maxValue = 256.0)
 
-    private val bossBarRequireLos
-        get() = config.get<Boolean>(ConfigKeys.INFERNAL_BOSS_BAR_REQUIRE_LOS)
+    private val bossBarShowHeight get() = config.getDouble(ConfigKeys.BOSS_BAR_SHOW_RANGE_HEIGHT, maxValue = 256.0)
+
+    private val bossBarRequireLineOfSight
+        get() = config.get<Boolean>(ConfigKeys.INFERNAL_BOSS_BAR_REQUIRE_LINE_OF_SIGHT)
 }
