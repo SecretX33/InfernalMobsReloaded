@@ -37,8 +37,6 @@ class LootItemsRepo (
         loadLootTable()
     }
 
-    //    fun getTypeOrNull(group: String): HarvestBlockGroup? = typeCache[group.toLowerCase(Locale.US)]
-
     fun getLootItemOrNull(name: String) = lootItemCache[name.toLowerCase(Locale.US)]
 
     fun getLootItem(name: String): LootItem = getLootItemOrNull(name) ?: throw NoSuchElementException("Loot item named $name was not found.")

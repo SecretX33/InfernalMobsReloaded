@@ -80,7 +80,8 @@ class InfernalMobsManager (
     }
 
     private fun addPdcKeysToInfernal(entity: LivingEntity, infernalType: InfernalMobType, event: InfernalSpawnEvent) {
-        val abilitySet = (event.abilitySet.takeIf { !event.randomAbilities } ?: Ability.random(infernalType.getAbilityNumber())).filterConflicts()
+        val abilitySet = (event.abilitySet.takeIf { !event.randomAbilities }
+            ?: Ability.random(infernalType.getAbilityNumber(), disabledAbilities)).filterInvalid()
         val livesNumber = if(abilitySet.contains(Ability.SECOND_WIND)) 2 else 1
 
         entity.pdc.apply {
@@ -90,15 +91,19 @@ class InfernalMobsManager (
         }
     }
 
-    private fun Set<Ability>.filterConflicts(): Set<Ability> {
+    private fun Set<Ability>.filterInvalid(): Set<Ability> {
         val newSet = HashSet(this)
+        // filter conflicts
         if(contains(Ability.FLYING) && contains(Ability.MOUNTED)) {
             if(random.nextInt(2) == 0) newSet.remove(Ability.FLYING)
             else newSet.remove(Ability.MOUNTED)
-            newSet.add(Ability.values.filter { it != Ability.FLYING && it != Ability.MOUNTED }.random())
+            newSet += Ability.random(1, disabledAbilities + Ability.FLYING + Ability.MOUNTED)
         }
         return newSet
     }
+
+    private val disabledAbilities: Set<Ability>
+        get() = config.getEnumSet(ConfigKeys.DISABLED_ABILITIES, Ability::class.java)
 
     private fun unmakeInfernalMob(entity: LivingEntity) {
         removeCustomNameOfInfernal(entity)

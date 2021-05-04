@@ -172,41 +172,42 @@ class AbilityConfig (
         return cache.getOrPut(key.configEntry) {
             if(!manager.contains(key.configEntry)) return@getOrPut key.defaultValue
             manager.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
-                val optional = Enums.getIfPresent(clazz, item.toUpperCase(Locale.US)).takeIf { opt -> opt.isPresent } ?: run {
+                val optional = Enums.getIfPresent(clazz, item.toUpperCase(Locale.US)).takeIf { opt -> opt.isPresent }?.get() ?: run {
                     log.severe("Error while trying to get ability key '$key', value passed '${item.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the ${manager.fileName} and reload the configs")
                     return@mapNotNullTo null
                 }
-                optional.get().takeIf { it != null && (predicate == null || predicate.apply(it as T)) }
+                optional.takeIf { predicate == null || predicate.apply(it as T) }
             }
         } as Set<T>
     }
 }
 
 enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
-    POTIONS_THROW_DELAY("${Ability.POTIONS.configEntry}.throw-delay", 0.35),
-    POTIONS_ENABLED_TYPES("${Ability.POTIONS.configEntry}.enabled-types", setOf(PotionEffectType.HARM, PotionEffectType.POISON, PotionEffectType.SLOW)),
-    TOSSER_SNEAK_MULTIPLIER_PERCENTAGE("${Ability.TOSSER.configEntry}.sneaking-multiplier-percentage", 0.4),
+    ARCHER_ARROW_AMOUNT("${Ability.ARCHER.configEntry}.arrow-amount", 10),
+    ARCHER_ARROW_DELAY("${Ability.ARCHER.configEntry}.arrow-delay", 0.2),
+    ARMOURED_ARMOR_DROP_CHANCE("${Ability.ARMOURED.configEntry}.armor-drop-chance", 0.001),
+    ARMOURED_POTION_LEVEL("${Ability.ARMOURED.configEntry}.fallback-dmg-resist-potion-level", 1),
+    BERSERK_CAUSED_DAMAGE_BONUS("${Ability.BERSERK.configEntry}.damage-caused-bonus", 1.3),
+    BERSERK_RECEIVED_DAMAGE_BONUS("${Ability.BERSERK.configEntry}.damage-received-bonus", 1.25),
+    FIREWORK_DAMAGE_MULTIPLIER("${Ability.FIREWORK.configEntry}.damage-multiplier", 1.0),
+    GHOST_EVIL_CHANCE("${Ability.GHOST.configEntry}.evil-chance", 0.3),
+    GHOST_ITEM_DROP_CHANCE("${Ability.GHOST.configEntry}.item-drop-chance", 0.2),
+    HEAVY_RESIST_PERCENTAGE("${Ability.HEAVY.configEntry}.knockback-resist-percentage", 0.4),
     INVISIBLE_DISABLE_ENTITY_SOUNDS("${Ability.INVISIBLE.configEntry}.disable-entity-sounds", true),
     INVISIBLE_DISABLE_EQUIPMENT_VISIBLITY("${Ability.INVISIBLE.configEntry}.disable-equipment-visibility", true),
     INVISIBLE_DISABLE_INFERNAL_PARTICLES("${Ability.INVISIBLE.configEntry}.disable-infernal-particles", true),
-    FIREWORK_DAMAGE_MULTIPLIER("${Ability.FIREWORK.configEntry}.damage-multiplier", 1.0),
-    LIFESTEAL_HEALING_PERCENTAGE("${Ability.LIFESTEAL.configEntry}.healing-percentage", 0.5),
-    THORMAIL_REFLECTED_AMOUNT("${Ability.THORNMAIL.configEntry}.reflected-amount", 0.5),
-    BERSERK_CAUSED_DAMAGE_BONUS("${Ability.BERSERK.configEntry}.damage-caused-bonus", 1.3),
-    BERSERK_RECEIVED_DAMAGE_BONUS("${Ability.BERSERK.configEntry}.damage-received-bonus", 1.25),
-    GHOST_EVIL_CHANCE("${Ability.GHOST.configEntry}.evil-chance", 0.3),
-    GHOST_ITEM_DROP_CHANCE("${Ability.GHOST.configEntry}.item-drop-chance", 0.2),
-    MORPH_KEEP_HP_PERCENTAGE("${Ability.MORPH.configEntry}.keep-hp-percentage", true),
-    ARCHER_ARROW_AMOUNT("${Ability.ARCHER.configEntry}.arrow-amount", 10),
-    ARCHER_ARROW_DELAY("${Ability.ARCHER.configEntry}.arrow-delay", 0.2),
-    SPEEDY_BONUS("${Ability.SPEEDY.configEntry}.bonus", 1.5),
-    ARMOURED_ARMOR_DROP_CHANCE("${Ability.ARMOURED.configEntry}.armor-drop-chance", 0.001),
-    ARMOURED_POTION_LEVEL("${Ability.ARMOURED.configEntry}.fallback-dmg-resist-potion-level", 1),
-    HEAVY_RESIST_PERCENTAGE("${Ability.HEAVY.configEntry}.knockback-resist-percentage", 0.4),
-    WEBBER_TRAP_DENSITY("${Ability.WEBBER.configEntry}.trap-density", 0.6),
-    WEBBER_MAX_RADIUS("${Ability.WEBBER.configEntry}.max-radius", 1),
+    KAMIZAZE_BREAK_BLOCKS("${Ability.KAMIKAZE.configEntry}.break-blocks", true),
     KAMIZAZE_EXPLOSION_POWER("${Ability.KAMIKAZE.configEntry}.explosion-power", 3.0),
     KAMIZAZE_SET_ON_FIRE("${Ability.KAMIKAZE.configEntry}.set-on-fire", true),
-    KAMIZAZE_BREAK_BLOCKS("${Ability.KAMIKAZE.configEntry}.break-blocks", true),
+    LIFESTEAL_HEALING_PERCENTAGE("${Ability.LIFESTEAL.configEntry}.healing-percentage", 0.5),
+    LIGHTNING_DAMAGE_MULTIPLIER("${Ability.LIGHTNING.configEntry}.damage-multiplier", 1.0),
+    MORPH_KEEP_HP_PERCENTAGE("${Ability.MORPH.configEntry}.keep-hp-percentage", true),
+    POTIONS_ENABLED_TYPES("${Ability.POTIONS.configEntry}.enabled-types", setOf(PotionEffectType.HARM, PotionEffectType.POISON, PotionEffectType.SLOW)),
+    POTIONS_THROW_DELAY("${Ability.POTIONS.configEntry}.throw-delay", 0.35),
+    SPEEDY_BONUS("${Ability.SPEEDY.configEntry}.bonus", 1.5),
+    THORMAIL_REFLECTED_AMOUNT("${Ability.THORNMAIL.configEntry}.reflected-amount", 0.5),
+    TOSSER_SNEAK_MULTIPLIER_PERCENTAGE("${Ability.TOSSER.configEntry}.sneaking-multiplier-percentage", 0.4),
+    WEBBER_MAX_RADIUS("${Ability.WEBBER.configEntry}.max-radius", 1),
+    WEBBER_TRAP_DENSITY("${Ability.WEBBER.configEntry}.trap-density", 0.6),
 }
 

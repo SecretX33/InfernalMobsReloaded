@@ -3,7 +3,6 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners.player
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
-import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.event.EventHandler

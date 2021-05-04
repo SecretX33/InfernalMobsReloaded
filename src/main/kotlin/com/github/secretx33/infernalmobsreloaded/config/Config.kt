@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
+import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.google.common.base.Enums
@@ -85,11 +86,11 @@ class Config(plugin: Plugin, private val log: Logger) {
         return cache.getOrPut(key.configEntry) {
             if(!manager.contains(key.configEntry)) return@getOrPut key.defaultValue
             manager.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
-                val optional = Enums.getIfPresent(clazz, item.toUpperCase(Locale.US)).takeIf { opt -> opt.isPresent } ?: run {
+                val optional = Enums.getIfPresent(clazz, item.toUpperCase(Locale.US)).takeIf { opt -> opt.isPresent }?.get() ?: run {
                     log.severe("Error while trying to get config key '$key', value passed '${item.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the ${manager.fileName} and reload the configs")
                     return@mapNotNullTo null
                 }
-                optional.get().takeIf { it != null && (predicate == null || predicate.apply(it as T)) }
+                optional.takeIf { predicate == null || predicate.apply(it as T) }
             }
         } as Set<T>
     }
@@ -107,25 +108,26 @@ class Config(plugin: Plugin, private val log: Logger) {
 }
 
 enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
-    INFERNAL_BOSS_BAR_REQUIRE_LOS("boss-bar-require-los", true),
-    MOB_TYPES_THAT_CAN_WEAR_ARMOR("mob-types-that-can-wear-armor", emptySet<EntityType>()),
-    INFERNALS_CANNOT_DAMAGE_THEMSELVES("infernals-cannot-damage-themselves", true),
+    DISABLED_ABILITIES("disabled-abilities", emptySet<Ability>()),
     BOSS_BAR_SHOW_RANGE("boss-bar-show-range", 25.0),
     DELAY_BETWEEN_INFERNAL_PARTICLES("delay-between-infernal-particles", 1.5),
     DISPLAY_INFERNAL_NAME_MODE("display-infernal-custom-name-mode", DisplayCustomNameMode.LOOKING_AT),
     ENABLE_BOSS_BARS("enable-boss-bars", true),
-    ENABLE_INFERNAL_DEATH_MESSAGE("enable-infernal-death-messages", false),
-    ENABLE_INFERNAL_SPAWN_MESSAGE("enable-infernal-spawn-messages", false),
-    ENABLE_INFERNAL_PARTICLES("enable-infernal-particles", true),
     ENABLE_GLOBAL_PARTICLE_EFFECTS("enable-particle-effects", true),
+    ENABLE_INFERNAL_DEATH_MESSAGE("enable-infernal-death-messages", false),
+    ENABLE_INFERNAL_PARTICLES("enable-infernal-particles", true),
+    ENABLE_INFERNAL_SPAWN_MESSAGE("enable-infernal-spawn-messages", false),
     INFERNAL_ALLOWED_SPAWN_REASONS("spawn-reasons-which-infernal-mobs-can-spawn", setOf(CreatureSpawnEvent.SpawnReason.NATURAL)),
     INFERNAL_ALLOWED_WORLDS("worlds-in-which-infernal-mobs-can-spawn", emptyList<String>()),
     INFERNAL_BLACKLISTED_BABY_MOBS("blacklisted-baby-mob-types", emptySet<EntityType>()),
+    INFERNAL_BOSS_BAR_REQUIRE_LOS("boss-bar-require-los", true),
     INFERNAL_DEATH_MESSAGE_RADIUS("infernal-death-message-radius", 20),
-    MOBS_THAT_CAN_BE_RIDED_BY_MOUNTED_INFERNALS("mobs-that-can-be-rided-by-mounted-infernals", emptySet<EntityType>()),
     INFERNAL_MOBS_THAT_CAN_SPAWN_MOUNTED("infernal-mobs-that-can-spawn-mounted", emptySet<EntityType>()),
     INFERNAL_PARTICLE_TYPE("infernal-particle-type", Particle.LAVA),
     INFERNAL_PARTICLES_AMOUNT("infernal-particles-amount", 10),
     INFERNAL_PARTICLES_SPREAD("infernal-particles-spread", 2.0),
     INFERNAL_SPAWN_MESSAGE_RADIUS("infernal-spawn-message-radius", 30),
+    INFERNALS_CANNOT_DAMAGE_THEMSELVES("infernals-cannot-damage-themselves", true),
+    MOB_TYPES_THAT_CAN_WEAR_ARMOR("mob-types-that-can-wear-armor", emptySet<EntityType>()),
+    MOBS_THAT_CAN_BE_RIDED_BY_MOUNTED_INFERNALS("mobs-that-can-be-rided-by-mounted-infernals", emptySet<EntityType>()),
 }

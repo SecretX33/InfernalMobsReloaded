@@ -3,6 +3,7 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners.ability
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
+import com.github.secretx33.infernalmobsreloaded.utils.getRandomBetween
 import com.github.secretx33.infernalmobsreloaded.utils.pdc
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
@@ -16,7 +17,6 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
-import java.util.*
 
 @KoinApiExtension
 class FireworkDamageIncreaseListener (
@@ -32,20 +32,14 @@ class FireworkDamageIncreaseListener (
         // it's not a firework or the firework was not fired by an infernal
         if(!isFireworkDamagingLivingEntity() || !damager.wasFiredByInfernal()) return
 
-        val damageMulti = abilityConfig.getDoublePair(AbilityConfigKeys.FIREWORK_DAMAGE_MULTIPLIER).getRandomBetween()
-        damage *= damageMulti
+        // multiply the damage caused by fireworks
+        damage *= fireworkDmgMulti
     }
+
+    private val fireworkDmgMulti
+        get() = abilityConfig.getDoublePair(AbilityConfigKeys.FIREWORK_DAMAGE_MULTIPLIER).getRandomBetween()
 
     private fun Entity.wasFiredByInfernal() = pdc.has(keyChain.fireworkOwnerUuidKey, PersistentDataType.STRING)
 
     private fun EntityDamageByEntityEvent.isFireworkDamagingLivingEntity() = damager.type == EntityType.FIREWORK && cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION && entity is LivingEntity
-
-    private fun Pair<Double, Double>.getRandomBetween(): Double {
-        val (minValue, maxValue) = this
-        return minValue + (maxValue - minValue) * random.nextDouble()
-    }
-
-    private companion object {
-        val random = Random()
-    }
 }

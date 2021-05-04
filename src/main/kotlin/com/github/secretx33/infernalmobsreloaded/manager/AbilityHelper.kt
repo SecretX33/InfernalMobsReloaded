@@ -265,7 +265,7 @@ class AbilityHelper (
     private fun LivingEntity.throwPotion(victim: LivingEntity, type: PotionEffectType) {
         val duration = abilityConfig.getDuration(Ability.POTIONS, 2.0).getRandomBetween()
         val potency = abilityConfig.getAbilityPotency(Ability.POTIONS, 2, minValue = 1).getRandomBetween() - 1
-        val dir = shootDirection(victim).normalize().apply { y += 0.1 }.multiply(random.nextDouble() * 0.6 + 1)
+        val dir = shootDirection(victim).normalize().apply { y += 0.1 }.multiply(random.nextDouble() * 0.5 + 1)
 
         val potionItem = ItemStack(randomPotionMaterial).modifyPotion(type, duration, potency)
         runSync(plugin) {
@@ -277,12 +277,12 @@ class AbilityHelper (
     }
 
     private val randomPotionMaterial
-        get() = if(random.nextBoolean()) Material.LINGERING_POTION else Material.SPLASH_POTION
+        get() = if(random.nextDouble() <= 0.7) Material.LINGERING_POTION else Material.SPLASH_POTION
 
     private fun ItemStack.modifyPotion(potionType: PotionEffectType, duration: Double, amplifier: Int): ItemStack {
         require(type == Material.LINGERING_POTION || type == Material.SPLASH_POTION) { "ItemStack used as this for function modifyPotion needs to be lingering or splash potion, and $type is not" }
         val meta = itemMeta as PotionMeta
-        meta.addCustomEffect(PotionEffect(potionType, (duration / 20).toInt().coerceAtLeast(0), amplifier), true)
+        meta.addCustomEffect(PotionEffect(potionType, (duration * 20).toInt().coerceAtLeast(0), amplifier), true)
         itemMeta = meta
         return this
     }
@@ -714,7 +714,6 @@ class AbilityHelper (
         val strikeLocation = defender.location
         InfernalLightningStrike(entity, infernalType, strikeLocation).callEvent()
         world.strikeLightning(strikeLocation)
-        println("Fired a lightning strike!")
     }
 
     private fun InfernalDamageDoneEvent.triggerLifesteal() {
@@ -864,7 +863,7 @@ class AbilityHelper (
 
         world.spawn(attacker.location.apply {
             x += random.nextDouble() - 0.5
-            y += random.nextDouble()
+            y += random.nextDouble() * 0.8 + 0.1
             z += random.nextDouble() - 0.5
         }, Firework::class.java, SpawnReason.CUSTOM) { it.prepareFirework(entity) }.detonate()
     }
@@ -932,16 +931,6 @@ class AbilityHelper (
 
     private fun Double.toLongDelay() = (this * 1000.0).toLong()
 
-    private fun Pair<Int, Int>.getRandomBetween(): Int {
-        val (minValue, maxValue) = this
-        return random.nextInt(maxValue - minValue + 1) + minValue
-    }
-
-    private fun Pair<Double, Double>.getRandomBetween(): Double {
-        val (minValue, maxValue) = this
-        return minValue + (maxValue - minValue) * random.nextDouble()
-    }
-
     private fun LivingEntity.getValidNearbyTargets(range: Double) = location.getNearbyLivingEntities(range) { !it.isDead && it.isValid }.takeUnless { it.isEmpty() } ?: listOf(this)
 
     private suspend fun LivingEntity.getValidNearbyTargetsAsync(range: Double) = futureSync(plugin) { getValidNearbyTargets(range) }
@@ -976,7 +965,7 @@ class AbilityHelper (
      */
     private fun LivingEntity.addPotion(effectType: PotionEffectType, ability: Ability, duration: Double, amplifier: Int = 0, isAmbient: Boolean = abilityConfig.getPotionIsAmbient(ability), emitParticles: Boolean = abilityConfig.getPotionEmitParticles(ability)) {
         // add a temporary potion effect to the living entity
-        addPotionEffect(PotionEffect(effectType, (duration * 20.0).toInt(), amplifier, isAmbient, emitParticles))
+        addPotionEffect(PotionEffect(effectType, (duration * 20.0).toInt().coerceAtLeast(0), amplifier, isAmbient, emitParticles))
     }
 
     private fun LivingEntity.addPermanentPotion(effectType: PotionEffectType, ability: Ability, amplifier: Int = 0, isAmbient: Boolean = abilityConfig.getPotionIsAmbient(ability), emitParticles: Boolean = abilityConfig.getPotionEmitParticles(ability)) {

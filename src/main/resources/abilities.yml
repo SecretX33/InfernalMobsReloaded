@@ -123,6 +123,7 @@ lifesteal:
 # On damage, have a chance of making a lightning fall right on their target, poor them... At least they had an electrifying experience.
 lightning:
   chance-on-damage-done: 0.2         # in percentage, the chance of a lightning strike the attacked entity
+  damage-multiplier: 1.4-1.7         # in percentage, multiply the damage caused by the lightning strikes launched by the infernals with lightning ability,by the specified values; 1.0 would make the damage be exactly as in vanilla, 2.0 would make it cause two times the normal damage, and so on.
 
 # Molten ability
 # Any infernal with this ability is immune to fire/lava. They set on fire entities that they attack and entities that attack them, it's basically a pyromaniac in disguise. "Set your life on fire. Seek those who fan your flames" - Rumi

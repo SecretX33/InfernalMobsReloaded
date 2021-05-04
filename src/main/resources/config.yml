@@ -166,40 +166,40 @@ mob-types-that-can-wear-armor:
 # +------------------------------------------------------+ #
 ############################################################
 
-# Disable abilities you don't want mobs to have here by changing their value to 'false'
+# Disable abilities you don't want mobs to have here by removing the square brackets and uncommenting them
 # The file `abilities.yml` contain a full explanation of all abilities if you need it
-abilities:
-  archer: true
-  armoured: true
-  berserk: true
-  blinding: true
-  call_the_gang: true
-  confusion: true
-  firework: true
-  flying: true
-  ghastly: true
-  ghost: true
-  heavy: true
-  hunger: true
-  invisible: true
-  kamikaze: true
-  levitate: true
-  lifesteal: true
-  lightning: true
-  molten: true
-  morph: true
-  mounted: true
-  necromancer: true
-  poisonous: true
-  potions: true
-  rust: true
-  second_wind: true
-  slowness: true
-  speedy: true
-  teleport: true
-  thief: true
-  thornmail: true
-  tosser: true
-  weakness: true
-  webber: true
-  withering: true
+disabled-abilities: []
+#  - ARCHER
+#  - ARMOURED
+#  - BERSERK
+#  - BLINDING
+#  - CALL_THE_GANG
+#  - CONFUSION
+#  - FIREWORK
+#  - FLYING
+#  - GHASTLY
+#  - GHOST
+#  - HEAVY
+#  - HUNGER
+#  - INVISIBLE
+#  - KAMIKAZE
+#  - LEVITATE
+#  - LIFESTEAL
+#  - LIGHTNING
+#  - MOLTEN
+#  - MORPH
+#  - MOUNTED
+#  - NECROMANCER
+#  - POISONOUS
+#  - POTIONS
+#  - RUST
+#  - SECOND_WIND
+#  - SLOWNESS
+#  - SPEEDY
+#  - TELEPORT
+#  - THIEF
+#  - THORNMAIL
+#  - TOSSER
+#  - WEAKNESS
+#  - WEBBER
+#  - WITHERING

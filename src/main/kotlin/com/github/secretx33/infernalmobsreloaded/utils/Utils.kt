@@ -20,6 +20,20 @@ import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
 
+private object Utils {
+    val random = Random()
+}
+
+fun Pair<Int, Int>.getRandomBetween(): Int {
+    val (minValue, maxValue) = this
+    return Utils.random.nextInt(maxValue - minValue + 1) + minValue
+}
+
+fun Pair<Double, Double>.getRandomBetween(): Double {
+    val (minValue, maxValue) = this
+    return minValue + (maxValue - minValue) * Utils.random.nextDouble()
+}
+
 fun Player.getTarget(range: Int): LivingEntity? = (world.rayTraceEntities(eyeLocation, eyeLocation.direction, range.toDouble()) { it is LivingEntity && type != EntityType.ENDER_DRAGON && it.uniqueId != uniqueId }?.hitEntity as? LivingEntity)?.takeIf { hasLineOfSight(it) }
 
 fun String.capitalizeFully(): String = WordUtils.capitalizeFully(this)

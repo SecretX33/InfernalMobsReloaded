@@ -7,6 +7,7 @@ import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkLoadListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ChunkUnloadListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.FireworkDamageIncreaseListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.LightningAbilityListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDamageEntityListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDeathListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntitySpawnListener
@@ -15,7 +16,6 @@ import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerJoi
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerLeaveListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerMoveListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.FireworkDamageWorkaroundListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.LightningDamageWorkaroundListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.sideeffectsmitigation.MountRemovalListener
 import com.github.secretx33.infernalmobsreloaded.manager.*
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
@@ -63,7 +63,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { PlayerLeaveListener(get(), get()) }
         single { PlayerMoveListener(get(), get(), get()) }
         single { FireworkDamageWorkaroundListener(get(), get(), get()) }
-        single { LightningDamageWorkaroundListener(get(), get()) }
+        single { LightningAbilityListener(get(), get(), get()) }
         single { MountRemovalListener(get(), get()) }
         single { ChunkUnloadListener(get(), get()) }
         single { ChunkLoadListener(get(), get()) }
@@ -99,7 +99,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<PlayerLeaveListener>()
         get<PlayerMoveListener>()
         get<FireworkDamageWorkaroundListener>()
-        get<LightningDamageWorkaroundListener>()
+        get<LightningAbilityListener>()
         get<MountRemovalListener>()
         get<ChunkUnloadListener>()
         get<ChunkLoadListener>()
