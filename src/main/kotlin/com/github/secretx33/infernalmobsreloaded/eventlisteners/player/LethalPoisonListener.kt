@@ -3,6 +3,7 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners.player
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.KilledByPoison
+import com.github.secretx33.infernalmobsreloaded.utils.runSync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -26,7 +27,7 @@ import kotlin.math.round
 
 @KoinApiExtension
 class LethalPoisonListener (
-    plugin: Plugin,
+    private val plugin: Plugin,
     private val config: Config,
 ): Listener {
 
@@ -38,8 +39,8 @@ class LethalPoisonListener (
     private fun EntityDamageEvent.onPoisonTick() {
         if(isNotPoison() || lethalPoisonDisabled) return
 
-        val killedBy = killedByPoison
         val entity = entity as? LivingEntity ?: return
+        val killedBy = killedByPoison
 
         // if the entity doesn't fit the target requirements
         if (killedBy == KilledByPoison.PLAYERS && entity !is Player || killedBy == KilledByPoison.MONSTERS && entity !is Monster) return
@@ -63,11 +64,13 @@ class LethalPoisonListener (
         scheduledLethalTicks.add(uniqueId)
 
         CoroutineScope(Dispatchers.Default).launch {
-            delay(poison.getTickDelay())
+            delay(poison.getTickDelay().also { println("Tick delay = $it") })
             // if entity is not poisoned anymore, or has its health above the threshold, don't do anything
-            if(isDead || !isValid || !isPoisoned() || uniqueId !in scheduledLethalTicks || health > (MIN_HP_VALUE_TO_DIE_OF_POISON + 0.5)) return@launch
+            if(isDead || !isValid || !isPoisoned() || uniqueId !in scheduledLethalTicks || health > (MIN_HP_VALUE_TO_DIE_OF_POISON + 0.5)) {
+                scheduledLethalTicks.remove(uniqueId)
+                return@launch
+            }
             killByPoison()
-            scheduledLethalTicks.remove(uniqueId)
         }
     }
 
@@ -81,7 +84,7 @@ class LethalPoisonListener (
         if (amplifier == 0) delay = 1250.0
         else if (amplifier <= 3) delay = 600.0
 
-        return round(delay / 50).toLong() + 1L
+        return delay.toLong()
     }
 
     @EventHandler
@@ -89,14 +92,16 @@ class LethalPoisonListener (
         if(lethalPoisonDisabled || player.uniqueId !in scheduledLethalTicks) return
         // If player tries to logs off and he is on the scheduledLethalTicks, he's low hp and probably logging off to avoid dying poisoned, so he'll be killed to prevent this exploit
         player.killByPoison()
-        scheduledLethalTicks.remove(player.uniqueId)
     }
 
     private fun LivingEntity.killByPoison() {
-        val event = EntityDamageEvent(this, DamageCause.POISON, 100_000.0)
-        if(!event.callEvent()) return
-        lastDamageCause = event
-        damage(event.finalDamage)
+        runSync(plugin) {
+            val event = EntityDamageEvent(this, DamageCause.POISON, 100_000.0)
+            if(!event.callEvent()) return@runSync
+            lastDamageCause = event
+            damage(event.finalDamage)
+            scheduledLethalTicks.remove(uniqueId)
+        }
     }
 
     private val killedByPoison
