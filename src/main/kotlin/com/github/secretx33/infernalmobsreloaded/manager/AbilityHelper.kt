@@ -268,7 +268,6 @@ class AbilityHelper (
         val dir = shootDirection(victim).normalize().apply { y += 0.1 }.multiply(random.nextDouble() * 0.6 + 1)
 
         val potionItem = ItemStack(randomPotionMaterial).modifyPotion(type, duration, potency)
-
         runSync(plugin) {
             world.spawn(eyeLocation, ThrownPotion::class.java) { potion ->
                 potion.item = potionItem

@@ -107,6 +107,7 @@ class Config(plugin: Plugin, private val log: Logger) {
 }
 
 enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
+    INFERNAL_BOSS_BAR_REQUIRE_LOS("boss-bar-require-los", true),
     MOB_TYPES_THAT_CAN_WEAR_ARMOR("mob-types-that-can-wear-armor", emptySet<EntityType>()),
     INFERNALS_CANNOT_DAMAGE_THEMSELVES("infernals-cannot-damage-themselves", true),
     BOSS_BAR_SHOW_RANGE("boss-bar-show-range", 25.0),

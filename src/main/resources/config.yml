@@ -37,6 +37,8 @@ display-infernal-custom-name-mode: LOOKING_AT
 enable-boss-bars: true
 # Distance that the player has to be of an infernal mob in order to see its boss bar
 boss-bar-show-range: 25.0
+# If enabled, the player will require line of sight of the infernal to display the bar, this prevents random boss bars from appearing to player that cannot even see the infernal mob; as side effect, if you use "world fog" as parameter in your boss bars, it might looks weird in certain cases because the fog might keep showing and hiding as the player tries to flee from an infernal mob
+boss-bar-require-los: true
 
 # Prevent infernals mobs from damaging itself, they literally cannot take damage of their own abilities, no matter what
 infernals-cannot-damage-themselves: true

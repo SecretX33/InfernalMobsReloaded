@@ -18,16 +18,13 @@ class PlayerMoveListener (
     plugin: Plugin,
     private val config: Config,
     private val bossBarManager: BossBarManager,
-    private val mobsManager: InfernalMobsManager,
 ): Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerMoveEvent.whenPlayerMoves() {
-        if(!bossBarEnabled) return
-        val world = player.world
-        if(!world.isWhitelisted()) return
+        if(!bossBarEnabled || !player.world.isWhitelisted()) return
         bossBarManager.showBarOfNearbyInfernals(player)
     }
 

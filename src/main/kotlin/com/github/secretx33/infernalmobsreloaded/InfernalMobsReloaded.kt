@@ -61,7 +61,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { InfernalUpdateBossBarListener(get(), get(), get()) }
         single { PlayerJoinListener(get(), get()) }
         single { PlayerLeaveListener(get(), get()) }
-        single { PlayerMoveListener(get(), get(), get(), get()) }
+        single { PlayerMoveListener(get(), get(), get()) }
         single { FireworkDamageWorkaroundListener(get(), get(), get()) }
         single { LightningDamageWorkaroundListener(get(), get()) }
         single { MountRemovalListener(get(), get()) }
