@@ -94,7 +94,7 @@ class InfernalMobTypesRepo (
         val abilityAmounts = getAbilityAmounts(name)
         val followRangeMultiplierAmounts = getFollowRangeMultiplierAmounts(name)
         val damageMultiplierAmounts = getDamageMultiplierAmounts(name)
-        val atkKnockbackAmounts = getAtkKnockbackModAmounts(name).also { println("Knockback $name from config is $it") }
+        val atkKnockbackAmounts = getAtkKnockbackModAmounts(name)
         val hpMultiplierAmounts = getHealthMultiplierAmounts(name)
         val speedMultiplierAmounts = getSpeedMultiplierAmounts(name)
         val lootTable = getMobLootTable(name)
@@ -205,10 +205,10 @@ class InfernalMobTypesRepo (
     }
 
     private fun getMobSpawnChance(name: String): Double {
-        val spawnChance = manager.getDouble("$name.spawn-chance", Double.MIN_VALUE)
+        val spawnChance = manager.getDouble("$name.spawn-chance", Double.NEGATIVE_INFINITY)
 
         // if user forgot to insert the spawnChance of that mob category
-        if(spawnChance == Double.MIN_VALUE) {
+        if(spawnChance == Double.NEGATIVE_INFINITY) {
             log.warning("You must provide a spawn chance for the mob category '$name'! Please fix your mobs configurations and reload, defaulting $name spawn chance to 15%.")
             return 0.15
         }
@@ -216,10 +216,10 @@ class InfernalMobTypesRepo (
     }
 
     private fun getSpawnerDropChance(name: String): Double {
-        val spawnerDropChance = manager.getDouble("$name.mob-spawn-drop-chance", Double.MIN_VALUE)
+        val spawnerDropChance = manager.getDouble("$name.mob-spawn-drop-chance", Double.NEGATIVE_INFINITY)
 
         // if user didn't insert the spawnerDropChance of that mob category, means he doesn't want that infernal to drop any spawner
-        if(spawnerDropChance == Double.MIN_VALUE) return 0.0
+        if(spawnerDropChance == Double.NEGATIVE_INFINITY) return 0.0
 
         return max(0.0, min(1.0, spawnerDropChance))
     }
@@ -245,7 +245,7 @@ class InfernalMobTypesRepo (
     private fun getDamageMultiplierAmounts(name: String) = getDoublePair(name, "damage-multiplier")
 
     // returns a pair with the <Min, Max> amount of the attack knockback modifier that that infernal mob will have
-    private fun getAtkKnockbackModAmounts(name: String) = getDoublePair(name, "attack-knockback-modifier", default = 0.0, minValue = Double.MIN_VALUE)
+    private fun getAtkKnockbackModAmounts(name: String) = getDoublePair(name, "attack-knockback-modifier", default = 0.0, minValue = Double.NEGATIVE_INFINITY)
 
     // returns a pair with the <Min, Max> amount of the health multiplier that that infernal mob will have
     private fun getHealthMultiplierAmounts(name: String) = getDoublePair(name, "health-multiplier", minValue = 0.01)
@@ -255,48 +255,48 @@ class InfernalMobTypesRepo (
 
     // returns a pair with the <Min, Max> amount of the key property
     private fun getIntPair(name: String, key: String, default: Int = 0, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Pair<Int, Int> {
-        val amounts = (manager.getString("$name.$key") ?: "").split('-', limit = 2)
+        val values = manager.getString("$name.$key") ?: ""
 
-        // if there's no amount field, default it to 0
-        if(amounts[0].isBlank()) return Pair(default, default)
+        // if there's no amount field, return pair with default values
+        if(values.isBlank()) return Pair(default, default)
 
-        // if typed amount is not an integer
-        val minAmount = amounts[0].toIntOrNull()?.let { min(maxValue, max(minValue, it)) } ?: run {
-            log.warning("$key amount '${amounts[0]}' provided for mob category '$name' is not an integer, please fix your configurations and reload. Defaulting '$name' $key to 1.")
-            return Pair(1, 1)
-        }
+        // value is only one value
+        SIGNED_INT.matchOrNull(values, 1)
+            ?.let { min(maxValue, max(minValue, it.toInt())) }
+            ?.let { return Pair(it, it) }
 
-        // if there's only one number, min and max amounts should be equal
-        if(amounts.size < 2 || amounts[1].isBlank()) return Pair(minAmount, minAmount)
+        // value is a range of values
+        SIGNED_INT_RANGE.matchEntire(values)?.groupValues
+            ?.subList(1, 3)
+            ?.map { min(maxValue, max(minValue, it.toInt())) }
+            ?.let { return Pair(it[0], max(it[0], it[1])) }
 
-        val maxAmount = amounts[1].toIntOrNull()?.let { min(maxValue, max(minAmount, it)) } ?: run {
-            log.warning("Max $key amount '${amounts[1]}' provided for mob category '$name' is not an integer, please fix the typo and reload the configurations. Defaulting '$name' max amount to its minimum amount, which is $minAmount.")
-            minAmount
-        }
-        return Pair(minAmount, maxAmount)
+        // typed amount is not an integer
+        log.warning("Inside mob category '$name', $key provided '$values' is not an integer nor an integer range, please fix your configurations and reload. Defaulting '$name' $key to $default.")
+        return Pair(default, default)
     }
 
     // returns a pair with the <Min, Max> amount of the key property
     private fun getDoublePair(name: String, key: String, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Pair<Double, Double> {
-        val amounts = (manager.getString("$name.$key") ?: "").split('-', limit = 2)
+        val values = manager.getString("$name.$key") ?: ""
 
-        // if there's no amount field, default it to 0
-        if(amounts[0].isBlank()) return Pair(default, default).also { println("$name doesn't have field \"$name.$key\"") }
+        // if there's no amount field, return pair with default values
+        if(values.isBlank()) return Pair(default, default)
 
-        // if typed amount is not an integer
-        val minAmount = amounts[0].toDoubleOrNull()?.let { min(maxValue, max(minValue, it)) } ?: run {
-            log.warning("Inside mob category '$name', $key provided '${amounts[0]}' is not a double, please fix your configurations and reload. Defaulting '$name' $key to 1.")
-            return Pair(default, default)
-        }
+        // value is only one value
+        SIGNED_DOUBLE.matchOrNull(values, 1)
+            ?.let { min(maxValue, max(minValue, it.toDouble())) }
+            ?.let { return Pair(it, it) }
 
-        // if there's one one number, min and max amounts should be equal
-        if(amounts.size < 2 || amounts[1].isBlank()) return Pair(minAmount, minAmount)
+        // value is a range of values
+        SIGNED_DOUBLE_RANGE.matchEntire(values)?.groupValues
+            ?.subList(1, 3)
+            ?.map { min(maxValue, max(minValue, it.toDouble())) }
+            ?.let { return Pair(it[0], max(it[0], it[1])) }
 
-        val maxAmount = amounts[1].toDoubleOrNull()?.let { min(maxValue, max(minAmount, it)) } ?: run {
-            log.warning("Inside mob category '$name', max $key provided '${amounts[0]}' is not a double, please fix the typo and reload the configurations. Defaulting '$name' max $key to its minimum amount, which is $minAmount.")
-            minAmount
-        }
-        return Pair(minAmount, maxAmount)
+        // typed amount is not a double
+        log.warning("Inside mob category '$name', $key provided '$values' is not a double nor a double range, please fix your configurations and reload. Defaulting '$name' $key to $default.")
+        return Pair(default, default)
     }
 
     // get map containing <Item, DropChance> what items should be dropped by that infernal mob type and what is the chance of them being dropped
@@ -333,6 +333,12 @@ class InfernalMobTypesRepo (
 
     private val bossBarEnabled get() = config.get<Boolean>(ConfigKeys.ENABLE_BOSS_BARS)
 
-    private val NEGATIVE_NUMBER = """^\s*(-\d+)*\s*$""".toRegex()
-    private val NUMBER_RANGE = """^\s*(-\d)(-\d+)*\s*$""".toRegex()
+    private fun Regex.matchOrNull(line: String, index: Int): String? = this.matchEntire(line)?.groupValues?.get(index)
+
+    private companion object {                                                             // regex matches examples
+        val SIGNED_INT = """^\s*(-?\d{1,11})\s*$""".toRegex()                              // "-5"     (-5)
+        val SIGNED_INT_RANGE = """^\s*(-?\d{1,11}?)\s*-\s*(-?\d{1,11})\s*$""".toRegex()    // "-5 - -1"  (-5 until -1)
+        val SIGNED_DOUBLE = """^\s*(-?\d+?(?:\.\d+?)?)\s*$""".toRegex()                    // "-5.0"   (-5.0)
+        val SIGNED_DOUBLE_RANGE = """^\s*(-?\d+?(?:\.\d+?)?)\s*-\s*(-?\d+?(?:\.\d+)?)\s*$""".toRegex()  // "-5.0 - -1.0"  (-5.0 until -1.0)
+    }
 }

@@ -25,7 +25,7 @@ enable-infernal-particles: true
 # What particle effect will be expelled from all infernals every certain amount of time
 infernal-particle-type: LAVA            # list with all possible particles can be found here: https://papermc.io/javadocs/paper/1.16/org/bukkit/Particle.html , make sure to check it out and choose the one that suits your taste
 # Delay between infernal particles
-delay-between-infernal-particles: 1.5   # in seconds
+delay-between-infernal-particles: 1.25  # in seconds
 # Spread of infernal particles
 infernal-particles-spread: 0.8          # in blocks
 # Amount of particles spawned, this number greatly varies per particle, so I suggest you test it and manually adjust it to a balanced amount
@@ -53,6 +53,21 @@ entities-killed-by-poison: ALL
 
 ############################################################
 # +------------------------------------------------------+ #
+# |                       Boss Bars                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+# If true, infernal mobs boss bar will be shown to the player's within configured range
+enable-boss-bars: true
+# Min distance that the player can approach an infernal before its boss bar is shown
+boss-bar-show-range-distance: 25.0
+# Min height that the player can approach an infernal before the boss bar is shown
+boss-bar-show-range-height: 10.0
+# If enabled, the player will require line of sight of the infernal to display the bar, this prevents random boss bars from appearing to player that cannot even see the infernal mob; as side effect, if you use "world fog" as parameter in your boss bars, it might looks weird in certain cases because the fog might keep showing and hiding as the player tries to flee from an infernal mob
+boss-bar-require-line-of-sight: true
+
+############################################################
+# +------------------------------------------------------+ #
 # |                    Spawn messages                    | #
 # +------------------------------------------------------+ #
 ############################################################
@@ -65,21 +80,6 @@ infernal-spawn-message-radius: 30       # in blocks
 enable-infernal-death-messages: true
 # The radius around the dead infernal mob that a player has to be to receive the death message
 infernal-death-message-radius: 20       # in blocks
-
-############################################################
-# +------------------------------------------------------+ #
-# |                       Boss Bars                      | #
-# +------------------------------------------------------+ #
-############################################################
-
-# If true, infernal mobs boss bar will be shown to the player's within configured range
-enable-boss-bars: true
-# Max distance that the player can be before the boss bar is shown
-boss-bar-show-range-distance: 25.0
-# Max height that the player can be before the boss bar is shown
-boss-bar-show-range-height: 10.0
-# If enabled, the player will require line of sight of the infernal to display the bar, this prevents random boss bars from appearing to player that cannot even see the infernal mob; as side effect, if you use "world fog" as parameter in your boss bars, it might looks weird in certain cases because the fog might keep showing and hiding as the player tries to flee from an infernal mob
-boss-bar-require-line-of-sight: true
 
 ############################################################
 # +------------------------------------------------------+ #
