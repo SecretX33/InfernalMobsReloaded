@@ -29,6 +29,7 @@ import me.mattstudios.msg.adventure.AdventureMessage
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.potion.PotionEffectType
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.logger.Level
 import org.koin.dsl.bind
@@ -116,6 +117,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<Metrics>()
         get<InfernalMobsManager>().loadAllInfernals()
         get<BossBarManager>().showBarsOfNearbyInfernalsForAllPlayers()
+        PotionEffectType.SLOW.isInstant
     }
 
     override fun onDisable() {

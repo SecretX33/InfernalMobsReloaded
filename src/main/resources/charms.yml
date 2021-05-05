@@ -1,0 +1,78 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                      Slot List                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+# List of all slots from the player's inventory and their number
+# So you can remove them
+
+#  Inventory Slots:
+#
+#   39             1  2     0
+#   38             3  4
+#   37
+#   36          40
+#   9  10 11 12 13 14 15 16 17
+#   18 19 20 21 22 23 24 25 26
+#   27 28 29 30 31 32 33 34 35
+#   0  1  2  3  4  5  6  7  8
+#
+# Only items in these slots will have their effects applied, otherwise they'll do nothing
+# You can also override these slots on a per item basis using the property `override-valid-slots`
+valid-charm-slots:
+  - 0-8
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                     Charm Effects                    | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Below you can create as many effects as you want, and link them with the items from `loot_table.yml` file.
+
+#############
+### Modes ###
+#############
+#
+# There are 3 modes that you can choose from of effects: SELF_PERMANENT, SELF_RECURRENT, and TARGET_TEMPORARY; not all potion effects works with all modes, but you'll get warned if you choose and invalid mode for that potion type, so don't you worry
+#
+# SELF_PERMANENT will just apply the potion when the charm is equipped, and remove it and the item is removed from one of the valid slots
+# SELF_RECURRENT will reapply the potion after the chosen delay, and keep reapplying it until the item is removed from one of the allowed slots
+# TARGET_TEMPORARY will apply the potion to any entity damaged by the owner of the charm, and delay represents the minimum delay between two reaplication of the effect on any given target
+
+charm-effects:
+  thors_apple:
+    player-message: "<#d75eff>You feel your wounds disappearing."   # omit this field to send nothing to the player when the effects kicks in
+    effect: INSTANT_HEALTH      # effect name, see list with all effects here https://papermc.io/javadocs/paper/1.16/org/bukkit/potion/PotionEffectType.html
+    potency: 1-2                # potion level
+#    duration: 10.0             # duration does nothing here, since instant healing is an instant effect
+    delay: 20.0-30.0            # in seconds, the delay between each recurrent application
+    mode: SELF_RECURRENT        # there are 3 modes: SELF_PERMANENT, SELF_RECURRENT, and TARGET_TEMPORARY; not all potion effects works with all modes, but you'll get warned if you choose and invalid mode for that potion type, so don't you worry; the TARGET_TEMPORARY will apply the
+    particles: totem:0:1
+    requiredItems:
+      - ""
+
+  fast_miner:
+    player-message: "<#36f5f2>Suddenly, you gain the agility of the gods."   # omit this field to send nothing to the player when the effects kicks in
+    effect: FAST_DIGGING     # effect name, see list with all effects here https://papermc.io/javadocs/paper/1.16/org/bukkit/potion/PotionEffectType.html
+    potency: 3               # potion level
+#    delay: 10.0             # delay does nothing since this is a permanent effect
+    mode: SELF_PERMANENT
+    particles: flame:0:1
+    requiredItems:
+      - "silky"
+
+  demon_touch:
+    player-message: "<#36f5f2>Your sword dismember a part of your opponent."   # message that will be sent to the player, when their target is effect by the charm's effect, omit this field to send nothing
+    target-message: "<#36f5f2>You got dismembered by your opponent's demonic sword."   # message that will be sent to the player's target, when affected by the effect, omit this field to send nothing
+    effect: HARM             # effect name, see list with all effects here https://papermc.io/javadocs/paper/1.16/org/bukkit/potion/PotionEffectType.html
+    potency: 1-2             # potion level
+#   duration: 10.0           # duration does nothing here, since instant damage is an instant effect
+    delay: 12.0              # in seconds, delay between each application
+    mode: TARGET_TEMPORARY
+    particles: flame:0:1
+    requiredItems:
+      - "demon_sword"
+

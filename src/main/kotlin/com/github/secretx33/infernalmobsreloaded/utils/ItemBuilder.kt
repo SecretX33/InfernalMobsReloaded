@@ -11,7 +11,9 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.material.Colorable
 import org.bukkit.persistence.PersistentDataContainer
+import org.koin.core.component.KoinApiExtension
 
+@KoinApiExtension
 class ItemBuilder private constructor(material: Material) {
 
     private val item = ItemStack(material)
@@ -64,11 +66,16 @@ class ItemBuilder private constructor(material: Material) {
     fun addLore(vararg lines: Component) = addLore(lines.toList())
 
     fun setLore(lines: List<Component>): ItemBuilder {
-        meta.lore(lines)
+        meta?.lore(lines)
         return this
     }
 
     fun setLore(vararg lines: Component) = setLore(lines.toList())
+
+    fun markWithInfernalTag(name: String): ItemBuilder {
+        meta?.markWithInfernalTag(name)
+        return this
+    }
 
     fun pdc(block: (PersistentDataContainer) -> Unit): ItemBuilder {
         meta?.persistentDataContainer?.let { block(it) }

@@ -23,6 +23,7 @@ import org.koin.core.component.KoinApiExtension
 import java.util.*
 import kotlin.math.max
 
+
 @KoinApiExtension
 class InfernalDeathListener (
     plugin: Plugin,

@@ -275,7 +275,7 @@ class AbilityHelper (
     }
 
     private val randomPotionMaterial
-        get() = if(random.nextDouble() <= 0.7) Material.LINGERING_POTION else Material.SPLASH_POTION
+        get() = if(random.nextDouble() <= 0.75) Material.LINGERING_POTION else Material.SPLASH_POTION
 
     private fun ItemStack.modifyPotion(potionType: PotionEffectType, duration: Double, amplifier: Int): ItemStack {
         require(type == Material.LINGERING_POTION || type == Material.SPLASH_POTION) { "ItemStack used as this for function modifyPotion needs to be lingering or splash potion, and $type is not" }

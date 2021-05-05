@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Material
+import org.koin.core.component.KoinApiExtension
 import java.util.*
 
 data class LootNormalItem (
@@ -28,6 +29,7 @@ data class LootNormalItem (
         require(minAmount <= maxAmount) { "minAmount cannot be higher than maxAmount, values passed minAmount = $minAmount and maxAmount = $maxAmount" }
     }
 
+    @KoinApiExtension
     override fun makeItem() = ItemBuilder.from(material)
         .displayName(displayName)
         .amount(random.nextInt(maxAmount - minAmount + 1) + minAmount)
@@ -35,6 +37,7 @@ data class LootNormalItem (
         .color(color)
         .dyeColor(dyeColor)
         .addEnchantments(enchants)
+        .markWithInfernalTag(name)
         .build()
 
     private companion object {

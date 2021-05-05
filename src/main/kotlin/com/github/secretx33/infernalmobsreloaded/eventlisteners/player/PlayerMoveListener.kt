@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
 
+// to update the boss bars
 @KoinApiExtension
 class PlayerMoveListener (
     plugin: Plugin,

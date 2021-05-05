@@ -17,6 +17,7 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataHolder
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
@@ -40,6 +41,12 @@ fun ItemStack.turnIntoSpawner(infernalType: InfernalMobType): ItemStack {
         pdc.set(keyChain.spawnerCategoryKey, PersistentDataType.STRING, infernalType.name)
         itemMeta = this
     }
+    return this
+}
+
+@KoinApiExtension
+fun ItemMeta.markWithInfernalTag(itemName: String): ItemMeta {
+    pdc.set(keyChain.infernalItemNameKey, PersistentDataType.STRING, itemName)
     return this
 }
 
