@@ -107,3 +107,4 @@ fun LivingEntity.getHealthPercent(damageTaken: Double = 0.0) = getAttribute(Attr
 
 fun LivingEntity.getValidNearbyEntities(range: Double) = location.getNearbyLivingEntities(range) { !it.isDead && it.isValid }
 
+fun Regex.matchOrNull(line: String, index: Int): String? = this.matchEntire(line)?.groupValues?.get(index)

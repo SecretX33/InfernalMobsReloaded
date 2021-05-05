@@ -301,7 +301,7 @@ class AbilityHelper (
             for (i in 1..amount) {
                 victims.forEach {
                     if(!isActive || entity.isNotTargeting(target)) return@launch
-                    val dir = entity.shootDirection(it).multiply(speed)
+                    val dir = entity.shootDirection(it).normalize().add(Vector(0.0, 0.14, 0.0)).multiply(speed)
                     entity.shootProjectile(dir, Arrow::class.java)
                 }
                 delay(delay)

@@ -7,6 +7,7 @@ import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
+import com.github.secretx33.infernalmobsreloaded.utils.matchOrNull
 import com.google.common.collect.ImmutableSet
 import com.google.common.collect.ImmutableSetMultimap
 import me.mattstudios.msg.adventure.AdventureMessage
@@ -332,8 +333,6 @@ class InfernalMobTypesRepo (
     }
 
     private val bossBarEnabled get() = config.get<Boolean>(ConfigKeys.ENABLE_BOSS_BARS)
-
-    private fun Regex.matchOrNull(line: String, index: Int): String? = this.matchEntire(line)?.groupValues?.get(index)
 
     private companion object {                                                             // regex matches examples
         val SIGNED_INT = """^\s*(-?\d{1,11})\s*$""".toRegex()                              // "-5"     (-5)

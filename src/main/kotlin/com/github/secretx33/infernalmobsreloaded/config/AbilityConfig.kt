@@ -1,7 +1,9 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
 import com.github.secretx33.infernalmobsreloaded.model.Ability
+import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
+import com.github.secretx33.infernalmobsreloaded.utils.matchOrNull
 import com.google.common.base.Enums
 import com.google.common.base.Predicate
 import org.bukkit.plugin.Plugin
@@ -113,25 +115,25 @@ class AbilityConfig (
     @Suppress("UNCHECKED_CAST")
     fun getIntPair(key: String, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Pair<Int, Int> {
         return cache.getOrPut(key) {
-            val amounts = (manager.getString(key) ?: "").split('-', limit = 2)
+            val values = manager.getString(key) ?: ""
 
-            // if there's no amount field, use default value
-            if (amounts[0].isBlank()) return@getOrPut Pair(default, default)
+            // if there's no amount field, return pair with default values
+            if(values.isBlank()) return@getOrPut Pair(default, default)
 
-            // if typed amount is not an integer
-            val minAmount = amounts[0].toIntOrNull()?.let { max(minValue, min(maxValue, it)) } ?: run {
-                log.severe("Oops, while trying to get ability '$key' value, could not parse '${amounts[0]}' because it's not an integer, please fix your configurations and reload. Defaulting '$key' value to $default.")
-                return Pair(default, default)
-            }
+            // value is only one value
+            SIGNED_INT.matchOrNull(values, 1)
+                ?.let { min(maxValue, max(minValue, it.toInt())) }
+                ?.let { return@getOrPut Pair(it, it) }
 
-            // if there's only one number, min and max amounts should be equal
-            if (amounts.size < 2 || amounts[1].isBlank()) return@getOrPut Pair(minAmount, minAmount)
+            // value is a range of values
+            SIGNED_INT_RANGE.matchEntire(values)?.groupValues
+                ?.subList(1, 3)
+                ?.map { min(maxValue, max(minValue, it.toInt())) }
+                ?.let { return@getOrPut Pair(it[0], max(it[0], it[1])) }
 
-            val maxAmount = amounts[1].toIntOrNull()?.let { max(minAmount, min(maxValue, it)) } ?: run {
-                log.severe("Max value '${amounts[1]}' provided for ability entry '$key' is not an integer, please fix the typo and reload the configurations. Defaulting '$key' max value to its minimum amount, which is $minAmount.")
-                minAmount
-            }
-            Pair(minAmount, maxAmount)
+            // typed amount is not an integer
+            log.severe("Oops, while trying to get ability '$key' value, could not parse '$values' because it's not an integer, please fix your configurations and reload. Defaulting '$key' value to $default.")
+            return@getOrPut Pair(default, default)
         } as Pair<Int, Int>
     }
 
@@ -142,25 +144,25 @@ class AbilityConfig (
     @Suppress("UNCHECKED_CAST")
     fun getDoublePair(key: String, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Pair<Double, Double> {
         return cache.getOrPut(key) {
-            val amounts = (manager.getString(key) ?: "").split('-', limit = 2)
+            val values = manager.getString(key) ?: ""
 
-            // if there's no amount field, use default value
-            if (amounts[0].isBlank()) return@getOrPut Pair(default, default)
+            // if there's no amount field, return pair with default values
+            if(values.isBlank()) return@getOrPut Pair(default, default)
 
-            // if typed amount is not an integer
-            val minAmount = amounts[0].toDoubleOrNull()?.let { max(minValue, min(maxValue, it)) } ?: run {
-                log.severe("Oops, while trying to get ability '${key}' value, could not parse '${amounts[0]}' because it's not a double, please fix your configurations and reload. Defaulting '${key}' value to $default.")
-                return Pair(default, default)
-            }
+            // value is only one value
+            SIGNED_DOUBLE.matchOrNull(values, 1)
+                ?.let { min(maxValue, max(minValue, it.toDouble())) }
+                ?.let { return@getOrPut Pair(it, it) }
 
-            // if there's only one number, min and max amounts should be equal
-            if (amounts.size < 2 || amounts[1].isBlank()) return@getOrPut Pair(minAmount, minAmount)
+            // value is a range of values
+            SIGNED_DOUBLE_RANGE.matchEntire(values)?.groupValues
+                ?.subList(1, 3)
+                ?.map { min(maxValue, max(minValue, it.toDouble())) }
+                ?.let { return@getOrPut Pair(it[0], max(it[0], it[1])) }
 
-            val maxAmount = amounts[1].toDoubleOrNull()?.let { max(minAmount, min(maxValue, it)) } ?: run {
-                log.severe("Max value '${amounts[1]}' provided for entry '${key}' is not a double, please fix the typo and reload the configurations. Defaulting '${key}' max value to its minimum amount, which is $minAmount.")
-                minAmount
-            }
-            Pair(minAmount, maxAmount)
+            // typed amount is not a double
+            log.severe("Oops, while trying to get ability '$key' value, could not parse '$values' because it's not a double nor a double range, please fix your configurations and reload. Defaulting '$key' value to $default.")
+            return@getOrPut Pair(default, default)
         } as Pair<Double, Double>
     }
 
@@ -179,6 +181,13 @@ class AbilityConfig (
                 optional.takeIf { predicate == null || predicate.apply(it as T) }
             }
         } as Set<T>
+    }
+
+    private companion object {                                                             // regex matches examples
+        val SIGNED_INT = """^\s*(-?\d{1,11})\s*$""".toRegex()                              // "-5"     (-5)
+        val SIGNED_INT_RANGE = """^\s*(-?\d{1,11}?)\s*-\s*(-?\d{1,11})\s*$""".toRegex()    // "-5 - -1"  (-5 until -1)
+        val SIGNED_DOUBLE = """^\s*(-?\d+?(?:\.\d+?)?)\s*$""".toRegex()                    // "-5.0"   (-5.0)
+        val SIGNED_DOUBLE_RANGE = """^\s*(-?\d+?(?:\.\d+?)?)\s*-\s*(-?\d+?(?:\.\d+)?)\s*$""".toRegex()  // "-5.0 - -1.0"  (-5.0 until -1.0)
     }
 }
 
