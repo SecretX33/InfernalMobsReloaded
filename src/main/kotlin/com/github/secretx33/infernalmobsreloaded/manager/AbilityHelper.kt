@@ -5,7 +5,6 @@ import com.github.secretx33.infernalmobsreloaded.config.*
 import com.github.secretx33.infernalmobsreloaded.events.*
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.BlockModification
-import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
@@ -64,10 +63,9 @@ class AbilityHelper (
 
     // abilities that are applied when mob spawns
 
-    fun addAbilityEffects(entity: LivingEntity, infernalType: InfernalMobType) {
+    fun addAbilityEffects(entity: LivingEntity) {
         val abilitySet = entity.getAbilities() ?: return
         entity.addAbilities(abilitySet)
-        entity.multiplyMaxHp(infernalType.getHealthMulti())
     }
 
     private fun LivingEntity.addAbilities(abilitySet: Set<Ability>) {

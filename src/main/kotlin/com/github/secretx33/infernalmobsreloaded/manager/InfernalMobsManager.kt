@@ -12,13 +12,17 @@ import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
+import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
 import com.github.secretx33.infernalmobsreloaded.utils.pdc
+import com.github.secretx33.infernalmobsreloaded.utils.toUuid
 import com.google.common.collect.MultimapBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import org.bukkit.Bukkit
 import org.bukkit.Particle
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
@@ -28,6 +32,7 @@ import org.koin.core.component.KoinApiExtension
 import java.lang.reflect.Type
 import java.util.*
 import kotlin.math.max
+
 
 @KoinApiExtension
 class InfernalMobsManager (
@@ -67,7 +72,38 @@ class InfernalMobsManager (
 
         addCustomNameToInfernal(entity, infernalType)
         addPdcKeysToInfernal(entity, infernalType, event)
-        abilityHelper.addAbilityEffects(entity, infernalType)
+        entity.addInfernalCustomAttribs(infernalType)
+        abilityHelper.addAbilityEffects(entity)
+    }
+
+    private fun LivingEntity.addInfernalCustomAttribs(infernalType: InfernalMobType) {
+        // follow range attribute
+        getAttribute(Attribute.GENERIC_FOLLOW_RANGE)?.let { hp ->
+            val mod = AttributeModifier(followRangeUID, "infernal_follow_range_multi", max(0.0, infernalType.getFollowRangeMulti() - 1), AttributeModifier.Operation.ADD_SCALAR)
+            hp.removeModifier(mod)
+            hp.addModifier(mod)
+        }
+        // attack knockback modifier
+        getAttribute(Attribute.GENERIC_ATTACK_KNOCKBACK)?.let { atkKnockback ->
+            val mod = AttributeModifier(atkKnockbackUID, "infernal_atk_knockback_multi", max(0.0, infernalType.getAtkKnockbackMod()), AttributeModifier.Operation.ADD_NUMBER)
+            atkKnockback.removeModifier(mod)
+            atkKnockback.addModifier(mod)
+            println("Applied knockback multiplier of ${mod.amount} to ${type.formattedTypeName()}")
+        }
+        // health attribute
+        getAttribute(Attribute.GENERIC_MAX_HEALTH)?.let { hp ->
+            val mod = AttributeModifier(healthUID, "infernal_hp_multi", max(0.01, infernalType.getHealthMulti() - 1), AttributeModifier.Operation.ADD_SCALAR)
+            val percentHP = health / hp.value
+            hp.removeModifier(mod)
+            hp.addModifier(mod)
+            health = hp.value * percentHP // Preserve the entity HP percentage when modifying HP
+        }
+        // speed attribute
+        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)?.let { moveSpeed ->
+            val mod = AttributeModifier(moveSpeedUID, "infernal_speed_multi", max(0.0, infernalType.getSpeedMulti() - 1), AttributeModifier.Operation.ADD_SCALAR)
+            moveSpeed.removeModifier(mod)
+            moveSpeed.addModifier(mod)
+        }
     }
 
     private fun addCustomNameToInfernal(entity: LivingEntity, infernalType: InfernalMobType) {
@@ -218,5 +254,10 @@ class InfernalMobsManager (
         val gson = Gson()
         val random = Random()
         val infernalAbilitySetToken: Type = object : TypeToken<Set<Ability>>() {}.type
+
+        val followRangeUID: UUID = "ff6d1ee3-8c7e-4826-b795-945689b5dc76".toUuid()
+        val atkKnockbackUID: UUID = "0c9a9cf0-4507-47b7-b4db-77be78e7d55e".toUuid()
+        val healthUID: UUID = "23a4f497-15c5-4fe1-9f2b-4c2b1249ba42".toUuid()
+        val moveSpeedUID: UUID = "913c083e-9b68-4677-bf27-510bc9aea94e".toUuid()
     }
 }

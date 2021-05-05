@@ -2,6 +2,7 @@ package com.github.secretx33.infernalmobsreloaded.repositories
 
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
+import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
@@ -90,9 +91,12 @@ class InfernalMobTypesRepo (
         val spawnChance = getMobSpawnChance(name)
         val spawnerDropChance = getSpawnerDropChance(name)
         val spawnerName = getSpawnerName(name, type, spawnerDropChance)
-        // TODO("Add the spawner and spawner drop chance")
         val abilityAmounts = getAbilityAmounts(name)
+        val followRangeMultiplierAmounts = getFollowRangeMultiplierAmounts(name)
+        val damageMultiplierAmounts = getDamageMultiplierAmounts(name)
+        val atkKnockbackAmounts = getAtkKnockbackModAmounts(name).also { println("Knockback $name from config is $it") }
         val hpMultiplierAmounts = getHealthMultiplierAmounts(name)
+        val speedMultiplierAmounts = getSpeedMultiplierAmounts(name)
         val lootTable = getMobLootTable(name)
         return InfernalMobType(name,
             displayName = displayName,
@@ -106,8 +110,16 @@ class InfernalMobTypesRepo (
             mobSpawnerDropChance = spawnerDropChance,
             minAbilities = abilityAmounts.first,
             maxAbilities = abilityAmounts.second,
+            minFollowRangeMulti = followRangeMultiplierAmounts.first,
+            maxFollowRangeMulti = followRangeMultiplierAmounts.second,
+            minDamageMulti = damageMultiplierAmounts.first,
+            maxDamageMulti = damageMultiplierAmounts.second,
+            minAttackKnockbackMod = atkKnockbackAmounts.first,
+            maxAttackKnockbackMod = atkKnockbackAmounts.second,
             minHealthMulti = hpMultiplierAmounts.first,
             maxHealthMulti = hpMultiplierAmounts.second,
+            minSpeedMulti = speedMultiplierAmounts.first,
+            maxSpeedMulti = speedMultiplierAmounts.second,
             loots = lootTable,
         )
     }
@@ -224,46 +236,64 @@ class InfernalMobTypesRepo (
     }
 
     // returns a pair with the <Min, Max> amount of abilities that that infernal mob will have
-    private fun getAbilityAmounts(name: String): Pair<Int, Int> {
-        val amounts = (manager.getString("$name.ability-amount") ?: "").split('-', limit = 2)
+    private fun getAbilityAmounts(name: String) = getIntPair(name, "ability-amount", maxValue = Ability.MAX_AMOUNT_OF_SIMULTANEOUS_ABILITIES)
+
+    // returns a pair with the <Min, Max> amount of the follow range multiplier that that infernal mob will have
+    private fun getFollowRangeMultiplierAmounts(name: String) = getDoublePair(name, "follow-range-multiplier")
+
+    // returns a pair with the <Min, Max> amount of the damage multiplier that that infernal mob will have
+    private fun getDamageMultiplierAmounts(name: String) = getDoublePair(name, "damage-multiplier")
+
+    // returns a pair with the <Min, Max> amount of the attack knockback modifier that that infernal mob will have
+    private fun getAtkKnockbackModAmounts(name: String) = getDoublePair(name, "attack-knockback-modifier", default = 0.0, minValue = Double.MIN_VALUE)
+
+    // returns a pair with the <Min, Max> amount of the health multiplier that that infernal mob will have
+    private fun getHealthMultiplierAmounts(name: String) = getDoublePair(name, "health-multiplier", minValue = 0.01)
+
+    // returns a pair with the <Min, Max> amount of the speed multiplier that that infernal mob will have
+    private fun getSpeedMultiplierAmounts(name: String) = getDoublePair(name, "speed-multiplier")
+
+    // returns a pair with the <Min, Max> amount of the key property
+    private fun getIntPair(name: String, key: String, default: Int = 0, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Pair<Int, Int> {
+        val amounts = (manager.getString("$name.$key") ?: "").split('-', limit = 2)
 
         // if there's no amount field, default it to 0
-        if(amounts[0].isBlank()) return Pair(0, 0)
+        if(amounts[0].isBlank()) return Pair(default, default)
 
         // if typed amount is not an integer
-        val minAmount = amounts[0].toIntOrNull()?.let { max(0, it) } ?: run {
-            log.warning("Ability amount '${amounts[0]}' provided for mob category '$name' is not an integer, please fix your configurations and reload. Defaulting '$name' ability amount to 1.")
+        val minAmount = amounts[0].toIntOrNull()?.let { min(maxValue, max(minValue, it)) } ?: run {
+            log.warning("$key amount '${amounts[0]}' provided for mob category '$name' is not an integer, please fix your configurations and reload. Defaulting '$name' $key to 1.")
             return Pair(1, 1)
         }
 
         // if there's only one number, min and max amounts should be equal
         if(amounts.size < 2 || amounts[1].isBlank()) return Pair(minAmount, minAmount)
 
-        val maxAmount = amounts[1].toIntOrNull()?.let { max(minAmount, it) } ?: run {
-            log.warning("Max ability amount '${amounts[1]}' provided for mob category '$name' is not an integer, please fix the typo and reload the configurations. Defaulting '$name' max amount to its minimum amount, which is $minAmount.")
+        val maxAmount = amounts[1].toIntOrNull()?.let { min(maxValue, max(minAmount, it)) } ?: run {
+            log.warning("Max $key amount '${amounts[1]}' provided for mob category '$name' is not an integer, please fix the typo and reload the configurations. Defaulting '$name' max amount to its minimum amount, which is $minAmount.")
             minAmount
         }
         return Pair(minAmount, maxAmount)
     }
 
-    // returns a pair with the <Min, Max> amount of the health multiplier that that infernal mob will have
-    private fun getHealthMultiplierAmounts(name: String): Pair<Double, Double> {
-        val amounts = (manager.getString("$name.health-multiplier") ?: "").split('-', limit = 2)
+    // returns a pair with the <Min, Max> amount of the key property
+    private fun getDoublePair(name: String, key: String, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Pair<Double, Double> {
+        val amounts = (manager.getString("$name.$key") ?: "").split('-', limit = 2)
 
         // if there's no amount field, default it to 0
-        if(amounts[0].isBlank()) return Pair(1.0, 1.0)
+        if(amounts[0].isBlank()) return Pair(default, default).also { println("$name doesn't have field \"$name.$key\"") }
 
         // if typed amount is not an integer
-        val minAmount = amounts[0].toDoubleOrNull()?.let { max(0.01, it) } ?: run {
-            log.warning("Inside mob category '$name', health multiplier provided '${amounts[0]}' is not a double, please fix your configurations and reload. Defaulting '$name' health multiplier to 1.")
-            return Pair(1.0, 1.0)
+        val minAmount = amounts[0].toDoubleOrNull()?.let { min(maxValue, max(minValue, it)) } ?: run {
+            log.warning("Inside mob category '$name', $key provided '${amounts[0]}' is not a double, please fix your configurations and reload. Defaulting '$name' $key to 1.")
+            return Pair(default, default)
         }
 
         // if there's one one number, min and max amounts should be equal
         if(amounts.size < 2 || amounts[1].isBlank()) return Pair(minAmount, minAmount)
 
-        val maxAmount = amounts[1].toDoubleOrNull()?.let { max(minAmount, it) } ?: run {
-            log.warning("Inside mob category '$name', max health multiplier provided '${amounts[0]}' is not a double, please fix the typo and reload the configurations. Defaulting '$name' max amount to its minimum amount, which is $minAmount.")
+        val maxAmount = amounts[1].toDoubleOrNull()?.let { min(maxValue, max(minAmount, it)) } ?: run {
+            log.warning("Inside mob category '$name', max $key provided '${amounts[0]}' is not a double, please fix the typo and reload the configurations. Defaulting '$name' max $key to its minimum amount, which is $minAmount.")
             minAmount
         }
         return Pair(minAmount, maxAmount)
@@ -302,4 +332,7 @@ class InfernalMobTypesRepo (
     }
 
     private val bossBarEnabled get() = config.get<Boolean>(ConfigKeys.ENABLE_BOSS_BARS)
+
+    private val NEGATIVE_NUMBER = """^\s*(-\d+)*\s*$""".toRegex()
+    private val NUMBER_RANGE = """^\s*(-\d)(-\d+)*\s*$""".toRegex()
 }

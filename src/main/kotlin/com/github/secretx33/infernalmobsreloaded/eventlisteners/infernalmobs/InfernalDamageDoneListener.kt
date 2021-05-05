@@ -20,5 +20,6 @@ class InfernalDamageDoneListener (
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun InfernalDamageDoneEvent.onInfernalDamageDone() {
         mobsManager.triggerOnDamageDoneAbilities(this)
+        damageMulti *= infernalType.getDamageMulti()
     }
 }

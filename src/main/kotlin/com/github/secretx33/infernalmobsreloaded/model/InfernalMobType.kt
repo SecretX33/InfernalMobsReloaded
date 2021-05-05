@@ -21,8 +21,16 @@ data class InfernalMobType (
     val mobSpawnerDropChance: Double,
     private val minAbilities: Int,
     private val maxAbilities: Int,
+    private val minFollowRangeMulti: Double,
+    private val maxFollowRangeMulti: Double,
+    private val minDamageMulti: Double,
+    private val maxDamageMulti: Double,
+    private val minAttackKnockbackMod: Double,
+    private val maxAttackKnockbackMod: Double,
     private val minHealthMulti: Double,
     private val maxHealthMulti: Double,
+    private val minSpeedMulti: Double,
+    private val maxSpeedMulti: Double,
     private val loots: Map<LootItem, Double>,
 ) {
     val entityClass: Class<out Entity> = entityType.entityClass ?: throw IllegalArgumentException("entityClass cannot be null")
@@ -39,17 +47,43 @@ data class InfernalMobType (
         require(maxAbilities >= 0) { "maxAbilities has to be at least 0, maxAbilities = $maxAbilities" }
         require(minAbilities <= maxAbilities) { "minAbilities cannot be higher than maxAbilities, minAbilities = $minAbilities, maxAbilities = $maxAbilities" }
 
+        // follow range multiplier
+        require(minFollowRangeMulti >= 0) { "minFollowRangeMulti has to be higher than 0, minFollowRangeMulti = $minFollowRangeMulti" }
+        require(maxFollowRangeMulti >= 0) { "maxFollowRangeMulti has to be higher than 0, maxFollowRangeMulti = $maxFollowRangeMulti" }
+        require(minFollowRangeMulti <= maxFollowRangeMulti) { "minFollowRangeMulti cannot be higher than maxFollowRangeMulti, minFollowRangeMulti = $minFollowRangeMulti, maxFollowRangeMulti = $maxFollowRangeMulti" }
+
+        // damage multiplier
+        require(minDamageMulti >= 0) { "minDamageMulti has to be higher than 0, minDamageMulti = $minDamageMulti" }
+        require(maxDamageMulti >= 0) { "maxDamageMulti has to be higher than 0, maxDamageMulti = $maxDamageMulti" }
+        require(minDamageMulti <= maxDamageMulti) { "minDamageMulti cannot be higher than maxDamageMulti, minDamageMulti = $minDamageMulti, maxDamageMulti = $maxDamageMulti" }
+
+        // attack knockback multiplier
+        require(minAttackKnockbackMod <= maxAttackKnockbackMod) { "minAttackKnockbackMulti cannot be higher than maxAttackKnockbackMulti, minAttackKnockbackMulti = $minAttackKnockbackMod, maxAttackKnockbackMulti = $maxAttackKnockbackMod" }
+
         // health multiplier
         require(minHealthMulti > 0) { "minHealthMulti has to be higher than 0, minHealthMulti = $minHealthMulti" }
         require(maxHealthMulti > 0) { "maxHealthMulti has to be higher than 0, maxHealthMulti = $maxHealthMulti" }
         require(minHealthMulti <= maxHealthMulti) { "minHealthMulti cannot be higher than maxHealthMulti, minHealthMulti = $minHealthMulti, maxHealthMulti = $maxHealthMulti" }
-    }
 
-    fun getDrops() = loots.filterValues { random.nextDouble() <= it }.keys
+        // speed multiplier
+        require(minSpeedMulti >= 0) { "minSpeedMulti has to be higher than 0, minSpeedMulti = $minSpeedMulti" }
+        require(maxSpeedMulti >= 0) { "maxSpeedMulti has to be higher than 0, maxSpeedMulti = $maxSpeedMulti" }
+        require(minSpeedMulti <= maxSpeedMulti) { "minSpeedMulti cannot be higher than maxSpeedMulti, minSpeedMulti = $minSpeedMulti, maxSpeedMulti = $maxSpeedMulti" }
+    }
 
     fun getAbilityNumber() = random.nextInt(maxAbilities - minAbilities + 1) + minAbilities
 
+    fun getFollowRangeMulti() = minFollowRangeMulti + (maxFollowRangeMulti - minFollowRangeMulti) * random.nextDouble()
+
+    fun getDamageMulti() = minDamageMulti + (maxDamageMulti - minDamageMulti) * random.nextDouble()
+
+    fun getAtkKnockbackMod() = minAttackKnockbackMod + (maxAttackKnockbackMod - minAttackKnockbackMod) * random.nextDouble()
+
     fun getHealthMulti() = minHealthMulti + (maxHealthMulti - minHealthMulti) * random.nextDouble()
+
+    fun getSpeedMulti() = minSpeedMulti + (maxSpeedMulti - minSpeedMulti) * random.nextDouble()
+
+    fun getLoots() = loots.asSequence().filter { random.nextDouble() <= it.value }.map { it.key.makeItem() }.toList()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -61,8 +95,6 @@ data class InfernalMobType (
 
         return true
     }
-
-    fun getLoots() = loots.asSequence().filter { random.nextDouble() <= it.value }.map { it.key.makeItem() }.toList()
 
     override fun hashCode() = Objects.hash(name.toLowerCase(Locale.US), entityType)
 

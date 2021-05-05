@@ -34,8 +34,7 @@ class EntityDamageEntityListener (
 
         val infernalType = mobsManager.getInfernalTypeOrNull(infernal) ?: return
         val event = InfernalDamageTakenEvent(infernal, attacker, damage, cause, infernalType)
-        event.callEvent()
-        if(event.isCancelled) isCancelled = true
+        if(!event.callEvent()) isCancelled = true
         damage *= event.damageMulti
     }
 
@@ -49,8 +48,7 @@ class EntityDamageEntityListener (
 
         val infernalType = mobsManager.getInfernalTypeOrNull(infernal) ?: return
         val event = InfernalDamageDoneEvent(infernal, defender, damage, cause, infernalType)
-        event.callEvent()
-        if(event.isCancelled) isCancelled = true
+        if(!event.callEvent()) isCancelled = true
         damage *= event.damageMulti
     }
 

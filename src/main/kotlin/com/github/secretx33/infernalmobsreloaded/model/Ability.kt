@@ -46,6 +46,7 @@ enum class Ability {
     companion object {
         val values = values().toList()
         val lowercasedValues = values().map { it.name.toLowerCase(Locale.US) }
+        val MAX_AMOUNT_OF_SIMULTANEOUS_ABILITIES = values.size - 2
 
         fun random(number: Int, disabled: Set<Ability>): Set<Ability> {
             require(number >= 0) { "number cannot be lower than 0, number = $number" }

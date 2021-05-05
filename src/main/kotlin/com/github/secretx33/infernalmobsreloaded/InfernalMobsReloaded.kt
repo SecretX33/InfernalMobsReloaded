@@ -73,6 +73,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { ChunkLoadListener(get(), get()) }
         single { InvisibleEntitiesEquipVanisherListener(get(), get(), get()) }
         single { Commands(get()) }
+        single { Metrics(get(), 11253) }
         single<WorldGuardChecker> { WorldGuardCheckerDummy() }
     }
 
@@ -110,16 +111,17 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<ChunkUnloadListener>()
         get<ChunkLoadListener>()
         get<Commands>()
-        get<InfernalMobsManager>().loadAllInfernals()
-        get<BossBarManager>().showBarsOfNearbyInfernalsForAllPlayers()
         if(isProtocolLibEnabled)
             get<InvisibleEntitiesEquipVanisherListener>()
+        get<Metrics>()
+        get<InfernalMobsManager>().loadAllInfernals()
+        get<BossBarManager>().showBarsOfNearbyInfernalsForAllPlayers()
     }
 
     override fun onDisable() {
-        get<AbilityHelper>().revertPendingBlockModifications()
         get<InfernalMobsManager>().unloadAllInfernals()
         get<BossBarManager>().hideAllBarsFromAllPlayers()
+        get<AbilityHelper>().revertPendingBlockModifications()
         unloadKoinModules(mod)
         stopKoin()
     }
