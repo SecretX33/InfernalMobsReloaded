@@ -35,7 +35,7 @@ class InfernalMobTypesRepo (
     private var infernalTypeNames = emptyList<String>()                    // original groupNames
     private var infernalTypeCache = emptyMap<String, InfernalMobType>()    // lowercase groupName, infernalType
     private var infernalTypeMultimap = ImmutableSetMultimap.of<EntityType, InfernalMobType>()  // entityType, set<infernalType>
-    private var userDefinedInfernalTypes = emptyList<Pair<EntityType, InfernalMobType>>() // list containing all mobs types, except the internal ones like 'ghost' and 'evil_ghost', used as cache for the 'getRandomInfernalType' method
+    private var userDefinedInfernalTypes = emptyList<Pair<EntityType, InfernalMobType>>()      // list containing all mobs types, except the internal ones like 'ghost' and 'evil_ghost', used as cache for the 'getRandomInfernalType' method
 
     init { reload() }
 
@@ -47,11 +47,11 @@ class InfernalMobTypesRepo (
 
     fun canTypeBecomeInfernal(type: EntityType) = infernalTypeMultimap.containsKey(type)
 
-    fun getInfernalTypeOrNull(name: String) = infernalTypeCache[name.toLowerCase(Locale.US)]
+    fun getInfernalTypeOrNull(name: String) = infernalTypeCache[name.lowercase(Locale.US)]
 
     fun getInfernalTypes(entityType: EntityType): ImmutableSet<InfernalMobType> = infernalTypeMultimap[entityType]
 
-    fun isValidInfernalType(name: String) = infernalTypeCache.containsKey(name.toLowerCase(Locale.US))
+    fun isValidInfernalType(name: String) = infernalTypeCache.containsKey(name.lowercase(Locale.US))
 
     fun getAllInfernalTypeNames() = infernalTypeNames
 
@@ -59,7 +59,7 @@ class InfernalMobTypesRepo (
     fun getRandomInfernalType(morphingEntity: LivingEntity) = userDefinedInfernalTypes.filter { morphingEntity.type != it.first }.randomOrNull()?.second ?: userDefinedInfernalTypes.random().second
 
     private fun ensureUniqueKeys() {
-        val duplicatedKeys = manager.getKeys(false).groupBy { it.toLowerCase(Locale.US) }.filterValues { it.size > 1 }
+        val duplicatedKeys = manager.getKeys(false).groupBy { it.lowercase(Locale.US) }.filterValues { it.size > 1 }
         // if there are duplicates in keys
         if(duplicatedKeys.isNotEmpty()) {
             val sb = StringBuilder("Oops, seems like there are duplicate mob categories in file '${manager.fileName}', remember that categories are caSE inSenSiTiVe, so make sure that each category has a unique name. Duplicated mob categories: ")
@@ -72,7 +72,7 @@ class InfernalMobTypesRepo (
 
     private fun loadMobTypes() {
         infernalTypeNames = manager.getKeys(false).sorted()
-        infernalTypeCache = infernalTypeNames.map { it.toLowerCase(Locale.US) }.associateWithTo(HashMap(infernalTypeNames.size)) { makeMobType(it) }
+        infernalTypeCache = infernalTypeNames.map { it.lowercase(Locale.US) }.associateWithTo(HashMap(infernalTypeNames.size)) { makeMobType(it) }
         val builder = ImmutableSetMultimap.builder<EntityType, InfernalMobType>()
         infernalTypeCache.forEach { (_, infernalType) -> builder.put(infernalType.entityType, infernalType) }
         infernalTypeMultimap = builder.build()

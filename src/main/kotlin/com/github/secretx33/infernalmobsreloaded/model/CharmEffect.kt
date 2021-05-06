@@ -1,11 +1,11 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
-import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
 import com.github.secretx33.infernalmobsreloaded.utils.getRandomBetween
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.potion.PotionEffectType
 import org.koin.core.component.KoinApiExtension
+import java.util.*
 
 @KoinApiExtension
 data class CharmEffect (
@@ -36,6 +36,7 @@ data class CharmEffect (
         require(delay.first >= 0 && delay.second >= 0) { "delay cannot be lower than 0, delay = $delay" }
         require(delay.first <= delay.second) { "delay first value has to be lower or equal than the second value, delay = $delay" }
 
+        // requiresSlots
         require(requiredSlots.all { it >= 0 }) { "requiredSlots requires that all slots are not less than 0, but there's some number that is lower than 0 in it, set = '${requiredSlots.joinToString()}'" }
 
         require(effectApplyMode in particleMode.validApplyModes) { "effectApplyMode has to be inside valid list of particleMode, but $effectApplyMode is not inside $particleMode's validApplyModes = ${particleMode.validApplyModes}" }
@@ -55,6 +56,39 @@ data class CharmEffect (
 
     val triggersOnDamage
         get() = effectApplyMode == PotionEffectApplyMode.TARGET_TEMPORARY
+
+    /**
+     * For a given inventory (mapped to itemName, slot), it validates if all items are on the correct slots
+     * for the effect to be granted from (or revoked of) the holder
+     *
+     * @param inventory Map<Int, String> a list containing all loot items owned, mapped as (itemName <-> slot)
+     * @return Boolean if effect can be granted to the holder
+     */
+    fun validateEffect(inventory: Map<String, Int>): Boolean {
+        // no items should have this effect
+        if(requiredItems.isEmpty()) return false
+
+        // inventory don't have all the required items
+        if(!inventory.keys.containsAll(requiredItems)) return false
+
+        // all required items are in the correct slots
+        return requiredItems.all { itemName ->
+            inventory[itemName]?.let { slot -> slot in requiredSlots } == true
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        return name.equals((other as CharmEffect).name, ignoreCase = true)
+    }
+
+    override fun hashCode() = name.lowercase(Locale.US).hashCode()
+
+    override fun toString(): String {
+        return "CharmEffect(name='$name', potionEffect=$potionEffect, potency=$potency, duration=$duration, delay=$delay, effectApplyMode=$effectApplyMode, particle=$particle, particleMode=$particleMode, requiredItems=$requiredItems, requiredSlots=$requiredSlots)"
+    }
 }
 
 enum class PotionEffectApplyMode {

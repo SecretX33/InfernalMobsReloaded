@@ -40,12 +40,12 @@ enum class Ability {
     WEBBER,
     WITHERING;
 
-    val configEntry = name.toLowerCase(Locale.US).replace('_', '-')
+    val configEntry = name.lowercase(Locale.US).replace('_', '-')
     val displayName = name.replace('_', ' ').capitalizeFully()
 
     companion object {
         val values = values().toList()
-        val lowercasedValues = values().map { it.name.toLowerCase(Locale.US) }
+        val lowercasedValues = values().map { it.name.lowercase(Locale.US) }
         val MAX_AMOUNT_OF_SIMULTANEOUS_ABILITIES = values.size - 2
 
         fun random(number: Int, disabled: Set<Ability>): Set<Ability> {

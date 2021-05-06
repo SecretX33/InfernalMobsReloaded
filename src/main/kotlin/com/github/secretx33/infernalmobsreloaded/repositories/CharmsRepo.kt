@@ -9,6 +9,7 @@ import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
 import com.github.secretx33.infernalmobsreloaded.utils.matchOrNull
 import com.github.secretx33.infernalmobsreloaded.utils.pdc
+import com.google.common.collect.ImmutableSetMultimap
 import me.mattstudios.msg.adventure.AdventureMessage
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
@@ -19,7 +20,6 @@ import org.bukkit.potion.PotionEffectType
 import org.koin.core.component.KoinApiExtension
 import java.util.*
 import java.util.logging.Logger
-import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 
@@ -32,31 +32,39 @@ class CharmsRepo (
     private val keyChain: KeyChain,
 ) {
     private val manager = YamlManager(plugin, "charms")
-    private var charmsCache = emptyMap<String, CharmEffect>()    // lowercase groupName, infernalType
+    private var charmsCache = ImmutableSetMultimap.of<String, CharmEffect>()    // lowercase lootItemName, charmEffect
 
     init { reload() }
 
     fun reload() {
         manager.reload()
-        loadMobTypes()
+        loadCharmEffects()
     }
 
-    fun getOrNull(name: String) = charmsCache[name.toLowerCase(Locale.US)]
+    fun getCharmEffectsOrNull(name: String): Set<CharmEffect>?  = charmsCache[name.lowercase(Locale.US)]
 
-    fun get(name: String) = getOrNull(name) ?: throw IllegalStateException("Tried to get $name charm effect but there's none")
+    fun getCharmEffects(lootItemName: String) = getCharmEffectsOrNull(lootItemName) ?: throw IllegalStateException("Tried to get $lootItemName charm effect but there's none")
 
-    fun getCharmEffect(item: ItemStack) = get(getLootItemTag(item))
+    fun getCharmEffects(item: ItemStack): Set<CharmEffect> = getCharmEffects(getLootItemTag(item))
 
     fun isCharm(item: ItemStack): Boolean {
         val name = item.itemMeta?.pdc?.get(keyChain.infernalItemNameKey, PersistentDataType.STRING) ?: return false
-        return lootItemsRepo.hasLootItem(name)
+        return charmsCache.containsKey(name)
     }
 
     fun getLootItemTag(item: ItemStack) = item.itemMeta?.pdc?.get(keyChain.infernalItemNameKey, PersistentDataType.STRING) ?: throw IllegalStateException("Tried to get charm effect of item ${item.formattedTypeName()} but this item doesn't contain the infernalItemNameKey pdc key")
 
-    private fun loadMobTypes() {
+    private fun loadCharmEffects() {
         val keys = manager.getConfigurationSection("charm-effects")?.getKeys(false) ?: throw IllegalStateException("missing charms section charm-effects")
-        charmsCache = keys.map { it.toLowerCase(Locale.US) }.associateWithTo(HashMap(keys.size)) { makeCharmEffect(it) }
+        val charmEffects = keys.mapNotNull { makeCharmEffect(it.lowercase(Locale.US)) }
+
+        val builder = ImmutableSetMultimap.builder<String, CharmEffect>()
+        charmEffects.forEach { effect ->
+            effect.requiredItems.forEach { lootItem ->
+                builder.put(lootItem, effect)
+            }
+        }
+        charmsCache = builder.build()
     }
 
     private fun makeCharmEffect(name: String): CharmEffect {
@@ -68,13 +76,13 @@ class CharmsRepo (
             targetMessage = getComponentMessage(name, "target-message"),
             potionEffect = getPotionEffect(name, "effect"),
             potency = getIntPair(name, "potency"),
-            duration = getDoublePair(name, "duration", default = 0.05),
+            duration = getDoublePair(name, "duration", default = 0.0),
             delay = getDoublePair(name, "duration", default = 0.0),
             particle = particle,
             effectApplyMode = mode,
             particleMode = getParticleMode(name, "particle-mode", particle, mode),
             requiredItems = getRequiredItems(name, "required-items"),
-            requiredSlots = getRequiredSlots(name, "override-charm-slots"),
+            requiredSlots = getRequiredSlots(name),
         )
     }
 
@@ -159,13 +167,26 @@ class CharmsRepo (
         items.filter { !lootItemsRepo.hasLootItem(it) }.forEach {
             log.warning("Inside ${manager.fileName} key '$name.$key', loot item named '$it' was not found, please fix your charm configurations and reload")
         }
-        return items.filter { lootItemsRepo.hasLootItem(it) }.mapTo(HashSet()) { it.toLowerCase(Locale.US) }
+        return items.filter { lootItemsRepo.hasLootItem(it) }.mapTo(HashSet()) { it.lowercase(Locale.US) }
     }
 
-    private fun getRequiredSlots(name: String, key: String): Set<Int> {
-        val slots = manager.getStringList("charm-effects.$name.$key").takeIf { it.isNotEmpty() }
-            ?: manager.getStringList("charm-effects.$name.valid-charm-slots")
-        return slots.mapNotNull { it.toIntOrNull() }.filterTo(HashSet()) { it >= 0 }
+    private fun getRequiredSlots(name: String): Set<Int> {
+        val slots = manager.getStringList("charm-effects.$name.override-charm-slots").takeIf { it.isNotEmpty() }
+            ?: manager.getStringList("valid-charm-slots")
+
+        return slots.mapNotNull { range ->
+            // value is only one value
+            SIGNED_INT.matchOrNull(range, 1)
+                ?.let { max(0, it.toInt()) }
+                ?.let { return@mapNotNull setOf(it) }
+
+            // value is a range of values
+            SIGNED_INT_RANGE.matchEntire(range)?.groupValues
+                ?.subList(1, 3)
+                ?.map { max(0, it.toInt()) }
+                ?.let { return@mapNotNull IntRange(it[0], it[1]).toSet() }
+
+        }.flatten().toHashSet()
     }
 
     // returns a pair with the <Min, Max> amount of the key property

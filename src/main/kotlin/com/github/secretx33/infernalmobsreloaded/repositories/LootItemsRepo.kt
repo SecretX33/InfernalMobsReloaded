@@ -37,14 +37,14 @@ class LootItemsRepo (
         loadLootTable()
     }
 
-    fun getLootItemOrNull(name: String) = lootItemCache[name.toLowerCase(Locale.US)]
+    fun getLootItemOrNull(name: String) = lootItemCache[name.lowercase(Locale.US)]
 
     fun getLootItem(name: String): LootItem = getLootItemOrNull(name) ?: throw NoSuchElementException("Loot item named $name was not found.")
 
-    fun hasLootItem(name: String) = lootItemCache.containsKey(name.toLowerCase(Locale.US))
+    fun hasLootItem(name: String) = lootItemCache.containsKey(name.lowercase(Locale.US))
 
     private fun ensureUniqueKeys() {
-        val duplicatedKeys = manager.getKeys(false).groupBy { it.toLowerCase(Locale.US) }.filterValues { it.size > 1 }
+        val duplicatedKeys = manager.getKeys(false).groupBy { it.lowercase(Locale.US) }.filterValues { it.size > 1 }
         // if there are duplicates in keys
         if(duplicatedKeys.isNotEmpty()) {
             val sb = StringBuilder("Oops, seems like there are duplicate item loot names in file '${manager.fileName}', remember that item names are caSE inSenSiTiVe, so make sure that each item has a unique name. Duplicated item names: ")
@@ -57,7 +57,7 @@ class LootItemsRepo (
 
     private fun loadLootTable() {
         lootItemNames = manager.getKeys(false).sorted()
-        lootItemCache = lootItemNames.map { it.toLowerCase(Locale.US) }.associateWithTo(HashMap(lootItemNames.size)) { makeLootItem(it) }
+        lootItemCache = lootItemNames.map { it.lowercase(Locale.US) }.associateWithTo(HashMap(lootItemNames.size)) { makeLootItem(it) }
     }
 
     private fun makeLootItem(name: String): LootNormalItem {

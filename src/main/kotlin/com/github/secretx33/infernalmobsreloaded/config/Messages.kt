@@ -52,7 +52,7 @@ enum class MessageKeys(val default: Any) {
     CONFIGS_RELOADED("${ChatColor.GREEN}Reloaded configs."),
     CONSOLE_CANNOT_USE("${ChatColor.RED}Sorry, the console cannot use this command.");
 
-    val configEntry = name.toLowerCase(Locale.US).replace('_','-')
+    val configEntry = name.lowercase(Locale.US).replace('_','-')
 }
 
 fun String.toComponent(r: Int, g: Int, b: Int) = Component.text(this, TextColor.color(r, g, b))

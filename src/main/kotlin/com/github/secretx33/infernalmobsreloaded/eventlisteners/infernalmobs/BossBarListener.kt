@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.plugin.Plugin
@@ -48,6 +49,14 @@ class BossBarListener (
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerTeleportEvent.onPlayerTeleport() {
+        CoroutineScope(Dispatchers.Default).launch {
+            delay(50L)
+            runSync(plugin) { bossBarManager.showBarOfNearbyInfernals(player) }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private fun PlayerChangedWorldEvent.onPlayerSwitchWorld() {
         CoroutineScope(Dispatchers.Default).launch {
             delay(150L)
             runSync(plugin) { bossBarManager.showBarOfNearbyInfernals(player) }

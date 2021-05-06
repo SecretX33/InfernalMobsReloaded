@@ -96,7 +96,7 @@ data class InfernalMobType (
         return true
     }
 
-    override fun hashCode() = Objects.hash(name.toLowerCase(Locale.US), entityType)
+    override fun hashCode() = Objects.hash(name.lowercase(Locale.US), entityType)
 
     private companion object {
         val random = Random()
