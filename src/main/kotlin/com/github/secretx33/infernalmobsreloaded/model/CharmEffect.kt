@@ -1,22 +1,26 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
+import com.github.secretx33.infernalmobsreloaded.utils.getRandomBetween
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.potion.PotionEffectType
+import org.koin.core.component.KoinApiExtension
 
+@KoinApiExtension
 data class CharmEffect (
-    private val playerMessage: Component?,   // null = don't send anything
-    private val targetMessage: Component?,   // null = don't send anything
-    private val potionEffect: PotionEffectType,
+    val name: String,
+    val playerMessage: Component?,   // null = don't send anything
+    val targetMessage: Component?,   // null = don't send anything
+    val potionEffect: PotionEffectType,
     private val potency: Pair<Int, Int>,
     private val duration: Pair<Double, Double>,
     private val delay: Pair<Double, Double>,
-    private val effectApplyMode: PotionEffectApplyMode,
-    private val particle: Particle?,
-    private val particleMode: CharmParticleDisplayMode,
-    private val requiredItems: Set<LootItem>,
-    private val requiredSlots: Set<Int>,
+    val effectApplyMode: PotionEffectApplyMode,
+    val particle: Particle?,
+    val particleMode: CharmParticleMode,
+    val requiredItems: Set<String>,
+    val requiredSlots: Set<Int>,
 ) {
 
     init {
@@ -36,13 +40,29 @@ data class CharmEffect (
 
         require(effectApplyMode in particleMode.validApplyModes) { "effectApplyMode has to be inside valid list of particleMode, but $effectApplyMode is not inside $particleMode's validApplyModes = ${particleMode.validApplyModes}" }
     }
+
+    fun getPotency() = potency.getRandomBetween()
+
+    fun getDuration() = duration.getRandomBetween()
+
+    fun getDelay() = delay.getRandomBetween()
+
+    val isPermanent
+        get() = effectApplyMode == PotionEffectApplyMode.SELF_PERMANENT
+
+    val isRecurrent
+        get() = effectApplyMode == PotionEffectApplyMode.SELF_RECURRENT
+
+    val triggersOnDamage
+        get() = effectApplyMode == PotionEffectApplyMode.TARGET_TEMPORARY
 }
 
-enum class PotionEffectApplyMode() {
+enum class PotionEffectApplyMode {
     SELF_PERMANENT, SELF_RECURRENT, TARGET_TEMPORARY
 }
 
-enum class CharmParticleDisplayMode(val validApplyModes: Set<PotionEffectApplyMode>) {
+enum class CharmParticleMode(val validApplyModes: Set<PotionEffectApplyMode>) {
+    NONE(PotionEffectApplyMode.values().toSet()),
     SELF_ONCE(setOf(PotionEffectApplyMode.SELF_PERMANENT)),
     ON_SELF_WHEN_APPLIED(setOf(PotionEffectApplyMode.SELF_RECURRENT, PotionEffectApplyMode.TARGET_TEMPORARY)),
     ON_TARGET_WHEN_APPLIED(setOf(PotionEffectApplyMode.TARGET_TEMPORARY)),

@@ -19,7 +19,7 @@
 #   0  1  2  3  4  5  6  7  8
 #
 # Only items in these slots will have their effects applied, otherwise they'll do nothing
-# You can also override these slots on a per item basis using the property `override-valid-slots`
+# You can also override these slots on a per item basis using the property `override-charm-slots`
 valid-charm-slots:
   - 0-8
 
@@ -45,23 +45,25 @@ valid-charm-slots:
 charm-effects:
   thors_apple:
     player-message: "<#d75eff>You feel your wounds disappearing."   # omit this field to send nothing to the player when the effects kicks in
-    effect: INSTANT_HEALTH      # effect name, see list with all effects here https://papermc.io/javadocs/paper/1.16/org/bukkit/potion/PotionEffectType.html
-    potency: 1-2                # potion level
-#    duration: 10.0             # duration does nothing here, since instant healing is an instant effect
-    delay: 20.0-30.0            # in seconds, the delay between each recurrent application
-    mode: SELF_RECURRENT        # there are 3 modes: SELF_PERMANENT, SELF_RECURRENT, and TARGET_TEMPORARY; not all potion effects works with all modes, but you'll get warned if you choose and invalid mode for that potion type, so don't you worry; the TARGET_TEMPORARY will apply the
-    particles: totem:0:1
-    requiredItems:
-      - ""
+    effect: INSTANT_HEALTH               # effect name, see list with all effects here https://papermc.io/javadocs/paper/1.16/org/bukkit/potion/PotionEffectType.html
+    potency: 1-2                         # potion level
+#    duration: 10.0                      # duration does nothing here, since instant healing is an instant effect
+    delay: 20.0-30.0                     # in seconds, the delay between each recurrent application
+    effect-mode: SELF_RECURRENT          # type of effect that will be applied on the player
+    particle-mode: ON_SELF_WHEN_APPLIED
+    particle-type: totem
+    required-items:
+      - "thors_apple"
 
   fast_miner:
     player-message: "<#36f5f2>Suddenly, you gain the agility of the gods."   # omit this field to send nothing to the player when the effects kicks in
     effect: FAST_DIGGING     # effect name, see list with all effects here https://papermc.io/javadocs/paper/1.16/org/bukkit/potion/PotionEffectType.html
     potency: 3               # potion level
 #    delay: 10.0             # delay does nothing since this is a permanent effect
-    mode: SELF_PERMANENT
-    particles: flame:0:1
-    requiredItems:
+    effect-mode: SELF_PERMANENT
+    particle-mode: SELF_ONCE
+    particle-type: flame
+    required-items:
       - "silky"
 
   demon_touch:
@@ -71,8 +73,9 @@ charm-effects:
     potency: 1-2             # potion level
 #   duration: 10.0           # duration does nothing here, since instant damage is an instant effect
     delay: 12.0              # in seconds, delay between each application
-    mode: TARGET_TEMPORARY
-    particles: flame:0:1
-    requiredItems:
+    effect-mode: TARGET_TEMPORARY
+    particle-mode: ON_BOTH_WHEN_APPLIED
+    particle-type: flame
+    required-items:
       - "demon_sword"
 
