@@ -8,6 +8,7 @@ import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.Firework
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.LightningAbilityListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.MountRemovalListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.charm.CancelCharmEffectsListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.charm.PlayerDamageCharmListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.charm.PlayerItemMoveListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDamageEntityListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDeathListener
@@ -52,12 +53,13 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { ParticlesHelper(get(), get()) }
         single { LootItemsRepo(get(), get(), get()) }
         single { CharmsRepo(get(), get(), get(), get(), get()) }
-        single { CharmsManager(get()) }
+        single { CharmsManager(get(), get()) }
         single { AbilityHelper(get(),get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         single { InfernalMobTypesRepo(get(), get(), get(), get(), get()) }
         single { InfernalMobsManager(get(), get(), get(), get(), get(), get()) }
         single { FireworkAbilityListener(get(), get(), get(), get()) }
         single { CancelCharmEffectsListener(get(), get()) }
+        single { PlayerDamageCharmListener(get(), get()) }
         single { PlayerItemMoveListener(get(), get()) }
         single { EntityDamageEntityListener(get(), get(), get()) }
         single { EntityDeathListener(get(), get()) }
@@ -101,6 +103,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<LightningAbilityListener>()
         get<MountRemovalListener>()
         get<CancelCharmEffectsListener>()
+        get<PlayerDamageCharmListener>()
         get<PlayerItemMoveListener>()
         get<EntityDamageEntityListener>()
         get<EntityDeathListener>()
@@ -130,6 +133,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
     override fun onDisable() {
         get<InfernalMobsManager>().unloadAllInfernals()
         get<BossBarManager>().hideAllBarsFromAllPlayers()
+        get<CharmsManager>().stopAllCharmTasks()
         get<AbilityHelper>().revertPendingBlockModifications()
         unloadKoinModules(mod)
         stopKoin()

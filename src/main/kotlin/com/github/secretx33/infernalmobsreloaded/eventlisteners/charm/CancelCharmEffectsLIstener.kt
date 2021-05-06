@@ -41,7 +41,7 @@ class CancelCharmEffectsListener (
         player.updateCharmEffects()
     }
 
-    private fun Player.updateCharmEffects() = charmsManager.updateEffects(this)
+    private fun Player.updateCharmEffects() = charmsManager.updateCharmEffects(this)
 
     private fun Player.cancelCharmEffects() = charmsManager.cancelAllCharmTasks(this)
 }

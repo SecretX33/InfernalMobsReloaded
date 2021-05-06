@@ -54,6 +54,8 @@ class CharmsRepo (
 
     fun getLootItemTag(item: ItemStack) = item.itemMeta?.pdc?.get(keyChain.infernalItemNameKey, PersistentDataType.STRING) ?: throw IllegalStateException("Tried to get charm effect of item ${item.formattedTypeName()} but this item doesn't contain the infernalItemNameKey pdc key")
 
+    fun getHighestEffectDelay(): Double = charmsCache.values().maxOfOrNull { it.getMaxDelay() } ?: 0.0
+
     private fun loadCharmEffects() {
         val keys = manager.getConfigurationSection("charm-effects")?.getKeys(false) ?: throw IllegalStateException("missing charms section charm-effects")
         val charmEffects = keys.mapNotNull { makeCharmEffect(it.lowercase(Locale.US)) }
@@ -76,14 +78,23 @@ class CharmsRepo (
             targetMessage = getComponentMessage(name, "target-message"),
             potionEffect = getPotionEffect(name, "effect"),
             potency = getIntPair(name, "potency"),
-            duration = getDoublePair(name, "duration", default = 0.0),
-            delay = getDoublePair(name, "duration", default = 0.0),
+            duration = getDoublePair(name, "duration", default = 0.05),
+            delay = getDelay(name, mode),
             particle = particle,
             effectApplyMode = mode,
             particleMode = getParticleMode(name, "particle-mode", particle, mode),
             requiredItems = getRequiredItems(name, "required-items"),
             requiredSlots = getRequiredSlots(name),
         )
+    }
+
+    private fun getDelay(name: String, mode: PotionEffectApplyMode): Pair<Double, Double> {
+        val delay = getDoublePair(name, "delay", default = 0.0)
+
+        if(mode == PotionEffectApplyMode.SELF_RECURRENT && delay.first <= 0.1) {
+            log.warning("Warning: You have set the minimum delay of '$name' charm effect to ${delay.first}s, which is less or equal to 100ms, this might overload or even crash your server and/or your players clients")
+        }
+        return delay
     }
 
     private fun getComponentMessage(name: String, key: String): Component? {

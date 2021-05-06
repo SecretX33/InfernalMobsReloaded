@@ -48,14 +48,13 @@ data class CharmEffect (
 
     fun getDelay() = delay.getRandomBetween()
 
-    val isPermanent
-        get() = effectApplyMode == PotionEffectApplyMode.SELF_PERMANENT
+    fun getMaxDelay() = delay.second
 
-    val isRecurrent
-        get() = effectApplyMode == PotionEffectApplyMode.SELF_RECURRENT
+    val enabledSelfParticle
+        get() = particle != null && (particleMode == CharmParticleMode.ON_BOTH_WHEN_APPLIED || particleMode == CharmParticleMode.ON_SELF_WHEN_APPLIED)
 
-    val triggersOnDamage
-        get() = effectApplyMode == PotionEffectApplyMode.TARGET_TEMPORARY
+    val enabledTargetParticle
+        get() = particle != null && (particleMode == CharmParticleMode.ON_BOTH_WHEN_APPLIED || particleMode == CharmParticleMode.ON_TARGET_WHEN_APPLIED)
 
     /**
      * For a given inventory (mapped to itemName, slot), it validates if all items are on the correct slots

@@ -8,10 +8,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityPickupItemEvent
-import org.bukkit.event.inventory.InventoryAction
-import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryDragEvent
-import org.bukkit.event.inventory.InventoryType
+import org.bukkit.event.inventory.*
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
@@ -57,5 +54,5 @@ class PlayerItemMoveListener (
         runSync(plugin, 50L) { player.updateCharmEffects() }
     }
 
-    private fun Player.updateCharmEffects() = charmsManager.updateEffects(this)
+    private fun Player.updateCharmEffects() = charmsManager.updateCharmEffects(this)
 }
