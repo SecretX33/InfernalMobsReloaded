@@ -1,4 +1,13 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                      Loot Table                      | #
+# +------------------------------------------------------+ #
+############################################################
 
+# You may create any amount of items that you can later assign as drop to mobs or get directly with the command 'getloot'
+# First, familiarize yourself with the syntax used to create items by observing the default loots
+
+# Useful links (ctrl + F)
 # Item material list: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
 # Enchantment list: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/enchantments/Enchantment.html
 
@@ -32,7 +41,7 @@ silky:
     - "&7Silkier than milk!"
   enchants:
     - "efficiency"                       # will make every 'silky' pickaxe have efficiency level 1; default level of all enchantments is 1, unless otherwise specified; enchantment level range goes from 1 to 65535, but not all enchantments scale with level
-    - "silk_touch:5"                     # will make every 'silky' pickaxe have Silk Touch level 5; full list of enchantments can be seen here https://hub.spigotmc.org/javadocs/spigot/org/bukkit/enchantments/Enchantment.html , Ctrl + F
+    - "silk_touch:5"                     # will make every 'silky' pickaxe have Silk Touch level 5
 
 thors_apple:
   name: "&eThors Apple"
@@ -50,6 +59,18 @@ glass_drill:
   enchants:
     - "efficiency:8-15"                  # every 'glass_drill' pickaxe will have Efficiency enchantment with level between 8 and 15
     - "unbreaking:1-3:0.5"               # and 50% chance of having the enchantment Unbreaking with level between 1 and 3
+
+example_book:
+  type: "book"                           # you must specify that this item is a book
+  material: "WRITTEN_BOOK"               # valid values: WRITTEN_BOOK, WRITABLE_BOOK; the former is not editable, the latter is; if you don't specify a type, WRITTEN_BOOK will be used
+  title: "<r>Title #1"                   # optional
+  author: "<#a93bf7>Author #1"           # optional
+  generation: "TATTERED"                 # valid values: ORIGINAL, COPY_OF_ORIGINAL, COPY_OF_COPY, TATTERED; of all those, only ORIGINAL and COPY_OF_ORIGINAL can be copied by players, keep that in mind; will default to ORIGINAL if you don't specify
+  pages:                                 # the page system a little weird, each of these lines is a new page, and you start a new line by using '\n'
+    - "first page\nsecond line of the first page"      # page #1
+    - "second page\nsecond line of the second page"    # page #2
+    - ""                                               # page #3 will be empty
+    - "fourth page"                                    # page #4
 
 
 ############################################################

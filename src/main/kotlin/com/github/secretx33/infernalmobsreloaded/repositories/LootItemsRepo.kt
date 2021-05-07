@@ -3,8 +3,10 @@ package com.github.secretx33.infernalmobsreloaded.repositories
 import com.cryptomorin.xseries.XEnchantment
 import com.cryptomorin.xseries.XMaterial
 import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
+import com.github.secretx33.infernalmobsreloaded.model.items.LootBook
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
-import com.github.secretx33.infernalmobsreloaded.model.items.LootNormalItem
+import com.github.secretx33.infernalmobsreloaded.model.items.LootItemType
+import com.github.secretx33.infernalmobsreloaded.model.items.NormalLootItem
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
 import me.mattstudios.msg.adventure.AdventureMessage
@@ -13,6 +15,7 @@ import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.plugin.Plugin
 import java.util.*
 import java.util.logging.Logger
@@ -49,7 +52,76 @@ class LootItemsRepo (
         lootItemCache = lootItemNames.map { it.lowercase(Locale.US) }.associateWithTo(HashMap(lootItemNames.size)) { makeLootItem(it) }
     }
 
-    private fun makeLootItem(name: String): LootNormalItem {
+    private fun makeLootItem(name: String): LootItem {
+        return when(getLootType(name)) {
+            LootItemType.NORMAL -> makeNormalLootItem(name)
+            LootItemType.BOOK -> makeLootBook(name)
+        }
+    }
+
+    private fun getLootType(name: String): LootItemType {
+        val itemType = manager.getString("$name.type") ?: ""
+
+        // if item type is absent or blank, assume normal item
+        if(itemType.isBlank()) return LootItemType.NORMAL
+
+        return LootItemType.values().firstOrNull { it.name.equals(itemType, ignoreCase = true) } ?: run {
+            log.warning("Inside item loot '$name', item type named '$itemType' doesn't exist, please fix your item loot configurations. Defaulting $name item type to 'normal'.")
+            LootItemType.NORMAL
+        }
+    }
+
+    // Loot Book
+
+    private fun makeLootBook(name: String): LootItem {
+        return LootBook(name,
+            material = getBookMaterial(name),
+            title = getBookTitle(name),
+            author = getBookAuthor(name),
+            generation = getBookGeneration(name),
+            pages = getBookPages(name),
+        )
+    }
+
+    private fun getBookMaterial(name: String): Material {
+        val materialName = manager.getString("$name.material") ?: ""
+
+        // if material name is absent or blank
+        if(materialName.isBlank()) return Material.WRITTEN_BOOK
+
+        return XMaterial.matchXMaterial(materialName).map { it.parseMaterial() }.filter { it == Material.WRITTEN_BOOK || it == Material.WRITABLE_BOOK }.orElseGet {
+            log.warning("Inside item loot '$name', material '$materialName' doesn't exist or is invalid, please fix your item loot configurations. Defaulting $name material to 'Written Book'.")
+            Material.WRITTEN_BOOK
+        }!!
+    }
+
+    private fun getBookTitle(name: String): Component? {
+        val bookTitle = manager.getString("$name.title") ?: return null // if book title is absent or blank
+        return adventureMessage.parse(bookTitle)
+    }
+
+    private fun getBookAuthor(name: String): Component? {
+        val bookTitle = manager.getString("$name.author") ?: return null // if book author is absent or blank
+        return adventureMessage.parse(bookTitle)
+    }
+
+    private fun getBookGeneration(name: String): BookMeta.Generation {
+        val generation = manager.getString("$name.material") ?: ""
+
+        // if book generation is absent or blank
+        if(generation.isBlank()) return BookMeta.Generation.ORIGINAL
+
+        return BookMeta.Generation.values().firstOrNull { it.name.equals(generation, ignoreCase = true) } ?: run {
+            log.warning("Inside item loot '$name', book generation '$generation' doesn't exist or is invalid, please fix your item loot configurations. Defaulting $name generation to 'Original'.")
+            BookMeta.Generation.ORIGINAL
+        }
+    }
+
+    private fun getBookPages(name: String): List<Component> = manager.getStringList("$name.pages").map { adventureMessage.parse(it) }
+
+    // Normal Loot Item
+
+    private fun makeNormalLootItem(name: String): NormalLootItem {
         val material = getItemMaterial(name)
         val displayName = parseDisplayName(name, material)
         val color = getItemColor(name)
@@ -57,7 +129,8 @@ class LootItemsRepo (
         val amounts = getAmounts(name)
         val lore = getItemLore(name)
         val enchants = getItemEnchants(name)
-        return LootNormalItem(name,
+        return NormalLootItem(
+            name,
             displayName = displayName,
             material = material,
             color = color,
@@ -74,6 +147,17 @@ class LootItemsRepo (
         // if color name is absent or blank
         if(colorRGB.isBlank()) return null
         return colorRGB.toColor()
+    }
+
+    private fun parseDisplayName(name: String, material: Material): Component {
+        val displayName = manager.getString("$name.name") ?: ""
+
+        // if display name is absent or blank
+        if(displayName.isBlank()) {
+            log.warning("You must provide a display name for the item '$name'! Defaulting '$name' display name to its material name.")
+            return Component.text(material.formattedTypeName())
+        }
+        return adventureMessage.parse(displayName)
     }
 
     private fun String.toColor(): Color {
@@ -169,7 +253,7 @@ class LootItemsRepo (
     private fun getItemMaterial(name: String): Material {
         val materialName = manager.getString("$name.material") ?: ""
 
-        // if display name is absent or blank
+        // if material name is absent or blank
         if(materialName.isBlank()) {
             log.warning("You must provide a material for the item loot '$name'! Please fix your item loot configurations, defaulting $name material to Stone.")
             return Material.STONE
@@ -182,17 +266,6 @@ class LootItemsRepo (
     }
 
     private fun getItemLore(name: String): List<Component> = manager.getStringList("$name.lore").map { adventureMessage.parse(it) }
-
-    private fun parseDisplayName(name: String, material: Material): Component {
-        val displayName = manager.getString("$name.name") ?: ""
-
-        // if display name is absent or blank
-        if(displayName.isBlank()) {
-            log.warning("You must provide a display name for the item '$name'! Defaulting '$name' display name to its material name.")
-            return Component.text(material.formattedTypeName())
-        }
-        return adventureMessage.parse(displayName)
-    }
 
     private companion object {
         val COLOR_PATTERN = """^(\d+?),\s*(\d+?),\s*(\d+)$""".toRegex()

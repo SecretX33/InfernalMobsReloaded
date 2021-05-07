@@ -21,3 +21,7 @@ interface LootItem {
      */
     fun makeItem(): ItemStack
 }
+
+enum class LootItemType {
+    NORMAL, BOOK
+}

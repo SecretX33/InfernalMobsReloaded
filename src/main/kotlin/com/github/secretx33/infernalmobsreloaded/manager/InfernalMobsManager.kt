@@ -12,7 +12,6 @@ import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
-import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
 import com.github.secretx33.infernalmobsreloaded.utils.pdc
 import com.github.secretx33.infernalmobsreloaded.utils.toUuid
 import com.google.common.collect.MultimapBuilder

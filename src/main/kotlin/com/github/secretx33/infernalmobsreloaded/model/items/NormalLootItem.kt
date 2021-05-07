@@ -9,7 +9,7 @@ import org.bukkit.Material
 import org.koin.core.component.KoinApiExtension
 import java.util.*
 
-data class LootNormalItem (
+data class NormalLootItem (
     override val name: String,
     val displayName: Component,
     val material: Material,
