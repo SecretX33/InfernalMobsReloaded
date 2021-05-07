@@ -2,6 +2,7 @@ package com.github.secretx33.infernalmobsreloaded.repositories
 
 import com.cryptomorin.xseries.XEnchantment
 import com.cryptomorin.xseries.XMaterial
+import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
 import com.github.secretx33.infernalmobsreloaded.model.items.LootBook
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
@@ -74,9 +75,10 @@ class LootItemsRepo (
     // Loot Book
 
     private fun makeLootBook(name: String): LootItem {
+        val material = getBookMaterial(name)
         return LootBook(name,
-            material = getBookMaterial(name),
-            title = getBookTitle(name),
+            material = material,
+            title = getBookTitle(name, material),
             author = getBookAuthor(name),
             generation = getBookGeneration(name),
             pages = getBookPages(name),
@@ -95,18 +97,25 @@ class LootItemsRepo (
         }!!
     }
 
-    private fun getBookTitle(name: String): Component? {
-        val bookTitle = manager.getString("$name.title") ?: return null // if book title is absent or blank
+    private fun getBookTitle(name: String, material: Material): Component {
+        val bookTitle = manager.getString("$name.title") ?: ""
+
+        // if book title is absent or blank
+        if(bookTitle.isBlank()) {
+            log.warning("You must provide a title for the loot book '$name'! Defaulting '$name' title to its material name.")
+            return material.formattedTypeName().toComponent()
+        }
+
         return adventureMessage.parse(bookTitle)
     }
 
     private fun getBookAuthor(name: String): Component? {
-        val bookTitle = manager.getString("$name.author") ?: return null // if book author is absent or blank
-        return adventureMessage.parse(bookTitle)
+        val bookAuthor = manager.getString("$name.author") ?: return null  // if book author is absent or blank
+        return bookAuthor.toComponent()
     }
 
     private fun getBookGeneration(name: String): BookMeta.Generation {
-        val generation = manager.getString("$name.material") ?: ""
+        val generation = manager.getString("$name.generation") ?: ""
 
         // if book generation is absent or blank
         if(generation.isBlank()) return BookMeta.Generation.ORIGINAL
@@ -117,7 +126,8 @@ class LootItemsRepo (
         }
     }
 
-    private fun getBookPages(name: String): List<Component> = manager.getStringList("$name.pages").map { adventureMessage.parse(it) }
+    private fun getBookPages(name: String): List<Component>
+        = manager.getStringList("$name.pages").map { adventureMessage.parse("<#000000>$it") } // otherwise the text becomes transparent
 
     // Normal Loot Item
 

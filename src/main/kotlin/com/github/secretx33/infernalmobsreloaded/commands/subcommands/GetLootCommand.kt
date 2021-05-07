@@ -20,7 +20,7 @@ class GetLootCommand: SubCommand(), CustomKoinComponent {
 
     override val name: String = "getloot"
     override val permission: String = "getloot"
-    override val aliases: List<String> = listOf(name, "loot", "gl")
+    override val aliases: List<String> = listOf(name, "loot", "gl", "l")
 
     private val messages by inject<Messages>()
     private val lootItemsRepo by inject<LootItemsRepo>()

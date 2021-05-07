@@ -9,7 +9,7 @@ import org.bukkit.inventory.meta.BookMeta
 data class LootBook (
     override val name: String,
     private val material: Material,
-    private val title: Component?,
+    private val title: Component,
     private val author: Component?,
     private val generation: BookMeta.Generation,
     private val pages: List<Component>,
@@ -24,11 +24,12 @@ data class LootBook (
     private fun generateBook(): ItemStack {
         val item = ItemStack(material)
         (item.itemMeta as? BookMeta)?.let { meta ->
-            title?.let { meta.title(title) }
+            title.let { meta.displayName(it) }
+            title.let { meta.title(it) }
             author?.let { meta.author(author) }
             meta.generation = generation
             meta.pages(pages)
-            book.itemMeta = meta
+            item.itemMeta = meta
         }
         return item
     }

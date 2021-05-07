@@ -19,7 +19,7 @@ class InspectCommand : SubCommand(), CustomKoinComponent {
 
     override val name: String = "inspect"
     override val permission: String = "inspect"
-    override val aliases: List<String> = listOf(name, "insp", "ins", "in")
+    override val aliases: List<String> = listOf(name, "insp", "ins", "in", "i")
 
     private val messages by inject<Messages>()
     private val mobsManager by inject<InfernalMobsManager>()

@@ -12,10 +12,10 @@
 # Enchantment list: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/enchantments/Enchantment.html
 
 murder_axe:
-  name: "&7Murder Axe"                   # item display name, the name that will appear when the player hover over the item or holds it
-  material: "IRON_AXE"                   # vanilla material of an item, use the name exactly as listed in the website
-  amount: 1                              # if you omit this field, the amount will default to 1
-  lore:                                  # this is how you set up lore that has multiple lines
+  name: "<#AAAAAA>Murder Axe"                  # item display name, the name that will appear when the player hover over the item or holds it
+  material: "IRON_AXE"                         # vanilla material of an item, use the name exactly as listed in the website
+  amount: 1                                    # if you omit this field, the amount will default to 1
+  lore:                                        # this is how you set up lore that has multiple lines
     - "This is a lore"
     - "With multiple lines"
 
@@ -23,54 +23,54 @@ fall_far_boots:
   name: "Fall Far Boots"
   material: "IRON_BOOTS"
   amount: 1
-  lore:                                  # and this is how you make the item lore with only one line
+  lore:                                        # and this is how you make the item lore with only one line
     - "Lore with single line"
 
 demon_sword:
-  name: "&4Demon Sword"
+  name: "<#AA0000>Demon Sword"
   material: "GOLDEN_SWORD"
   amount: 1
-  lore: []                               # put this empty square brackets to make the item have no lore, or simply omit this field
-  enchants: []                           # put this empty square brackets to make the item have no enchants, or simply omit this field
+  lore: []                                     # put this empty square brackets to make the item have no lore, or simply omit this field
+  enchants: []                                 # put this empty square brackets to make the item have no enchants, or simply omit this field
 
 silky:
-  name: "&fSilky"
+  name: "<#FFFFFF>Silky"
   material: "DIAMOND_PICKAXE"
   amount: 1
   lore:
-    - "&7Silkier than milk!"
+    - "<#AAAAAA>Silkier than milk!"
   enchants:
-    - "efficiency"                       # will make every 'silky' pickaxe have efficiency level 1; default level of all enchantments is 1, unless otherwise specified; enchantment level range goes from 1 to 65535, but not all enchantments scale with level
-    - "silk_touch:5"                     # will make every 'silky' pickaxe have Silk Touch level 5
+    - "efficiency"                             # will make every 'silky' pickaxe have efficiency level 1; default level of all enchantments is 1, unless otherwise specified; enchantment level range goes from 1 to 65535, but not all enchantments scale with level
+    - "silk_touch:5"                           # will make every 'silky' pickaxe have Silk Touch level 5
 
 thors_apple:
-  name: "&eThors Apple"
+  name: "<#FFFF55>Thors Apple"
   material: "GOLDEN_APPLE"
-  amount: 2-5                            # random amount between 2 and 5
+  amount: 2-5                                  # random amount between 2 and 5
   lore:
-    - "&eStolen from Thors own table."
+    - "<#FFFF55>Stolen from Thors own table."
 
 glass_drill:
-  name: "&7Glass Drill"
+  name: "<#AAAAAA>Glass Drill"
   material: "GOLDEN_PICKAXE"
   amount: 1
   lore:
-    - "&8Use in case of emergency!"
+    - "<#555555>Use in case of emergency!"
   enchants:
-    - "efficiency:8-15"                  # every 'glass_drill' pickaxe will have Efficiency enchantment with level between 8 and 15
-    - "unbreaking:1-3:0.5"               # and 50% chance of having the enchantment Unbreaking with level between 1 and 3
+    - "efficiency:8-15"                        # every 'glass_drill' pickaxe will have Efficiency enchantment with level between 8 and 15
+    - "unbreaking:1-3:0.5"                     # and 50% chance of having the enchantment Unbreaking with level between 1 and 3
 
 example_book:
-  type: "book"                           # you must specify that this item is a book
-  material: "WRITTEN_BOOK"               # valid values: WRITTEN_BOOK, WRITABLE_BOOK; the former is not editable, the latter is; if you don't specify a type, WRITTEN_BOOK will be used
-  title: "<r>Title #1"                   # optional
-  author: "<#a93bf7>Author #1"           # optional
-  generation: "TATTERED"                 # valid values: ORIGINAL, COPY_OF_ORIGINAL, COPY_OF_COPY, TATTERED; of all those, only ORIGINAL and COPY_OF_ORIGINAL can be copied by players, keep that in mind; will default to ORIGINAL if you don't specify
-  pages:                                 # the page system a little weird, each of these lines is a new page, and you start a new line by using '\n'
-    - "first page\nsecond line of the first page"      # page #1
-    - "second page\nsecond line of the second page"    # page #2
-    - ""                                               # page #3 will be empty
-    - "fourth page"                                    # page #4
+  type: "book"                                 # you must specify that this item is a book
+  material: "WRITTEN_BOOK"                     # valid values: WRITTEN_BOOK, WRITABLE_BOOK; the former is not editable, the latter is; if you don't specify a type, WRITTEN_BOOK will be used
+  title: "<#c663f7>Title <#FFAA00>1"           # all books must have a title
+  author: "Author 1"                           # optional, doesn't support colors
+  generation: "TATTERED"                       # valid values: ORIGINAL, COPY_OF_ORIGINAL, COPY_OF_COPY, TATTERED; of all those, only ORIGINAL and COPY_OF_ORIGINAL can be copied by players, keep that in mind; will default to ORIGINAL if you don't specify
+  pages:                                       # the page system a little weird, each of these lines is a new page, and you start a new line by using \\n
+    - "first page\\nsecond line of the <#c663f7>first page"      # page #1
+    - "second page\\nsecond line of the <#c663f7>second page"    # page #2
+    - ""                                                        # page #3 will be empty
+    - "<#ff5555>fourth page"                                    # page #4
 
 
 ############################################################
