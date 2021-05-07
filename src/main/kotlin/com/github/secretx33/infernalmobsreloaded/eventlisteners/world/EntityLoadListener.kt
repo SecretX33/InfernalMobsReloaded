@@ -19,10 +19,10 @@ class EntityLoadListener(plugin: Plugin, private val mobsManager: InfernalMobsMa
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun EntityAddToWorldEvent.onInfernalMobsRespawn() {
+        // when infernal mob gets respawned on the world
         if(!entity.isPossibleInfernalMob()) return
         mobsManager.loadInfernalMob(entity as LivingEntity)
     }
 
-    // isValid may not return true since the entity is being loaded again (?)
     private fun Entity.isPossibleInfernalMob() = this is LivingEntity && isValid && !isDead && mobsManager.isPossibleInfernalMob(this)
 }

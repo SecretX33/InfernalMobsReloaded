@@ -189,7 +189,7 @@ class InfernalMobsManager (
                 delay(delay)
             }
             infernalMobParticleTasks.remove(entity.uniqueId)
-            println("Removing task particle of ${entity.name}")
+//            println("Removing task particle of ${entity.name}")
         }
         infernalMobParticleTasks[entity.uniqueId] = job
     }

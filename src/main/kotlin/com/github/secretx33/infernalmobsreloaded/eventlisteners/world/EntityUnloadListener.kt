@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
+import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
 import com.github.secretx33.infernalmobsreloaded.utils.runSync
 import org.bukkit.Bukkit
 import org.bukkit.entity.*
@@ -25,10 +26,11 @@ class EntityUnloadListener (
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun EntityRemoveFromWorldEvent.onInfernalMobsDespawn() {
-        // when infernal mob gets removed from the server
+        // when infernal mob gets removed from the world
         if(!entity.isInfernalMob()) return
         mobsManager.unloadInfernalMob(entity as LivingEntity)
         barManager.removeBossBar(entity as LivingEntity)
+        println("Removing ${entity.name} (${entity.formattedTypeName()}) from the world")
     }
 
     private fun Entity.isInfernalMob() = this is LivingEntity && mobsManager.isValidInfernalMob(this)
