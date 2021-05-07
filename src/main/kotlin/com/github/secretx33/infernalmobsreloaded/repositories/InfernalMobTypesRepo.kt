@@ -98,7 +98,6 @@ class InfernalMobTypesRepo (
         val atkKnockbackAmounts = getAtkKnockbackModAmounts(name)
         val hpMultiplierAmounts = getHealthMultiplierAmounts(name)
         val speedMultiplierAmounts = getSpeedMultiplierAmounts(name)
-        val lootTable = getMobLootTable(name)
         return InfernalMobType(name,
             displayName = displayName,
             bossBarName = bossBarName,
@@ -121,9 +120,12 @@ class InfernalMobTypesRepo (
             maxHealthMulti = hpMultiplierAmounts.second,
             minSpeedMulti = speedMultiplierAmounts.first,
             maxSpeedMulti = speedMultiplierAmounts.second,
-            loots = lootTable,
+            consoleCommand = getConsoleCommand(name),
+            loots = getMobLootTable(name),
         )
     }
+
+    private fun getConsoleCommand(name: String) = manager.getString("$name.run-command")?.trim() ?: ""
 
     private fun getMobType(name: String): EntityType {
         val mobType = manager.getString("$name.type") ?: ""

@@ -50,6 +50,13 @@ class InfernalDeathListener (
         dropMobLoots()
         dropMobSpawner()
         sendDeathMessage()
+        consoleCommmand()
+    }
+
+    private fun InfernalDeathEvent.consoleCommmand() {
+        val player = entity.killer ?: return
+        val command = infernalType.consoleCommand.takeIf { it.isNotBlank() } ?: return
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("<player>", player.name))
     }
 
     private fun InfernalDeathEvent.triggerSecondWind(lives: Int) {
@@ -72,8 +79,8 @@ class InfernalDeathListener (
 
     private fun InfernalDeathEvent.sendDeathMessage() {
         if(!deathMessageEnabled) return
-        val killer = entity.killer ?: return
-        val msg = deathMessages.randomOrNull()?.replace("<player>", killer.displayName()) ?: return
+        val player = entity.killer ?: return
+        val msg = deathMessages.randomOrNull()?.replace("<player>", player.displayName()) ?: return
         val range = max(0, messageRange).toDouble()
 
         entity.getNearbyEntities(range, range, range).forEach {
