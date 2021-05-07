@@ -33,7 +33,6 @@ class LootItemsRepo (
 
     fun reload() {
         manager.reload()
-        ensureUniqueKeys()
         loadLootTable()
     }
 
@@ -43,17 +42,7 @@ class LootItemsRepo (
 
     fun hasLootItem(name: String) = lootItemCache.containsKey(name.lowercase(Locale.US))
 
-    private fun ensureUniqueKeys() {
-        val duplicatedKeys = manager.getKeys(false).groupBy { it.lowercase(Locale.US) }.filterValues { it.size > 1 }
-        // if there are duplicates in keys
-        if(duplicatedKeys.isNotEmpty()) {
-            val sb = StringBuilder("Oops, seems like there are duplicate item loot names in file '${manager.fileName}', remember that item names are caSE inSenSiTiVe, so make sure that each item has a unique name. Duplicated item names: ")
-            duplicatedKeys.entries.forEachIndexed { index, (k, v) ->
-                sb.append("\n${index + 1}) $k = {${v.joinToString()}}")
-            }
-            log.severe(sb.toString())
-        }
-    }
+    fun getAllLootItems() = lootItemNames
 
     private fun loadLootTable() {
         lootItemNames = manager.getKeys(false).sorted()

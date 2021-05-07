@@ -38,6 +38,9 @@ class Messages(plugin: Plugin, private val adventureMessage: AdventureMessage) {
 }
 
 enum class MessageKeys(val default: Any) {
+    RECEIVED_LOOT_ITEM("<#55FF55>Received <#FFAA00><amount> <#55FF55>of <#FFAA00><item>."),
+    LOOT_ITEM_DOESNT_EXIST("<#FF5555>Sorry, loot item named <item> <#FF5555>doesn't exist."),
+    INVALID_NUMBER("<#FF5555>Sorry, <number> <#FF5555>is not a number."),
     RUST_CORRODE_TOOLS_MESSAGE("<#c27c21>You feel your tools corroding at your hands."),
     THIEF_MESSAGE_TO_TARGET("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item>."),
     THIEF_MESSAGE_TO_TARGET_ITEM_BROKE("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item><#55FFFF>, and unfortunately it broke in the process."),
@@ -49,8 +52,8 @@ enum class MessageKeys(val default: Any) {
     TARGETING_INFERNAL("<#55FF55>The <#00AA00><entity> <#55FF55>you're currently targeting has the following abilities: <#ffb319><abilities>."),
     INFERNAL_MOB_SPAWN_MESSAGES(""),
     INFERNAL_MOB_DEATH_MESSAGES(""),
-    CONFIGS_RELOADED("${ChatColor.GREEN}Reloaded configs."),
-    CONSOLE_CANNOT_USE("${ChatColor.RED}Sorry, the console cannot use this command.");
+    CONFIGS_RELOADED("Reloaded configs.".toComponent(NamedTextColor.GREEN)),
+    CONSOLE_CANNOT_USE("Sorry, the console cannot use this command.".toComponent(NamedTextColor.RED));
 
     val configEntry = name.lowercase(Locale.US).replace('_','-')
 }

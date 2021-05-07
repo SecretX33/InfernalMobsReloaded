@@ -24,16 +24,17 @@ class PlayerItemMoveListener (
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun InventoryDragEvent.onItemDrag() {
         val player = whoClicked as? Player ?: return
+        println("Called InventoryDragEvent")
         val topInvSize = view.topInventory.size.takeIf { view.topInventory != view.bottomInventory } ?: 0
         // player didn't drag any items inside his inventory
-        if(rawSlots.none { it >= topInvSize }) return
+        if(rawSlots.all { it < topInvSize }) return
         // update charm tasks
-        player.updateCharmEffects()
+        runSync(plugin, 50L) { player.updateCharmEffects() }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun InventoryClickEvent.onItemMove() {
-//        println("clickedInventory.type = ${clickedInventory?.type}, action = $action, inventory.type = ${inventory.type}")
+        println("clickedInventory.type = ${clickedInventory?.type}, action = $action, inventory.type = ${inventory.type}")
         if(didNothing()) return
         val player = whoClicked as? Player ?: return
         // update charm tasks
@@ -44,12 +45,12 @@ class PlayerItemMoveListener (
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerDropItemEvent.onItemDrop() {
-        player.updateCharmEffects()
+        println("1. PlayerDropItemEvent triggered")
+        runSync(plugin, 50L) { player.updateCharmEffects() }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun EntityPickupItemEvent.onItemPickup() {
-//        println("Fired EntityPickupItemEvent for entity = ${entity.name}")
         val player = entity as? Player ?: return
         runSync(plugin, 50L) { player.updateCharmEffects() }
     }

@@ -14,7 +14,7 @@ import org.koin.core.component.KoinApiExtension
 
 @KoinApiExtension
 class PlayerDamageCharmListener  (
-    private val plugin: Plugin,
+    plugin: Plugin,
     private val charmsManager: CharmsManager,
 ) : Listener {
 

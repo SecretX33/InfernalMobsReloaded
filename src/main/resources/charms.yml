@@ -23,7 +23,6 @@
 valid-charm-slots:
   - 0-8
 
-
 ############################################################
 # +------------------------------------------------------+ #
 # |                     Charm Effects                    | #
@@ -56,6 +55,8 @@ charm-effects:
       - "thors_apple"
 
   fast_miner:
+    override-charm-slots:
+      - 0
     player-message: "<#36f5f2>Suddenly, you gain the agility of the gods."   # omit this field to send nothing to the player when the effects kicks in
     effect: FAST_DIGGING     # effect name, see list with all effects here https://papermc.io/javadocs/paper/1.16/org/bukkit/potion/PotionEffectType.html
     potency: 3               # potion level

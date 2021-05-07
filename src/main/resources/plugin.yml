@@ -22,6 +22,8 @@ permissions:
       imr.reload: true
       imr.inspect: true
       imr.spawn: true
+      imr.multispawn: true
+      imr.getloot: true
 
   imr.reload:
     description: Allows one to reload all plugin configurations.
@@ -33,4 +35,12 @@ permissions:
 
   imr.spawn:
     description: Allows one to spawn infernal mobs, optionally with specified abilities.
+    default: false
+
+  imr.multispawn:
+    description: Allows one to spawn multiple infernal mobs at once, optionally with specified abilities.
+    default: false
+
+  imr.getloot:
+    description: Allows player to use subcommand 'getloot', which allows him to get any loot item, in any amount.
     default: false
