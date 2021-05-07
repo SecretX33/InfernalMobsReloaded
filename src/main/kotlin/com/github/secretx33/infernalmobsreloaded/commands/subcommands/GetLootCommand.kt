@@ -6,8 +6,6 @@ import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.config.replace
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
-import com.github.secretx33.infernalmobsreloaded.model.Ability
-import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.CustomKoinComponent
 import com.github.secretx33.infernalmobsreloaded.utils.displayName
@@ -60,7 +58,6 @@ class GetLootCommand: SubCommand(), CustomKoinComponent {
     override fun getCompletor(sender: CommandSender, length: Int, hint: String, strings: Array<String>): List<String> {
         if(sender !is Player || length < 2) return emptyList()
 
-        println("lootItemsRepo.getAllLootItems() = ${lootItemsRepo.getAllLootItems()}")
         if(length == 2) return lootItemsRepo.getAllLootItems().filter { it.startsWith(hint, ignoreCase = true) }
         if(length == 3 && hint.isBlank()) return listOf("<number>")
 

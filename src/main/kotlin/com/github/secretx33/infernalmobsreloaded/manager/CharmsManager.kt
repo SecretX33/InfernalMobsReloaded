@@ -44,15 +44,17 @@ class CharmsManager(
         // owned loot items, because charms may require loot items to work
         val lootItems = charms.mapKeys { (charm, _) -> charmsRepo.getLootItemTag(charm) }
         // charmEffects present in all loot items in player's inventory
-        val effects = charms.flatMap { charmsRepo.getCharmEffects(it.key) }.filter { it.requiredItems.isNotEmpty() }
+        val effects = charms.flatMap { charmsRepo.getCharmEffects(it.key) }.filter { it.requiredItems.isNotEmpty() } + player.getActiveCharms()
 
         // start valid effects and cancel invalid effects
         effects.forEach {
             if(it.validateEffect(lootItems)) player.startCharmEffect(it)
             else player.cancelCharmEffect(it)
         }
-        println("2. lootItems = ${lootItems.keys.joinToString()}, effects = ${effects.joinToString(separator = ",\n")}")
+//        println("2. lootItems = ${lootItems.keys.joinToString()}, effects = ${effects.joinToString(separator = ",\n")}")
     }
+
+    private fun Player.getActiveCharms() = permanentEffects.row(uniqueId).keys + periodicEffects.row(uniqueId).keys + targetEffects.get(uniqueId)
 
     private fun Player.startCharmEffect(charmEffect: CharmEffect) {
 //        println("2. Starting effect of charm '${charmEffect.name}' -> $charmEffect'")
@@ -82,13 +84,13 @@ class CharmsManager(
         if(periodicEffects.contains(uniqueId, charmEffect)) return
 
         val job = CoroutineScope(Dispatchers.Default).launch {
-            delay((charmEffect.getDelay() * 1000.0).toLong().also { println("Delaying charmEffect for $it seconds") })
+            delay((charmEffect.getDelay() * 1000.0).toLong())
 
             while(isActive && isValid && !isDead) {
                 runSync(plugin) { addPotionEffect(PotionEffect(charmEffect.potionEffect, (charmEffect.getDuration() * 20.0).toInt(), charmEffect.getPotency())) }
                 spawnCharmParticles(charmEffect)
                 charmEffect.playerMessage?.let { sendMessage(it) }
-                delay((charmEffect.getDelay() * 1000.0).toLong().also { println("Delaying charmEffect for $it seconds") })
+                delay((charmEffect.getDelay() * 1000.0).toLong())
             }
         }
         periodicEffects.put(uniqueId, charmEffect, job)
@@ -101,7 +103,6 @@ class CharmsManager(
 
     fun triggerOnHitCharms(player: Player, target: LivingEntity) {
         targetEffects.get(player.uniqueId).filter { it.isNotCooldown(player) }.forEach {
-            println("3. Triggered charm effect ${it.name} on ${target.name}")
             target.addPotionEffect(PotionEffect(it.potionEffect, (it.getDuration() * 20.0).toInt(), it.getPotency()))
 
             // particles
@@ -118,11 +119,9 @@ class CharmsManager(
 
 
     private fun Player.cancelCharmEffect(charmEffect: CharmEffect) {
-//        println("2. Canceling effect of charm '${charmEffect.name}' -> $charmEffect'")
         when(charmEffect.effectApplyMode) {
             PotionEffectApplyMode.SELF_PERMANENT -> {
-                println("Trying to remove $charmEffect")
-                permanentEffects.remove(uniqueId, charmEffect)?.let { removePotionEffect(it) }?.also { println("removed it") }
+                permanentEffects.remove(uniqueId, charmEffect)?.let { removePotionEffect(it) }
             }
             PotionEffectApplyMode.SELF_RECURRENT -> periodicEffects.remove(uniqueId, charmEffect)?.cancel()
             PotionEffectApplyMode.TARGET_TEMPORARY -> targetEffects.remove(uniqueId, charmEffect)

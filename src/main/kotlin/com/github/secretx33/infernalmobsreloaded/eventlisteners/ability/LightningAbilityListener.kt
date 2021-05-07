@@ -59,7 +59,6 @@ class LightningAbilityListener (
         // if the lightning was not fired by the damaged entity (or its rider), return
         if(!entity.isOwnerOrMountUuid(ownerUuid)) return
         // prevent the infernal mob, owner of that lightning, from combusting itself or its mount
-        println("Preventing combustion of ${entity.name}")
         isCancelled = true
         duration = 0
     }

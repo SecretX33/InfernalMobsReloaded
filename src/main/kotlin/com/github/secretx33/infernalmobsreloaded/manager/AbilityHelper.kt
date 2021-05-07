@@ -689,7 +689,7 @@ class AbilityHelper (
         // makes the defender hunger for some time
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.HUNGER, 8).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.HUNGER, 30.0).getRandomBetween()
-        println("Hunger: chance = $chance, potency = $potency, durantion = $duration")
+        println("Hunger: chance = $chance, potency = $potency, duration = $duration")
         defender.addPotion(PotionEffectType.HUNGER, Ability.HUNGER, duration, amplifier = potency)
     }
 
@@ -700,7 +700,7 @@ class AbilityHelper (
         // makes the defender levitate for some time
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.LEVITATE, 6).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.LEVITATE, 6.0).getRandomBetween()
-        println("Levitate: chance = $chance, potency = $potency, durantion = $duration")
+        println("Levitate: chance = $chance, potency = $potency, duration = $duration")
         defender.addPotion(PotionEffectType.LEVITATION, Ability.LEVITATE, duration, amplifier = potency)
     }
 
@@ -742,7 +742,7 @@ class AbilityHelper (
 
         // sets the attacker on defender
         val duration = abilityConfig.getDuration(Ability.MOLTEN, 8.0).getRandomBetween()
-        println("Molten (done): chance = $chance, durantion = $duration")
+        println("Molten (done): chance = $chance, duration = $duration")
         defender.fireTicks = (duration * 20.0).toInt()
     }
 
@@ -753,7 +753,7 @@ class AbilityHelper (
         // poisons the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.POISONOUS, 6).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.POISONOUS, 8.0).getRandomBetween()
-        println("Posion (done): chance = $chance, potency = $potency, durantion = $duration")
+        println("Posion (done): chance = $chance, potency = $potency, duration = $duration")
         defender.addPotion(PotionEffectType.POISON, Ability.POISONOUS, duration, amplifier = potency)
     }
 
@@ -807,7 +807,7 @@ class AbilityHelper (
         // gives slow effect to the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.SLOWNESS, 3).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.SLOWNESS, 6.0).getRandomBetween()
-        println("Slowness: chance = $chance, potency = $potency, durantion = $duration")
+        println("Slowness: chance = $chance, potency = $potency, duration = $duration")
         defender.addPotion(PotionEffectType.SLOW, Ability.SLOWNESS, duration, amplifier = potency)
     }
 
@@ -818,7 +818,7 @@ class AbilityHelper (
         // gives weakness effect to the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.WEAKNESS, 1, minValue = 1).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.WEAKNESS, 5.0).getRandomBetween()
-        println("Weakness: chance = $chance, potency = $potency, durantion = $duration")
+        println("Weakness: chance = $chance, potency = $potency, duration = $duration")
         defender.addPotion(PotionEffectType.WEAKNESS, Ability.WEAKNESS, duration, amplifier = potency)
     }
 
@@ -829,7 +829,7 @@ class AbilityHelper (
         // gives wither effect to the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.WITHERING, 1).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.WITHERING, 6.0).getRandomBetween()
-        println("Withering: chance = $chance, potency = $potency, durantion = $duration")
+        println("Withering: chance = $chance, potency = $potency, duration = $duration")
         defender.addPotion(PotionEffectType.WITHER, Ability.WITHERING, duration, amplifier = potency)
     }
 
@@ -897,7 +897,7 @@ class AbilityHelper (
 
         // sets the attacker on fire
         val duration = abilityConfig.getDuration(Ability.MOLTEN, 8.0).getRandomBetween()
-        println("Molten (taken): chance = $chance, durantion = $duration")
+        println("Molten (taken): chance = $chance, duration = $duration")
         attacker.fireTicks = (duration * 20.0).toInt()
     }
 
@@ -909,7 +909,7 @@ class AbilityHelper (
         // poisons the attacker
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.POISONOUS, 6).getRandomBetween() - 1)
         val duration = abilityConfig.getDuration(Ability.POISONOUS, 8.0).getRandomBetween()
-        println("Poison (taken): chance = $chance, potency = $potency, durantion = $duration")
+        println("Poison (taken): chance = $chance, potency = $potency, duration = $duration")
         attacker.addPotion(PotionEffectType.POISON, Ability.POISONOUS, duration, amplifier = potency)
     }
 

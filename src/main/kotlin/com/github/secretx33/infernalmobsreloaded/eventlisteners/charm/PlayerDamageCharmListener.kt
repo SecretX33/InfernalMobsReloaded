@@ -8,7 +8,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
 
@@ -21,7 +20,7 @@ class PlayerDamageCharmListener  (
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    private fun EntityDamageByEntityEvent.onItemDrag() {
+    private fun EntityDamageByEntityEvent.onPlayerHitEntity() {
         val player = damager as? Player ?: return
         val target = entity as? LivingEntity ?: return
 

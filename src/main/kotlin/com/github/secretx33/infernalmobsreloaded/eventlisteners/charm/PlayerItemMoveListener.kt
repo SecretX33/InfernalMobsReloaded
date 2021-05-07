@@ -8,7 +8,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityPickupItemEvent
-import org.bukkit.event.inventory.*
+import org.bukkit.event.inventory.InventoryAction
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryDragEvent
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
@@ -24,7 +27,6 @@ class PlayerItemMoveListener (
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun InventoryDragEvent.onItemDrag() {
         val player = whoClicked as? Player ?: return
-        println("Called InventoryDragEvent")
         val topInvSize = view.topInventory.size.takeIf { view.topInventory != view.bottomInventory } ?: 0
         // player didn't drag any items inside his inventory
         if(rawSlots.all { it < topInvSize }) return
@@ -34,7 +36,7 @@ class PlayerItemMoveListener (
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun InventoryClickEvent.onItemMove() {
-        println("clickedInventory.type = ${clickedInventory?.type}, action = $action, inventory.type = ${inventory.type}")
+//        println("clickedInventory.type = ${clickedInventory?.type}, action = $action, inventory.type = ${inventory.type}")
         if(didNothing()) return
         val player = whoClicked as? Player ?: return
         // update charm tasks
@@ -45,8 +47,7 @@ class PlayerItemMoveListener (
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerDropItemEvent.onItemDrop() {
-        println("1. PlayerDropItemEvent triggered")
-        runSync(plugin, 50L) { player.updateCharmEffects() }
+        player.updateCharmEffects()
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
