@@ -20,8 +20,8 @@ import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerB
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerInteractListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerPlaceListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerSpawnListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.world.ChunkLoadListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.world.ChunkUnloadListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.world.EntityLoadListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.world.EntityUnloadListener
 import com.github.secretx33.infernalmobsreloaded.manager.*
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.packetlisteners.InvisibleEntitiesEquipVanisherListener
@@ -78,8 +78,8 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { SpawnerSpawnListener(get(), get(), get()) }
         single { LightningAbilityListener(get(), get(), get()) }
         single { MountRemovalListener(get(), get()) }
-        single { ChunkUnloadListener(get(), get(), get()) }
-        single { ChunkLoadListener(get(), get()) }
+        single { EntityUnloadListener(get(), get(), get()) }
+        single { EntityLoadListener(get(), get()) }
         single { InvisibleEntitiesEquipVanisherListener(get(), get(), get()) }
         single { Commands(get()) }
         single { Metrics(get(), 11253) }
@@ -120,8 +120,8 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<SpawnerInteractListener>()
         get<SpawnerPlaceListener>()
         get<SpawnerSpawnListener>()
-        get<ChunkUnloadListener>()
-        get<ChunkLoadListener>()
+        get<EntityUnloadListener>()
+        get<EntityLoadListener>()
         get<Commands>()
         if(isProtocolLibEnabled)
             get<InvisibleEntitiesEquipVanisherListener>()

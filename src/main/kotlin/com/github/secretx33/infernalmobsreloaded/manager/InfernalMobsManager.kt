@@ -30,6 +30,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.koin.core.component.KoinApiExtension
 import java.lang.reflect.Type
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.max
 
 
@@ -43,7 +44,7 @@ class InfernalMobsManager (
     private val abilityHelper: AbilityHelper,
 ) {
 
-    private val infernalMobParticleTasks = HashMap<UUID, Job>()   // stores the job currently emitting infernal particles
+    private val infernalMobParticleTasks = ConcurrentHashMap<UUID, Job>()   // stores the job currently emitting infernal particles
     private val infernalMobAbilityTasks = MultimapBuilder.hashKeys().arrayListValues().build<UUID, Job>()  // for abilities that require a target
 
     fun isValidInfernalMob(entity: LivingEntity) = infernalMobTypesRepo.canTypeBecomeInfernal(entity.type) && entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)?.let { infernalMobTypesRepo.isValidInfernalType(it) } == true
@@ -182,10 +183,13 @@ class InfernalMobsManager (
         val delay = delayBetweenParticleEmission
 
         val job = CoroutineScope(Dispatchers.Default).launch {
-            while(isActive) {
+            delay(100L)  // delay to give entity time to load
+            while(isActive && !entity.isDead && entity.isValid) {
                 particlesHelper.sendParticle(entity, particleType, particleSpread)
                 delay(delay)
             }
+            infernalMobParticleTasks.remove(entity.uniqueId)
+            println("Removing task particle of ${entity.name}")
         }
         infernalMobParticleTasks[entity.uniqueId] = job
     }
@@ -214,8 +218,10 @@ class InfernalMobsManager (
 
     fun unloadAllInfernals() {
         Bukkit.getWorlds().forEach { world ->
-            world.livingEntities.filter { isValidInfernalMob(it) }.forEach { unloadInfernalMob(it) }
+            world.livingEntities.forEach { unloadInfernalMob(it) }
         }
+        infernalMobParticleTasks.forEach { (_, job) -> job.cancel() }
+        infernalMobParticleTasks.clear()
     }
 
     fun unloadInfernalMob(entity: LivingEntity) {

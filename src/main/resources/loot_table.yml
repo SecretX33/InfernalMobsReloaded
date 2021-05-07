@@ -12,6 +12,7 @@
 # Enchantment list: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/enchantments/Enchantment.html
 
 murder_axe:
+  type: "normal"                               # valid values: NORMAL, BOOK; you may omit this field for normal items
   name: "<#AAAAAA>Murder Axe"                  # item display name, the name that will appear when the player hover over the item or holds it
   material: "IRON_AXE"                         # vanilla material of an item, use the name exactly as listed in the website
   amount: 1                                    # if you omit this field, the amount will default to 1

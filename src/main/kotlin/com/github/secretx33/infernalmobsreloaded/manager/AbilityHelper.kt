@@ -647,7 +647,7 @@ class AbilityHelper (
                 Ability.HUNGER -> event.triggerHunger()
                 Ability.LEVITATE -> event.triggerLevitate()
                 Ability.LIFESTEAL -> event.triggerLifesteal()
-                Ability.LIGHTNING -> event.triggerLightning()  // TODO("Add a damage multiplier)"
+                Ability.LIGHTNING -> event.triggerLightning()
                 Ability.MOLTEN -> event.triggerMolten()
                 Ability.POISONOUS -> event.triggerPoisonous()
                 Ability.SLOWNESS -> event.triggerSlowness()

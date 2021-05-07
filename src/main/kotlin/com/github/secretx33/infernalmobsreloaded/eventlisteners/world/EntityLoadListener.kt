@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners.world
 
+import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
@@ -12,14 +13,14 @@ import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
 
 @KoinApiExtension
-class ChunkLoadListener(plugin: Plugin, private val mobsManager: InfernalMobsManager): Listener {
+class EntityLoadListener(plugin: Plugin, private val mobsManager: InfernalMobsManager): Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    private fun ChunkLoadEvent.onInfernalMobsRespawn() {
-        chunk.entities.filter { it.isPossibleInfernalMob() }
-            .forEach { mobsManager.loadInfernalMob(it as LivingEntity) }
+    private fun EntityAddToWorldEvent.onInfernalMobsRespawn() {
+        if(!entity.isPossibleInfernalMob()) return
+        mobsManager.loadInfernalMob(entity as LivingEntity)
     }
 
     // isValid may not return true since the entity is being loaded again (?)
