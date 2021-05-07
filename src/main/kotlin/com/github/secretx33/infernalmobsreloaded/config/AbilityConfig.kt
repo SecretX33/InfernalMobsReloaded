@@ -173,8 +173,8 @@ class AbilityConfig (
         return cache.getOrPut(key.configEntry) {
             if(!manager.contains(key.configEntry)) return@getOrPut key.defaultValue
             manager.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
-                val optional = Enums.getIfPresent(clazz, item.toUpperCase(Locale.US)).takeIf { opt -> opt.isPresent }?.get() ?: run {
-                    log.severe("Error while trying to get ability key '$key', value passed '${item.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the ${manager.fileName} and reload the configs")
+                val optional = Enums.getIfPresent(clazz, item.uppercase(Locale.US)).takeIf { opt -> opt.isPresent }?.get() ?: run {
+                    log.severe("Error while trying to get ability key '$key', value passed '${item.uppercase(Locale.US)}' is an invalid value, please fix this entry in the ${manager.fileName} and reload the configs")
                     return@mapNotNullTo null
                 }
                 optional.takeIf { predicate == null || predicate.apply(it as T) }

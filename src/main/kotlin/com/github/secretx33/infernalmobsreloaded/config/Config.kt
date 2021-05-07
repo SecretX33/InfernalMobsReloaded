@@ -74,9 +74,9 @@ class Config(plugin: Plugin, private val log: Logger) {
         return cache.getOrPut(key.configEntry) {
             manager.getString(key.configEntry)?.let {
                 try {
-                    JavaEnum.valueOf(key.defaultValue::class.java as Class<out Enum<T>>, it.toUpperCase(Locale.US))
+                    JavaEnum.valueOf(key.defaultValue::class.java as Class<out Enum<T>>, it.uppercase(Locale.US))
                 } catch(e: IllegalArgumentException) {
-                    log.severe("Error while trying to get config key '$key', value passed ${it.toUpperCase(Locale.US)} is an invalid value, please fix this entry in the config.yml and reload the configs, defaulting to ${(key.defaultValue as Enum<T>).name}")
+                    log.severe("Error while trying to get config key '$key', value passed ${it.uppercase(Locale.US)} is an invalid value, please fix this entry in the config.yml and reload the configs, defaulting to ${(key.defaultValue as Enum<T>).name}")
                 }
             } ?: key.defaultValue
         } as T
@@ -87,8 +87,8 @@ class Config(plugin: Plugin, private val log: Logger) {
         return cache.getOrPut(key.configEntry) {
             if(!manager.contains(key.configEntry)) return@getOrPut key.defaultValue
             manager.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
-                val optional = Enums.getIfPresent(clazz, item.toUpperCase(Locale.US)).takeIf { opt -> opt.isPresent }?.get() ?: run {
-                    log.severe("Error while trying to get config key '$key', value passed '${item.toUpperCase(Locale.US)}' is an invalid value, please fix this entry in the ${manager.fileName} and reload the configs")
+                val optional = Enums.getIfPresent(clazz, item.uppercase(Locale.US)).takeIf { opt -> opt.isPresent }?.get() ?: run {
+                    log.severe("Error while trying to get config key '$key', value passed '${item.uppercase(Locale.US)}' is an invalid value, please fix this entry in the ${manager.fileName} and reload the configs")
                     return@mapNotNullTo null
                 }
                 optional.takeIf { predicate == null || predicate.apply(it as T) }
@@ -109,18 +109,17 @@ class Config(plugin: Plugin, private val log: Logger) {
 }
 
 enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
-    ENABLE_SPAWNER_DROPS("enable-spawner-drops", true),
-    LETHAL_POISON_TARGETS("entities-killed-by-poison", KilledByPoison.NONE),
-    DISABLED_ABILITIES("disabled-abilities", emptySet<Ability>()),
     BOSS_BAR_SHOW_RANGE_DISTANCE("boss-bar-show-range-distance", 25.0),
     BOSS_BAR_SHOW_RANGE_HEIGHT("boss-bar-show-range-height", 15.0),
     DELAY_BETWEEN_INFERNAL_PARTICLES("delay-between-infernal-particles", 1.5),
+    DISABLED_ABILITIES("disabled-abilities", emptySet<Ability>()),
     DISPLAY_INFERNAL_NAME_MODE("display-infernal-custom-name-mode", DisplayCustomNameMode.LOOKING_AT),
     ENABLE_BOSS_BARS("enable-boss-bars", true),
     ENABLE_GLOBAL_PARTICLE_EFFECTS("enable-particle-effects", true),
     ENABLE_INFERNAL_DEATH_MESSAGE("enable-infernal-death-messages", false),
     ENABLE_INFERNAL_PARTICLES("enable-infernal-particles", true),
     ENABLE_INFERNAL_SPAWN_MESSAGE("enable-infernal-spawn-messages", false),
+    ENABLE_SPAWNER_DROPS("enable-spawner-drops", true),
     INFERNAL_ALLOWED_SPAWN_REASONS("spawn-reasons-which-infernal-mobs-can-spawn", setOf(CreatureSpawnEvent.SpawnReason.NATURAL)),
     INFERNAL_ALLOWED_WORLDS("worlds-in-which-infernal-mobs-can-spawn", emptyList<String>()),
     INFERNAL_BLACKLISTED_BABY_MOBS("blacklisted-baby-mob-types", emptySet<EntityType>()),
@@ -132,6 +131,7 @@ enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
     INFERNAL_PARTICLES_SPREAD("infernal-particles-spread", 2.0),
     INFERNAL_SPAWN_MESSAGE_RADIUS("infernal-spawn-message-radius", 30),
     INFERNALS_CANNOT_DAMAGE_THEMSELVES("infernals-cannot-damage-themselves", true),
+    LETHAL_POISON_TARGETS("entities-killed-by-poison", KilledByPoison.NONE),
     MOB_TYPES_THAT_CAN_WEAR_ARMOR("mob-types-that-can-wear-armor", emptySet<EntityType>()),
     MOBS_THAT_CAN_BE_RIDED_BY_MOUNTED_INFERNALS("mobs-that-can-be-rided-by-mounted-infernals", emptySet<EntityType>()),
 }

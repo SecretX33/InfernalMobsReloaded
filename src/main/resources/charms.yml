@@ -9,8 +9,8 @@
 
 #  Inventory Slots:
 #
-#   39             1  2     0
-#   38             3  4
+#   39             *  *     *
+#   38             *  *
 #   37
 #   36          40
 #   9  10 11 12 13 14 15 16 17
@@ -23,60 +23,72 @@
 valid-charm-slots:
   - 0-8
 
+
 ############################################################
 # +------------------------------------------------------+ #
 # |                     Charm Effects                    | #
 # +------------------------------------------------------+ #
 ############################################################
 
-# Below you can create as many effects as you want, and link them with the items from `loot_table.yml` file.
-
-#############
-### Modes ###
-#############
+######################
+###  Effect Modes  ###
+######################
 #
 # There are 3 modes that you can choose from of effects: SELF_PERMANENT, SELF_RECURRENT, and TARGET_TEMPORARY; not all potion effects works with all modes, but you'll get warned if you choose and invalid mode for that potion type, so don't you worry
 #
-# SELF_PERMANENT will just apply the potion when the charm is equipped, and remove it and the item is removed from one of the valid slots
-# SELF_RECURRENT will reapply the potion after the chosen delay, and keep reapplying it until the item is removed from one of the allowed slots
-# TARGET_TEMPORARY will apply the potion to any entity damaged by the owner of the charm, and delay represents the minimum delay between two reaplication of the effect on any given target
+# 1. SELF_PERMANENT will just apply the potion when the charm is equipped, and remove it and the item is removed from one of the valid slots
+# 2. SELF_RECURRENT will reapply the potion after the chosen delay, and keep reapplying it until the item is removed from one of the allowed slots
+# 3. TARGET_TEMPORARY will apply the potion to any entity damaged by the owner of the charm, and delay represents the minimum delay between two reaplication of the effect on any given target
+#
+########################
+###  Particle Modes  ###
+########################
+#
+# There are 5 different particle modes you can choose from: NONE, SELF_ONCE, ON_SELF_WHEN_APPLIED, ON_TARGET_WHEN_APPLIED, ON_BOTH_WHEN_APPLIED; some of them only works with certain effect modes
+#
+# 1. NONE will disable any particle effect (if you don't specify any particle, it'll also default to "none"
+# 2. SELF_ONCE will spawn particles one time, when the effect is gained, on self
+# 3. ON_SELF_WHEN_APPLIED can be used for SELF_RECURRENT and for TARGET_TEMPORARY effect modes, it'll spawn particles every time the effect occurs, on self
+# 4. ON_TARGET_WHEN_APPLIED is only a valid particle mode for TARGET_TEMPORARY effect mode, it'll spawn particles on the target, every time the effect occurs
+# 5. ON_BOTH_WHEN_APPLIED is also only a valid particle mode for TARGET_TEMPORARY effect mode, it'll spawn particles on both self and the target, every time the effect happens
+
+# Below you can create as many effects as you want, and link them with the items from `loot_table.yml` file
 
 charm-effects:
   thors_apple:
     player-message: "<#d75eff>You feel your wounds disappearing."   # omit this field to send nothing to the player when the effects kicks in
-    effect: INSTANT_HEALTH               # effect name, see list with all effects here https://papermc.io/javadocs/paper/1.16/org/bukkit/potion/PotionEffectType.html
-    potency: 1-2                         # potion level
-#    duration: 10.0                      # duration does nothing here, since instant healing is an instant effect
-    delay: 20.0-30.0                     # in seconds, the delay between each recurrent application
-    effect-mode: SELF_RECURRENT          # type of effect that will be applied on the player
-    particle-mode: ON_SELF_WHEN_APPLIED
-    particle-type: totem
-    required-items:
+    effect: INSTANT_HEALTH                     # effect name, see list with all effects here https://papermc.io/javadocs/paper/1.16/org/bukkit/potion/PotionEffectType.html
+    potency: 1-2                               # potion level
+#    duration: 10.0                            # duration does nothing here, since instant healing is an instant effect
+    delay: 20.0-30.0                           # in seconds, the delay between each recurrent application
+    effect-mode: SELF_RECURRENT                # type of effect that will be applied on the player, choose from SELF_PERMANENT, SELF_RECURRENT, and TARGET_TEMPORARY
+    particle-mode: ON_SELF_WHEN_APPLIED        # what type of particle mode will be used, choose from: NONE, SELF_ONCE, ON_SELF_WHEN_APPLIED, ON_TARGET_WHEN_APPLIED, ON_BOTH_WHEN_APPLIED
+    particle-type: totem                       # see full list here https://papermc.io/javadocs/paper/1.16/org/bukkit/Particle.html
+    required-items:                            # the effect will require ALL the items listed below to be active
       - "thors_apple"
 
   fast_miner:
     override-charm-slots:
       - 0
     player-message: "<#36f5f2>Suddenly, you gain the agility of the gods."   # omit this field to send nothing to the player when the effects kicks in
-    effect: FAST_DIGGING     # effect name, see list with all effects here https://papermc.io/javadocs/paper/1.16/org/bukkit/potion/PotionEffectType.html
-    potency: 3               # potion level
-#    delay: 10.0             # delay does nothing since this is a permanent effect
+    effect: FAST_DIGGING                       # effect name, see list with all effects here https://papermc.io/javadocs/paper/1.16/org/bukkit/potion/PotionEffectType.html
+    potency: 3                                 # potion level
+#    delay: 10.0                               # delay does nothing since this is a permanent effect
     effect-mode: SELF_PERMANENT
     particle-mode: SELF_ONCE
     particle-type: flame
-    required-items:
+    required-items:                            # the effect will require ALL the items listed below to be active
       - "silky"
 
   demon_touch:
     player-message: "<#36f5f2>Your sword dismember a part of your opponent."   # message that will be sent to the player, when their target is effect by the charm's effect, omit this field to send nothing
     target-message: "<#36f5f2>You got dismembered by your opponent's demonic sword."   # message that will be sent to the player's target, when affected by the effect, omit this field to send nothing
-    effect: HARM             # effect name, see list with all effects here https://papermc.io/javadocs/paper/1.16/org/bukkit/potion/PotionEffectType.html
-    potency: 1-2             # potion level
-#   duration: 10.0           # duration does nothing here, since instant damage is an instant effect
-    delay: 12.0              # in seconds, delay between each application
+    effect: HARM                               # effect name, see list with all effects here https://papermc.io/javadocs/paper/1.16/org/bukkit/potion/PotionEffectType.html
+    potency: 1-2                               # potion level
+#   duration: 10.0                             # duration does nothing here, since instant damage is an instant effect
+    delay: 12.0                                # in seconds, delay between each application
     effect-mode: TARGET_TEMPORARY
     particle-mode: ON_BOTH_WHEN_APPLIED
     particle-type: flame
-    required-items:
+    required-items:                            # the effect will require ALL the items listed below to be active
       - "demon_sword"
-

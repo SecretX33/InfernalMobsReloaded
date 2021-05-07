@@ -33,12 +33,12 @@ class GetLootCommand: SubCommand(), CustomKoinComponent {
         }
 
         val item = lootItemsRepo.getLootItemOrNull(strings[1])?.makeItem() ?: run {
-            player.sendMessage(messages.get(MessageKeys.LOOT_ITEM_DOESNT_EXIST).replace("<item>", strings[1].toComponent(NamedTextColor.GOLD)))
+            player.sendMessage(messages.get(MessageKeys.LOOT_ITEM_DOESNT_EXIST).replace("<item>", strings[1]))
             return
         }
 
         val amount = if(strings.size < 3) item.amount else strings[2].toIntOrNull() ?: run {
-            player.sendMessage(messages.get(MessageKeys.INVALID_NUMBER).replace("<number>", strings[2].toComponent(NamedTextColor.GOLD)))
+            player.sendMessage(messages.get(MessageKeys.INVALID_NUMBER).replace("<number>", strings[2]))
             return
         }
         item.amount = amount

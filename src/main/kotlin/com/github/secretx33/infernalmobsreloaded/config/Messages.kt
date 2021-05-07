@@ -37,22 +37,22 @@ class Messages(plugin: Plugin, private val adventureMessage: AdventureMessage) {
 }
 
 enum class MessageKeys(val default: Any) {
-    RECEIVED_LOOT_ITEM("<#55FF55>Received <#FFAA00><amount> <#55FF55>of <#FFAA00><item>."),
-    LOOT_ITEM_DOESNT_EXIST("<#FF5555>Sorry, loot item named <item> <#FF5555>doesn't exist."),
-    INVALID_NUMBER("<#FF5555>Sorry, <number> <#FF5555>is not a number."),
-    RUST_CORRODE_TOOLS_MESSAGE("<#c27c21>You feel your tools corroding at your hands."),
-    THIEF_MESSAGE_TO_TARGET("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item>."),
-    THIEF_MESSAGE_TO_TARGET_ITEM_BROKE("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item><#55FFFF>, and unfortunately it broke in the process."),
-    ABILITY_DOESNT_EXIST("Sorry, there is no ability named <ability>, please type a valid ability.".toComponent(NamedTextColor.RED)),
-    INFERNAL_MOB_TYPE_DOESNT_EXIST("Sorry, the infernal type <type> doesn't exist in your mobs.yml file, please type a valid name.".toComponent(NamedTextColor.RED)),
-    NOT_TARGETING_LIVING_ENTITY("You are not targeting an entity, please aim to an entity and try again.".toComponent(NamedTextColor.RED)),
-    NOT_TARGETING_INFERNAl("The entity you're currently targeting is not an Infernal Mob, please target an Infernal Mob and try again.".toComponent(NamedTextColor.RED)),
-    NOT_TARGETING_VALID_INFERNAl("The entity you're currently targeting was an Infernal Mob from mob category <group>, but this mob category is not present on your mobs.yml file, so it's not currently considered an Infernal Mob.".toComponent(NamedTextColor.RED)),
-    TARGETING_INFERNAL("<#55FF55>The <#00AA00><entity> <#55FF55>you're currently targeting has the following abilities: <#ffb319><abilities>."),
-    INFERNAL_MOB_SPAWN_MESSAGES(""),
+    ABILITY_DOESNT_EXIST("<#FF5555>Sorry, there is no ability named <ability>, please type a valid ability."),
+    CONFIGS_RELOADED("<#55FF55>Reloaded configs."),
+    CONSOLE_CANNOT_USE("<#FF5555>Sorry, the console cannot use this command."),
     INFERNAL_MOB_DEATH_MESSAGES(""),
-    CONFIGS_RELOADED("Reloaded configs.".toComponent(NamedTextColor.GREEN)),
-    CONSOLE_CANNOT_USE("Sorry, the console cannot use this command.".toComponent(NamedTextColor.RED));
+    INFERNAL_MOB_SPAWN_MESSAGES(""),
+    INFERNAL_MOB_TYPE_DOESNT_EXIST("<#FF5555>Sorry, the infernal type <type> <#FF5555>doesn't exist in your <#FFAA00>mobs.yml <#FF5555>file, please type a valid name."),
+    INVALID_NUMBER("<#FF5555>Sorry, <#FFAA00><number> <#FF5555>is not a number."),
+    LOOT_ITEM_DOESNT_EXIST("<#FF5555>Sorry, loot item named <#FFAA00><item> <#FF5555>doesn't exist."),
+    NOT_TARGETING_INFERNAL("<#FF5555>The entity you're currently targeting is not an Infernal Mob, please target an Infernal Mob and try again."),
+    NOT_TARGETING_LIVING_ENTITY("<#FF5555>You are not targeting an entity, please aim to an entity and try again."),
+    NOT_TARGETING_VALID_INFERNAL("<#FF5555>The entity you're currently targeting was an Infernal Mob from mob category <group>, but this mob category is not present on your mobs.yml file, so it's not currently considered an Infernal Mob."),
+    RECEIVED_LOOT_ITEM("<#55FF55>Received <#FFAA00><amount> <#55FF55>of <#FFAA00><item>."),
+    RUST_CORRODE_TOOLS_MESSAGE("<#c27c21>You feel your tools corroding at your hands."),
+    TARGETING_INFERNAL("<#55FF55>The <#00AA00><entity> <#55FF55>you're currently targeting has the following abilities: <#ffb319><abilities>."),
+    THIEF_MESSAGE_TO_TARGET("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item>."),
+    THIEF_MESSAGE_TO_TARGET_ITEM_BROKE("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item><#55FFFF>, and unfortunately it broke in the process.");
 
     val configEntry = name.lowercase(Locale.US).replace('_','-')
 }
