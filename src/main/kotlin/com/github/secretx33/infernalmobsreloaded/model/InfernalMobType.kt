@@ -1,13 +1,16 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
+import com.github.secretx33.infernalmobsreloaded.utils.getRandomBetween
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
+import org.koin.core.component.KoinApiExtension
 import java.util.*
 
+@KoinApiExtension
 data class InfernalMobType (
     val name: String,
     val displayName: Component,
@@ -19,18 +22,12 @@ data class InfernalMobType (
     val entityType: EntityType,
     val spawnChance: Double,
     val mobSpawnerDropChance: Double,
-    private val minAbilities: Int,
-    private val maxAbilities: Int,
-    private val minFollowRangeMulti: Double,
-    private val maxFollowRangeMulti: Double,
-    private val minDamageMulti: Double,
-    private val maxDamageMulti: Double,
-    private val minAttackKnockbackMod: Double,
-    private val maxAttackKnockbackMod: Double,
-    private val minHealthMulti: Double,
-    private val maxHealthMulti: Double,
-    private val minSpeedMulti: Double,
-    private val maxSpeedMulti: Double,
+    private val numAbilities: Pair<Int, Int>,
+    private val followRangeMulti: Pair<Double, Double>,
+    private val damageMulti: Pair<Double, Double>,
+    private val attackKnockbackMod: Pair<Double, Double>,
+    private val healthMulti: Pair<Double, Double>,
+    private val speedMulti: Pair<Double, Double>,
     val consoleCommand: String,
     private val loots: Map<LootItem, Double>,
 ) {
@@ -44,45 +41,40 @@ data class InfernalMobType (
         require(loots.values.all { it in 0.0..1.0 }) { "all loot chances must be within 0 and 1, something inside the loop map was not, map = $loots"}
 
         // abilities amount
-        require(minAbilities >= 0) { "minAbilities has to be at least 0, minAbilities = $minAbilities" }
-        require(maxAbilities >= 0) { "maxAbilities has to be at least 0, maxAbilities = $maxAbilities" }
-        require(minAbilities <= maxAbilities) { "minAbilities cannot be higher than maxAbilities, minAbilities = $minAbilities, maxAbilities = $maxAbilities" }
+        require(numAbilities.first >= 0 && numAbilities.second >= 0) { "numAbilities cannot be lower than 0, numAbilities = $numAbilities" }
+        require(numAbilities.first <= numAbilities.second) { "numAbilities first value has to be lower or equal than the second value, numAbilities = $numAbilities" }
 
         // follow range multiplier
-        require(minFollowRangeMulti >= 0) { "minFollowRangeMulti has to be higher than 0, minFollowRangeMulti = $minFollowRangeMulti" }
-        require(maxFollowRangeMulti >= 0) { "maxFollowRangeMulti has to be higher than 0, maxFollowRangeMulti = $maxFollowRangeMulti" }
-        require(minFollowRangeMulti <= maxFollowRangeMulti) { "minFollowRangeMulti cannot be higher than maxFollowRangeMulti, minFollowRangeMulti = $minFollowRangeMulti, maxFollowRangeMulti = $maxFollowRangeMulti" }
+        require(followRangeMulti.first >= 0 && followRangeMulti.second >= 0) { "followRangeMulti cannot be lower than 0, followRangeMulti = $followRangeMulti" }
+        require(followRangeMulti.first <= followRangeMulti.second) { "followRangeMulti first value has to be lower or equal than the second value, followRangeMulti = $followRangeMulti" }
 
         // damage multiplier
-        require(minDamageMulti >= 0) { "minDamageMulti has to be higher than 0, minDamageMulti = $minDamageMulti" }
-        require(maxDamageMulti >= 0) { "maxDamageMulti has to be higher than 0, maxDamageMulti = $maxDamageMulti" }
-        require(minDamageMulti <= maxDamageMulti) { "minDamageMulti cannot be higher than maxDamageMulti, minDamageMulti = $minDamageMulti, maxDamageMulti = $maxDamageMulti" }
+        require(damageMulti.first >= 0 && damageMulti.second >= 0) { "damageMulti cannot be lower than 0, damageMulti = $damageMulti" }
+        require(damageMulti.first <= damageMulti.second) { "damageMulti first value has to be lower or equal than the second value, damageMulti = $damageMulti" }
 
         // attack knockback multiplier
-        require(minAttackKnockbackMod <= maxAttackKnockbackMod) { "minAttackKnockbackMulti cannot be higher than maxAttackKnockbackMulti, minAttackKnockbackMulti = $minAttackKnockbackMod, maxAttackKnockbackMulti = $maxAttackKnockbackMod" }
+        require(attackKnockbackMod.first <= attackKnockbackMod.second) { "attackKnockbackMod first value has to be lower or equal than the second value, attackKnockbackMod = $attackKnockbackMod" }
 
         // health multiplier
-        require(minHealthMulti > 0) { "minHealthMulti has to be higher than 0, minHealthMulti = $minHealthMulti" }
-        require(maxHealthMulti > 0) { "maxHealthMulti has to be higher than 0, maxHealthMulti = $maxHealthMulti" }
-        require(minHealthMulti <= maxHealthMulti) { "minHealthMulti cannot be higher than maxHealthMulti, minHealthMulti = $minHealthMulti, maxHealthMulti = $maxHealthMulti" }
+        require(healthMulti.first > 0 && healthMulti.second > 0) { "healthMulti cannot be lower than 0, healthMulti = $healthMulti" }
+        require(healthMulti.first <= healthMulti.second) { "healthMulti first value has to be lower or equal than the second value, healthMulti = $healthMulti" }
 
         // speed multiplier
-        require(minSpeedMulti >= 0) { "minSpeedMulti has to be higher than 0, minSpeedMulti = $minSpeedMulti" }
-        require(maxSpeedMulti >= 0) { "maxSpeedMulti has to be higher than 0, maxSpeedMulti = $maxSpeedMulti" }
-        require(minSpeedMulti <= maxSpeedMulti) { "minSpeedMulti cannot be higher than maxSpeedMulti, minSpeedMulti = $minSpeedMulti, maxSpeedMulti = $maxSpeedMulti" }
+        require(speedMulti.first >= 0 && speedMulti.second >= 0) { "speedMulti cannot be lower than 0, speedMulti = $speedMulti" }
+        require(speedMulti.first <= speedMulti.second) { "speedMulti first value has to be lower or equal than the second value, speedMulti = $speedMulti" }
     }
 
-    fun getAbilityNumber() = random.nextInt(maxAbilities - minAbilities + 1) + minAbilities
+    fun getAbilityNumber() = numAbilities.getRandomBetween()
 
-    fun getFollowRangeMulti() = minFollowRangeMulti + (maxFollowRangeMulti - minFollowRangeMulti) * random.nextDouble()
+    fun getFollowRangeMulti() = followRangeMulti.getRandomBetween()
 
-    fun getDamageMulti() = minDamageMulti + (maxDamageMulti - minDamageMulti) * random.nextDouble()
+    fun getDamageMulti() = damageMulti.getRandomBetween()
 
-    fun getAtkKnockbackMod() = minAttackKnockbackMod + (maxAttackKnockbackMod - minAttackKnockbackMod) * random.nextDouble()
+    fun getAtkKnockbackMod() = attackKnockbackMod.getRandomBetween()
 
-    fun getHealthMulti() = minHealthMulti + (maxHealthMulti - minHealthMulti) * random.nextDouble()
+    fun getHealthMulti() = healthMulti.getRandomBetween()
 
-    fun getSpeedMulti() = minSpeedMulti + (maxSpeedMulti - minSpeedMulti) * random.nextDouble()
+    fun getSpeedMulti() = speedMulti.getRandomBetween()
 
     fun getLoots() = loots.asSequence().filter { random.nextDouble() <= it.value }.map { it.key.makeItem() }.toList()
 

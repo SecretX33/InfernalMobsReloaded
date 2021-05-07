@@ -5,7 +5,9 @@ import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.Cancellable
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
+import org.koin.core.component.KoinApiExtension
 
+@KoinApiExtension
 class InfernalSpawnEvent (
     entity: LivingEntity,
     infernalType: InfernalMobType,

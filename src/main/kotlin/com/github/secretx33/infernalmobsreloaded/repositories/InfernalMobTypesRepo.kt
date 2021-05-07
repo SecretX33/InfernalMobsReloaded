@@ -84,42 +84,23 @@ class InfernalMobTypesRepo (
 
     private fun makeMobType(name: String): InfernalMobType {
         val type = getMobType(name)
-        val displayName = getMobDisplayName(name, type)
-        val bossBarName = getMobBossBarName(name, type)
-        val bossBarColor = getMobBossBarColor(name)
-        val bossBarOverlay = getMobBossBarOverlay(name)
-        val bossBarFlags = getMobBossBarFlags(name)
-        val spawnChance = getMobSpawnChance(name)
         val spawnerDropChance = getSpawnerDropChance(name)
-        val spawnerName = getSpawnerName(name, type, spawnerDropChance)
-        val abilityAmounts = getAbilityAmounts(name)
-        val followRangeMultiplierAmounts = getFollowRangeMultiplierAmounts(name)
-        val damageMultiplierAmounts = getDamageMultiplierAmounts(name)
-        val atkKnockbackAmounts = getAtkKnockbackModAmounts(name)
-        val hpMultiplierAmounts = getHealthMultiplierAmounts(name)
-        val speedMultiplierAmounts = getSpeedMultiplierAmounts(name)
         return InfernalMobType(name,
-            displayName = displayName,
-            bossBarName = bossBarName,
-            bossBarColor = bossBarColor,
-            bossBarOverlay = bossBarOverlay,
-            bossBarFlags = bossBarFlags,
+            displayName = getMobDisplayName(name, type),
+            bossBarName = getMobBossBarName(name, type),
+            bossBarColor = getMobBossBarColor(name),
+            bossBarOverlay = getMobBossBarOverlay(name),
+            bossBarFlags = getMobBossBarFlags(name),
             entityType = type,
-            spawnChance = spawnChance,
-            mobSpawnerName = spawnerName,
+            spawnChance = getMobSpawnChance(name),
+            mobSpawnerName = getSpawnerName(name, type, spawnerDropChance),
             mobSpawnerDropChance = spawnerDropChance,
-            minAbilities = abilityAmounts.first,
-            maxAbilities = abilityAmounts.second,
-            minFollowRangeMulti = followRangeMultiplierAmounts.first,
-            maxFollowRangeMulti = followRangeMultiplierAmounts.second,
-            minDamageMulti = damageMultiplierAmounts.first,
-            maxDamageMulti = damageMultiplierAmounts.second,
-            minAttackKnockbackMod = atkKnockbackAmounts.first,
-            maxAttackKnockbackMod = atkKnockbackAmounts.second,
-            minHealthMulti = hpMultiplierAmounts.first,
-            maxHealthMulti = hpMultiplierAmounts.second,
-            minSpeedMulti = speedMultiplierAmounts.first,
-            maxSpeedMulti = speedMultiplierAmounts.second,
+            numAbilities = getAbilityAmounts(name),
+            followRangeMulti = getFollowRangeMultiplierAmounts(name),
+            damageMulti = getDamageMultiplierAmounts(name),
+            attackKnockbackMod = getAtkKnockbackModAmounts(name),
+            healthMulti = getHealthMultiplierAmounts(name),
+            speedMulti = getSpeedMultiplierAmounts(name),
             consoleCommand = getConsoleCommand(name),
             loots = getMobLootTable(name),
         )
