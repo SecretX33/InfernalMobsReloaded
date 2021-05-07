@@ -1,0 +1,10 @@
+```**Terms of service**
+By purchasing this plugin, you agree to the following:
+
+\* You are not allowed to redistribute, resell, or give this plugin to anyone else.
+\* You are not allowed to modify or decompile the plugin.
+\* You are allowed to use this plugin in all networks/server that you own.
+\* You are only allowed to download this plugin from an official source (for your own safety).
+\* Bugs may be reported in the directly through my discord private messages.
+\* The license is yours, forever.
+\* I (developer) reserves the right to change the terms at any time; therefore you have to agree to the most recent version of them.```
