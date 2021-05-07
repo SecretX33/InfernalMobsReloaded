@@ -88,7 +88,6 @@ class InfernalMobsManager (
             val mod = AttributeModifier(atkKnockbackUID, "infernal_atk_knockback_multi", max(0.0, infernalType.getAtkKnockbackMod()), AttributeModifier.Operation.ADD_NUMBER)
             atkKnockback.removeModifier(mod)
             atkKnockback.addModifier(mod)
-            println("Applied knockback multiplier of ${mod.amount} to ${type.formattedTypeName()}")
         }
         // health attribute
         getAttribute(Attribute.GENERIC_MAX_HEALTH)?.let { hp ->

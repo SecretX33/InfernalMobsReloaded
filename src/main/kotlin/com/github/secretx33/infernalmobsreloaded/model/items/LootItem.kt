@@ -14,5 +14,10 @@ interface LootItem {
      */
     val name: String
 
+    /**
+     * Create on the fly a new item stack with the configured attribute ranges.
+     *
+     * @return ItemStack
+     */
     fun makeItem(): ItemStack
 }

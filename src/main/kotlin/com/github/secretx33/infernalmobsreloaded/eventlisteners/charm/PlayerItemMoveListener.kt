@@ -8,7 +8,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityPickupItemEvent
-import org.bukkit.event.inventory.*
+import org.bukkit.event.inventory.InventoryAction
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryDragEvent
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
@@ -26,9 +29,9 @@ class PlayerItemMoveListener (
         val player = whoClicked as? Player ?: return
         val topInvSize = view.topInventory.size.takeIf { view.topInventory != view.bottomInventory } ?: 0
         // player didn't drag any items inside his inventory
-        if(rawSlots.none { it >= topInvSize }) return
+        if(rawSlots.all { it < topInvSize }) return
         // update charm tasks
-        player.updateCharmEffects()
+        runSync(plugin, 50L) { player.updateCharmEffects() }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -49,7 +52,6 @@ class PlayerItemMoveListener (
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun EntityPickupItemEvent.onItemPickup() {
-//        println("Fired EntityPickupItemEvent for entity = ${entity.name}")
         val player = entity as? Player ?: return
         runSync(plugin, 50L) { player.updateCharmEffects() }
     }

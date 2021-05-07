@@ -63,7 +63,7 @@ class LethalPoisonListener (
         scheduledLethalTicks.add(uniqueId)
 
         CoroutineScope(Dispatchers.Default).launch {
-            delay(poison.getTickDelay().also { println("Tick delay = $it") })
+            delay(poison.getTickDelay())
             // if entity is not poisoned anymore, or has its health above the threshold, don't do anything
             if(isDead || !isValid || !isPoisoned() || uniqueId !in scheduledLethalTicks || health > (MIN_HP_VALUE_TO_DIE_OF_POISON + 0.5)) {
                 scheduledLethalTicks.remove(uniqueId)

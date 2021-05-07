@@ -1,9 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.commands
 
-import com.github.secretx33.infernalmobsreloaded.commands.subcommands.InspectCommand
-import com.github.secretx33.infernalmobsreloaded.commands.subcommands.ReloadCommand
-import com.github.secretx33.infernalmobsreloaded.commands.subcommands.SpawnCommand
-import com.github.secretx33.infernalmobsreloaded.commands.subcommands.SubCommand
+import com.github.secretx33.infernalmobsreloaded.commands.subcommands.*
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -17,7 +14,9 @@ import java.util.*
 class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
 
     private val subcommands: List<SubCommand> = listOf(
+        GetLootCommand(),
         InspectCommand(),
+        MultispawnCommand(),
         ReloadCommand(),
         SpawnCommand(),
     )

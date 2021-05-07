@@ -50,7 +50,4 @@ class InvisibleEntitiesEquipVanisherListener (
 
     private val disableEquipVisibility
         get() = abilityConfig.get<Boolean>(AbilityConfigKeys.INVISIBLE_DISABLE_EQUIPMENT_VISIBLITY)
-
-    private val disableEntitySounds
-        get() = abilityConfig.get<Boolean>(AbilityConfigKeys.INVISIBLE_DISABLE_ENTITY_SOUNDS)
 }
