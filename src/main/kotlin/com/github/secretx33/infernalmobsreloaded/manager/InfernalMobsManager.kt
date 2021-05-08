@@ -108,7 +108,7 @@ class InfernalMobsManager (
     private fun addCustomNameToInfernal(entity: LivingEntity, infernalType: InfernalMobType) {
         val displayMode = config.getEnum<DisplayCustomNameMode>(ConfigKeys.DISPLAY_INFERNAL_NAME_MODE)
         entity.apply {
-            isPersistent = true
+            removeWhenFarAway = !config.get<Boolean>(ConfigKeys.INFERNALS_ARE_PERSISTENT)
             if(displayMode.addCustomName) customName(infernalType.displayName)
             isCustomNameVisible = displayMode.customNameVisible
         }
@@ -156,9 +156,9 @@ class InfernalMobsManager (
 
     private fun removeCustomNameOfInfernal(entity: LivingEntity) {
         entity.apply {
-            isPersistent = entity !is Monster
-            isCustomNameVisible = false
+            removeWhenFarAway = entity is Monster
             customName(null)
+            isCustomNameVisible = false
         }
     }
 
@@ -185,11 +185,13 @@ class InfernalMobsManager (
         val job = CoroutineScope(Dispatchers.Default).launch {
             delay(100L)  // delay to give entity time to load
             while(isActive && !entity.isDead && entity.isValid) {
+                println("Chunk está carregada = ${entity.chunk.isLoaded}")
+                println("Chunk está forçadamente carregada = ${entity.chunk.isForceLoaded}")
                 particlesHelper.sendParticle(entity, particleType, particleSpread)
                 delay(delay)
             }
             infernalMobParticleTasks.remove(entity.uniqueId)
-//            println("Removing task particle of ${entity.name}")
+            println("Removing task particle of ${entity.name}")
         }
         infernalMobParticleTasks[entity.uniqueId] = job
     }

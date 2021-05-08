@@ -125,7 +125,7 @@ class AbilityHelper (
             it.addPermanentPotion(PotionEffectType.INVISIBILITY, Ability.MOUNTED, isAmbient = false, emitParticles = false)
             // makes the newly spawned bat goes in a random x z direction, upwards
             it.velocity = Vector(random.nextDouble() * 2 - 1.0, 1.0, random.nextDouble() * 2 - 1.0)
-            it.isPersistent = true
+            it.removeWhenFarAway = false
             it.multiplyMaxHp(3.5)
         }
         bat.addPassenger(this)

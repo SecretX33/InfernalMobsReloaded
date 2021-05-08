@@ -130,6 +130,7 @@ enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
     INFERNAL_PARTICLES_AMOUNT("infernal-particles-amount", 10),
     INFERNAL_PARTICLES_SPREAD("infernal-particles-spread", 2.0),
     INFERNAL_SPAWN_MESSAGE_RADIUS("infernal-spawn-message-radius", 30),
+    INFERNALS_ARE_PERSISTENT("infernals-are-persistent", true),
     INFERNALS_CANNOT_DAMAGE_THEMSELVES("infernals-cannot-damage-themselves", true),
     LETHAL_POISON_TARGETS("entities-killed-by-poison", KilledByPoison.NONE),
     MOB_TYPES_THAT_CAN_WEAR_ARMOR("mob-types-that-can-wear-armor", emptySet<EntityType>()),
