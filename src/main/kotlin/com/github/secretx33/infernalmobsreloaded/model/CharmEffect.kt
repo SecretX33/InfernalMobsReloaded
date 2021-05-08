@@ -8,7 +8,7 @@ import org.koin.core.component.KoinApiExtension
 import java.util.*
 
 @KoinApiExtension
-data class CharmEffect (
+class CharmEffect (
     val name: String,
     val playerMessage: Component?,   // null = don't send anything
     val targetMessage: Component?,   // null = don't send anything
@@ -20,9 +20,11 @@ data class CharmEffect (
     val particle: Particle?,
     val particleMode: CharmParticleMode,
     val requiredMainHand: String?,
-    val requiredItems: Set<String>,
+    requiredItems: Set<String>,
     val requiredSlots: Set<Int>,
 ) {
+
+    val requiredItems: Set<String> = if(requiredMainHand != null) requiredItems + requiredMainHand else requiredItems
 
     init {
         // potency

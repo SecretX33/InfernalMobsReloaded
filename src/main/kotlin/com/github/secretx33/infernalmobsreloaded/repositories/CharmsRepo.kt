@@ -45,16 +45,12 @@ class CharmsRepo (
 
     fun getCharmEffects(lootItemName: String) = getCharmEffectsOrNull(lootItemName) ?: throw IllegalStateException("Tried to get $lootItemName charm effect but there's none")
 
-    fun getCharmEffects(item: ItemStack): Set<CharmEffect> = getCharmEffects(getLootItemTag(item))
+    fun getCharmEffects(item: ItemStack): Set<CharmEffect> = getCharmEffects(lootItemsRepo.getLootItemTag(item))
 
     fun isCharm(item: ItemStack): Boolean {
         val name = item.itemMeta?.pdc?.get(keyChain.infernalItemNameKey, PersistentDataType.STRING) ?: return false
         return charmsCache.containsKey(name)
     }
-
-    fun getLootItemTagOrNull(item: ItemStack) = item.itemMeta?.pdc?.get(keyChain.infernalItemNameKey, PersistentDataType.STRING)
-
-    fun getLootItemTag(item: ItemStack) = getLootItemTagOrNull(item) ?: throw IllegalStateException("Tried to get charm effect of item ${item.formattedTypeName()} but this item doesn't contain the infernalItemNameKey pdc key")
 
     fun getHighestEffectDelay(): Double = charmsCache.values().maxOfOrNull { it.getMaxDelay() } ?: 0.0
 
@@ -86,8 +82,8 @@ class CharmsRepo (
             effectApplyMode = mode,
             particleMode = getParticleMode(name, "particle-mode", particle, mode),
             requiredMainHand = getRequiredMainHand(name, "main-hand"),
-            requiredSlots = getRequiredSlots(name),
             requiredItems = getRequiredItems(name, "required-items"),
+            requiredSlots = getRequiredSlots(name),
         )
     }
 

@@ -4,19 +4,23 @@ import com.cryptomorin.xseries.XEnchantment
 import com.cryptomorin.xseries.XMaterial
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
+import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.model.items.LootBook
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItemType
 import com.github.secretx33.infernalmobsreloaded.model.items.NormalLootItem
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
+import com.github.secretx33.infernalmobsreloaded.utils.pdc
 import me.mattstudios.msg.adventure.AdventureMessage
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
 import java.util.*
@@ -28,6 +32,7 @@ import kotlin.math.min
 class LootItemsRepo (
     plugin: Plugin,
     private val log: Logger,
+    private val keyChain: KeyChain,
     private val adventureMessage: AdventureMessage,
 ) {
 
@@ -49,6 +54,12 @@ class LootItemsRepo (
     fun hasLootItem(name: String) = lootItemCache.containsKey(name.lowercase(Locale.US))
 
     fun getAllLootItems() = lootItemNames
+
+    fun isLootItem(item: ItemStack) = item.itemMeta?.pdc?.get(keyChain.infernalItemNameKey, PersistentDataType.STRING)?.let { lootItemCache.keys.contains(it) } == true
+
+    fun getLootItemTagOrNull(item: ItemStack) = item.itemMeta?.pdc?.get(keyChain.infernalItemNameKey, PersistentDataType.STRING)
+
+    fun getLootItemTag(item: ItemStack) = getLootItemTagOrNull(item) ?: throw IllegalStateException("Tried to get charm effect of item ${item.formattedTypeName()} but this item doesn't contain the infernalItemNameKey pdc key")
 
     private fun loadLootTable() {
         lootItemNames = manager.getKeys(false).sorted()

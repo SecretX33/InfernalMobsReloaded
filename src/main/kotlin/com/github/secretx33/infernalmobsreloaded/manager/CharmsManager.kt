@@ -4,6 +4,7 @@ import com.github.secretx33.infernalmobsreloaded.model.CharmEffect
 import com.github.secretx33.infernalmobsreloaded.model.CharmParticleMode
 import com.github.secretx33.infernalmobsreloaded.model.PotionEffectApplyMode
 import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
+import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.isAir
 import com.github.secretx33.infernalmobsreloaded.utils.runSync
 import com.google.common.cache.CacheBuilder
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit
 class CharmsManager(
     private val plugin: Plugin,
     private val charmsRepo: CharmsRepo,
+    private val lootItemsRepo: LootItemsRepo,
 ) {
 
     private val permanentEffects = HashBasedTable.create<UUID, CharmEffect, PotionEffectType>()               // PlayerUuid, charmEffect, PotionEffect
@@ -35,17 +37,16 @@ class CharmsManager(
     private fun makeCooldownsCache() = CacheBuilder.newBuilder().expireAfterWrite((charmsRepo.getHighestEffectDelay() * 1000.0).toLong(), TimeUnit.MILLISECONDS).build<Pair<UUID, CharmEffect>, Long>()
 
     fun updateCharmEffects(player: Player) {
-        val charms = player.inventoryMap.filterKeys { charmsRepo.isCharm(it) }
+        val invMap = player.inventoryMap
+        val charms = invMap.filterKeys { charmsRepo.isCharm(it) }
         // if player has no charms in his inventory
-        println("a")
         if(charms.isEmpty()) {
             cancelAllCharmTasks(player)
             return
         }
-        println("b")
         // owned loot items, because charms may require loot items to work
-        val lootItems = player.inventory.mapKeys { (charm, _) -> charmsRepo.getLootItemTag(charm) }
-        val mainHand = player.inventory.itemInMainHand.let { charmsRepo.getLootItemTagOrNull(it) }
+        val lootItems = invMap.filterKeys { lootItemsRepo.isLootItem(it) }.mapKeys { lootItemsRepo.getLootItemTag(it.key) }
+        val mainHand = player.inventory.itemInMainHand.let { lootItemsRepo.getLootItemTagOrNull(it) }
 
         // charmEffects present in all loot items in player's inventory
         val effects = charms.flatMap { charmsRepo.getCharmEffects(it.key) }.filter { it.requiredItems.isNotEmpty() } + player.getActiveCharms()
@@ -55,13 +56,13 @@ class CharmsManager(
             if(it.validateEffect(lootItems, mainHand)) player.startCharmEffect(it)
             else player.cancelCharmEffect(it)
         }
-        println("2. lootItems = ${lootItems.keys.joinToString()}, effects = ${effects.joinToString(separator = ",\n")}")
+//        println("2. lootItems = ${lootItems.keys.joinToString()}, effects = ${effects.joinToString(separator = ",\n")}")
     }
 
     private fun Player.getActiveCharms() = permanentEffects.row(uniqueId).keys + periodicEffects.row(uniqueId).keys + targetEffects.get(uniqueId)
 
     private fun Player.startCharmEffect(charmEffect: CharmEffect) {
-        println("2. Starting effect of charm '${charmEffect.name}' -> $charmEffect'")
+//        println("2. Starting effect of charm '${charmEffect.name}' -> $charmEffect'")
         when(charmEffect.effectApplyMode) {
             // permanent buffs, like speed
             PotionEffectApplyMode.SELF_PERMANENT -> addPermanentCharmEffect(charmEffect)
@@ -106,9 +107,9 @@ class CharmsManager(
     }
 
     fun triggerOnHitCharms(player: Player, target: LivingEntity) {
-        println("Triggering on hit effects")
+//        println("Triggering on hit effects")
         targetEffects.get(player.uniqueId).filter { it.isNotCooldown(player) }.forEach {
-            println("Triggering ${it.name} on ${target.name}")
+//            println("Triggering ${it.name} on ${target.name}")
             if(it.effectApplyMode == PotionEffectApplyMode.SELF_ON_HIT || it.effectApplyMode == PotionEffectApplyMode.BOTH_ON_HIT)
                 player.addPotionEffect(PotionEffect(it.potionEffect, (it.getDuration() * 20.0).toInt(), it.getPotency()))
 

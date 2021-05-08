@@ -59,8 +59,7 @@ class PlayerItemMoveListener (
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerItemHeldEvent.onItemHeldChanged() {
-        println("${player.name} changed his active item")
-        player.updateCharmEffects()
+        runSync(plugin, 50L) { player.updateCharmEffects() }
     }
 
     private fun Player.updateCharmEffects() = charmsManager.updateCharmEffects(this)
