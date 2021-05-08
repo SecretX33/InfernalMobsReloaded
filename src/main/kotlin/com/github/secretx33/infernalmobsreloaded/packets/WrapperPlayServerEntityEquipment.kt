@@ -40,7 +40,7 @@ class WrapperPlayServerEntityEquipment : AbstractPacket {
      * @param world - the current world of the entity.
      * @return The spawned entity.
      */
-    fun getEntity(world: World): Entity = handle.getEntityModifier(world).read(0)
+    fun getEntity(world: World): Entity? = handle.getEntityModifier(world).read(0)
 
     /**
      * Retrieve the entity of the painting that will be spawned.
@@ -48,7 +48,7 @@ class WrapperPlayServerEntityEquipment : AbstractPacket {
      * @param event - the packet event.
      * @return The spawned entity.
      */
-    fun getEntity(event: PacketEvent): Entity = getEntity(event.player.world)
+    fun getEntity(event: PacketEvent): Entity? = getEntity(event.player.world)
 
     var slot: ItemSlot
         get() = handle.itemSlots.read(0)

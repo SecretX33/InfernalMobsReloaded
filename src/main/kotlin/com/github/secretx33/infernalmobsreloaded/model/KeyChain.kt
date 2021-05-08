@@ -1,6 +1,9 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
+import com.github.secretx33.infernalmobsreloaded.utils.pdc
 import org.bukkit.NamespacedKey
+import org.bukkit.entity.Entity
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 
 /**
@@ -15,4 +18,6 @@ class KeyChain(plugin: Plugin) {
     val fireworkOwnerUuidKey  = NamespacedKey(plugin, "infernal_uuid_which_spawned_the_firework")   // String containing the infernal UUID that spawned the firework
     val spawnerCategoryKey    = NamespacedKey(plugin, "spawner_infernal_category")    // String
     val infernalItemNameKey   = NamespacedKey(plugin, "infernal_mobs_loot_item_name") // String
+
+    fun hasMountKey(entity: Entity) = entity.pdc.has(infernalMountKey, PersistentDataType.SHORT) || entity.pdc.has(infernalBatMountKey, PersistentDataType.SHORT)
 }

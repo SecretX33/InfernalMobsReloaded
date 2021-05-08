@@ -24,6 +24,7 @@ permissions:
       imr.spawn: true
       imr.multispawn: true
       imr.getloot: true
+      imr.killall: true
 
   imr.reload:
     description: Allows one to reload all plugin configurations.
@@ -43,4 +44,8 @@ permissions:
 
   imr.getloot:
     description: Allows player to use subcommand 'getloot', which allows him to get any loot item, in any amount.
+    default: false
+
+  imr.killall:
+    description: Allows player to use subcommand 'killall', which kill all infernals and their mounts from all worlds.
     default: false

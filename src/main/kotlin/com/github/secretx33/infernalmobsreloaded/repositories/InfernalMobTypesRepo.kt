@@ -102,7 +102,7 @@ class InfernalMobTypesRepo (
             attackKnockbackMod = getAtkKnockbackModAmounts(name),
             healthMulti = getHealthMultiplierAmounts(name),
             speedMulti = getSpeedMultiplierAmounts(name),
-            consoleCommand = getConsoleCommand(name),
+            consoleCommands = getConsoleCommands(name),
             forcedAbilities = getForcedAbilities(name),
             loots = getMobLootTable(name),
         )
@@ -125,7 +125,7 @@ class InfernalMobTypesRepo (
     private val disabledAbilities: Set<Ability>
         get() = config.getEnumSet(ConfigKeys.DISABLED_ABILITIES, Ability::class.java)
 
-    private fun getConsoleCommand(name: String) = manager.getString("$name.run-command")?.trim() ?: ""
+    private fun getConsoleCommands(name: String) = manager.getStringList("$name.run-command").map { it.trim() }
 
     private fun getMobType(name: String): EntityType {
         val mobType = manager.getString("$name.type") ?: ""

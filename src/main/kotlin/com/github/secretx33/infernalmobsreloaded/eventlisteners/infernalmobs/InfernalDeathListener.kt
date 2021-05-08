@@ -50,13 +50,14 @@ class InfernalDeathListener (
         dropMobLoots()
         dropMobSpawner()
         sendDeathMessage()
-        consoleCommmand()
+        consoleCommmands()
     }
 
-    private fun InfernalDeathEvent.consoleCommmand() {
+    private fun InfernalDeathEvent.consoleCommmands() {
         val player = entity.killer ?: return
-        val command = infernalType.consoleCommand.takeIf { it.isNotBlank() } ?: return
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("<player>", player.name))
+        infernalType.consoleCommands.forEach {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), it.replace("<player>", player.name))
+        }
     }
 
     private fun InfernalDeathEvent.triggerSecondWind(lives: Int) {

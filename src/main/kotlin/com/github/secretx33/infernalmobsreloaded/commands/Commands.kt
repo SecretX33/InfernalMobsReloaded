@@ -16,6 +16,7 @@ class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
     private val subcommands: List<SubCommand> = listOf(
         GetLootCommand(),
         InspectCommand(),
+        KillAllCommand(),
         MultispawnCommand(),
         ReloadCommand(),
         SpawnCommand(),

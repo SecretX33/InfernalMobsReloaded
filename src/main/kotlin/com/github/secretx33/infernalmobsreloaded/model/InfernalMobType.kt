@@ -28,7 +28,7 @@ data class InfernalMobType (
     private val attackKnockbackMod: Pair<Double, Double>,
     private val healthMulti: Pair<Double, Double>,
     private val speedMulti: Pair<Double, Double>,
-    val consoleCommand: String,
+    val consoleCommands: List<String>,
     val forcedAbilities: Set<Ability>,
     private val loots: Map<LootItem, Double>,
 ) {

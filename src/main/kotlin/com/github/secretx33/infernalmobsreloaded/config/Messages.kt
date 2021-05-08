@@ -44,6 +44,7 @@ enum class MessageKeys(val default: Any) {
     INFERNAL_MOB_SPAWN_MESSAGES(""),
     INFERNAL_MOB_TYPE_DOESNT_EXIST("<#FF5555>Sorry, the infernal type <type> <#FF5555>doesn't exist in your <#FFAA00>mobs.yml <#FF5555>file, please type a valid name."),
     INVALID_NUMBER("<#FF5555>Sorry, <#FFAA00><number> <#FF5555>is not a number."),
+    KILLED_ALL_INFERNALS("<#55FF55>Killed all infernals from all worlds."),
     LOOT_ITEM_DOESNT_EXIST("<#FF5555>Sorry, loot item named <#FFAA00><item> <#FF5555>doesn't exist."),
     NOT_TARGETING_INFERNAL("<#FF5555>The entity you're currently targeting is not an Infernal Mob, please target an Infernal Mob and try again."),
     NOT_TARGETING_LIVING_ENTITY("<#FF5555>You are not targeting an entity, please aim to an entity and try again."),
