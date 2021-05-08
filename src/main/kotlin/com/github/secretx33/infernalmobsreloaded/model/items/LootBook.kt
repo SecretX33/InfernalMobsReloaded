@@ -1,11 +1,14 @@
 package com.github.secretx33.infernalmobsreloaded.model.items
 
 import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
+import com.github.secretx33.infernalmobsreloaded.utils.markWithInfernalTag
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
+import org.koin.core.component.KoinApiExtension
 
+@KoinApiExtension
 data class LootBook (
     override val name: String,
     private val material: Material,
@@ -29,7 +32,7 @@ data class LootBook (
             author?.let { meta.author(author) }
             meta.generation = generation
             meta.pages(pages)
-            item.itemMeta = meta
+            item.itemMeta = meta.markWithInfernalTag(name)
         }
         return item
     }

@@ -41,7 +41,7 @@ class CharmsRepo (
         loadCharmEffects()
     }
 
-    fun getCharmEffectsOrNull(name: String): Set<CharmEffect>?  = charmsCache[name.lowercase(Locale.US)]
+    fun getCharmEffectsOrNull(name: String): Set<CharmEffect>? = charmsCache[name.lowercase(Locale.US)]
 
     fun getCharmEffects(lootItemName: String) = getCharmEffectsOrNull(lootItemName) ?: throw IllegalStateException("Tried to get $lootItemName charm effect but there's none")
 
@@ -52,7 +52,9 @@ class CharmsRepo (
         return charmsCache.containsKey(name)
     }
 
-    fun getLootItemTag(item: ItemStack) = item.itemMeta?.pdc?.get(keyChain.infernalItemNameKey, PersistentDataType.STRING) ?: throw IllegalStateException("Tried to get charm effect of item ${item.formattedTypeName()} but this item doesn't contain the infernalItemNameKey pdc key")
+    fun getLootItemTagOrNull(item: ItemStack) = item.itemMeta?.pdc?.get(keyChain.infernalItemNameKey, PersistentDataType.STRING)
+
+    fun getLootItemTag(item: ItemStack) = getLootItemTagOrNull(item) ?: throw IllegalStateException("Tried to get charm effect of item ${item.formattedTypeName()} but this item doesn't contain the infernalItemNameKey pdc key")
 
     fun getHighestEffectDelay(): Double = charmsCache.values().maxOfOrNull { it.getMaxDelay() } ?: 0.0
 
@@ -78,13 +80,14 @@ class CharmsRepo (
             targetMessage = getComponentMessage(name, "target-message"),
             potionEffect = getPotionEffect(name, "effect"),
             potency = getIntPair(name, "potency"),
-            duration = getDoublePair(name, "duration", default = 0.05),
+            duration = getDoublePair(name, "duration", default = 0.05, minValue = 0.05),
             delay = getDelay(name, mode),
             particle = particle,
             effectApplyMode = mode,
             particleMode = getParticleMode(name, "particle-mode", particle, mode),
-            requiredItems = getRequiredItems(name, "required-items"),
+            requiredMainHand = getRequiredMainHand(name, "main-hand"),
             requiredSlots = getRequiredSlots(name),
+            requiredItems = getRequiredItems(name, "required-items"),
         )
     }
 
@@ -103,7 +106,6 @@ class CharmsRepo (
         return adventureMessage.parse(message)
     }
 
-
     private fun getPotionEffect(name: String, key: String): PotionEffectType {
         val potionEffect = manager.getString("charm-effects.$name.$key") ?: ""
 
@@ -118,6 +120,7 @@ class CharmsRepo (
             PotionEffectType.LUCK
         }
     }
+
 
     private fun getEffectApplyMode(name: String, key: String): PotionEffectApplyMode {
         val applyMode = manager.getString("charm-effects.$name.$key") ?: ""
@@ -172,13 +175,23 @@ class CharmsRepo (
         return particleMode
     }
 
+    private fun getRequiredMainHand(name: String, key: String): String? {
+        val item = manager.getString("charm-effects.$name.$key")?.takeIf { it.isNotBlank() } ?: return null
+
+        if(!lootItemsRepo.hasLootItem(item)) {
+            log.warning("Inside ${manager.fileName} key '$name.$key', loot item named '$item' was not found, please fix your charm configurations and reload.")
+            return null
+        }
+        return lootItemsRepo.getLootItem(item).name
+    }
+
     private fun getRequiredItems(name: String, key: String): Set<String> {
         val items = manager.getStringList("charm-effects.$name.$key")
 
         items.filter { !lootItemsRepo.hasLootItem(it) }.forEach {
-            log.warning("Inside ${manager.fileName} key '$name.$key', loot item named '$it' was not found, please fix your charm configurations and reload")
+            log.warning("Inside ${manager.fileName} key '$name.$key', loot item named '$it' was not found, please fix your charm configurations and reload.")
         }
-        return items.filter { lootItemsRepo.hasLootItem(it) }.mapTo(HashSet()) { it.lowercase(Locale.US) }
+        return items.filter { lootItemsRepo.hasLootItem(it) }.mapTo(HashSet()) { lootItemsRepo.getLootItem(it).name }
     }
 
     private fun getRequiredSlots(name: String): Set<Int> {

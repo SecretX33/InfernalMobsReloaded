@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinApiExtension
 
@@ -54,6 +55,12 @@ class PlayerItemMoveListener (
     private fun EntityPickupItemEvent.onItemPickup() {
         val player = entity as? Player ?: return
         runSync(plugin, 50L) { player.updateCharmEffects() }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private fun PlayerItemHeldEvent.onItemHeldChanged() {
+        println("${player.name} changed his active item")
+        player.updateCharmEffects()
     }
 
     private fun Player.updateCharmEffects() = charmsManager.updateCharmEffects(this)

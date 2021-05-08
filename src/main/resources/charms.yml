@@ -79,8 +79,7 @@ charm-effects:
     effect-mode: SELF_PERMANENT
     particle-mode: SELF_ONCE
     particle-type: flame
-    required-items:                            # the effect will require ALL the items listed below to be active
-      - "silky"
+    main-hand: "silky"
 
   demon_touch:
     player-message: "<#36f5f2>Your sword dismember a part of your opponent."   # message that will be sent to the player, when their target is effect by the charm's effect, omit this field to send nothing
@@ -92,5 +91,6 @@ charm-effects:
     effect-mode: TARGET_ON_HIT
     particle-mode: BOTH_WHEN_APPLIED
     particle-type: flame
-    required-items:                            # the effect will require ALL the items listed below to be active
-      - "demon_sword"
+    main-hand: "demon_sword"                   # will require 'demon_sword' to be on the main hand for the effect to kicks in
+    #required-items:                           # you can add more items as requirement, just not in the main hand since players cannot hold two items at the same time using the main hand
+      #- "another_item"

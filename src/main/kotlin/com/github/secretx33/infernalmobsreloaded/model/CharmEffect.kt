@@ -19,8 +19,8 @@ data class CharmEffect (
     val effectApplyMode: PotionEffectApplyMode,
     val particle: Particle?,
     val particleMode: CharmParticleMode,
+    val requiredMainHand: String?,
     val requiredItems: Set<String>,
-    val requiredMainHand: Optional<String>,
     val requiredSlots: Set<Int>,
 ) {
 
@@ -64,15 +64,18 @@ data class CharmEffect (
      * @param inventory Map<Int, String> a list containing all loot items owned, mapped as (itemName <-> slot)
      * @return Boolean if effect can be granted to the holder
      */
-    fun validateEffect(inventory: Map<String, Int>): Boolean {
+    fun validateEffect(inventory: Map<String, Int>, mainHand: String?): Boolean {
         // no items should have this effect
         if(requiredItems.isEmpty()) return false
 
         // inventory don't have all the required items
         if(!inventory.keys.containsAll(requiredItems)) return false
 
-        // all required items are in the correct slots
-        return requiredItems.all { itemName ->
+        // if player doesn't have the required charm in the main hand
+        if(requiredMainHand?.equals(mainHand, ignoreCase = true) == false) return false
+
+        // all required items are in the correct slots (except main hand item)
+        return (requiredItems - mainHand).all { itemName ->
             inventory[itemName]?.let { slot -> slot in requiredSlots } == true
         }
     }
