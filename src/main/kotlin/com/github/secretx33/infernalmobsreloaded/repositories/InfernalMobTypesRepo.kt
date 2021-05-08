@@ -85,7 +85,8 @@ class InfernalMobTypesRepo (
     private fun makeMobType(name: String): InfernalMobType {
         val type = getMobType(name)
         val spawnerDropChance = getSpawnerDropChance(name)
-        return InfernalMobType(name,
+        return InfernalMobType(
+            name,
             displayName = getMobDisplayName(name, type),
             bossBarName = getMobBossBarName(name, type),
             bossBarColor = getMobBossBarColor(name),
@@ -102,9 +103,27 @@ class InfernalMobTypesRepo (
             healthMulti = getHealthMultiplierAmounts(name),
             speedMulti = getSpeedMultiplierAmounts(name),
             consoleCommand = getConsoleCommand(name),
+            forcedAbilities = getForcedAbilities(name),
             loots = getMobLootTable(name),
         )
     }
+
+    private fun getForcedAbilities(name: String): Set<Ability> {
+        val forcedAbilities = manager.getStringList("$name.forced-abilities")
+
+        // if forced abilities is absent or blank
+        if(forcedAbilities.isEmpty()) return emptySet()
+
+        return forcedAbilities.mapNotNull { ability ->
+            Ability.values.firstOrNull { it.name.equals(ability, ignoreCase = true) } ?: run {
+                log.warning("Inside mob category '$name' forced-abilities, ability named '$ability' doesn't exist, please fix your mobs configurations. Ignoring this entry for now.")
+                null
+            }
+        }.filterTo(HashSet()) { it !in disabledAbilities }
+    }
+
+    private val disabledAbilities: Set<Ability>
+        get() = config.getEnumSet(ConfigKeys.DISABLED_ABILITIES, Ability::class.java)
 
     private fun getConsoleCommand(name: String) = manager.getString("$name.run-command")?.trim() ?: ""
 

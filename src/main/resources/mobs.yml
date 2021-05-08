@@ -18,7 +18,9 @@ my_custom_skeleton:
   health-multiplier: 2.5-4.0         # will have between 2.5 and 4 times the normal health amount of a Skeleton
   speed-multiplier: 1.4              # will have 1.4 times the normal speed of a Skeleton
   run-command: "say <player>"        # will run the command as the server when a infernal of this type dies, replacing <player> with the name of the player who killed the entity
-  loot-table:
+  forced-abilities:                  # you can force a type of mob to always have some abilities, if you want (copy the ability names from either `abilities.yml` or `config.yml`); if you don't want to force any ability, you may safely omit this field
+    - "ARCHER"
+  loot-table:                        # what items the mob will have a chance of dropping; if you don't want the mob to drop anything extra, just omit this field
     - "murder_axe:0.5"               # will have 50% chance of dropping a 'murder_axe'
     - "demon_sword:0.954321"         # will have 95.4321% chance of dropping a 'demon_sword'
     - "thors_apple"                  # will have 100% chance of dropping a 'thors_apple'

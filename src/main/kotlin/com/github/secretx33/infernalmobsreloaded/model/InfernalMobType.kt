@@ -29,6 +29,7 @@ data class InfernalMobType (
     private val healthMulti: Pair<Double, Double>,
     private val speedMulti: Pair<Double, Double>,
     val consoleCommand: String,
+    val forcedAbilities: Set<Ability>,
     private val loots: Map<LootItem, Double>,
 ) {
     val entityClass: Class<out Entity> = entityType.entityClass ?: throw IllegalArgumentException("entityClass cannot be null")

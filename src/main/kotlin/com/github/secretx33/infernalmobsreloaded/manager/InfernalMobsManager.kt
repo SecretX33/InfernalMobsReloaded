@@ -116,7 +116,7 @@ class InfernalMobsManager (
 
     private fun addPdcKeysToInfernal(entity: LivingEntity, infernalType: InfernalMobType, event: InfernalSpawnEvent) {
         val abilitySet = (event.abilitySet.takeIf { !event.randomAbilities }
-            ?: Ability.random(infernalType.getAbilityNumber(), disabledAbilities)).filterInvalid()
+            ?: Ability.random(infernalType.getAbilityNumber(), disabledAbilities)).filterInvalid() + infernalType.forcedAbilities
         val livesNumber = if(abilitySet.contains(Ability.SECOND_WIND)) 2 else 1
 
         entity.pdc.apply {
