@@ -30,7 +30,6 @@ class EntityUnloadListener (
         if(!entity.isInfernalMob()) return
         mobsManager.unloadInfernalMob(entity as LivingEntity)
         barManager.removeBossBar(entity as LivingEntity)
-        println("Removing ${entity.name} (${entity.formattedTypeName()}) from the world")
     }
 
     private fun Entity.isInfernalMob() = this is LivingEntity && mobsManager.isValidInfernalMob(this)

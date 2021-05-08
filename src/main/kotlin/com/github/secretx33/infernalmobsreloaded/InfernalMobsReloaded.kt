@@ -128,6 +128,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<Metrics>()
         get<InfernalMobsManager>().loadAllInfernals()
         get<BossBarManager>().showBarsOfNearbyInfernalsForAllPlayers()
+        get<CharmsManager>().startAllCharmTasks()
     }
 
     override fun onDisable() {

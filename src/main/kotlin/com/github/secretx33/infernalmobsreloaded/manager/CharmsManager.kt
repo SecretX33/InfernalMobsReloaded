@@ -102,7 +102,9 @@ class CharmsManager(
     }
 
     fun triggerOnHitCharms(player: Player, target: LivingEntity) {
+//        println("Triggering on hit effects")
         targetEffects.get(player.uniqueId).filter { it.isNotCooldown(player) }.forEach {
+//            println("Triggering ${it.name} on ${target.name}")
             target.addPotionEffect(PotionEffect(it.potionEffect, (it.getDuration() * 20.0).toInt(), it.getPotency()))
 
             // particles
@@ -159,7 +161,7 @@ class CharmsManager(
         targetEffects.clear()
     }
 
-    private fun startAllCharmTasks() {
+    fun startAllCharmTasks() {
         Bukkit.getOnlinePlayers().forEach { updateCharmEffects(it) }
     }
 }

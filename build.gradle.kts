@@ -17,7 +17,7 @@ plugins {
 }
 
 group = "com.github.secretx33"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -71,6 +71,7 @@ tasks.shadowJar {
     relocate("org.jetbrains", "${dependencyPackage}.jetbrains")
     relocate("org.intellij", "${dependencyPackage}.jetbrains.intellij")
     relocate("com.cryptomorin.xseries", "${dependencyPackage}.xseries")
+    relocate("me.mattstudios.msg", "${dependencyPackage}.mfmsg")
     exclude("DebugProbesKt.bin")
     exclude("META-INF/**")
 }
