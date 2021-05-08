@@ -64,9 +64,9 @@ class CharmsManager(
             // recurrent effects, like healing
             PotionEffectApplyMode.SELF_RECURRENT -> addRecurrentCharmEffect(charmEffect)
             // on hit effects, like instant damage, only applied on target
-            PotionEffectApplyMode.TARGET_TEMPORARY -> {
-                targetEffects.put(uniqueId, charmEffect)
-            }
+            PotionEffectApplyMode.SELF_ON_HIT,
+            PotionEffectApplyMode.TARGET_ON_HIT,
+            PotionEffectApplyMode.BOTH_ON_HIT -> targetEffects.put(uniqueId, charmEffect)
         }
     }
 
@@ -105,7 +105,11 @@ class CharmsManager(
 //        println("Triggering on hit effects")
         targetEffects.get(player.uniqueId).filter { it.isNotCooldown(player) }.forEach {
 //            println("Triggering ${it.name} on ${target.name}")
-            target.addPotionEffect(PotionEffect(it.potionEffect, (it.getDuration() * 20.0).toInt(), it.getPotency()))
+            if(it.effectApplyMode == PotionEffectApplyMode.SELF_ON_HIT || it.effectApplyMode == PotionEffectApplyMode.BOTH_ON_HIT)
+                player.addPotionEffect(PotionEffect(it.potionEffect, (it.getDuration() * 20.0).toInt(), it.getPotency()))
+
+            if(it.effectApplyMode == PotionEffectApplyMode.TARGET_ON_HIT || it.effectApplyMode == PotionEffectApplyMode.BOTH_ON_HIT)
+                target.addPotionEffect(PotionEffect(it.potionEffect, (it.getDuration() * 20.0).toInt(), it.getPotency()))
 
             // particles
             if(it.enabledSelfParticle) player.spawnCharmParticles(it)
@@ -126,7 +130,9 @@ class CharmsManager(
                 permanentEffects.remove(uniqueId, charmEffect)?.let { removePotionEffect(it) }
             }
             PotionEffectApplyMode.SELF_RECURRENT -> periodicEffects.remove(uniqueId, charmEffect)?.cancel()
-            PotionEffectApplyMode.TARGET_TEMPORARY -> targetEffects.remove(uniqueId, charmEffect)
+            PotionEffectApplyMode.SELF_ON_HIT,
+            PotionEffectApplyMode.TARGET_ON_HIT,
+            PotionEffectApplyMode.BOTH_ON_HIT -> targetEffects.remove(uniqueId, charmEffect)
         }
     }
 

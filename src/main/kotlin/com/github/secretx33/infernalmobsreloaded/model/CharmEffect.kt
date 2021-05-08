@@ -20,6 +20,7 @@ data class CharmEffect (
     val particle: Particle?,
     val particleMode: CharmParticleMode,
     val requiredItems: Set<String>,
+    val requiredMainHand: Optional<String>,
     val requiredSlots: Set<Int>,
 ) {
 
@@ -51,10 +52,10 @@ data class CharmEffect (
     fun getMaxDelay() = delay.second
 
     val enabledSelfParticle
-        get() = particle != null && (particleMode == CharmParticleMode.ON_BOTH_WHEN_APPLIED || particleMode == CharmParticleMode.ON_SELF_WHEN_APPLIED)
+        get() = particle != null && (particleMode == CharmParticleMode.BOTH_WHEN_APPLIED || particleMode == CharmParticleMode.SELF_WHEN_APPLIED)
 
     val enabledTargetParticle
-        get() = particle != null && (particleMode == CharmParticleMode.ON_BOTH_WHEN_APPLIED || particleMode == CharmParticleMode.ON_TARGET_WHEN_APPLIED)
+        get() = particle != null && (particleMode == CharmParticleMode.BOTH_WHEN_APPLIED || particleMode == CharmParticleMode.TARGET_WHEN_APPLIED)
 
     /**
      * For a given inventory (mapped to itemName, slot), it validates if all items are on the correct slots
@@ -91,13 +92,13 @@ data class CharmEffect (
 }
 
 enum class PotionEffectApplyMode {
-    SELF_PERMANENT, SELF_RECURRENT, TARGET_TEMPORARY
+    SELF_PERMANENT, SELF_RECURRENT, SELF_ON_HIT, TARGET_ON_HIT, BOTH_ON_HIT
 }
 
 enum class CharmParticleMode(val validApplyModes: Set<PotionEffectApplyMode>) {
     NONE(PotionEffectApplyMode.values().toSet()),
     SELF_ONCE(setOf(PotionEffectApplyMode.SELF_PERMANENT)),
-    ON_SELF_WHEN_APPLIED(setOf(PotionEffectApplyMode.SELF_RECURRENT, PotionEffectApplyMode.TARGET_TEMPORARY)),
-    ON_TARGET_WHEN_APPLIED(setOf(PotionEffectApplyMode.TARGET_TEMPORARY)),
-    ON_BOTH_WHEN_APPLIED(setOf(PotionEffectApplyMode.TARGET_TEMPORARY)),
+    SELF_WHEN_APPLIED(setOf(PotionEffectApplyMode.SELF_RECURRENT, PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
+    TARGET_WHEN_APPLIED(setOf(PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
+    BOTH_WHEN_APPLIED(setOf(PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
 }
