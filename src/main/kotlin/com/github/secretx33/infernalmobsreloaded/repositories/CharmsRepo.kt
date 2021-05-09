@@ -47,7 +47,7 @@ class CharmsRepo (
 
     fun getCharmEffects(item: ItemStack): Set<CharmEffect> = getCharmEffects(lootItemsRepo.getLootItemTag(item))
 
-    fun isCharm(item: ItemStack): Boolean {
+    fun isItemRequiredByCharm(item: ItemStack): Boolean {
         val name = item.itemMeta?.pdc?.get(keyChain.infernalItemNameKey, PersistentDataType.STRING) ?: return false
         return charmsCache.containsKey(name)
     }

@@ -38,14 +38,14 @@ class CharmsManager(
 
     fun updateCharmEffects(player: Player) {
         val invMap = player.inventoryMap
-        val charms = invMap.filterKeys { charmsRepo.isCharm(it) }
+        val charms = invMap.filterKeys { charmsRepo.isItemRequiredByCharm(it) }
         // if player has no charms in his inventory
         if(charms.isEmpty()) {
             cancelAllCharmTasks(player)
             return
         }
         // owned loot items, because charms may require loot items to work
-        val lootItems = invMap.filterKeys { lootItemsRepo.isLootItem(it) }.mapKeys { lootItemsRepo.getLootItemTag(it.key) }
+        val lootItems = invMap.filterKeys { lootItemsRepo.isLootItem(it) }.mapKeys { lootItemsRepo.getLootItemTag(it.key) } // TODO("maybe change invMap to charms again")
         val mainHand = player.inventory.itemInMainHand.let { lootItemsRepo.getLootItemTagOrNull(it) }
 
         // charmEffects present in all loot items in player's inventory
