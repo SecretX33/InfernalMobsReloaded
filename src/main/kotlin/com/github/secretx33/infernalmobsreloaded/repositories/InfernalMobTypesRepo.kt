@@ -17,13 +17,11 @@ import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.plugin.Plugin
-import org.koin.core.component.KoinApiExtension
 import java.util.*
 import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.min
 
-@KoinApiExtension
 class InfernalMobTypesRepo (
     plugin: Plugin,
     private val log: Logger,

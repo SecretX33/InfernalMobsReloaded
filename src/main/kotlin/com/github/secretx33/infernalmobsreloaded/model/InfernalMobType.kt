@@ -1,16 +1,14 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
-import com.github.secretx33.infernalmobsreloaded.utils.getRandomBetween
+import com.github.secretx33.infernalmobsreloaded.utils.random
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
-import org.koin.core.component.KoinApiExtension
 import java.util.*
 
-@KoinApiExtension
 data class InfernalMobType (
     val name: String,
     val displayName: Component,
@@ -35,6 +33,7 @@ data class InfernalMobType (
     val entityClass: Class<out Entity> = entityType.entityClass ?: throw IllegalArgumentException("entityClass cannot be null")
 
     init {
+        require(name.isNotBlank()) { "name cannot be blank, name = '$name'" }
         require(spawnChance in 0.0..1.0) { "spawnChance needs to be within 0 and 1, spawnChance = $spawnChance" }
         require(mobSpawnerDropChance in 0.0..1.0) { "mobSpawnerDropChance needs to be within 0 and 1, mobSpawnerDropChance = $mobSpawnerDropChance" }
         require(entityType.isSpawnable) { "entityType needs to be spawnable, $entityType is not" }
@@ -65,17 +64,17 @@ data class InfernalMobType (
         require(speedMulti.first <= speedMulti.second) { "speedMulti first value has to be lower or equal than the second value, speedMulti = $speedMulti" }
     }
 
-    fun getAbilityNumber() = numAbilities.getRandomBetween()
+    fun getAbilityNumber() = numAbilities.random()
 
-    fun getFollowRangeMulti() = followRangeMulti.getRandomBetween()
+    fun getFollowRangeMulti() = followRangeMulti.random()
 
-    fun getDamageMulti() = damageMulti.getRandomBetween()
+    fun getDamageMulti() = damageMulti.random()
 
-    fun getAtkKnockbackMod() = attackKnockbackMod.getRandomBetween()
+    fun getAtkKnockbackMod() = attackKnockbackMod.random()
 
-    fun getHealthMulti() = healthMulti.getRandomBetween()
+    fun getHealthMulti() = healthMulti.random()
 
-    fun getSpeedMulti() = speedMulti.getRandomBetween()
+    fun getSpeedMulti() = speedMulti.random()
 
     fun getLoots() = loots.asSequence().filter { random.nextDouble() <= it.value }.map { it.key.makeItem() }.toList()
 

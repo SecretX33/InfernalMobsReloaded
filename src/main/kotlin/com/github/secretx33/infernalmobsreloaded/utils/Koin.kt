@@ -2,7 +2,6 @@ package com.github.secretx33.infernalmobsreloaded.utils
 
 import org.koin.core.Koin
 import org.koin.core.KoinApplication
-import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.context.KoinContext
 import org.koin.core.error.KoinAppAlreadyStartedException
@@ -11,7 +10,6 @@ import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.qualifier.Qualifier
 import org.koin.dsl.KoinAppDeclaration
 
-@KoinApiExtension
 interface CustomKoinComponent : KoinComponent {
     override fun getKoin(): Koin = CustomScope.get()
 }
@@ -19,65 +17,56 @@ interface CustomKoinComponent : KoinComponent {
 private object CustomScope : KoinContext {
 
     private var _koin: Koin? = null
+    private var _koinApplication: KoinApplication? = null
 
-    override fun get(): Koin = _koin ?: error("Custom KoinApplication has not been started")
+    override fun get(): Koin = _koin ?: error("KoinApplication has not been started")
 
     override fun getOrNull(): Koin? = _koin
 
-    override fun register(koinApplication: KoinApplication) {
+    fun getKoinApplicationOrNull(): KoinApplication? = _koinApplication
+
+    private fun register(koinApplication: KoinApplication) {
         if (_koin != null) {
-            throw KoinAppAlreadyStartedException("A Custom Koin Application has already been started")
+            throw KoinAppAlreadyStartedException("A Koin Application has already been started")
         }
+        _koinApplication = koinApplication
         _koin = koinApplication.koin
     }
 
-    override fun stop() = synchronized(this) {
+    override fun stopKoin() = synchronized(this) {
         _koin?.close()
         _koin = null
     }
 
-    fun startKoin(koinContext: KoinContext = CustomScope, koinApplication: KoinApplication): KoinApplication = synchronized(this) {
-        koinContext.register(koinApplication)
+
+    override fun startKoin(koinApplication: KoinApplication): KoinApplication = synchronized(this) {
+        register(koinApplication)
         koinApplication.createEagerInstances()
         return koinApplication
     }
 
-    /**
-     * Start a custom Koin Application as StandAlone
-     */
-    fun startKoin(koinContext: KoinContext = CustomScope, appDeclaration: KoinAppDeclaration): KoinApplication = synchronized(this) {
+    override fun startKoin(appDeclaration: KoinAppDeclaration): KoinApplication = synchronized(this) {
         val koinApplication = KoinApplication.init()
-        koinContext.register(koinApplication)
+        register(koinApplication)
         appDeclaration(koinApplication)
         koinApplication.createEagerInstances()
         return koinApplication
     }
 
-    /**
-     * load Koin module in custom Koin context
-     */
-    fun loadKoinModules(module: Module) = synchronized(this) {
+
+    override fun loadKoinModules(module: Module) = synchronized(this) {
         get().loadModules(listOf(module))
     }
 
-    /**
-     * load Koin modules in custom Koin context
-     */
-    fun loadKoinModules(modules: List<Module>) = synchronized(this) {
+    override fun loadKoinModules(modules: List<Module>) = synchronized(this) {
         get().loadModules(modules)
     }
 
-    /**
-     * unload Koin modules from custom Koin context
-     */
-    fun unloadKoinModules(module: Module) = synchronized(this) {
+    override fun unloadKoinModules(module: Module) = synchronized(this) {
         get().unloadModules(listOf(module))
     }
 
-    /**
-     * unload Koin modules from custom Koin context
-     */
-    fun unloadKoinModules(modules: List<Module>) = synchronized(this) {
+    override fun unloadKoinModules(modules: List<Module>) = synchronized(this) {
         get().unloadModules(modules)
     }
 }
@@ -85,19 +74,17 @@ private object CustomScope : KoinContext {
 /**
  * Start a Koin Application as StandAlone
  */
-fun startKoin(koinContext: KoinContext = CustomScope,
-              koinApplication: KoinApplication): KoinApplication = CustomScope.startKoin(koinContext, koinApplication)
+fun startKoin(koinApplication: KoinApplication): KoinApplication = CustomScope.startKoin(koinApplication)
 
 /**
  * Start a Koin Application as StandAlone
  */
-fun startKoin(koinContext: KoinContext = CustomScope,
-              appDeclaration: KoinAppDeclaration): KoinApplication = CustomScope.startKoin(koinContext, appDeclaration)
+fun startKoin(appDeclaration: KoinAppDeclaration): KoinApplication = CustomScope.startKoin(appDeclaration)
 
 /**
  * Stop current StandAlone Koin application
  */
-fun stopKoin() = CustomScope.stop()
+fun stopKoin() = CustomScope.stopKoin()
 
 /**
  * load Koin module in global Koin context
@@ -119,7 +106,6 @@ fun unloadKoinModules(module: Module) = CustomScope.unloadKoinModules(module)
  */
 fun unloadKoinModules(modules: List<Module>) = CustomScope.unloadKoinModules(modules)
 
-@KoinApiExtension
 inline fun <reified T : Any> CustomKoinComponent.inject(
     qualifier: Qualifier? = null,
     mode: LazyThreadSafetyMode = LazyThreadSafetyMode.SYNCHRONIZED,
@@ -127,5 +113,19 @@ inline fun <reified T : Any> CustomKoinComponent.inject(
 ): Lazy<T> =
     lazy(mode) { getKoin().get(qualifier, parameters) }
 
-@KoinApiExtension
-inline fun <reified T : Any> CustomKoinComponent.get(qualifier: Qualifier? = null, noinline parameters: ParametersDefinition? = null): T = getKoin().get(qualifier = qualifier, parameters = parameters)
+inline fun <reified T : Any> CustomKoinComponent.injectOrNull(
+    qualifier: Qualifier? = null,
+    mode: LazyThreadSafetyMode = LazyThreadSafetyMode.SYNCHRONIZED,
+    noinline parameters: ParametersDefinition? = null
+): Lazy<T?> =
+    lazy(mode) { getKoin().getOrNull(qualifier, parameters) }
+
+inline fun <reified T : Any> CustomKoinComponent.get(
+    qualifier: Qualifier? = null,
+    noinline parameters: ParametersDefinition? = null
+): T = getKoin().get(T::class, qualifier = qualifier, parameters = parameters)
+
+inline fun <reified T : Any> CustomKoinComponent.getOrNull(
+    qualifier: Qualifier? = null,
+    noinline parameters: ParametersDefinition? = null
+): T? = getKoin().getOrNull(T::class, qualifier, parameters)

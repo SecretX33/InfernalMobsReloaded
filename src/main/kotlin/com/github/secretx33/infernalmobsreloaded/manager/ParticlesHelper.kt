@@ -11,10 +11,8 @@ import kotlinx.coroutines.launch
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.entity.LivingEntity
-import org.koin.core.component.KoinApiExtension
 import java.util.logging.Logger
 
-@KoinApiExtension
 class ParticlesHelper(private val config: Config, private val log: Logger) {
 
     fun sendParticle(loc: Location, particle: Particle, spread: Double, amount: Int = particleAmount) {

@@ -21,19 +21,16 @@ import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataHolder
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
-import org.koin.core.component.KoinApiExtension
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
 
 
-@KoinApiExtension
 private object Utils: CustomKoinComponent {
     val random = Random()
     val keyChain by inject<KeyChain>()
 }
 
-@KoinApiExtension
 fun ItemStack.turnIntoSpawner(infernalType: InfernalMobType): ItemStack {
     require(type == Material.SPAWNER) { "may only turn into spawn actual spawners, $type is not spawner" }
    itemMeta.apply {
@@ -44,20 +41,17 @@ fun ItemStack.turnIntoSpawner(infernalType: InfernalMobType): ItemStack {
     return this
 }
 
-@KoinApiExtension
 fun ItemMeta.markWithInfernalTag(itemName: String): ItemMeta {
     pdc.set(keyChain.infernalItemNameKey, PersistentDataType.STRING, itemName)
     return this
 }
 
-@KoinApiExtension
-fun Pair<Int, Int>.getRandomBetween(): Int {
+fun Pair<Int, Int>.random(): Int {
     val (minValue, maxValue) = this
     return Utils.random.nextInt(maxValue - minValue + 1) + minValue
 }
 
-@KoinApiExtension
-fun Pair<Double, Double>.getRandomBetween(): Double {
+fun Pair<Double, Double>.random(): Double {
     val (minValue, maxValue) = this
     return minValue + (maxValue - minValue) * Utils.random.nextDouble()
 }

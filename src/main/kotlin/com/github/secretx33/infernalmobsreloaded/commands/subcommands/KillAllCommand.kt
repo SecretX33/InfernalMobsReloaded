@@ -2,21 +2,14 @@ package com.github.secretx33.infernalmobsreloaded.commands.subcommands
 
 import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
-import com.github.secretx33.infernalmobsreloaded.config.replace
-import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.utils.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
-import com.github.secretx33.infernalmobsreloaded.utils.getTarget
 import com.github.secretx33.infernalmobsreloaded.utils.inject
-import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.koin.core.component.KoinApiExtension
 
-@KoinApiExtension
 class KillAllCommand : SubCommand(), CustomKoinComponent {
 
     override val name: String = "killall"

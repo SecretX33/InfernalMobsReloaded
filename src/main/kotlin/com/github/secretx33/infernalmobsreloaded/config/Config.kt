@@ -10,7 +10,6 @@ import org.bukkit.Particle
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.plugin.Plugin
-import org.koin.core.component.KoinApiExtension
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
@@ -19,7 +18,6 @@ import kotlin.math.max
 import kotlin.math.min
 import java.lang.Enum as JavaEnum
 
-@KoinApiExtension
 class Config(plugin: Plugin, private val log: Logger) {
 
     private val manager = YamlManager(plugin, "config")
@@ -109,6 +107,8 @@ class Config(plugin: Plugin, private val log: Logger) {
 }
 
 enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
+    TOWNY_REMOVE_INFERNAL_IN_TOWNS("remove-infernal-mobs-in-towns", true),
+    TOWNY_REMOVE_INFERNAL_IN_TOWNS_DELAY("remove-infernal-mobs-in-towns-after", 5.0),
     BOSS_BAR_SHOW_RANGE_DISTANCE("boss-bar-show-range-distance", 25.0),
     BOSS_BAR_SHOW_RANGE_HEIGHT("boss-bar-show-range-height", 15.0),
     DELAY_BETWEEN_INFERNAL_PARTICLES("delay-between-infernal-particles", 1.5),

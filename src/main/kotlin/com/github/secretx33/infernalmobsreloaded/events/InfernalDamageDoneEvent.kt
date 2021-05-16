@@ -4,9 +4,7 @@ import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.Cancellable
 import org.bukkit.event.entity.EntityDamageEvent
-import org.koin.core.component.KoinApiExtension
 
-@KoinApiExtension
 class InfernalDamageDoneEvent (
     entity: LivingEntity,
     val defender: LivingEntity,

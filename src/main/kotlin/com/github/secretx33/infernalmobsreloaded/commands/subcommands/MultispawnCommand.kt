@@ -16,10 +16,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.CreatureSpawnEvent
-import org.koin.core.component.KoinApiExtension
 import kotlin.math.min
 
-@KoinApiExtension
 class MultispawnCommand: SubCommand(), CustomKoinComponent {
 
     override val name: String = "multispawn"

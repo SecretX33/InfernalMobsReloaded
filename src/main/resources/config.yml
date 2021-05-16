@@ -37,7 +37,7 @@ display-infernal-custom-name-mode: LOOKING_AT
 # Prevent infernals mobs from damaging itself, they literally cannot take damage of their own abilities, no matter what
 infernals-cannot-damage-themselves: true
 
-# Prevent despawn of infernals, it doesn't mean this option will force chunks infernal mobs are in to always be loaded, it means that infernals will be saved with the chunk when it's get unloaded, and respawned once the chunk is loaded again (pretty much like villagers).
+# Prevent despawn of infernals, it doesn't mean this option will force chunks infernal mobs are in to always be loaded, it means that infernals will be saved with the chunk when it's get unloaded, and respawned once the chunk is loaded again (pretty much like villagers). May cause increase in infernal population around busy areas.
 infernals-are-persistent: true
 
 ####################
@@ -53,6 +53,25 @@ enable-spawner-drops: true
 
 # If set to any value other than NONE, that type of entity will be able to die from poison, similar to the wither effect; valid values: NONE, MONSTERS, PLAYERS, ALL
 entities-killed-by-poison: ALL
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                  Integration Configs                 | #
+# +------------------------------------------------------+ #
+############################################################
+
+# You can config below plugin integration with other plugins, does nothing if the plugin is absent
+
+#############
+### Towny ###
+#############
+
+# If true, infernal mobs that steps any any Town will be removed after the provided delay, unless they exist the town before. Requires a full server restart to reflect changes in this config. Disabling this feature while using Towny may reduce overall server cpu usage.
+remove-infernal-mobs-in-towns: true
+# Delay before the infernal mob is removed from the town
+remove-infernal-mobs-in-towns-after: 5.0            # in seconds
+
 
 ############################################################
 # +------------------------------------------------------+ #

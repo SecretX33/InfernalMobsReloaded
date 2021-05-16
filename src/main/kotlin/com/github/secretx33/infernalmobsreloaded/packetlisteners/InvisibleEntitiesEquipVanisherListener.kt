@@ -15,9 +15,7 @@ import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
-import org.koin.core.component.KoinApiExtension
 
-@KoinApiExtension
 class InvisibleEntitiesEquipVanisherListener (
     private val plugin: Plugin,
     private val abilityConfig: AbilityConfig,

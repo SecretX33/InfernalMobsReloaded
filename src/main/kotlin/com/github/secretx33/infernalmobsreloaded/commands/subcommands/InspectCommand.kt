@@ -12,9 +12,7 @@ import com.github.secretx33.infernalmobsreloaded.utils.inject
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.koin.core.component.KoinApiExtension
 
-@KoinApiExtension
 class InspectCommand : SubCommand(), CustomKoinComponent {
 
     override val name: String = "inspect"

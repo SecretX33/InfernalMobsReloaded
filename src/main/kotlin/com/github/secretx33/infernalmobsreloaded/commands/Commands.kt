@@ -7,10 +7,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
-import org.koin.core.component.KoinApiExtension
 import java.util.*
 
-@KoinApiExtension
 class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
 
     private val subcommands: List<SubCommand> = listOf(

@@ -14,9 +14,7 @@ import com.github.secretx33.infernalmobsreloaded.utils.CustomKoinComponent
 import com.github.secretx33.infernalmobsreloaded.utils.inject
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.koin.core.component.KoinApiExtension
 
-@KoinApiExtension
 class ReloadCommand : SubCommand(), CustomKoinComponent {
 
     override val name: String = "reload"

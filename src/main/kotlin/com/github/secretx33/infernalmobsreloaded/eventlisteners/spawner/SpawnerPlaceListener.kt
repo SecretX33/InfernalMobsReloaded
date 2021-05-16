@@ -13,9 +13,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
-import org.koin.core.component.KoinApiExtension
 
-@KoinApiExtension
 class SpawnerPlaceListener (
     plugin: Plugin,
     private val infernalMobTypeRepo: InfernalMobTypesRepo,

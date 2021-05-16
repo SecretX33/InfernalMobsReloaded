@@ -18,11 +18,9 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import org.koin.core.component.KoinApiExtension
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-@KoinApiExtension
 class CharmsManager(
     private val plugin: Plugin,
     private val charmsRepo: CharmsRepo,

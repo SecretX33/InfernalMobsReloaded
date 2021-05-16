@@ -16,9 +16,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
-import org.koin.core.component.KoinApiExtension
 
-@KoinApiExtension
 class SpawnCommand: SubCommand(), CustomKoinComponent {
 
     override val name: String = "spawn"

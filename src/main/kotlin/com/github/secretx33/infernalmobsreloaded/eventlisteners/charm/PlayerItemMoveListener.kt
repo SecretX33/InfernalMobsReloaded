@@ -15,9 +15,7 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.plugin.Plugin
-import org.koin.core.component.KoinApiExtension
 
-@KoinApiExtension
 class PlayerItemMoveListener (
     private val plugin: Plugin,
     private val charmsManager: CharmsManager,

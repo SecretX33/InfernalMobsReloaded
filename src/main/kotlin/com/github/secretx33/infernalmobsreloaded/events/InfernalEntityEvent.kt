@@ -4,7 +4,6 @@ import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
-import org.koin.core.component.KoinApiExtension
 
 /**
  * Represents any event that involves a infernal entity directly
@@ -15,7 +14,6 @@ import org.koin.core.component.KoinApiExtension
  * @property entityType EntityType What type of vanilla entity the mob is
  * @constructor
  */
-@KoinApiExtension
 abstract class InfernalEntityEvent (
     val entity: LivingEntity,
     val infernalType: InfernalMobType,

@@ -33,14 +33,12 @@ import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.Vector
-import org.koin.core.component.KoinApiExtension
 import java.lang.StrictMath.pow
 import java.lang.reflect.Type
 import java.util.*
 import java.util.logging.Logger
 import kotlin.math.*
 
-@KoinApiExtension
 class AbilityHelper (
     private val plugin: Plugin,
     private val config: Config,
@@ -133,7 +131,7 @@ class AbilityHelper (
 
     private fun LivingEntity.addHeavyAbility() {
         getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.apply {
-            val resistAmount = abilityConfig.getDoublePair(AbilityConfigKeys.HEAVY_RESIST_PERCENTAGE).getRandomBetween()
+            val resistAmount = abilityConfig.getDoublePair(AbilityConfigKeys.HEAVY_RESIST_PERCENTAGE).random()
             val mod = AttributeModifier(knockbackResistUID, Ability.HEAVY.name, resistAmount, AttributeModifier.Operation.ADD_NUMBER)
             removeModifier(mod)
             addModifier(mod)
@@ -202,7 +200,7 @@ class AbilityHelper (
     private fun LivingEntity.addSpeedyAbility() {
         val movSpeed = (if(doesFly()) getAttribute(Attribute.GENERIC_FLYING_SPEED) else getAttribute(Attribute.GENERIC_MOVEMENT_SPEED))
             ?: return
-        val speedBonus = abilityConfig.getDoublePair(AbilityConfigKeys.SPEEDY_BONUS).getRandomBetween()
+        val speedBonus = abilityConfig.getDoublePair(AbilityConfigKeys.SPEEDY_BONUS).random()
         val mod = AttributeModifier(movSpeedUID, Ability.SPEEDY.name, speedBonus, AttributeModifier.Operation.ADD_SCALAR)
         movSpeed.removeModifier(mod)
         movSpeed.addModifier(mod)
@@ -240,7 +238,7 @@ class AbilityHelper (
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
-            val amount = abilityConfig.getIntAmounts(Ability.POTIONS, 1, minValue = 1).getRandomBetween()
+            val amount = abilityConfig.getIntAmounts(Ability.POTIONS, 1, minValue = 1).random()
             val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
 
             for (i in 1..amount) {
@@ -254,15 +252,15 @@ class AbilityHelper (
 
                     entity.throwPotion(victim, type)
                 }
-                val throwDelay = abilityConfig.getDoublePair(AbilityConfigKeys.POTIONS_THROW_DELAY).getRandomBetween().toLongDelay()
+                val throwDelay = abilityConfig.getDoublePair(AbilityConfigKeys.POTIONS_THROW_DELAY).random().toLongDelay()
                 delay(throwDelay)
             }
         }
     }
 
     private fun LivingEntity.throwPotion(victim: LivingEntity, type: PotionEffectType) {
-        val duration = abilityConfig.getDuration(Ability.POTIONS, 2.0).getRandomBetween()
-        val potency = abilityConfig.getAbilityPotency(Ability.POTIONS, 2, minValue = 1).getRandomBetween() - 1
+        val duration = abilityConfig.getDuration(Ability.POTIONS, 2.0).random()
+        val potency = abilityConfig.getAbilityPotency(Ability.POTIONS, 2, minValue = 1).random() - 1
         val dir = shootDirection(victim).normalize().apply { y += 0.1 }.multiply(random.nextDouble() * 0.5 + 1)
 
         val potionItem = ItemStack(randomPotionMaterial).modifyPotion(type, duration, potency)
@@ -295,7 +293,7 @@ class AbilityHelper (
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
-            val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).getRandomBetween()
+            val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).random()
             val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
 
             for (i in 1..amount) {
@@ -316,9 +314,9 @@ class AbilityHelper (
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
-            val amount = abilityConfig.getIntAmounts(Ability.CALL_THE_GANG, 2).getRandomBetween()
-            val potency = abilityConfig.getAbilityPotency(Ability.CALL_THE_GANG, 3).getRandomBetween()
-            val potionDuration = abilityConfig.getDuration(Ability.CALL_THE_GANG, 8.0).getRandomBetween()
+            val amount = abilityConfig.getIntAmounts(Ability.CALL_THE_GANG, 2).random()
+            val potency = abilityConfig.getAbilityPotency(Ability.CALL_THE_GANG, 3).random()
+            val potionDuration = abilityConfig.getDuration(Ability.CALL_THE_GANG, 8.0).random()
 
             runSync(plugin) {
                 repeat(amount) {
@@ -439,7 +437,7 @@ class AbilityHelper (
             val equip = target.equipment ?: return@launch
             // slot chosen to have its equipment stolen, skipping this interaction if there's none (and yeah EntityEquipment#getItem returns null even if its annotated with @NonNull)
             val chosenSlot = EquipmentSlot.values().filter { slot -> equip.getItem(slot).let { it != null && !it.isAir() } }.randomOrNull() ?: continue
-            val durabilityLoss = abilityConfig.getDurabilityLoss(Ability.THIEF, 0.04).getRandomBetween()
+            val durabilityLoss = abilityConfig.getDurabilityLoss(Ability.THIEF, 0.04).random()
             val item = equip.getItem(chosenSlot)
             val damagedItem = item.damageItemBy(durabilityLoss)
 
@@ -497,8 +495,8 @@ class AbilityHelper (
     }
 
     private fun launchCobweb(target: LivingEntity) {
-        val trapDensity = abilityConfig.getDoublePair(AbilityConfigKeys.WEBBER_TRAP_DENSITY, maxValue = 1.0).getRandomBetween()
-        val duration = abilityConfig.getDuration(Ability.WEBBER, 5.0, minValue = 0.1).getRandomBetween().toLongDelay()
+        val trapDensity = abilityConfig.getDoublePair(AbilityConfigKeys.WEBBER_TRAP_DENSITY, maxValue = 1.0).random()
+        val duration = abilityConfig.getDuration(Ability.WEBBER, 5.0, minValue = 0.1).random().toLongDelay()
         val blocks = target.makeCuboidAround().blockList().filter { random.nextDouble() <= trapDensity && it.canMobGrief() }
         val blockMod = BlockModification(blocks, blockModifications, blocksBlackList) { list -> list.forEach { it.type = Material.COBWEB } }
         blocksBlackList.addAll(blockMod.blockLocations)
@@ -514,7 +512,7 @@ class AbilityHelper (
     private fun Block.canMobGrief(): Boolean = type != Material.BEDROCK && isPassable && !blocksBlackList.contains(location) && wgChecker.canMobGriefBlock(this)
 
     private fun LivingEntity.makeCuboidAround(): Cuboid {
-        val maxRadius = abilityConfig.getIntPair(AbilityConfigKeys.WEBBER_MAX_RADIUS).getRandomBetween()
+        val maxRadius = abilityConfig.getIntPair(AbilityConfigKeys.WEBBER_MAX_RADIUS).random()
         val lowerBound = location.apply {
             x -= ceil(width) + 1 + maxRadius
             z -= ceil(width) + 1 + maxRadius
@@ -661,7 +659,7 @@ class AbilityHelper (
 
     private fun InfernalDamageDoneEvent.triggerBerserk() {
         val bonus = abilityConfig.getDoublePair(AbilityConfigKeys.BERSERK_CAUSED_DAMAGE_BONUS)
-        damageMulti = bonus.getRandomBetween()
+        damageMulti = bonus.random()
     }
 
     private fun InfernalDamageDoneEvent.triggerBlinding() {
@@ -669,7 +667,7 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // blinds the defender for some time
-        val duration = abilityConfig.getDuration(Ability.BLINDING, 7.0).getRandomBetween()
+        val duration = abilityConfig.getDuration(Ability.BLINDING, 7.0).random()
         defender.addPotion(PotionEffectType.BLINDNESS, Ability.BLINDING, duration)
     }
 
@@ -678,7 +676,7 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // makes the defender nauseated for some time
-        val duration = abilityConfig.getDuration(Ability.CONFUSION, 8.0).getRandomBetween()
+        val duration = abilityConfig.getDuration(Ability.CONFUSION, 8.0).random()
         defender.addPotion(PotionEffectType.CONFUSION, Ability.CONFUSION, duration)
     }
 
@@ -687,8 +685,8 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // makes the defender hunger for some time
-        val potency = max(0, abilityConfig.getAbilityPotency(Ability.HUNGER, 8).getRandomBetween() - 1)
-        val duration = abilityConfig.getDuration(Ability.HUNGER, 30.0).getRandomBetween()
+        val potency = max(0, abilityConfig.getAbilityPotency(Ability.HUNGER, 8).random() - 1)
+        val duration = abilityConfig.getDuration(Ability.HUNGER, 30.0).random()
         defender.addPotion(PotionEffectType.HUNGER, Ability.HUNGER, duration, amplifier = potency)
     }
 
@@ -697,8 +695,8 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // makes the defender levitate for some time
-        val potency = max(0, abilityConfig.getAbilityPotency(Ability.LEVITATE, 6).getRandomBetween() - 1)
-        val duration = abilityConfig.getDuration(Ability.LEVITATE, 6.0).getRandomBetween()
+        val potency = max(0, abilityConfig.getAbilityPotency(Ability.LEVITATE, 6).random() - 1)
+        val duration = abilityConfig.getDuration(Ability.LEVITATE, 6.0).random()
         defender.addPotion(PotionEffectType.LEVITATION, Ability.LEVITATE, duration, amplifier = potency)
     }
 
@@ -715,7 +713,7 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.LIFESTEAL, 0.75)
         if(random.nextDouble() > chance) return
 
-        val healingAmount = abilityConfig.getDoublePair(AbilityConfigKeys.LIFESTEAL_HEALING_PERCENTAGE).getRandomBetween()
+        val healingAmount = abilityConfig.getDoublePair(AbilityConfigKeys.LIFESTEAL_HEALING_PERCENTAGE).random()
         val effectiveHealed = entity.heal(damage * healingAmount)
         if(effectiveHealed <= 0.0) return
 
@@ -737,7 +735,7 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // sets the attacker on defender
-        val duration = abilityConfig.getDuration(Ability.MOLTEN, 8.0).getRandomBetween()
+        val duration = abilityConfig.getDuration(Ability.MOLTEN, 8.0).random()
         defender.fireTicks = (duration * 20.0).toInt()
     }
 
@@ -746,16 +744,16 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // poisons the defender
-        val potency = max(0, abilityConfig.getAbilityPotency(Ability.POISONOUS, 6).getRandomBetween() - 1)
-        val duration = abilityConfig.getDuration(Ability.POISONOUS, 8.0).getRandomBetween()
+        val potency = max(0, abilityConfig.getAbilityPotency(Ability.POISONOUS, 6).random() - 1)
+        val duration = abilityConfig.getDuration(Ability.POISONOUS, 8.0).random()
         defender.addPotion(PotionEffectType.POISON, Ability.POISONOUS, duration, amplifier = potency)
     }
 
     private fun InfernalDamageDoneEvent.triggerRust() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.RUST, 0.6)
         if(random.nextDouble() > chance) return
-        val mhDurabilityLoss = abilityConfig.getDurabilityLoss(Ability.RUST, 0.15).getRandomBetween()
-        val ohDurabilityLoss = abilityConfig.getDurabilityLoss(Ability.RUST, 0.15).getRandomBetween()
+        val mhDurabilityLoss = abilityConfig.getDurabilityLoss(Ability.RUST, 0.15).random()
+        val ohDurabilityLoss = abilityConfig.getDurabilityLoss(Ability.RUST, 0.15).random()
         val sendMessage = abilityConfig.getSendMessage(Ability.RUST)
 
         var corrodedSomething = false  // to prevent message being sent if no tools got corroded
@@ -799,8 +797,8 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // gives slow effect to the defender
-        val potency = max(0, abilityConfig.getAbilityPotency(Ability.SLOWNESS, 3).getRandomBetween() - 1)
-        val duration = abilityConfig.getDuration(Ability.SLOWNESS, 6.0).getRandomBetween()
+        val potency = max(0, abilityConfig.getAbilityPotency(Ability.SLOWNESS, 3).random() - 1)
+        val duration = abilityConfig.getDuration(Ability.SLOWNESS, 6.0).random()
         defender.addPotion(PotionEffectType.SLOW, Ability.SLOWNESS, duration, amplifier = potency)
     }
 
@@ -809,8 +807,8 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // gives weakness effect to the defender
-        val potency = max(0, abilityConfig.getAbilityPotency(Ability.WEAKNESS, 1, minValue = 1).getRandomBetween() - 1)
-        val duration = abilityConfig.getDuration(Ability.WEAKNESS, 5.0).getRandomBetween()
+        val potency = max(0, abilityConfig.getAbilityPotency(Ability.WEAKNESS, 1, minValue = 1).random() - 1)
+        val duration = abilityConfig.getDuration(Ability.WEAKNESS, 5.0).random()
         defender.addPotion(PotionEffectType.WEAKNESS, Ability.WEAKNESS, duration, amplifier = potency)
     }
 
@@ -819,8 +817,8 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // gives wither effect to the defender
-        val potency = max(0, abilityConfig.getAbilityPotency(Ability.WITHERING, 1).getRandomBetween() - 1)
-        val duration = abilityConfig.getDuration(Ability.WITHERING, 6.0).getRandomBetween()
+        val potency = max(0, abilityConfig.getAbilityPotency(Ability.WITHERING, 1).random() - 1)
+        val duration = abilityConfig.getDuration(Ability.WITHERING, 6.0).random()
         defender.addPotion(PotionEffectType.WITHER, Ability.WITHERING, duration, amplifier = potency)
     }
 
@@ -843,7 +841,7 @@ class AbilityHelper (
 
     private fun InfernalDamageTakenEvent.triggerBerserk() {
         val bonus = abilityConfig.getDoublePair(AbilityConfigKeys.BERSERK_RECEIVED_DAMAGE_BONUS)
-        damageMulti = bonus.getRandomBetween()
+        damageMulti = bonus.random()
     }
 
     private fun InfernalDamageTakenEvent.triggerFirework() {
@@ -887,7 +885,7 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // sets the attacker on fire
-        val duration = abilityConfig.getDuration(Ability.MOLTEN, 8.0).getRandomBetween()
+        val duration = abilityConfig.getDuration(Ability.MOLTEN, 8.0).random()
         attacker.fireTicks = (duration * 20.0).toInt()
     }
 
@@ -897,8 +895,8 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // poisons the attacker
-        val potency = max(0, abilityConfig.getAbilityPotency(Ability.POISONOUS, 6).getRandomBetween() - 1)
-        val duration = abilityConfig.getDuration(Ability.POISONOUS, 8.0).getRandomBetween()
+        val potency = max(0, abilityConfig.getAbilityPotency(Ability.POISONOUS, 6).random() - 1)
+        val duration = abilityConfig.getDuration(Ability.POISONOUS, 8.0).random()
         attacker.addPotion(PotionEffectType.POISON, Ability.POISONOUS, duration, amplifier = potency)
     }
 
@@ -907,7 +905,7 @@ class AbilityHelper (
         if(random.nextDouble() > chance) return
 
         // reflect part of the damage to the attacker
-        val reflectPercentage = abilityConfig.getDoublePair(AbilityConfigKeys.THORMAIL_REFLECTED_AMOUNT).getRandomBetween()
+        val reflectPercentage = abilityConfig.getDoublePair(AbilityConfigKeys.THORMAIL_REFLECTED_AMOUNT).random()
         particlesHelper.sendParticle(entity, Ability.THORNMAIL)
         attacker.damage(damage * reflectPercentage, entity)
     }

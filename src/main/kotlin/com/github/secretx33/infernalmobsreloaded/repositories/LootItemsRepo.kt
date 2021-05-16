@@ -22,13 +22,11 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
-import org.koin.core.component.KoinApiExtension
 import java.util.*
 import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.min
 
-@KoinApiExtension
 class LootItemsRepo (
     plugin: Plugin,
     private val log: Logger,

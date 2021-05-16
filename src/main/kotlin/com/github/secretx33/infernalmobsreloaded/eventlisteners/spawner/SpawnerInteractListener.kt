@@ -14,9 +14,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
-import org.koin.core.component.KoinApiExtension
 
-@KoinApiExtension
 class SpawnerInteractListener (
     plugin: Plugin,
     private val config: Config,
@@ -35,14 +33,14 @@ class SpawnerInteractListener (
         // get spawner category, or return if none
         val spawnerType = spawnerState.getSpawnerCategory() ?: return
 
+        // prevent any change of the type of this spawner using egg
+        isCancelled = true
         // if spawner is from a removed type
-        val infernoType = infernalMobTypeRepo.getInfernalTypeOrNull(spawnerType) ?: run {
+        if(!infernalMobTypeRepo.isValidInfernalType(spawnerType)) {
             spawnerState.pdc.remove(keyChain.spawnerCategoryKey)
             spawnerState.update(true, true)
             return
         }
-        // prevent any change of the type of this spawner using eggs
-        isCancelled = true
     }
 
     private fun PlayerInteractEvent.isRightClickSpawner() = clickedBlock?.type == Material.SPAWNER && action == Action.RIGHT_CLICK_BLOCK

@@ -12,9 +12,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.SpawnerSpawnEvent
 import org.bukkit.plugin.Plugin
-import org.koin.core.component.KoinApiExtension
 
-@KoinApiExtension
 class SpawnerSpawnListener (
     plugin: Plugin,
     private val infernalMobTypeRepo: InfernalMobTypesRepo,

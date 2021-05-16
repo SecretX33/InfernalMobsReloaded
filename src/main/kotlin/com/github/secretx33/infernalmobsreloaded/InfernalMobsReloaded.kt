@@ -3,6 +3,7 @@ package com.github.secretx33.infernalmobsreloaded
 import com.github.secretx33.infernalmobsreloaded.commands.Commands
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.Config
+import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.FireworkAbilityListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.LightningAbilityListener
@@ -14,6 +15,7 @@ import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDam
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDeathListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntitySpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.*
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.integration.TownyListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.LethalPoisonListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerMoveListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerBreakListener
@@ -33,12 +35,10 @@ import me.mattstudios.msg.adventure.AdventureMessage
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
-import org.koin.core.component.KoinApiExtension
 import org.koin.core.logger.Level
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-@KoinApiExtension
 class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
 
     private val mod = module {
@@ -81,6 +81,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { EntityUnloadListener(get(), get(), get()) }
         single { EntityLoadListener(get(), get()) }
         single { InvisibleEntitiesEquipVanisherListener(get(), get(), get()) }
+        single { TownyListener(get(), get(), get(), get()) }
         single { Commands(get()) }
         single { Metrics(get(), 11253) }
         single<WorldGuardChecker> { WorldGuardCheckerDummy() }
@@ -125,6 +126,8 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<Commands>()
         if(isProtocolLibEnabled)
             get<InvisibleEntitiesEquipVanisherListener>()
+        if(isTownyHookEnabled)
+            get<TownyListener>()
         get<Metrics>()
         get<InfernalMobsManager>().loadAllInfernals()
         get<BossBarManager>().showBarsOfNearbyInfernalsForAllPlayers()
@@ -145,4 +148,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
 
     private val isProtocolLibEnabled
         get() = Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")
+
+    private val isTownyHookEnabled
+        get() = Bukkit.getPluginManager().isPluginEnabled("Towny") && get<Config>().get(ConfigKeys.TOWNY_REMOVE_INFERNAL_IN_TOWNS)
 }

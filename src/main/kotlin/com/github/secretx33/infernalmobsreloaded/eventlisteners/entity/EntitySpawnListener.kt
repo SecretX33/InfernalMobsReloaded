@@ -16,10 +16,8 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 import org.bukkit.plugin.Plugin
-import org.koin.core.component.KoinApiExtension
 import java.util.*
 
-@KoinApiExtension
 class EntitySpawnListener (
     plugin: Plugin,
     private val config: Config,

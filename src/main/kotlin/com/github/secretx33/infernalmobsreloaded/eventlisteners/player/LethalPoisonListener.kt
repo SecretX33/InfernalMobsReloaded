@@ -20,11 +20,9 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import org.koin.core.component.KoinApiExtension
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-@KoinApiExtension
 class LethalPoisonListener (
     private val plugin: Plugin,
     private val config: Config,

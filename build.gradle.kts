@@ -17,7 +17,7 @@ plugins {
 }
 
 group = "com.github.secretx33"
-version = "1.0.2"
+version = "1.0.3"
 
 repositories {
     mavenCentral()
@@ -38,15 +38,14 @@ dependencies {
     compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT") // Paper API dependency
     compileOnly(fileTree("libs"))      // Paper server dependency
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
-    val koin_version = "2.2.2"
-    implementation("org.koin:koin-core:$koin_version")
-    testCompileOnly("org.koin:koin-test:$koin_version")
+    val koin_version = "3.0.1"
+    implementation("io.insert-koin:koin-core:$koin_version")
+    testCompileOnly("io.insert-koin:koin-test:$koin_version")
     implementation("com.github.cryptomorin:XSeries:7.9.1.1")
-//    implementation("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
     implementation("me.mattstudios:triumph-msg-adventure:2.2.4-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0")
-//    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.5")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.4")
+    compileOnly("com.github.TownyAdvanced:Towny:0.97.0.0")
 }
 
 tasks.test {
@@ -72,6 +71,7 @@ tasks.shadowJar {
     relocate("org.intellij", "${dependencyPackage}.jetbrains.intellij")
     relocate("com.cryptomorin.xseries", "${dependencyPackage}.xseries")
     relocate("me.mattstudios.msg", "${dependencyPackage}.mfmsg")
+    exclude("ScopeJVMKt.class")
     exclude("DebugProbesKt.bin")
     exclude("META-INF/**")
 }

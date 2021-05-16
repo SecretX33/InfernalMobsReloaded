@@ -7,10 +7,8 @@ import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import org.koin.core.component.KoinApiExtension
 import java.util.*
 
-@KoinApiExtension
 class BossBarManager (
     private val config: Config,
     private val mobsManager: InfernalMobsManager,

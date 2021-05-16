@@ -1,13 +1,11 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
-import com.github.secretx33.infernalmobsreloaded.utils.getRandomBetween
+import com.github.secretx33.infernalmobsreloaded.utils.random
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.potion.PotionEffectType
-import org.koin.core.component.KoinApiExtension
 import java.util.*
 
-@KoinApiExtension
 class CharmEffect (
     val name: String,
     val playerMessage: Component?,   // null = don't send anything
@@ -27,6 +25,8 @@ class CharmEffect (
     val requiredItems: Set<String> = if(requiredMainHand != null) requiredItems + requiredMainHand else requiredItems
 
     init {
+        require(name.isNotBlank()) { "name cannot be blank, name = '$name'" }
+
         // potency
         require(potency.first >= 0 && potency.second >= 0) { "potency cannot be lower than 0, potency = $potency" }
         require(potency.first <= potency.second) { "potency first value has to be lower or equal than the second value, potency = $potency" }
@@ -45,11 +45,11 @@ class CharmEffect (
         require(effectApplyMode in particleMode.validApplyModes) { "effectApplyMode has to be inside valid list of particleMode, but $effectApplyMode is not inside $particleMode's validApplyModes = ${particleMode.validApplyModes}" }
     }
 
-    fun getPotency() = potency.getRandomBetween()
+    fun getPotency() = potency.random()
 
-    fun getDuration() = duration.getRandomBetween()
+    fun getDuration() = duration.random()
 
-    fun getDelay() = delay.getRandomBetween()
+    fun getDelay() = delay.random()
 
     fun getMaxDelay() = delay.second
 

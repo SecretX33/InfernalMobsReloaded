@@ -12,9 +12,7 @@ import org.bukkit.event.player.PlayerItemBreakEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
-import org.koin.core.component.KoinApiExtension
 
-@KoinApiExtension
 class CancelCharmEffectsListener (
     private val plugin: Plugin,
     private val charmsManager: CharmsManager,

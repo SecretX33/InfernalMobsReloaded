@@ -6,9 +6,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
-import org.koin.core.component.KoinApiExtension
 
-@KoinApiExtension
 data class LootBook (
     override val name: String,
     private val material: Material,

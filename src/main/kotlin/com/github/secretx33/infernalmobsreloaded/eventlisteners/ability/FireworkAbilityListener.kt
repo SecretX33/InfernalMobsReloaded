@@ -5,8 +5,8 @@ import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
-import com.github.secretx33.infernalmobsreloaded.utils.getRandomBetween
 import com.github.secretx33.infernalmobsreloaded.utils.pdc
+import com.github.secretx33.infernalmobsreloaded.utils.random
 import com.github.secretx33.infernalmobsreloaded.utils.toUuid
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
@@ -19,10 +19,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
-import org.koin.core.component.KoinApiExtension
 import java.util.*
 
-@KoinApiExtension
 class FireworkAbilityListener (
     plugin: Plugin,
     private val config: Config,
@@ -54,7 +52,7 @@ class FireworkAbilityListener (
     }
 
     private val fireworkDmgMulti
-        get() = abilityConfig.getDoublePair(AbilityConfigKeys.FIREWORK_DAMAGE_MULTIPLIER).getRandomBetween()
+        get() = abilityConfig.getDoublePair(AbilityConfigKeys.FIREWORK_DAMAGE_MULTIPLIER).random()
 
     private fun Entity.wasFiredByInfernal() = pdc.has(keyChain.fireworkOwnerUuidKey, PersistentDataType.STRING)
 

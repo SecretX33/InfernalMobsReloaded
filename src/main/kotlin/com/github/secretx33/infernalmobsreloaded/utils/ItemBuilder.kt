@@ -11,9 +11,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.material.Colorable
 import org.bukkit.persistence.PersistentDataContainer
-import org.koin.core.component.KoinApiExtension
 
-@KoinApiExtension
 class ItemBuilder private constructor(material: Material) {
 
     private val item = ItemStack(material)

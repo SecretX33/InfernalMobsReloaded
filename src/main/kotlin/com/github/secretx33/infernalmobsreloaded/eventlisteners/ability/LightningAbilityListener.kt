@@ -5,7 +5,7 @@ import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.events.InfernalLightningStrike
-import com.github.secretx33.infernalmobsreloaded.utils.getRandomBetween
+import com.github.secretx33.infernalmobsreloaded.utils.random
 import com.google.common.cache.CacheBuilder
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -19,11 +19,9 @@ import org.bukkit.event.entity.EntityCombustByEntityEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.plugin.Plugin
-import org.koin.core.component.KoinApiExtension
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-@KoinApiExtension
 class LightningAbilityListener (
     plugin: Plugin,
     private val config: Config,
@@ -80,7 +78,7 @@ class LightningAbilityListener (
     }
 
     private val lightningDmgMulti
-        get() = abilityConfig.getDoublePair(AbilityConfigKeys.LIGHTNING_DAMAGE_MULTIPLIER).getRandomBetween()
+        get() = abilityConfig.getDoublePair(AbilityConfigKeys.LIGHTNING_DAMAGE_MULTIPLIER).random()
 
     private fun Entity.isInfernalLightning() = strikeLocations.asMap().entries.firstOrNull { it.key.isAt(location) }?.value != null
 

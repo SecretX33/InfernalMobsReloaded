@@ -27,14 +27,11 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
 import org.bukkit.entity.Monster
 import org.bukkit.persistence.PersistentDataType
-import org.koin.core.component.KoinApiExtension
 import java.lang.reflect.Type
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.max
 
-
-@KoinApiExtension
 class InfernalMobsManager (
     private val config: Config,
     private val keyChain: KeyChain,
