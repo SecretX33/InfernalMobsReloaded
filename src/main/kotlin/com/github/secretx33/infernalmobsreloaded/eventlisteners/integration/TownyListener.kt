@@ -53,23 +53,22 @@ class TownyListener (
     }
 
     private fun Entity.blackhole() {
-        passengers.forEach {
-            removePassenger(it)
-            it.blackhole()
-        }
         vehicle?.let {
-            removePassenger(this)
-            it.blackhole()
+            blackhole()
+            return
         }
-        if(!isDead && isValid) remove()
-
-        (this as? LivingEntity)?.let {
-            if(!isInfernalMob()) return
-            removalCache.invalidate(uniqueId)
-            mobsManager.unloadInfernalMob(this)
-            bossBarManager.removeBossBar(this)
-        }
+        getSelfAndPassengersRecursively().asSequence()
+            .filter { !isDead && isValid }
+            .forEach {
+                it.remove()
+                removalCache.invalidate(uniqueId)
+                if(it !is LivingEntity || !it.isInfernalMob()) return@forEach
+                mobsManager.unloadInfernalMob(it)
+                bossBarManager.removeBossBar(it)
+            }
     }
+
+    private fun Entity.getSelfAndPassengersRecursively(): Set<Entity> = passengers.flatMapTo(HashSet()) { it.getSelfAndPassengersRecursively() + this }
 
     private fun LivingEntity.isInfernalMob() = mobsManager.isValidInfernalMob(this)
 

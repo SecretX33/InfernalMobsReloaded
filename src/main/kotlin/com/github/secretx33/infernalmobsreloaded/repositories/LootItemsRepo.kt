@@ -14,6 +14,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Material
+import org.bukkit.block.banner.Pattern
 import org.bukkit.block.banner.PatternType
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
@@ -150,8 +151,25 @@ class LootItemsRepo (
         val enchants = getItemEnchants(name)
 
         if(material == Material.SHIELD) return shieldWithPatternLootItem(name, displayName, material, color, dyeColor, amounts, lore, enchants)
+
+        if(material.name.contains("banner", ignoreCase = true)) return bannerLootItem(name, displayName, material, color, dyeColor, amounts, lore, enchants)
+
         return genericLootItem(name, displayName, material, color, dyeColor, amounts, lore, enchants)
     }
+
+    private fun bannerLootItem(name: String, displayName: Component, material: Material, color: Color?, dyeColor: DyeColor?, amounts: Pair<Int, Int>, lore: List<Component>, enchants: Set<CustomEnchantment>) =
+        BannerLootItem(
+            name,
+            displayName = displayName,
+            material = material,
+            color = color,
+            dyeColor = dyeColor,
+            minAmount = amounts.first,
+            maxAmount = amounts.second,
+            lore = lore,
+            enchants = enchants,
+            patterns = getPatterns(name),
+        )
 
     private fun shieldWithPatternLootItem(name: String, displayName: Component, material: Material, color: Color?, dyeColor: DyeColor?, amounts: Pair<Int, Int>, lore: List<Component>, enchants: Set<CustomEnchantment>) =
         ShieldWithPatternLootItem(
@@ -164,10 +182,10 @@ class LootItemsRepo (
             maxAmount = amounts.second,
             lore = lore,
             enchants = enchants,
-            patterns = getShieldPatterns(name),
+            patterns = getPatterns(name),
         )
 
-    private fun getShieldPatterns(name: String): List<Pair<PatternType, DyeColor>> {
+    private fun getPatterns(name: String): List<Pattern> {
         val patternList = manager.getStringList("$name.patterns").takeUnless { it.isEmpty() } ?: return emptyList()
 
         return patternList.mapNotNull { line ->
@@ -177,13 +195,13 @@ class LootItemsRepo (
                 logger.warning("Invalid pattern '${split[0]}' for loot item '$name', please fix your configurations and reload.")
                 return@mapNotNull null
             }
-            if(split.size == 1) return@mapNotNull Pair(pattern, DyeColor.WHITE)
+            if(split.size == 1) return@mapNotNull Pattern(DyeColor.WHITE, pattern)
 
             val dyeColor = DyeColor.values().firstOrNull { it.name.equals(split[1], ignoreCase = true) } ?: run {
                 logger.warning("Invalid dye color '${split[0]}' in pattern '${split[0]}' for loot item '$name', please fix your configurations and reload.")
-                return@mapNotNull Pair(pattern, DyeColor.WHITE)
+                return@mapNotNull Pattern(DyeColor.WHITE, pattern)
             }
-            return@mapNotNull Pair(pattern, dyeColor)
+            return@mapNotNull Pattern(dyeColor, pattern)
         }
     }
 

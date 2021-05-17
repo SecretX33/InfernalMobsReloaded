@@ -8,7 +8,7 @@ import org.bukkit.Material
 import org.bukkit.block.banner.Pattern
 import org.bukkit.block.banner.PatternType
 
-class ShieldWithPatternLootItem(
+class BannerLootItem(
     name: String,
     displayName: Component,
     material: Material,
@@ -22,6 +22,6 @@ class ShieldWithPatternLootItem(
 ): NormalLootItem(name, displayName, material, color, dyeColor, minAmount, maxAmount, lore, enchants) {
 
     override fun makeItem() = preparedItem
-        .shieldPatterns(dyeColor, patterns)
+        .bannerPatterns(patterns)
         .build()
 }

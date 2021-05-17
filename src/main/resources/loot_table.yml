@@ -91,8 +91,18 @@ example_shield_without_pattern:
   material: "SHIELD"
   # dye-color: "RED"                           # uncomment this to make the shield plain red
   amount: 1
-  lore:                                        # and this is how you make the item lore with only one line
+  lore:
     - "Lore with single line"
+
+example_banner_with_pattern:
+  name: "Pattern banner"
+  material: "CYAN_BANNER"
+  amount: 1
+  lore:
+    - "Lore with single line"
+  patterns:                                    # may contain infinite amount of patterns
+    - "GRADIENT:magenta"
+    - "sku:LIME"
 
 ############################################################
 # +------------------------------------------------------+ #

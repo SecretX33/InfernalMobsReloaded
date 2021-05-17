@@ -11,6 +11,7 @@ import org.bukkit.block.banner.PatternType
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.BannerMeta
 import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.material.Colorable
@@ -61,13 +62,19 @@ class ItemBuilder private constructor(material: Material) {
         return this
     }
 
-    fun patterns(baseColor: DyeColor?, patterns: Collection<Pair<PatternType, DyeColor>>): ItemBuilder {
+    fun bannerPatterns(patterns: List<Pattern>): ItemBuilder {
+        if(patterns.isEmpty()) return this
+        (meta as? BannerMeta)?.patterns = patterns
+        return this
+    }
+
+    fun shieldPatterns(baseColor: DyeColor?, patterns: Collection<Pattern>): ItemBuilder {
         if(baseColor == null && patterns.isEmpty()) return this
         val blockMeta = meta as? BlockStateMeta ?: return this
         val banner = blockMeta.blockState as? Banner ?: return this
         banner.let {
             if(baseColor != null) it.baseColor = baseColor
-            patterns.forEach { (pattern, color) -> it.addPattern(Pattern(color, pattern)) }
+            patterns.forEach { pattern -> it.addPattern(pattern) }
             it.update()
             blockMeta.blockState = it
         }
