@@ -6,7 +6,6 @@ import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.block.banner.Pattern
-import org.bukkit.block.banner.PatternType
 
 class ShieldWithPatternLootItem(
     name: String,

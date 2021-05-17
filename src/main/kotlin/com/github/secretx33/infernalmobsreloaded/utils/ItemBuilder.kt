@@ -7,7 +7,6 @@ import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.block.Banner
 import org.bukkit.block.banner.Pattern
-import org.bukkit.block.banner.PatternType
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack

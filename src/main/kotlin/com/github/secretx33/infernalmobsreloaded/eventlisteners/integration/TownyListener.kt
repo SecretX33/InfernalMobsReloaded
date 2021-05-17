@@ -8,7 +8,10 @@ import com.github.secretx33.infernalmobsreloaded.utils.runSync
 import com.google.common.cache.CacheBuilder
 import com.palmergames.bukkit.towny.TownyAPI
 import io.papermc.paper.event.entity.EntityMoveEvent
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
@@ -34,7 +37,7 @@ class TownyListener (
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun EntityMoveEvent.onInfernalMove() {
-        if(!entity.isInfernalMob() || towny.isWilderness(entity.location)) return
+        if(!entity.isInfernalMob() || entity.isNotInsideAnyTown()) return
 
         // infernal removal is already pending
         if(removalCache.getIfPresent(entity.uniqueId) != null) return
@@ -47,10 +50,12 @@ class TownyListener (
         val uuid = entity.uniqueId
         CoroutineScope(Dispatchers.Default).launch {
             delay(removalDelay)
-            val entity = Bukkit.getEntity(uuid)?.takeIf { it.isValid && !it.isDead } ?: return@launch
+            val entity = Bukkit.getEntity(uuid)?.takeIf { it.isValid && !it.isDead && !entity.isNotInsideAnyTown()} ?: return@launch
             runSync(plugin) { entity.blackhole() }
         }
     }
+
+    private fun Entity.isNotInsideAnyTown() = towny.isWilderness(location)
 
     private fun Entity.blackhole() {
         vehicle?.let {
