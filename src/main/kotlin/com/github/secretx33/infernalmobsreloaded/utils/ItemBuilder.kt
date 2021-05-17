@@ -5,9 +5,13 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Material
+import org.bukkit.block.Banner
+import org.bukkit.block.banner.Pattern
+import org.bukkit.block.banner.PatternType
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.material.Colorable
 import org.bukkit.persistence.PersistentDataContainer
@@ -49,10 +53,24 @@ class ItemBuilder private constructor(material: Material) {
         return this
     }
 
-    fun dyeColor(dyeColor: DyeColor): ItemBuilder {
+    fun dyeColor(dyeColor: DyeColor?): ItemBuilder {
+        if(dyeColor == null) return this
         item.itemMeta = meta
         (item as? Colorable)?.color = dyeColor
         meta = item.itemMeta
+        return this
+    }
+
+    fun patterns(baseColor: DyeColor?, patterns: Collection<Pair<PatternType, DyeColor>>): ItemBuilder {
+        if(baseColor == null && patterns.isEmpty()) return this
+        val blockMeta = meta as? BlockStateMeta ?: return this
+        val banner = blockMeta.blockState as? Banner ?: return this
+        banner.let {
+            if(baseColor != null) it.baseColor = baseColor
+            patterns.forEach { (pattern, color) -> it.addPattern(Pattern(color, pattern)) }
+            it.update()
+            blockMeta.blockState = it
+        }
         return this
     }
 

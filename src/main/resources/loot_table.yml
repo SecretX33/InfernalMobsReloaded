@@ -73,6 +73,25 @@ example_book:
     - ""                                                        # page #3 will be empty
     - "<#ff5555>fourth page"                                    # page #4
 
+example_shield_with_pattern:
+  name: "Test color shield"
+  material: "SHIELD"
+  dye-color: "RED"                             # base color of the shield patterns
+  amount: 1
+  lore:                                        # and this is how you make the item lore with only one line
+    - "Lore with single line"
+  patterns:                                    # may contain infinite amount of patterns
+    - "GRADIENT:LIME"                          # format is "pattern:color", pattern list can be found here https://hub.spigotmc.org/javadocs/spigot/org/bukkit/block/banner/PatternType.html , color list can be found here https://hub.spigotmc.org/javadocs/spigot/org/bukkit/DyeColor.html
+    - "half_vertical:magenta"                  # patterns are, also, case insensitive
+    - "TRIANGLE_TOP:ORANGE"
+    - "sku:RED"                                # may also use pattern identifier names (this is SKULL)
+
+example_shield_without_pattern:
+  name: "Test normal shield"
+  material: "SHIELD"
+  amount: 1
+  lore:                                        # and this is how you make the item lore with only one line
+    - "Lore with single line"
 
 ############################################################
 # +------------------------------------------------------+ #

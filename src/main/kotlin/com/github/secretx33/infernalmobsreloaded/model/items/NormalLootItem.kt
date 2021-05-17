@@ -8,12 +8,12 @@ import org.bukkit.DyeColor
 import org.bukkit.Material
 import java.util.*
 
-data class NormalLootItem (
-    override val name: String,
+open class NormalLootItem (
+    final override val name: String,
     val displayName: Component,
     val material: Material,
     val color: Color?,
-    val dyeColor: DyeColor,
+    val dyeColor: DyeColor?,
     val minAmount: Int,
     val maxAmount: Int,
     val lore: List<Component>,
@@ -28,15 +28,24 @@ data class NormalLootItem (
         require(minAmount <= maxAmount) { "minAmount cannot be higher than maxAmount, values passed minAmount = $minAmount and maxAmount = $maxAmount" }
     }
 
-        override fun makeItem() = ItemBuilder.from(material)
+    protected val preparedItem = ItemBuilder.from(material)
         .displayName(displayName)
         .amount(random.nextInt(maxAmount - minAmount + 1) + minAmount)
         .setLore(lore)
         .color(color)
-        .dyeColor(dyeColor)
         .addEnchantments(enchants)
         .markWithInfernalTag(name)
-        .build()
+
+    override fun makeItem() = preparedItem.dyeColor(dyeColor).build()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as NormalLootItem
+        return name.equals(other.name, ignoreCase = true)
+    }
+
+    override fun hashCode() = name.lowercase(Locale.US).hashCode()
 
     private companion object {
         val random = Random()

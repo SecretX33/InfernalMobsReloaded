@@ -5,10 +5,7 @@ import com.cryptomorin.xseries.XMaterial
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
-import com.github.secretx33.infernalmobsreloaded.model.items.LootBook
-import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
-import com.github.secretx33.infernalmobsreloaded.model.items.LootItemType
-import com.github.secretx33.infernalmobsreloaded.model.items.NormalLootItem
+import com.github.secretx33.infernalmobsreloaded.model.items.*
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
 import com.github.secretx33.infernalmobsreloaded.utils.pdc
@@ -17,6 +14,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Material
+import org.bukkit.block.banner.PatternType
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
@@ -29,7 +27,7 @@ import kotlin.math.min
 
 class LootItemsRepo (
     plugin: Plugin,
-    private val log: Logger,
+    private val logger: Logger,
     private val keyChain: KeyChain,
     private val adventureMessage: AdventureMessage,
 ) {
@@ -78,7 +76,7 @@ class LootItemsRepo (
         if(itemType.isBlank()) return LootItemType.NORMAL
 
         return LootItemType.values().firstOrNull { it.name.equals(itemType, ignoreCase = true) } ?: run {
-            log.warning("Inside item loot '$name', item type named '$itemType' doesn't exist, please fix your item loot configurations. Defaulting $name item type to 'normal'.")
+            logger.warning("Inside item loot '$name', item type named '$itemType' doesn't exist, please fix your item loot configurations. Defaulting $name item type to 'normal'.")
             LootItemType.NORMAL
         }
     }
@@ -103,7 +101,7 @@ class LootItemsRepo (
         if(materialName.isBlank()) return Material.WRITTEN_BOOK
 
         return XMaterial.matchXMaterial(materialName).map { it.parseMaterial() }.filter { it == Material.WRITTEN_BOOK || it == Material.WRITABLE_BOOK }.orElseGet {
-            log.warning("Inside item loot '$name', material '$materialName' doesn't exist or is invalid, please fix your item loot configurations. Defaulting $name material to 'Written Book'.")
+            logger.warning("Inside item loot '$name', material '$materialName' doesn't exist or is invalid, please fix your item loot configurations. Defaulting $name material to 'Written Book'.")
             Material.WRITTEN_BOOK
         }!!
     }
@@ -113,7 +111,7 @@ class LootItemsRepo (
 
         // if book title is absent or blank
         if(bookTitle.isBlank()) {
-            log.warning("You must provide a title for the loot book '$name'! Defaulting '$name' title to its material name.")
+            logger.warning("You must provide a title for the loot book '$name'! Defaulting '$name' title to its material name.")
             return material.formattedTypeName().toComponent()
         }
 
@@ -132,7 +130,7 @@ class LootItemsRepo (
         if(generation.isBlank()) return BookMeta.Generation.ORIGINAL
 
         return BookMeta.Generation.values().firstOrNull { it.name.equals(generation, ignoreCase = true) } ?: run {
-            log.warning("Inside item loot '$name', book generation '$generation' doesn't exist or is invalid, please fix your item loot configurations. Defaulting $name generation to 'Original'.")
+            logger.warning("Inside item loot '$name', book generation '$generation' doesn't exist or is invalid, please fix your item loot configurations. Defaulting $name generation to 'Original'.")
             BookMeta.Generation.ORIGINAL
         }
     }
@@ -150,8 +148,47 @@ class LootItemsRepo (
         val amounts = getAmounts(name)
         val lore = getItemLore(name)
         val enchants = getItemEnchants(name)
-        return NormalLootItem(
+
+        if(material == Material.SHIELD) return shieldWithPatternLootItem(name, displayName, material, color, dyeColor, amounts, lore, enchants)
+        return genericLootItem(name, displayName, material, color, dyeColor, amounts, lore, enchants)
+    }
+
+    private fun shieldWithPatternLootItem(name: String, displayName: Component, material: Material, color: Color?, dyeColor: DyeColor?, amounts: Pair<Int, Int>, lore: List<Component>, enchants: Set<CustomEnchantment>) =
+        ShieldWithPatternLootItem(
             name,
+            displayName = displayName,
+            material = material,
+            color = color,
+            dyeColor = dyeColor,
+            minAmount = amounts.first,
+            maxAmount = amounts.second,
+            lore = lore,
+            enchants = enchants,
+            patterns = getShieldPatterns(name),
+        )
+
+    private fun getShieldPatterns(name: String): List<Pair<PatternType, DyeColor>> {
+        val patternList = manager.getStringList("$name.patterns").takeUnless { it.isEmpty() } ?: return emptyList()
+
+        return patternList.mapNotNull { line ->
+            val split = line.split(':', limit = 2).takeIf { it.isNotEmpty() } ?: return@mapNotNull null
+
+            val pattern = PatternType.values().firstOrNull { it.name.equals(split[0], ignoreCase = true) || it.identifier.equals(split[0], ignoreCase = true) } ?: run {
+                logger.warning("Invalid pattern '${split[0]}' for loot item '$name', please fix your configurations and reload.")
+                return@mapNotNull null
+            }
+            if(split.size == 1) return@mapNotNull Pair(pattern, DyeColor.WHITE)
+
+            val dyeColor = DyeColor.values().firstOrNull { it.name.equals(split[1], ignoreCase = true) } ?: run {
+                logger.warning("Invalid dye color '${split[0]}' in pattern '${split[0]}' for loot item '$name', please fix your configurations and reload.")
+                return@mapNotNull Pair(pattern, DyeColor.WHITE)
+            }
+            return@mapNotNull Pair(pattern, dyeColor)
+        }
+    }
+
+    private fun genericLootItem(name: String, displayName: Component, material: Material, color: Color?, dyeColor: DyeColor?, amounts: Pair<Int, Int>, lore: List<Component>, enchants: Set<CustomEnchantment>): NormalLootItem {
+        return NormalLootItem(name,
             displayName = displayName,
             material = material,
             color = color,
@@ -175,7 +212,7 @@ class LootItemsRepo (
 
         // if display name is absent or blank
         if(displayName.isBlank()) {
-            log.warning("You must provide a display name for the item '$name'! Defaulting '$name' display name to its material name.")
+            logger.warning("You must provide a display name for the item '$name'! Defaulting '$name' display name to its material name.")
             return Component.text(material.formattedTypeName())
         }
         return adventureMessage.parse(displayName)
@@ -184,7 +221,7 @@ class LootItemsRepo (
     private fun String.toColor(): Color {
         val results = COLOR_PATTERN.find(this.trim())?.groupValues
         if(results?.size != 4) {
-            log.warning("Inside loot items, seems like you have malformed color string in your config file, please fix color entry with value '$this' and reload the plugin configurations.")
+            logger.warning("Inside loot items, seems like you have malformed color string in your config file, please fix color entry with value '$this' and reload the plugin configurations.")
             return Color.WHITE
         }
         val r = results[1].toInt()
@@ -193,19 +230,16 @@ class LootItemsRepo (
         return try {
             Color.fromRGB(r, g, b)
         } catch(e: IllegalArgumentException) {
-            log.warning("Inside loot items, seems like you have typoed a invalid number somewhere in '$this', please only use values between 0 and 255 to write the colors. Original error message: ${e.message}")
+            logger.warning("Inside loot items, seems like you have typoed a invalid number somewhere in '$this', please only use values between 0 and 255 to write the colors. Original error message: ${e.message}")
             Color.WHITE
         }
     }
 
-    private fun getItemDyeColor(name: String): DyeColor {
-        val colorName = manager.getString("$name.dye-color") ?: ""
-
-        // if dye color name is absent or blank
-        if(colorName.isBlank()) return DyeColor.WHITE
+    private fun getItemDyeColor(name: String): DyeColor? {
+        val colorName = manager.getString("$name.dye-color")?.takeIf { it.isNotBlank() } ?: return null
 
         return DyeColor.values().firstOrNull { it.name.equals(colorName, ignoreCase = true) } ?: run {
-            log.warning("Inside item loot '$name', dye color named '$colorName' doesn't exist, please fix your item loot configurations. Defaulting $name color to white.")
+            logger.warning("Inside item loot '$name', dye color named '$colorName' doesn't exist, please fix your item loot configurations. Defaulting $name color to white.")
             DyeColor.WHITE
         }
     }
@@ -221,7 +255,7 @@ class LootItemsRepo (
             val fields = line.split(':')
 
             val enchant = XEnchantment.matchXEnchantment(fields[0]).map { it.parseEnchantment() }.orElseGet {
-                log.warning("Inside item loot '$name', enchantment with name '${fields[0]}' doesn't exist, please fix your item loot configurations. Defaulting this enchantment to ${Enchantment.LUCK}.")
+                logger.warning("Inside item loot '$name', enchantment with name '${fields[0]}' doesn't exist, please fix your item loot configurations. Defaulting this enchantment to ${Enchantment.LUCK}.")
                 Enchantment.LUCK
             }!!
             if(fields.size == 1) return@mapTo CustomEnchantment(type = enchant, minLevel = 1, maxLevel = 1, chance = 1.0)
@@ -231,7 +265,7 @@ class LootItemsRepo (
 
             // get the enchant minLevel and maxLevel as well, if present
             val minLevel = levels[0].toIntOrNull()?.let { max(1, it) } ?: run {
-                log.warning("Inside item loot '$name', level '${levels[0]}' for enchantment $enchant is not an integer. Defaulting $name's $enchant level to 1.")
+                logger.warning("Inside item loot '$name', level '${levels[0]}' for enchantment $enchant is not an integer. Defaulting $name's $enchant level to 1.")
                 1
             }
             // get the enchant maxLevel or just default it to minLevel, in case of missing or invalid argument
@@ -241,7 +275,7 @@ class LootItemsRepo (
 
             // parse the chance of that enchant to be applied to the item
             val chance = fields[2].toDoubleOrNull()?.let { max(0.0, min(1.0, it)) } ?: run {
-                log.warning("Inside item loot '$name', chance for enchantment '${levels[0]}' is invalid. Defaulting $name's $enchant enchant chance to 100%.")
+                logger.warning("Inside item loot '$name', chance for enchantment '${levels[0]}' is invalid. Defaulting $name's $enchant enchant chance to 100%.")
                 1.0
             }
             CustomEnchantment(type = enchant, minLevel = minLevel, maxLevel = maxLevel, chance = chance)
@@ -257,7 +291,7 @@ class LootItemsRepo (
 
         // if typed amount is not an integer
         val minAmount = amounts[0].toIntOrNull()?.let { max(1, it) } ?: run {
-            log.warning("Amount provided for item loot '$name' is not an integer. Defaulting '$name' amount to 1.")
+            logger.warning("Amount provided for item loot '$name' is not an integer. Defaulting '$name' amount to 1.")
             return Pair(1, 1)
         }
 
@@ -265,7 +299,7 @@ class LootItemsRepo (
         if(amounts.size < 2 || amounts[1].isBlank()) return Pair(minAmount, minAmount)
 
         val maxAmount = amounts[1].toIntOrNull()?.let { max(minAmount, it) } ?: run {
-            log.warning("Max amount provided for item loot '$name' is not an integer, please fix the typo and reload the configurations. Defaulting '$name' max amount to its minimum amount, which is $minAmount.")
+            logger.warning("Max amount provided for item loot '$name' is not an integer, please fix the typo and reload the configurations. Defaulting '$name' max amount to its minimum amount, which is $minAmount.")
             minAmount
         }
         return Pair(minAmount, maxAmount)
@@ -276,12 +310,12 @@ class LootItemsRepo (
 
         // if material name is absent or blank
         if(materialName.isBlank()) {
-            log.warning("You must provide a material for the item loot '$name'! Please fix your item loot configurations, defaulting $name material to Stone.")
+            logger.warning("You must provide a material for the item loot '$name'! Please fix your item loot configurations, defaulting $name material to Stone.")
             return Material.STONE
         }
 
         return XMaterial.matchXMaterial(materialName).map { it.parseMaterial() }.filter { it?.isItem == true }.orElseGet {
-            log.warning("Inside item loot '$name', material '$materialName' doesn't exist, please fix your item loot configurations. Defaulting $name material to Stone.")
+            logger.warning("Inside item loot '$name', material '$materialName' doesn't exist, please fix your item loot configurations. Defaulting $name material to Stone.")
             Material.STONE
         }!!
     }
