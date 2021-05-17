@@ -89,6 +89,7 @@ example_shield_with_pattern:
 example_shield_without_pattern:
   name: "Test normal shield"
   material: "SHIELD"
+  # dye-color: "RED"                           # uncomment this to make the shield plain red
   amount: 1
   lore:                                        # and this is how you make the item lore with only one line
     - "Lore with single line"
