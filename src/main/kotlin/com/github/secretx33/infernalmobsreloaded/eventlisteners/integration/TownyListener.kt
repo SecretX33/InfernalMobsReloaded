@@ -47,10 +47,9 @@ class TownyListener (
 
     private fun EntityMoveEvent.scheduleMobRemoval() {
         removalCache.put(entity.uniqueId, true)
-        val uuid = entity.uniqueId
         CoroutineScope(Dispatchers.Default).launch {
             delay(removalDelay)
-            val entity = Bukkit.getEntity(uuid)?.takeIf { it.isValid && !it.isDead && !entity.isNotInsideAnyTown()} ?: return@launch
+            if(!entity.isValid || entity.isDead || entity.isNotInsideAnyTown()) return@launch
             runSync(plugin) { entity.blackhole() }
         }
     }
@@ -59,7 +58,7 @@ class TownyListener (
 
     private fun Entity.blackhole() {
         vehicle?.let {
-            blackhole()
+            it.blackhole()
             return
         }
         getSelfAndPassengersRecursively().asSequence()

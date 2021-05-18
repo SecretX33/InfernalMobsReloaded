@@ -126,8 +126,10 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<Commands>()
         if(isProtocolLibEnabled)
             get<InvisibleEntitiesEquipVanisherListener>()
-        if(isTownyHookEnabled)
+        if(isTownyHookEnabled) {
+            logger.info("Enabling Towny hook.")
             get<TownyListener>()
+        }
         get<Metrics>()
         get<InfernalMobsManager>().loadAllInfernals()
         get<BossBarManager>().showBarsOfNearbyInfernalsForAllPlayers()

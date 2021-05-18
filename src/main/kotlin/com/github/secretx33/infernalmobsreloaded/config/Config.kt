@@ -16,7 +16,6 @@ import java.util.logging.Logger
 import kotlin.Enum
 import kotlin.math.max
 import kotlin.math.min
-import java.lang.Enum as JavaEnum
 
 class Config(plugin: Plugin, private val log: Logger) {
 
@@ -70,11 +69,10 @@ class Config(plugin: Plugin, private val log: Logger) {
     @Suppress("UNCHECKED_CAST")
     fun <T : Enum<T>> getEnum(key: ConfigKeys): T {
         return cache.getOrPut(key.configEntry) {
-            manager.getString(key.configEntry)?.let {
-                try {
-                    JavaEnum.valueOf(key.defaultValue::class.java as Class<out Enum<T>>, it.uppercase(Locale.US))
-                } catch(e: IllegalArgumentException) {
-                    log.severe("Error while trying to get config key '$key', value passed ${it.uppercase(Locale.US)} is an invalid value, please fix this entry in the config.yml and reload the configs, defaulting to ${(key.defaultValue as Enum<T>).name}")
+            manager.getString(key.configEntry)?.let { enum ->
+                (key.defaultValue::class.java as Class<out Enum<T>>).enumConstants.firstOrNull { it.name.equals(enum, ignoreCase = true) } ?: run {
+                    log.severe("Error while trying to get config key '$key', value passed ${enum.uppercase(Locale.US)} is an invalid value, please fix this entry in the config.yml and reload the configs, defaulting to ${(key.defaultValue as Enum<T>).name}")
+                    key.defaultValue
                 }
             } ?: key.defaultValue
         } as T
