@@ -19,6 +19,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
+import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -47,9 +48,10 @@ class TownyListener (
 
     private fun EntityMoveEvent.scheduleMobRemoval() {
         removalCache.put(entity.uniqueId, true)
+        val wEntity = WeakReference(entity)
         CoroutineScope(Dispatchers.Default).launch {
             delay(removalDelay)
-            if(!entity.isValid || entity.isDead || entity.isNotInsideAnyTown()) return@launch
+            val entity = wEntity.get()?.takeIf { entity.isValid && !entity.isDead && !entity.isNotInsideAnyTown() } ?: return@launch
             runSync(plugin) { entity.blackhole() }
         }
     }
