@@ -117,7 +117,7 @@ class InfernalMobTypesRepo (
                 log.warning("Inside mob category '$name' forced-abilities, ability named '$ability' doesn't exist, please fix your mobs configurations. Ignoring this entry for now.")
                 null
             }
-        }.filterTo(HashSet()) { it !in disabledAbilities }
+        }.filterTo(EnumSet.noneOf(Ability::class.java)) { it !in disabledAbilities }
     }
 
     private val disabledAbilities: Set<Ability>
@@ -197,7 +197,7 @@ class InfernalMobTypesRepo (
         // if there's no flag set or boss bars are disabled, return empty set
         if(bossBarFlags.isEmpty() || !bossBarEnabled) return emptySet()
 
-        return bossBarFlags.mapNotNullTo(HashSet()) { line ->
+        return bossBarFlags.mapNotNullTo(EnumSet.noneOf(BossBar.Flag::class.java)) { line ->
             BossBar.Flag.values().firstOrNull { it.name.equals(line, ignoreCase = true) } ?: run {
                 log.warning("Inside mob category '$name', boss bar flag named '$line' is invalid or doesn't exist, please fix your mobs configurations.")
                 null

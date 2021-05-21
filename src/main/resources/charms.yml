@@ -48,11 +48,11 @@ valid-charm-slots:
 #
 # There are 5 different particle modes you can choose from: NONE, SELF_ONCE, ON_SELF_WHEN_APPLIED, ON_TARGET_WHEN_APPLIED, ON_BOTH_WHEN_APPLIED; some of them only works with certain effect modes
 #
-# 1. NONE will disable any particle effect (if you don't specify any particle, it'll also default to "none"
-# 2. SELF_ONCE will spawn particles one time, when the effect is gained, on self
-# 3. SELF_WHEN_APPLIED can be used for SELF_RECURRENT and for TARGET_TEMPORARY effect modes, it'll spawn particles every time the effect occurs, on self
-# 4. TARGET_WHEN_APPLIED is only a valid particle mode for TARGET_TEMPORARY effect mode, it'll spawn particles on the target, every time the effect occurs
-# 5. BOTH_WHEN_APPLIED is also only a valid particle mode for TARGET_TEMPORARY effect mode, it'll spawn particles on both self and the target, every time the effect happens
+# 1. NONE will disable any particle effect (if you don't specify any particle, it'll also default to "none")
+# 2. SELF_ONCE will spawn particles one time, when the effect is gained, on self, can only be used with SELF_PERMANENT effect mode
+# 3. SELF_WHEN_APPLIED can be used for SELF_RECURRENT, SELF_ON_HIT, TARGET_ON_HIT, and for BOTH_ON_HIT effect modes, it'll spawn particles every time the effect occurs, on self
+# 4. TARGET_WHEN_APPLIED is only a valid particle mode for SELF_ON_HIT, TARGET_ON_HIT, and BOTH_ON_HIT effect modes, it'll spawn particles on the target, every time the effect occurs
+# 5. BOTH_WHEN_APPLIED is also only a valid particle mode for SELF_ON_HIT, TARGET_ON_HIT, and BOTH_ON_HIT effect modes, it'll spawn particles on both self and the target, every time the effect happens
 
 # Below you can create as many effects as you want, and link them with the items from `loot_table.yml` file
 
@@ -65,7 +65,7 @@ charm-effects:
     potency: 1-2                               # potion level
 #    duration: 10.0                            # duration does nothing here, since instant healing is an instant effect
     delay: 20.0-30.0                           # in seconds, the delay between each recurrent application
-    effect-mode: SELF_RECURRENT                # type of effect that will be applied on the player, choose from SELF_PERMANENT, SELF_RECURRENT, and TARGET_TEMPORARY
+    effect-mode: SELF_RECURRENT                # type of effect that will be applied on the player, choose from SELF_PERMANENT, SELF_RECURRENT, SELF_ON_HIT, TARGET_ON_HIT, BOTH_ON_HIT
     particle-mode: SELF_WHEN_APPLIED        # what type of particle mode will be used, choose from: NONE, SELF_ONCE, SELF_WHEN_APPLIED, TARGET_WHEN_APPLIED, BOTH_WHEN_APPLIED
     particle-type: totem                       # see full list here https://papermc.io/javadocs/paper/1.16/org/bukkit/Particle.html
     required-items:                            # the effect will require ALL the items listed below to be active

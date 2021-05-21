@@ -101,9 +101,9 @@ enum class PotionEffectApplyMode {
 }
 
 enum class CharmParticleMode(val validApplyModes: Set<PotionEffectApplyMode>) {
-    NONE(PotionEffectApplyMode.values().toSet()),
-    SELF_ONCE(setOf(PotionEffectApplyMode.SELF_PERMANENT)),
-    SELF_WHEN_APPLIED(setOf(PotionEffectApplyMode.SELF_RECURRENT, PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
-    TARGET_WHEN_APPLIED(setOf(PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
-    BOTH_WHEN_APPLIED(setOf(PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
+    NONE(EnumSet.allOf(PotionEffectApplyMode::class.java)),
+    SELF_ONCE(EnumSet.of(PotionEffectApplyMode.SELF_PERMANENT)),
+    SELF_WHEN_APPLIED(EnumSet.of(PotionEffectApplyMode.SELF_RECURRENT, PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
+    TARGET_WHEN_APPLIED(EnumSet.of(PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
+    BOTH_WHEN_APPLIED(EnumSet.of(PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
 }

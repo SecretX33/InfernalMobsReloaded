@@ -24,7 +24,8 @@ class InspectCommand : SubCommand(), CustomKoinComponent {
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
         // if player is not targeting an entity
-        val target = player.getTarget(15) ?: run {
+        val target = player.getTarget(25)
+            ?: player.getTargetBlock(null, 25).let { block -> block.world.getNearbyLivingEntities(block.location, 6.0, 6.0) { it.isValid && !it.isDead && mobsManager.isPossibleInfernalMob(it) }.firstOrNull() } ?: run {
             player.sendMessage(messages.get(MessageKeys.NOT_TARGETING_LIVING_ENTITY))
             return
         }
