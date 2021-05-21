@@ -141,6 +141,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<BossBarManager>().hideAllBarsFromAllPlayers()
         get<CharmsManager>().stopAllCharmTasks()
         get<AbilityHelper>().revertPendingBlockModifications()
+        getOrNull<TownyListener>()?.cancelRemovalTasks()
         unloadKoinModules(mod)
         stopKoin()
     }

@@ -8,10 +8,7 @@ import com.github.secretx33.infernalmobsreloaded.utils.runSync
 import com.google.common.cache.CacheBuilder
 import com.palmergames.bukkit.towny.TownyAPI
 import io.papermc.paper.event.entity.EntityMoveEvent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
@@ -34,6 +31,8 @@ class TownyListener (
 
     private val removalCache = CacheBuilder.newBuilder().expireAfterWrite(removalDelay, TimeUnit.MILLISECONDS).build<UUID, Boolean>()
 
+    private val removalTaskCache = CacheBuilder.newBuilder().expireAfterWrite(removalDelay, TimeUnit.MILLISECONDS).build<Job, Boolean>()
+
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -53,7 +52,7 @@ class TownyListener (
             delay(removalDelay)
             val entity = wEntity.get()?.takeIf { it.isValid && !it.isDead && !it.isNotInsideAnyTown() } ?: return@launch
             runSync(plugin) { entity.blackhole() }
-        }
+        }.let { removalTaskCache.put(it, true) }
     }
 
     private fun Entity.isNotInsideAnyTown() = towny.isWilderness(location)
@@ -77,6 +76,11 @@ class TownyListener (
     private fun Entity.getSelfAndPassengersRecursively(): Set<Entity> = passengers.flatMapTo(HashSet()) { it.getSelfAndPassengersRecursively() } + this
 
     private fun LivingEntity.isInfernalMobOrMount() = mobsManager.isValidInfernalMob(this) || mobsManager.isMountOfAnotherInfernal(this)
+
+    fun cancelRemovalTasks() {
+        removalTaskCache.asMap().forEach { (job, _) -> job.cancel() }
+        removalTaskCache.invalidateAll()
+    }
 
     private val towny get() = TownyAPI.getInstance()
 }
