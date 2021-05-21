@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
+import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.plugin.Plugin
 
 class PlayerItemMoveListener (
@@ -57,6 +58,11 @@ class PlayerItemMoveListener (
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerItemHeldEvent.onItemHeldChanged() {
+        runSync(plugin, 50L) { player.updateCharmEffects() }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private fun PlayerSwapHandItemsEvent.onOffhandSwap() {
         runSync(plugin, 50L) { player.updateCharmEffects() }
     }
 

@@ -77,7 +77,7 @@ class CharmEffect (
         if(requiredMainHand?.equals(mainHand, ignoreCase = true) == false) return false
 
         // all required items are in the correct slots (except main hand item)
-        return (requiredItems - mainHand).all { itemName ->
+        return (requiredItems - requiredMainHand).all { itemName ->
             inventory[itemName]?.let { slot -> slot in requiredSlots } == true
         }
     }
