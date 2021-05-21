@@ -51,13 +51,6 @@ class InfernalDeathListener (
         consoleCommmands()
     }
 
-    private fun InfernalDeathEvent.consoleCommmands() {
-        val player = entity.killer ?: return
-        infernalType.consoleCommands.forEach {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), it.replace("<player>", player.name))
-        }
-    }
-
     private fun InfernalDeathEvent.triggerSecondWind(lives: Int) {
         particlesHelper.sendParticle(entity, Ability.SECOND_WIND)
         mobsManager.setLives(entity, lives - 1)
@@ -84,6 +77,13 @@ class InfernalDeathListener (
 
         entity.getNearbyEntities(range, range, range).forEach {
             it.sendMessage(msg)
+        }
+    }
+
+    private fun InfernalDeathEvent.consoleCommmands() {
+        val player = entity.killer ?: return
+        infernalType.consoleCommands.forEach {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), it.replace("<player>", player.name))
         }
     }
 

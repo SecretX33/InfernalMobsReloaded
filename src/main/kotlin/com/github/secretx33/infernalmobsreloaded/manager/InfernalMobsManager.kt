@@ -52,7 +52,7 @@ class InfernalMobsManager (
 
     fun getInfernalAbilities(entity: LivingEntity) = entity.getAbilities() ?: throw IllegalStateException("Queried for infernal mob abilities but it doesn't have any")
 
-    fun isMountOfAnotherInfernal(entity: Entity) = entity.pdc.has(keyChain.infernalMountKey, PersistentDataType.SHORT) || entity.pdc.has(keyChain.infernalBatMountKey, PersistentDataType.SHORT)
+    fun isMountOfAnotherInfernal(entity: Entity) = keyChain.hasMountKey(entity)
 
     fun getInfernalTypeOrNull(entity: LivingEntity) = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)
         ?.let { infernalMobTypesRepo.getInfernalTypeOrNull(it) }

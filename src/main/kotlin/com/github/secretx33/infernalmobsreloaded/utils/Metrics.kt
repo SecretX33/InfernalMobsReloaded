@@ -640,8 +640,8 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
                     when(char) {
                         '"' -> builder.append("\\\"")
                         '\\' -> builder.append("\\\\")
-                        '\u000F' -> builder.append("\\u000").append(Integer.toHexString(char.toInt()))
-                        '\u001F' -> builder.append("\\u00").append(Integer.toHexString(char.toInt()))
+                        '\u000F' -> builder.append("\\u000").append(Integer.toHexString(char.code))
+                        '\u001F' -> builder.append("\\u00").append(Integer.toHexString(char.code))
                         else -> builder.append(char)
                     }
                 }

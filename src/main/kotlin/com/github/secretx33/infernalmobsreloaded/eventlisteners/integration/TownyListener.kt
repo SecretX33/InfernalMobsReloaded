@@ -38,7 +38,7 @@ class TownyListener (
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun EntityMoveEvent.onInfernalMove() {
-        if(!entity.isInfernalMob() || entity.isNotInsideAnyTown()) return
+        if(!entity.isInfernalMobOrMount() || entity.isNotInsideAnyTown()) return
 
         // infernal removal is already pending
         if(removalCache.getIfPresent(entity.uniqueId) != null) return
@@ -51,7 +51,7 @@ class TownyListener (
         val wEntity = WeakReference(entity)
         CoroutineScope(Dispatchers.Default).launch {
             delay(removalDelay)
-            val entity = wEntity.get()?.takeIf { entity.isValid && !entity.isDead && !entity.isNotInsideAnyTown() } ?: return@launch
+            val entity = wEntity.get()?.takeIf { it.isValid && !it.isDead && !it.isNotInsideAnyTown() } ?: return@launch
             runSync(plugin) { entity.blackhole() }
         }
     }
@@ -68,15 +68,15 @@ class TownyListener (
             .forEach {
                 it.remove()
                 removalCache.invalidate(uniqueId)
-                if(it !is LivingEntity || !it.isInfernalMob()) return@forEach
+                if(it !is LivingEntity || !it.isInfernalMobOrMount()) return@forEach
                 mobsManager.unloadInfernalMob(it)
                 bossBarManager.removeBossBar(it)
             }
     }
 
-    private fun Entity.getSelfAndPassengersRecursively(): Set<Entity> = passengers.flatMapTo(HashSet()) { it.getSelfAndPassengersRecursively() + this }
+    private fun Entity.getSelfAndPassengersRecursively(): Set<Entity> = passengers.flatMapTo(HashSet()) { it.getSelfAndPassengersRecursively() } + this
 
-    private fun LivingEntity.isInfernalMob() = mobsManager.isValidInfernalMob(this)
+    private fun LivingEntity.isInfernalMobOrMount() = mobsManager.isValidInfernalMob(this) || mobsManager.isMountOfAnotherInfernal(this)
 
     private val towny get() = TownyAPI.getInstance()
 }
