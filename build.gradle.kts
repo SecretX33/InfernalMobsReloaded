@@ -3,17 +3,18 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 buildscript {
     repositories {
         google()
-        jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.0.0")
+        classpath("com.guardsquare:proguard-gradle:7.1.0-beta4") {
+            exclude("com.android.tools.build")
+        }
     }
 }
 
 plugins {
     kotlin("jvm") version "1.5.0"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 group = "com.github.secretx33"
@@ -37,8 +38,8 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
     compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT") // Paper API dependency
     compileOnly(fileTree("libs"))      // Paper server dependency
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
-    val koin_version = "3.0.1"
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
+    val koin_version = "3.0.2"
     implementation("io.insert-koin:koin-core:$koin_version")
     testCompileOnly("io.insert-koin:koin-test:$koin_version")
     implementation("com.github.cryptomorin:XSeries:7.9.1.1")
@@ -80,9 +81,13 @@ tasks.register<proguard.gradle.ProGuardTask>("proguard") {
     configuration("proguard-rules.pro")
 }
 
-//tasks.build.get().finalizedBy(tasks.getByName("proguard"))
+tasks.build.get().finalizedBy(tasks.getByName("proguard"))
 
-tasks.withType<JavaCompile> { options.encoding = "UTF-8" }
+tasks.withType<JavaCompile> {
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
+    options.encoding = "UTF-8"
+}
 
 tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "1.8" }
 
