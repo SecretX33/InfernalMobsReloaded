@@ -11,6 +11,7 @@ import com.github.secretx33.infernalmobsreloaded.utils.getTarget
 import com.github.secretx33.infernalmobsreloaded.utils.inject
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 
 class InspectCommand : SubCommand(), CustomKoinComponent {
@@ -25,7 +26,11 @@ class InspectCommand : SubCommand(), CustomKoinComponent {
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
         // if player is not targeting an entity
         val target = player.getTarget(25)
-            ?: player.getTargetBlock(null, 25).let { block -> block.world.getNearbyLivingEntities(block.location, 6.0, 6.0) { it.isValid && !it.isDead && mobsManager.isPossibleInfernalMob(it) }.firstOrNull() } ?: run {
+            ?: player.getTargetBlock(null, 3).let { block -> block.world.getNearbyLivingEntities(block.location, 1.5, 1.5) { it.isPossibleInfernalMob() }.firstOrNull() }
+            ?: player.getTargetBlock(null, 7).let { block -> block.world.getNearbyLivingEntities(block.location, 2.5, 2.5) { it.isPossibleInfernalMob() }.firstOrNull() }
+            ?: player.getTargetBlock(null, 12).let { block -> block.world.getNearbyLivingEntities(block.location, 4.0, 4.0) { it.isPossibleInfernalMob() }.firstOrNull() }
+            ?: player.getTargetBlock(null, 18).let { block -> block.world.getNearbyLivingEntities(block.location, 6.0, 6.0) { it.isPossibleInfernalMob() }.firstOrNull() }
+            ?: player.getTargetBlock(null, 25).let { block -> block.world.getNearbyLivingEntities(block.location, 6.5, 6.5) { it.isPossibleInfernalMob() }.firstOrNull() } ?: run {
             player.sendMessage(messages.get(MessageKeys.NOT_TARGETING_LIVING_ENTITY))
             return
         }
@@ -49,6 +54,8 @@ class InspectCommand : SubCommand(), CustomKoinComponent {
             .replace("<entity>", target.formattedTypeName())
             .replace("<abilities>", abilitiesString))
     }
+
+    private fun LivingEntity.isPossibleInfernalMob() = isValid && !isDead && mobsManager.isPossibleInfernalMob(this)
 
     override fun onCommandByConsole(sender: CommandSender, alias: String, strings: Array<String>) {
         sender.sendMessage(messages.get(MessageKeys.CONSOLE_CANNOT_USE))

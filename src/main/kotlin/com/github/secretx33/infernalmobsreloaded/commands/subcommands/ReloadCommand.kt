@@ -8,6 +8,7 @@ import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
+import com.github.secretx33.infernalmobsreloaded.repositories.GlobalDropsRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.CustomKoinComponent
@@ -24,8 +25,9 @@ class ReloadCommand : SubCommand(), CustomKoinComponent {
     private val config by inject<Config>()
     private val messages by inject<Messages>()
     private val abilityConfig by inject<AbilityConfig>()
-    private val infernalMobTypesRepo by inject<InfernalMobTypesRepo>()
     private val lootItemsRepo by inject<LootItemsRepo>()
+    private val globalDropsRepo by inject<GlobalDropsRepo>()
+    private val infernalMobTypesRepo by inject<InfernalMobTypesRepo>()
     private val charmsRepo by inject<CharmsRepo>()
     private val infernalMobsManager by inject<InfernalMobsManager>()
     private val bossBarManager by inject<BossBarManager>()
@@ -42,6 +44,7 @@ class ReloadCommand : SubCommand(), CustomKoinComponent {
         messages.reload()
         abilityConfig.reload()
         lootItemsRepo.reload()
+        globalDropsRepo.reload()
         infernalMobTypesRepo.reload()
         charmsRepo.reload()
         infernalMobsManager.loadAllInfernals()

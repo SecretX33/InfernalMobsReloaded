@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners.charm
 
+import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
 import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
 import com.github.secretx33.infernalmobsreloaded.utils.runSync
 import org.bukkit.Bukkit
@@ -64,6 +65,11 @@ class PlayerItemMoveListener (
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerSwapHandItemsEvent.onOffhandSwap() {
         runSync(plugin, 50L) { player.updateCharmEffects() }
+    }
+
+    @EventHandler
+    private fun PlayerArmorChangeEvent.onArmorChangeEvent() {
+        player.updateCharmEffects()
     }
 
     private fun Player.updateCharmEffects() = charmsManager.updateCharmEffects(this)

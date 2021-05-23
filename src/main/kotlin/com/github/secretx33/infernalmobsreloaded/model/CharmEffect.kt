@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.potion.PotionEffectType
 import java.util.*
+import kotlin.math.max
 
 class CharmEffect (
     val name: String,
@@ -28,7 +29,7 @@ class CharmEffect (
         require(name.isNotBlank()) { "name cannot be blank, name = '$name'" }
 
         // potency
-        require(potency.first >= 0 && potency.second >= 0) { "potency cannot be lower than 0, potency = $potency" }
+        require(potency.first >= 1 && potency.second >= 1) { "potency cannot be lower than 1, potency = $potency" }
         require(potency.first <= potency.second) { "potency first value has to be lower or equal than the second value, potency = $potency" }
 
         // duration
@@ -45,7 +46,7 @@ class CharmEffect (
         require(effectApplyMode in particleMode.validApplyModes) { "effectApplyMode has to be inside valid list of particleMode, but $effectApplyMode is not inside $particleMode's validApplyModes = ${particleMode.validApplyModes}" }
     }
 
-    fun getPotency() = potency.random()
+    fun getPotency() = max(0, potency.random() - 1)
 
     fun getDuration() = duration.random()
 

@@ -1,0 +1,13 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                     Global Drops                     | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Specify below the name of the items from the file 'loot_table.yml' that you want to be "global", or in other words, have those items being dropped by ALL infernal mobs.
+
+# To add items to this list, remove the square brackets and add items like the examples below
+global-drops: []
+#  - "my_item"                          # has 100% chance of being dropped by all infernal mobs
+#  - "my_cool_item:1.0"                 # also has 100% chance of being dropped by all infernal mobs
+#  - "my_maybe_item:0.45"               # has 45% of being dropped by all infernal mobs

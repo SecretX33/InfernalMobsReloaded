@@ -28,6 +28,7 @@ import com.github.secretx33.infernalmobsreloaded.manager.*
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.packetlisteners.InvisibleEntitiesEquipVanisherListener
 import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
+import com.github.secretx33.infernalmobsreloaded.repositories.GlobalDropsRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.*
@@ -55,7 +56,8 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { CharmsRepo(get(), get(), get(), get(), get()) }
         single { CharmsManager(get(), get(), get()) }
         single { AbilityHelper(get(),get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-        single { InfernalMobTypesRepo(get(), get(), get(), get(), get()) }
+        single { GlobalDropsRepo(get(), get(), get()) }
+        single { InfernalMobTypesRepo(get(), get(), get(), get(), get(), get()) }
         single { InfernalMobsManager(get(), get(), get(), get(), get(), get()) }
         single { FireworkAbilityListener(get(), get(), get(), get()) }
         single { CancelCharmEffectsListener(get(), get()) }

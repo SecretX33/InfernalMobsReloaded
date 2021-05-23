@@ -28,6 +28,7 @@ class InfernalMobTypesRepo (
     private val config: Config,
     private val adventureMessage: AdventureMessage,
     private val lootItemsRepo: LootItemsRepo,
+    private val globalDropsRepo: GlobalDropsRepo,
 ) {
     private val manager = YamlManager(plugin, "mobs")
     private var infernalTypeNames = emptyList<String>()                    // original groupNames
@@ -102,7 +103,7 @@ class InfernalMobTypesRepo (
             speedMulti = getSpeedMultiplierAmounts(name),
             consoleCommands = getConsoleCommands(name),
             forcedAbilities = getForcedAbilities(name),
-            loots = getMobLootTable(name),
+            loots = getMobLootTable(name) + globalDropsRepo.getGlobalDrops(),
         )
     }
 

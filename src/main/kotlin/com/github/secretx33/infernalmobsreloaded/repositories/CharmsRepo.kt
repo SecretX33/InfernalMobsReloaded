@@ -72,7 +72,7 @@ class CharmsRepo (
             playerMessage = getComponentMessage(name, "player-message"),
             targetMessage = getComponentMessage(name, "target-message"),
             potionEffect = getPotionEffect(name, "effect"),
-            potency = getIntPair(name, "potency"),
+            potency = getIntPair(name, "potency", minValue = 1),
             duration = getDoublePair(name, "duration", default = 0.05, minValue = 0.05),
             delay = getDelay(name, mode),
             particle = particle,

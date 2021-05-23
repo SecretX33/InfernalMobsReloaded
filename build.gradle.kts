@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "com.github.secretx33"
-version = "1.0.4"
+version = "1.0.4.1"
 
 repositories {
     mavenCentral()
@@ -81,7 +81,7 @@ tasks.register<proguard.gradle.ProGuardTask>("proguard") {
     configuration("proguard-rules.pro")
 }
 
-tasks.build.get().finalizedBy(tasks.getByName("proguard"))
+//tasks.build.get().finalizedBy(tasks.getByName("proguard"))
 
 tasks.withType<JavaCompile> {
     sourceCompatibility = "1.8"

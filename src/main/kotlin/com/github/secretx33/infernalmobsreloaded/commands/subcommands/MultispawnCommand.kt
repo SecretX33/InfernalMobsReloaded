@@ -29,7 +29,7 @@ class MultispawnCommand: SubCommand(), CustomKoinComponent {
     private val bossBarManager by inject<BossBarManager>()
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
-        if(strings.size < 2) {
+        if(strings.size < 3) {
             player.sendMessage("Usage: /$alias $name <amount> <entity_type> [abilities]".toComponent(NamedTextColor.RED))
             return
         }

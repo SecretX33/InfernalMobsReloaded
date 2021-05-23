@@ -34,7 +34,7 @@
 -keepnames class com.github.secretx33.dependencies.infernalmobsreloaded.mfmsg**
 
 #-dontshrink
--dontobfuscate
+#-dontobfuscate
 #-dontoptimize
 
 # Keep your main class
