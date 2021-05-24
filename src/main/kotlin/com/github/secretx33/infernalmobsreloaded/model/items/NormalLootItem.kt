@@ -2,6 +2,7 @@ package com.github.secretx33.infernalmobsreloaded.model.items
 
 import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
 import com.github.secretx33.infernalmobsreloaded.utils.ItemBuilder
+import com.github.secretx33.infernalmobsreloaded.utils.random
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.DyeColor
@@ -15,8 +16,7 @@ open class NormalLootItem (
     val material: Material,
     val color: Color?,
     val dyeColor: DyeColor?,
-    val minAmount: Int,
-    val maxAmount: Int,
+    val amount: Pair<Int, Int>,
     val flags: Set<ItemFlag>,
     val lore: List<Component>,
     val enchants: Set<CustomEnchantment>,
@@ -25,19 +25,19 @@ open class NormalLootItem (
     init {
         require(name.isNotBlank()) { "LootItem name is invalid, it cannot be blank or empty" }
         require(material.isItem) { "material needs to be an item, and $material is not" }
-        require(minAmount >= 1) { "minAmount has to be a number equal to or higher than 0, value passed was $minAmount" }
-        require(maxAmount >= 1) { "maxAmount has to be a number equal to or higher than 0, value passed was $maxAmount" }
-        require(minAmount <= maxAmount) { "minAmount cannot be higher than maxAmount, values passed minAmount = $minAmount and maxAmount = $maxAmount" }
+        require(amount.first >= 1 && amount.second >= 1) { "amount cannot have values lower than 1, but amount = $amount" }
+        require(amount.first <= amount.second) { "min amount cannot be higher than the max amount, value passed was amount = $amount" }
     }
 
-    protected val preparedItem = ItemBuilder.from(material)
-        .displayName(displayName)
-        .amount(random.nextInt(maxAmount - minAmount + 1) + minAmount)
-        .flags(flags)
-        .lore(lore)
-        .color(color)
-        .addEnchantments(enchants)
-        .markWithInfernalTag(name)
+    protected val preparedItem
+        get() = ItemBuilder.from(material)
+            .displayName(displayName)
+            .amount(amount.random())
+            .flags(flags)
+            .lore(lore)
+            .color(color)
+            .addEnchantments(enchants)
+            .markWithInfernalTag(name)
 
     override fun makeItem() = preparedItem.dyeColor(dyeColor).build()
 
@@ -49,8 +49,4 @@ open class NormalLootItem (
     }
 
     override fun hashCode() = name.lowercase(Locale.US).hashCode()
-
-    private companion object {
-        val random = Random()
-    }
 }

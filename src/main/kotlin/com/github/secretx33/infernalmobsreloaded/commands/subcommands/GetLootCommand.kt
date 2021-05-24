@@ -30,12 +30,14 @@ class GetLootCommand: SubCommand(), CustomKoinComponent {
             return
         }
 
-        val item = lootItemsRepo.getLootItemOrNull(strings[1])?.makeItem() ?: run {
+        val lootItem = lootItemsRepo.getLootItemOrNull(strings[1]) ?: run {
             player.sendMessage(messages.get(MessageKeys.LOOT_ITEM_DOESNT_EXIST).replace("<item>", strings[1]))
             return
         }
+        val item = lootItem.makeItem()
 
-        val amount = if(strings.size < 3) item.amount else strings[2].toIntOrNull() ?: run {
+        // Material.maxStackSize * 36 is the upper limit here because https://github.com/CryptoMorin/XSeries/issues/119
+        val amount = if(strings.size < 3) item.amount else strings[2].toIntOrNull()?.coerceIn(1, item.type.maxStackSize * 36) ?: run {
             player.sendMessage(messages.get(MessageKeys.INVALID_NUMBER).replace("<number>", strings[2]))
             return
         }
@@ -45,7 +47,13 @@ class GetLootCommand: SubCommand(), CustomKoinComponent {
         player.sendMessage(messages.get(MessageKeys.RECEIVED_LOOT_ITEM).replace("<amount>", item.amount.toString())
             .replace("<item>", item.displayName))
         // and give the item to him
-        XItemStack.giveOrDrop(player, true, item)
+        if(item.type.maxStackSize == 1)  {
+            repeat(amount.coerceAtMost(250)) {
+                XItemStack.giveOrDrop(player, true, lootItem.makeItem())
+            }
+        } else {
+            XItemStack.giveOrDrop(player, true, item)
+        }
         charmsManager.updateCharmEffects(player)
     }
 

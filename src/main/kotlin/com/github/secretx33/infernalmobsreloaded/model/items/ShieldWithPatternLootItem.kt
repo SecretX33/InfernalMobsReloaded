@@ -14,13 +14,12 @@ class ShieldWithPatternLootItem(
     material: Material,
     color: Color?,
     dyeColor: DyeColor?,
-    minAmount: Int,
-    maxAmount: Int,
+    amount: Pair<Int, Int>,
     flags: Set<ItemFlag>,
     lore: List<Component>,
     enchants: Set<CustomEnchantment>,
     private val patterns: List<Pattern>,
-): NormalLootItem(name, displayName, material, color, dyeColor, minAmount, maxAmount, flags, lore, enchants) {
+): NormalLootItem(name, displayName, material, color, dyeColor, amount, flags, lore, enchants) {
 
     override fun makeItem() = preparedItem
         .shieldPatterns(dyeColor, patterns)

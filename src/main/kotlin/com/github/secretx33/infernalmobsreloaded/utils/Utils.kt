@@ -24,10 +24,9 @@ import org.bukkit.plugin.Plugin
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
-
+import java.util.concurrent.ThreadLocalRandom
 
 private object Utils: CustomKoinComponent {
-    val random = Random()
     val keyChain by inject<KeyChain>()
 }
 
@@ -48,12 +47,12 @@ fun ItemMeta.markWithInfernalTag(itemName: String): ItemMeta {
 
 fun Pair<Int, Int>.random(): Int {
     val (minValue, maxValue) = this
-    return Utils.random.nextInt(maxValue - minValue + 1) + minValue
+    return ThreadLocalRandom.current().nextInt(maxValue - minValue + 1) + minValue
 }
 
 fun Pair<Double, Double>.random(): Double {
     val (minValue, maxValue) = this
-    return minValue + (maxValue - minValue) * Utils.random.nextDouble()
+    return minValue + (maxValue - minValue) * ThreadLocalRandom.current().nextDouble()
 }
 
 fun Player.getTarget(range: Int): LivingEntity? = (world.rayTraceEntities(eyeLocation, eyeLocation.direction, range.toDouble()) { it is LivingEntity && type != EntityType.ENDER_DRAGON && it.uniqueId != uniqueId }?.hitEntity as? LivingEntity)?.takeIf { hasLineOfSight(it) }

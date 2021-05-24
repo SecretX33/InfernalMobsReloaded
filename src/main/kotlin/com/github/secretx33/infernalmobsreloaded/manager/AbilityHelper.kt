@@ -36,6 +36,7 @@ import org.bukkit.util.Vector
 import java.lang.StrictMath.pow
 import java.lang.reflect.Type
 import java.util.*
+import java.util.concurrent.ThreadLocalRandom
 import java.util.logging.Logger
 import kotlin.math.*
 
@@ -970,7 +971,8 @@ class AbilityHelper (
     }
 
     private companion object {
-        val random = Random()
+        val random: ThreadLocalRandom
+            get() = ThreadLocalRandom.current()
         val gson = Gson()
         val infernalAbilitySetToken: Type = object : TypeToken<Set<Ability>>() {}.type
         val movSpeedUID: UUID = "57202f4c-2e52-46cb-ad37-77550e99edb2".toUuid()
