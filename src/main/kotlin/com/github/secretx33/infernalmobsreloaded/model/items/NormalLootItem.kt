@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Material
+import org.bukkit.inventory.ItemFlag
 import java.util.*
 
 open class NormalLootItem (
@@ -16,6 +17,7 @@ open class NormalLootItem (
     val dyeColor: DyeColor?,
     val minAmount: Int,
     val maxAmount: Int,
+    val flags: Set<ItemFlag>,
     val lore: List<Component>,
     val enchants: Set<CustomEnchantment>,
 ) : LootItem {
@@ -31,7 +33,8 @@ open class NormalLootItem (
     protected val preparedItem = ItemBuilder.from(material)
         .displayName(displayName)
         .amount(random.nextInt(maxAmount - minAmount + 1) + minAmount)
-        .setLore(lore)
+        .flags(flags)
+        .lore(lore)
         .color(color)
         .addEnchantments(enchants)
         .markWithInfernalTag(name)

@@ -33,10 +33,17 @@ class ItemBuilder private constructor(material: Material) {
         return this
     }
 
-    fun addFlags(vararg flags: ItemFlag): ItemBuilder {
+    fun flags(vararg flags: ItemFlag): ItemBuilder {
         meta?.addItemFlags(*flags)
         return this
     }
+
+    fun flags(flags: Collection<ItemFlag>): ItemBuilder {
+        flags.forEach { meta?.addItemFlags(it) }
+        return this
+    }
+
+    fun hasFlag(flag: ItemFlag): Boolean = meta?.hasItemFlag(flag) == true
 
     fun addEnchantment(enchant: Enchantment, level: Int): ItemBuilder {
         meta?.addEnchant(enchant, level, true)
@@ -87,12 +94,12 @@ class ItemBuilder private constructor(material: Material) {
 
     fun addLore(vararg lines: Component) = addLore(lines.toList())
 
-    fun setLore(lines: List<Component>): ItemBuilder {
+    fun lore(lines: List<Component>): ItemBuilder {
         meta?.lore(lines)
         return this
     }
 
-    fun setLore(vararg lines: Component) = setLore(lines.toList())
+    fun lore(vararg lines: Component) = lore(lines.toList())
 
     fun markWithInfernalTag(name: String): ItemBuilder {
         meta?.markWithInfernalTag(name)

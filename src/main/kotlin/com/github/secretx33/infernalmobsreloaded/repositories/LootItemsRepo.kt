@@ -17,6 +17,7 @@ import org.bukkit.Material
 import org.bukkit.block.banner.Pattern
 import org.bukkit.block.banner.PatternType
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.persistence.PersistentDataType
@@ -92,6 +93,8 @@ class LootItemsRepo (
             author = getBookAuthor(name),
             generation = getBookGeneration(name),
             pages = getBookPages(name),
+            flags = getItemFlags(name),
+            enchants = getItemEnchants(name),
         )
     }
 
@@ -147,17 +150,18 @@ class LootItemsRepo (
         val color = getItemColor(name)
         val dyeColor = getItemDyeColor(name)
         val amounts = getAmounts(name)
+        val flags = getItemFlags(name)
         val lore = getItemLore(name)
         val enchants = getItemEnchants(name)
 
-        if(material == Material.SHIELD) return shieldWithPatternLootItem(name, displayName, material, color, dyeColor, amounts, lore, enchants)
+        if(material == Material.SHIELD) return shieldWithPatternLootItem(name, displayName, material, color, dyeColor, amounts, flags, lore, enchants)
 
-        if(material.name.contains("banner", ignoreCase = true)) return bannerLootItem(name, displayName, material, color, dyeColor, amounts, lore, enchants)
+        if(material.name.contains("banner", ignoreCase = true)) return bannerLootItem(name, displayName, material, color, dyeColor, amounts, flags, lore, enchants)
 
-        return genericLootItem(name, displayName, material, color, dyeColor, amounts, lore, enchants)
+        return genericLootItem(name, displayName, material, color, dyeColor, amounts, flags, lore, enchants)
     }
 
-    private fun bannerLootItem(name: String, displayName: Component, material: Material, color: Color?, dyeColor: DyeColor?, amounts: Pair<Int, Int>, lore: List<Component>, enchants: Set<CustomEnchantment>) =
+    private fun bannerLootItem(name: String, displayName: Component, material: Material, color: Color?, dyeColor: DyeColor?, amounts: Pair<Int, Int>, flags: Set<ItemFlag>, lore: List<Component>, enchants: Set<CustomEnchantment>) =
         BannerLootItem(
             name,
             displayName = displayName,
@@ -166,12 +170,13 @@ class LootItemsRepo (
             dyeColor = dyeColor,
             minAmount = amounts.first,
             maxAmount = amounts.second,
+            flags = flags,
             lore = lore,
             enchants = enchants,
             patterns = getPatterns(name),
         )
 
-    private fun shieldWithPatternLootItem(name: String, displayName: Component, material: Material, color: Color?, dyeColor: DyeColor?, amounts: Pair<Int, Int>, lore: List<Component>, enchants: Set<CustomEnchantment>) =
+    private fun shieldWithPatternLootItem(name: String, displayName: Component, material: Material, color: Color?, dyeColor: DyeColor?, amounts: Pair<Int, Int>, flags: Set<ItemFlag>, lore: List<Component>, enchants: Set<CustomEnchantment>) =
         ShieldWithPatternLootItem(
             name,
             displayName = displayName,
@@ -180,6 +185,7 @@ class LootItemsRepo (
             dyeColor = dyeColor,
             minAmount = amounts.first,
             maxAmount = amounts.second,
+            flags = flags,
             lore = lore,
             enchants = enchants,
             patterns = getPatterns(name),
@@ -205,17 +211,15 @@ class LootItemsRepo (
         }
     }
 
-    private fun genericLootItem(name: String, displayName: Component, material: Material, color: Color?, dyeColor: DyeColor?, amounts: Pair<Int, Int>, lore: List<Component>, enchants: Set<CustomEnchantment>): NormalLootItem {
-        return NormalLootItem(name,
-            displayName = displayName,
-            material = material,
-            color = color,
-            dyeColor = dyeColor,
-            minAmount = amounts.first,
-            maxAmount = amounts.second,
-            lore = lore,
-            enchants = enchants,
-        )
+    private fun getItemFlags(name: String): Set<ItemFlag> {
+        val itemFlags = manager.getStringList("$name.item-flags").filter { it.isNotBlank() }.takeUnless { it.isEmpty() } ?: return emptySet()
+
+        return itemFlags.mapNotNullTo(EnumSet.noneOf(ItemFlag::class.java)) { flag ->
+            ItemFlag.values().firstOrNull { it.name.equals(flag, ignoreCase = true) } ?: run {
+                logger.warning("Invalid item flag '$flag' for loot item '$name', please fix your configurations and reload.")
+                null
+            }
+        }
     }
 
     private fun getItemColor(name: String): Color? {
@@ -234,6 +238,20 @@ class LootItemsRepo (
             return Component.text(material.formattedTypeName())
         }
         return adventureMessage.parse(displayName)
+    }
+
+    private fun genericLootItem(name: String, displayName: Component, material: Material, color: Color?, dyeColor: DyeColor?, amounts: Pair<Int, Int>, flags: Set<ItemFlag>, lore: List<Component>, enchants: Set<CustomEnchantment>): NormalLootItem {
+        return NormalLootItem(name,
+            displayName = displayName,
+            material = material,
+            color = color,
+            dyeColor = dyeColor,
+            minAmount = amounts.first,
+            maxAmount = amounts.second,
+            flags = flags,
+            lore = lore,
+            enchants = enchants,
+        )
     }
 
     private fun String.toColor(): Color {
@@ -273,7 +291,7 @@ class LootItemsRepo (
             val fields = line.split(':')
 
             val enchant = XEnchantment.matchXEnchantment(fields[0]).map { it.parseEnchantment() }.orElseGet {
-                logger.warning("Inside item loot '$name', enchantment with name '${fields[0]}' doesn't exist, please fix your item loot configurations. Defaulting this enchantment to ${Enchantment.LUCK}.")
+                logger.warning("Inside item loot '$name', enchantment with name '${fields[0]}' doesn't exist, please fix your item loot configurations. Defaulting this enchantment to LUCK.")
                 Enchantment.LUCK
             }!!
             if(fields.size == 1) return@mapTo CustomEnchantment(type = enchant, minLevel = 1, maxLevel = 1, chance = 1.0)

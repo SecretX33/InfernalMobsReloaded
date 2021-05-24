@@ -6,6 +6,7 @@ import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.block.banner.Pattern
+import org.bukkit.inventory.ItemFlag
 
 class BannerLootItem(
     name: String,
@@ -15,10 +16,11 @@ class BannerLootItem(
     dyeColor: DyeColor?,
     minAmount: Int,
     maxAmount: Int,
+    flags: Set<ItemFlag>,
     lore: List<Component>,
     enchants: Set<CustomEnchantment>,
     private val patterns: List<Pattern>,
-): NormalLootItem(name, displayName, material, color, dyeColor, minAmount, maxAmount, lore, enchants) {
+): NormalLootItem(name, displayName, material, color, dyeColor, minAmount, maxAmount, flags, lore, enchants) {
 
     override fun makeItem() = preparedItem
         .bannerPatterns(patterns)

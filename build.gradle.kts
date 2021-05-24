@@ -18,18 +18,18 @@ plugins {
 }
 
 group = "com.github.secretx33"
-version = "1.0.4.1"
+version = "1.0.4.2"
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") }
-    maven { url = uri("https://oss.sonatype.org/content/groups/public/") }
-    maven { url = uri("https://repo.codemc.org/repository/maven-public/") }
-    maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
-    maven { url = uri("https://plugins.gradle.org/m2/") }
-    maven { url = uri("https://jitpack.io") }
-    maven { url = uri("https://maven.enginehub.org/repo/") }
-    maven { url = uri("https://repo.mattstudios.me/artifactory/public") }
+    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://oss.sonatype.org/content/groups/public/")
+    maven("https://repo.codemc.org/repository/maven-public/")
+    maven("https://papermc.io/repo/repository/maven-public/")
+    maven("https://plugins.gradle.org/m2/")
+    maven("https://jitpack.io")
+    maven("https://maven.enginehub.org/repo/")
+    maven("https://repo.mattstudios.me/artifactory/public")
 }
 
 dependencies {

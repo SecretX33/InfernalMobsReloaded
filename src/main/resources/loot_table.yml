@@ -54,6 +54,8 @@ thors_apple:
 glass_drill:
   name: "<#AAAAAA>Glass Drill"
   material: "GOLDEN_PICKAXE"
+  item-flags:                                  # see complete list here https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/inventory/ItemFlag.html
+    - "HIDE_ENCHANTS"                          # hide all the enchantments from the item
   amount: 1
   lore:
     - "<#555555>Use in case of emergency!"
@@ -70,8 +72,24 @@ example_book:
   pages:                                       # the page system a little weird, each of these lines is a new page, and you start a new line by using \\n
     - "first page\\nsecond line of the <#c663f7>first page"      # page #1
     - "second page\\nsecond line of the <#c663f7>second page"    # page #2
-    - ""                                                        # page #3 will be empty
-    - "<#ff5555>fourth page"                                    # page #4
+    - ""                                                         # page #3 will be empty
+    - "<#ff5555>fourth page"                                     # page #4
+
+example_book_with_enchant_effect:
+  type: "book"                                 # you must specify that this item is a book
+  material: "WRITTEN_BOOK"                     # valid values: WRITTEN_BOOK, WRITABLE_BOOK; the former is not editable, the latter is; if you don't specify a type, WRITTEN_BOOK will be used
+  title: "<#c663f7>Title <#FFAA00>2"           # all books must have a title
+  author: "Author 2"                           # optional, doesn't support colors
+  generation: "ORIGINAL"                       # valid values: ORIGINAL, COPY_OF_ORIGINAL, COPY_OF_COPY, TATTERED; of all those, only ORIGINAL and COPY_OF_ORIGINAL can be copied by players, keep that in mind; will default to ORIGINAL if you don't specify
+  pages:                                       # the page system a little weird, each of these lines is a new page, and you start a new line by using \\n
+    - "first page\\nsecond line of the <#c663f7>first page"      # page #1
+    - "second page\\nsecond line of the <#c663f7>second page"    # page #2
+    - ""                                                         # page #3 will be empty
+    - "<#ff5555>fourth page"                                     # page #4
+  enchants:
+    - "DURABILITY"
+  item-flags:
+    - "HIDE_ENCHANTS"
 
 example_shield_with_pattern:
   name: "Test color shield"
