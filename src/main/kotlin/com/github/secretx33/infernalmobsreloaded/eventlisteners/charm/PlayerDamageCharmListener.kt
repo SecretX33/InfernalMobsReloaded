@@ -22,6 +22,9 @@ class PlayerDamageCharmListener  (
         val player = damager as? Player ?: return
         val target = entity as? LivingEntity ?: return
 
+        if(!player.isOnCharmEnabledWorld()) return
         charmsManager.triggerOnHitCharms(player, target)
     }
+
+    private fun Player.isOnCharmEnabledWorld() = charmsManager.areCharmsAllowedOnWorld(world)
 }

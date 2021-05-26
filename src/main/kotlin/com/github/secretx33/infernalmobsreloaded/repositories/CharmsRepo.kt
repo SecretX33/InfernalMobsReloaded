@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableSetMultimap
 import me.mattstudios.msg.adventure.AdventureMessage
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
+import org.bukkit.World
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
@@ -30,13 +31,17 @@ class CharmsRepo (
 ) {
     private val manager = YamlManager(plugin, "charms")
     private var charmsCache = ImmutableSetMultimap.of<String, CharmEffect>()    // lowercase lootItemName, charmEffect
+    private var worldWhitelist = emptySet<String>()
 
     init { reload() }
 
     fun reload() {
         manager.reload()
         loadCharmEffects()
+        loadWorldWhitelist()
     }
+
+    fun areCharmsAllowedOnWorld(world: World): Boolean = worldWhitelist.contains("<ALL>") || worldWhitelist.contains(world.name.lowercase(Locale.US))
 
     fun getCharmEffectsOrNull(name: String): Set<CharmEffect>? = charmsCache[name.lowercase(Locale.US)]
 
@@ -62,6 +67,10 @@ class CharmsRepo (
             }
         }
         charmsCache = builder.build()
+    }
+
+    private fun loadWorldWhitelist() {
+        worldWhitelist = manager.getStringList("charm-effects-world-whitelist").toHashSet()
     }
 
     private fun makeCharmEffect(name: String): CharmEffect {

@@ -8,9 +8,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.bukkit.event.player.PlayerItemBreakEvent
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.*
 import org.bukkit.plugin.Plugin
 
 class CancelCharmEffectsListener (
@@ -22,6 +20,7 @@ class CancelCharmEffectsListener (
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerJoinEvent.onPlayerJoin() {
+        if(!player.isOnCharmEnabledWorld()) return
         player.updateCharmEffects()
     }
 
@@ -36,11 +35,29 @@ class CancelCharmEffectsListener (
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    private fun PlayerItemBreakEvent.onPlayerDeath() {
+    private fun PlayerItemBreakEvent.onItemBreak() {
         runSync(plugin, 50L) { player.updateCharmEffects() }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private fun PlayerChangedWorldEvent.onWorldChange() {
+        runSync(plugin, 50L) {
+            if(player.isOnCharmEnabledWorld()) player.updateCharmEffects()
+            else player.cancelCharmEffects()
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private fun PlayerTeleportEvent.onPlayerTeleport() {
+        runSync(plugin, 50L) {
+            if(player.isOnCharmEnabledWorld()) player.updateCharmEffects()
+            else player.cancelCharmEffects()
+        }
     }
 
     private fun Player.updateCharmEffects() = charmsManager.updateCharmEffects(this)
 
     private fun Player.cancelCharmEffects() = charmsManager.cancelAllCharmTasks(this)
+
+    private fun Player.isOnCharmEnabledWorld() = charmsManager.areCharmsAllowedOnWorld(world)
 }

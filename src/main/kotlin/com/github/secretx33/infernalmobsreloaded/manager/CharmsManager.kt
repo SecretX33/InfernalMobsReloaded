@@ -12,6 +12,7 @@ import com.google.common.collect.HashBasedTable
 import com.google.common.collect.MultimapBuilder
 import kotlinx.coroutines.*
 import org.bukkit.Bukkit
+import org.bukkit.World
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -34,7 +35,17 @@ class CharmsManager(
 
     private fun makeCooldownsCache() = CacheBuilder.newBuilder().expireAfterWrite((charmsRepo.getHighestEffectDelay() * 1000.0).toLong(), TimeUnit.MILLISECONDS).build<Pair<UUID, CharmEffect>, Long>()
 
+    fun areCharmsAllowedOnWorld(world: World) = charmsRepo.areCharmsAllowedOnWorld(world)
+
+    private fun Player.isOnCharmEnabledWorld() = areCharmsAllowedOnWorld(world)
+
     fun updateCharmEffects(player: Player) {
+        // player is not on a charm effects enabled world
+        if(!player.isOnCharmEnabledWorld()) {
+            cancelAllCharmTasks(player)
+            return
+        }
+
         val invMap = player.inventoryMap
         val charms = invMap.filterKeys { charmsRepo.isItemRequiredByCharm(it) }
         // if player has no charms in his inventory

@@ -26,6 +26,17 @@ valid-charm-slots:
 
 ############################################################
 # +------------------------------------------------------+ #
+# |             Charm Effects World Whitelist            | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Worlds in which charms will grant their effects to players; <ALL> is a special tag, it will allow charms to work in ALL worlds; to prevent charms of having effect in any world, just delete all the items and insert empty square brackets instead
+charm-effects-world-whitelist:
+  - "<ALL>"
+
+
+############################################################
+# +------------------------------------------------------+ #
 # |                     Charm Effects                    | #
 # +------------------------------------------------------+ #
 ############################################################
