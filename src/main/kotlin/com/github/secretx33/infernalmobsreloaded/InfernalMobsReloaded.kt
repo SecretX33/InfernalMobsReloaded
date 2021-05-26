@@ -8,6 +8,7 @@ import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.FireworkAbilityListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.LightningAbilityListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.MountRemovalListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.ThiefAbilityListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.charm.CancelCharmEffectsListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.charm.PlayerDamageCharmListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.charm.PlayerItemMoveListener
@@ -60,28 +61,29 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { InfernalMobTypesRepo(get(), get(), get(), get(), get(), get()) }
         single { InfernalMobsManager(get(), get(), get(), get(), get(), get()) }
         single { FireworkAbilityListener(get(), get(), get(), get()) }
+        single { LightningAbilityListener(get(), get(), get()) }
+        single { MountRemovalListener(get(), get()) }
+        single { ThiefAbilityListener(get(), get(), get()) }
         single { CancelCharmEffectsListener(get(), get()) }
         single { PlayerDamageCharmListener(get(), get()) }
         single { PlayerItemMoveListener(get(), get()) }
         single { EntityDamageEntityListener(get(), get(), get()) }
         single { EntityDeathListener(get(), get()) }
         single { EntitySpawnListener(get(), get(), get(), get()) }
+        single { BossBarListener(get(), get(), get()) }
         single { InfernalDamageDoneListener(get(), get()) }
         single { InfernalDamageTakenListener(get(), get()) }
         single { InfernalDeathListener(get(), get(), get(), get(), get(), get(), get()) }
         single { InfernalSpawnListener(get(), get(), get(), get()) }
         single { InfernalTargetListener(get(), get()) }
-        single { BossBarListener(get(), get(), get()) }
         single { LethalPoisonListener(get(), get()) }
         single { PlayerMoveListener(get(), get(), get()) }
         single { SpawnerBreakListener(get(), get(), get(), get()) }
         single { SpawnerInteractListener(get(), get(), get(), get()) }
         single { SpawnerPlaceListener(get(), get(), get()) }
         single { SpawnerSpawnListener(get(), get(), get()) }
-        single { LightningAbilityListener(get(), get(), get()) }
-        single { MountRemovalListener(get(), get()) }
-        single { EntityUnloadListener(get(), get(), get()) }
         single { EntityLoadListener(get(), get()) }
+        single { EntityUnloadListener(get(), get(), get()) }
         single { InvisibleEntitiesEquipVanisherListener(get(), get(), get()) }
         single { TownyListener(get(), get(), get(), get()) }
         single { Commands(get()) }
@@ -105,6 +107,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         get<FireworkAbilityListener>()
         get<LightningAbilityListener>()
         get<MountRemovalListener>()
+        get<ThiefAbilityListener>()
         get<CancelCharmEffectsListener>()
         get<PlayerDamageCharmListener>()
         get<PlayerItemMoveListener>()

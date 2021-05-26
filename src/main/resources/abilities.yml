@@ -218,6 +218,7 @@ thief:
   affect-only-players: true          # set to true by default to prevent exploits, people "storing" mobs with thief ability and make them fight against another infernal that has special, rare armor, in order to make them steal the rare equipment of that other infernal, which will be dropped at the thief's feet, and will make getting them much easier; you may set this to false if you don't care
   require-line-of-sight: true        # if true, the ability will only trigger if the infernal mob has line of sight of the victim
   send-message-to-player: true       # if true, will send a message to player warning him that he got stolen (recommended)
+  drop-stolen-item-chance: 1.0       # in percentage, the chance of the entity dropping the item it stole from the player
 
 # Thornmail ability
 # Has a chance of partially (or fully, or even multiply) reflect the damage received

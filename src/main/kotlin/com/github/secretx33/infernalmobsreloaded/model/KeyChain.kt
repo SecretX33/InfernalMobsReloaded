@@ -18,6 +18,7 @@ class KeyChain(plugin: Plugin) {
     val fireworkOwnerUuidKey  = NamespacedKey(plugin, "infernal_uuid_which_spawned_the_firework")   // String containing the infernal UUID that spawned the firework
     val spawnerCategoryKey    = NamespacedKey(plugin, "spawner_infernal_category")    // String
     val infernalItemNameKey   = NamespacedKey(plugin, "infernal_mobs_loot_item_name") // String
+    val stolenItemByThiefKey  = NamespacedKey(plugin, "stolen_item_by_thief")         // Short = 1
 
     fun hasMountKey(entity: Entity) = entity.pdc.has(infernalMountKey, PersistentDataType.SHORT) || entity.pdc.has(infernalBatMountKey, PersistentDataType.SHORT)
 }

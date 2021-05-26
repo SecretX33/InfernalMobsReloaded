@@ -77,6 +77,7 @@ class AbilityHelper (
                 Ability.MOLTEN -> addMoltenAbility()
                 Ability.MOUNTED -> addMountedAbility()
                 Ability.SPEEDY -> addSpeedyAbility()
+                Ability.THIEF -> addThiefAbility()
                 else -> {}
             }
         }
@@ -205,6 +206,11 @@ class AbilityHelper (
         val mod = AttributeModifier(movSpeedUID, Ability.SPEEDY.name, speedBonus, AttributeModifier.Operation.ADD_SCALAR)
         movSpeed.removeModifier(mod)
         movSpeed.addModifier(mod)
+    }
+
+    private fun LivingEntity.addThiefAbility() {
+        if(!canWearArmor()) return
+        canPickupItems = true
     }
 
     // periodic tasks that require a target
@@ -440,7 +446,7 @@ class AbilityHelper (
             val chosenSlot = EquipmentSlot.values().filter { slot -> equip.getItem(slot).let { it != null && !it.isAir() } }.randomOrNull() ?: continue
             val durabilityLoss = abilityConfig.getDurabilityLoss(Ability.THIEF, 0.04).random()
             val item = equip.getItem(chosenSlot)
-            val damagedItem = item.damageItemBy(durabilityLoss)
+            val damagedItem = item.damageItemBy(durabilityLoss).markAsStolen()
 
             // set air in that slot, removing the item from player's inventory
             equip.setItem(chosenSlot, ItemStack(Material.AIR))
@@ -457,6 +463,14 @@ class AbilityHelper (
                     .replace("<item>", item.displayName))
             }
         }
+    }
+
+    private fun ItemStack.markAsStolen(): ItemStack {
+        itemMeta?.let { meta ->
+            meta.pdc.set(keyChain.stolenItemByThiefKey, PersistentDataType.SHORT, 1)
+            itemMeta = meta
+        }
+        return this
     }
 
     private fun makeTosserTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {

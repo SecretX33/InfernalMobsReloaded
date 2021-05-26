@@ -213,6 +213,7 @@ enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
     POTIONS_ENABLED_TYPES("${Ability.POTIONS.configEntry}.enabled-types", setOf(PotionEffectType.HARM, PotionEffectType.POISON, PotionEffectType.SLOW)),
     POTIONS_THROW_DELAY("${Ability.POTIONS.configEntry}.throw-delay", 0.35),
     SPEEDY_BONUS("${Ability.SPEEDY.configEntry}.bonus", 1.5),
+    THIEF_DROP_STOLEN_ITEM_CHANCE("${Ability.THIEF.configEntry}.drop-stolen-item-chance", 1.0),
     THORMAIL_REFLECTED_AMOUNT("${Ability.THORNMAIL.configEntry}.reflected-amount", 0.5),
     TOSSER_SNEAK_MULTIPLIER_PERCENTAGE("${Ability.TOSSER.configEntry}.sneaking-multiplier-percentage", 0.4),
     WEBBER_MAX_RADIUS("${Ability.WEBBER.configEntry}.max-radius", 1),
