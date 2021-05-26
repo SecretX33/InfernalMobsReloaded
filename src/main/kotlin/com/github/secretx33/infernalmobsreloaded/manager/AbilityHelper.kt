@@ -466,8 +466,12 @@ class AbilityHelper (
     }
 
     private fun ItemStack.markAsStolen(): ItemStack {
+        if(isAir()) return this
         itemMeta?.let { meta ->
-            meta.pdc.set(keyChain.stolenItemByThiefKey, PersistentDataType.SHORT, 1)
+            meta.pdc.apply {
+                set(keyChain.stolenItemByThiefKey, PersistentDataType.SHORT, 1)
+                set(keyChain.thiefItemDurabilityKey, PersistentDataType.INTEGER, (meta as? Damageable)?.damage ?: 0)
+            }
             itemMeta = meta
         }
         return this

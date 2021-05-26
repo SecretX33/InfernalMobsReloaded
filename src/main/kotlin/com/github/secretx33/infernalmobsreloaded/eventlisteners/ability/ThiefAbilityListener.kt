@@ -10,9 +10,11 @@ import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.Damageable
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 
@@ -38,21 +40,39 @@ class ThiefAbilityListener (
         runSync(plugin, 50L) {
             entity.equipment?.let { equip ->
                 EquipmentSlot.values().filter { equip.getItem(it).isStolenItem() }
-                    .forEach {
-                        equip.setDropChance(it, stolenItemDropChance)
-                        equip.setItem(it, equip.getItem(it).removeStolenTag())
-                    }
+                    .forEach { equip.setDropChance(it, stolenItemDropChance) }
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    private fun EntityDeathEvent.onEntityDeathEvent() {
+        // players don't need to have theirs drops parsed, since they'll never have stolen items
+        if(entityType == EntityType.PLAYER) return
+        // restore the durability that the items had before they were stolen
+        drops.asSequence().withIndex()
+            .filter { it.value?.isStolenItem() == true }
+            .forEach { (index, item) ->
+                drops[index] = item.restoreDurability().removeStolenTag() }
     }
 
     private fun ItemStack?.isStolenItem() = this != null && itemMeta?.pdc?.has(keyChain.stolenItemByThiefKey, PersistentDataType.SHORT) == true
 
     private fun ItemStack?.removeStolenTag(): ItemStack? {
         this?.itemMeta?.let { meta ->
-            meta.pdc.remove(keyChain.stolenItemByThiefKey)
+            meta.pdc.apply {
+                remove(keyChain.stolenItemByThiefKey)
+                remove(keyChain.thiefItemDurabilityKey)
+            }
             itemMeta = meta
         }
+        return this
+    }
+
+    private fun ItemStack.restoreDurability(): ItemStack {
+        val meta = itemMeta ?: return this
+        (meta as? Damageable)?.damage = meta.pdc.get(keyChain.thiefItemDurabilityKey, PersistentDataType.INTEGER) ?: 0
+        itemMeta = meta
         return this
     }
 
