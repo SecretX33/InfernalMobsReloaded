@@ -151,13 +151,9 @@ class CharmsManager(
     }
 
     private val Player.inventoryMap: Map<ItemStack, Int>
-        get() {
-            val inventoryMap = HashMap<ItemStack, Int>()
-            inventory.iterator().withIndex().forEachRemaining { (index, item: ItemStack?) ->
-                item?.let { inventoryMap[item] = index }
-            }
-            return inventoryMap.filter { !it.key.isAir() }
-        }
+        get() = inventory.withIndex()
+            .filter { it.value != null && !it.value.isAir() }
+            .associateTo(HashMap()) { it.value to it.index }
 
     fun cancelAllCharmTasks(player: Player) {
         permanentEffects.row(player.uniqueId).values.forEach { player.removePotionEffect(it) }

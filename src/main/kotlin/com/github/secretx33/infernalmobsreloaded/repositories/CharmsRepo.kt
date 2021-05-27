@@ -70,7 +70,7 @@ class CharmsRepo (
     }
 
     private fun loadWorldWhitelist() {
-        worldWhitelist = manager.getStringList("charm-effects-world-whitelist").toHashSet()
+        worldWhitelist = manager.getStringList("charm-effects-world-whitelist").mapTo(HashSet()) { it.lowercase(Locale.US) }
     }
 
     private fun makeCharmEffect(name: String): CharmEffect {
