@@ -37,8 +37,11 @@ display-infernal-custom-name-mode: LOOKING_AT
 # Prevent infernals mobs from damaging itself, they literally cannot take damage of their own abilities, no matter what
 infernals-cannot-damage-themselves: true
 
-# Prevent despawn of infernals, it doesn't mean this option will force chunks infernal mobs are in to always be loaded, it means that infernals will be saved with the chunk when it's get unloaded, and respawned once the chunk is loaded again (pretty much like villagers). May cause increase in infernal population around busy areas.
-infernals-are-persistent: true
+# Prevent despawn of infernals, it doesn't mean this option will force chunks infernal mobs are in to always be loaded, it means that infernals will be saved with the chunk when it's get unloaded, and respawned once the chunk is loaded again (pretty much like villagers). May cause increases in infernal population around busy areas.
+infernals-are-persistent: false
+
+# When infernal persistence is turned off and this option is turned on, any infernal mob that gets loaded and is persistent will be removed. Basically, an option to "purge" persistent infernals from your worlds when you change your mind and don't want persistence anymore.
+infernals-persistence-purge-mode: false
 
 ####################
 ####  Spawners  ####

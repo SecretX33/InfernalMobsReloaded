@@ -82,7 +82,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { SpawnerInteractListener(get(), get(), get(), get()) }
         single { SpawnerPlaceListener(get(), get(), get()) }
         single { SpawnerSpawnListener(get(), get(), get()) }
-        single { EntityLoadListener(get(), get()) }
+        single { EntityLoadListener(get(), get(), get(), get()) }
         single { EntityUnloadListener(get(), get(), get()) }
         single { InvisibleEntitiesEquipVanisherListener(get(), get(), get()) }
         single { TownyListener(get(), get(), get(), get()) }

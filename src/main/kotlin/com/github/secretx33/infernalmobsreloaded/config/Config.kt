@@ -104,8 +104,6 @@ class Config(plugin: Plugin, private val log: Logger) {
 }
 
 enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
-    TOWNY_REMOVE_INFERNAL_IN_TOWNS("remove-infernal-mobs-in-towns", true),
-    TOWNY_REMOVE_INFERNAL_IN_TOWNS_DELAY("remove-infernal-mobs-in-towns-after", 5.0),
     BOSS_BAR_SHOW_RANGE_DISTANCE("boss-bar-show-range-distance", 25.0),
     BOSS_BAR_SHOW_RANGE_HEIGHT("boss-bar-show-range-height", 15.0),
     DELAY_BETWEEN_INFERNAL_PARTICLES("delay-between-infernal-particles", 1.5),
@@ -129,7 +127,10 @@ enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
     INFERNAL_SPAWN_MESSAGE_RADIUS("infernal-spawn-message-radius", 30),
     INFERNALS_ARE_PERSISTENT("infernals-are-persistent", true),
     INFERNALS_CANNOT_DAMAGE_THEMSELVES("infernals-cannot-damage-themselves", true),
+    INFERNALS_PERSISTENCE_PURGE_MODE("infernals-persistence-purge-mode", false),
     LETHAL_POISON_TARGETS("entities-killed-by-poison", KilledByPoison.NONE),
     MOB_TYPES_THAT_CAN_WEAR_ARMOR("mob-types-that-can-wear-armor", emptySet<EntityType>()),
     MOBS_THAT_CAN_BE_RIDED_BY_MOUNTED_INFERNALS("mobs-that-can-be-rided-by-mounted-infernals", emptySet<EntityType>()),
+    TOWNY_REMOVE_INFERNAL_IN_TOWNS("remove-infernal-mobs-in-towns", true),
+    TOWNY_REMOVE_INFERNAL_IN_TOWNS_DELAY("remove-infernal-mobs-in-towns-after", 5.0),
 }
