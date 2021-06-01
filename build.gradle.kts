@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "com.github.secretx33"
-version = "1.0.4.2"
+version = "1.0.5"
 
 repositories {
     mavenCentral()
@@ -34,12 +34,12 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test-junit5"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
     compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT") // Paper API dependency
     compileOnly(fileTree("libs"))      // Paper server dependency
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
-    val koin_version = "3.0.2"
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.+")
+    val koin_version = "3.0.+"
     implementation("io.insert-koin:koin-core:$koin_version")
     testCompileOnly("io.insert-koin:koin-test:$koin_version")
     implementation("com.github.cryptomorin:XSeries:7.9.1.1")

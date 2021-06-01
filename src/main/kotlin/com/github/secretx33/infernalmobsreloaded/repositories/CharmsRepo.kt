@@ -41,7 +41,7 @@ class CharmsRepo (
         loadWorldWhitelist()
     }
 
-    fun areCharmsAllowedOnWorld(world: World): Boolean = worldWhitelist.contains("<ALL>") || worldWhitelist.contains(world.name.lowercase(Locale.US))
+    fun areCharmsAllowedOnWorld(world: World): Boolean = worldWhitelist.contains("<all>") || worldWhitelist.contains(world.name.lowercase(Locale.US))
 
     fun getCharmEffectsOrNull(name: String): Set<CharmEffect>? = charmsCache[name.lowercase(Locale.US)]
 

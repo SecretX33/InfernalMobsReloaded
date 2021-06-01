@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.manager
 
+import com.github.secretx33.infernalmobsreloaded.manager.InvisibilityHelper.isInvisibleOrVanished
 import com.github.secretx33.infernalmobsreloaded.model.CharmEffect
 import com.github.secretx33.infernalmobsreloaded.model.CharmParticleMode
 import com.github.secretx33.infernalmobsreloaded.model.PotionEffectApplyMode
@@ -111,6 +112,7 @@ class CharmsManager(
     }
 
     private fun LivingEntity.spawnCharmParticles(charmEffect: CharmEffect) {
+        if((this as? Player)?.isInvisibleOrVanished() == true) return
         val particle = charmEffect.particle?.takeIf { charmEffect.particleMode != CharmParticleMode.NONE } ?: return
         world.spawnParticle(particle, eyeLocation, 100, 0.5, 1.0, 0.5)
     }
