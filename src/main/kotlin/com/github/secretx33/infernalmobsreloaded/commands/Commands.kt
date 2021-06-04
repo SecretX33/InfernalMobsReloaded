@@ -11,8 +11,9 @@ import java.util.*
 
 class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
 
-    private val subcommands: List<SubCommand> = listOf(
+    private val subcommands: Set<SubCommand> = setOf(
         GetLootCommand(),
+        GetSpawnerCommand(),
         InspectCommand(),
         KillAllCommand(),
         MultispawnCommand(),
@@ -42,6 +43,7 @@ class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
     }
 
     override fun onTabComplete(sender: CommandSender, command: Command, alias: String, strings: Array<String>): List<String> {
+        if(strings.isEmpty()) return emptyList()
         // mobs <subcommand> <args>
         if(strings.size == 1) {
             return subcommands.asSequence()
@@ -49,12 +51,9 @@ class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
                 .map { it.name }
                 .toList()
         }
-        if(strings.size > 1) {
-            return subcommands
-                .firstOrNull { it.hasPermission(sender) && it.aliases.contains(strings[0].lowercase()) }
-                ?.getCompletor(sender, strings.size, strings[strings.size - 1], strings)
-                ?: emptyList()
-        }
-        return emptyList()
+        return subcommands
+            .firstOrNull { it.hasPermission(sender) && it.aliases.contains(strings[0].lowercase()) }
+            ?.getCompletor(sender, strings.size, strings[strings.size - 1], strings)
+            ?: emptyList()
     }
 }

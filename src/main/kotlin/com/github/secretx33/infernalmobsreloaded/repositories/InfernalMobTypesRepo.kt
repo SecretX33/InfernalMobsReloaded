@@ -102,23 +102,24 @@ class InfernalMobTypesRepo (
             healthMulti = getHealthMultiplierAmounts(name),
             speedMulti = getSpeedMultiplierAmounts(name),
             consoleCommands = getConsoleCommands(name),
-            forcedAbilities = getForcedAbilities(name),
+            forcedAbilities = getAbilitySet(name, "forced-abilities").also { println("$name forcedAbilities = $it") },
+            blacklistedAbilities = getAbilitySet(name, "blacklisted-abilities", false).also { println("$name blacklistedAbilities = $it") },
             loots = getMobLootTable(name) + globalDropsRepo.getGlobalDrops(),
         )
     }
 
-    private fun getForcedAbilities(name: String): Set<Ability> {
-        val forcedAbilities = manager.getStringList("$name.forced-abilities")
+    private fun getAbilitySet(name: String, subKey: String, filterDisabled: Boolean = true): Set<Ability> {
+        val forcedAbilities = manager.getStringList("$name.$subKey")
 
         // if forced abilities is absent or blank
         if(forcedAbilities.isEmpty()) return emptySet()
 
         return forcedAbilities.mapNotNull { ability ->
             Ability.values.firstOrNull { it.name.equals(ability, ignoreCase = true) } ?: run {
-                log.warning("Inside mob category '$name' forced-abilities, ability named '$ability' doesn't exist, please fix your mobs configurations. Ignoring this entry for now.")
+                log.warning("Inside mob category '$name' $subKey, ability named '$ability' doesn't exist, please fix your mobs configurations. Ignoring this entry for now.")
                 null
             }
-        }.filterTo(EnumSet.noneOf(Ability::class.java)) { it !in disabledAbilities }
+        }.filterTo(EnumSet.noneOf(Ability::class.java)) { !filterDisabled || it !in disabledAbilities }
     }
 
     private val disabledAbilities: Set<Ability>
