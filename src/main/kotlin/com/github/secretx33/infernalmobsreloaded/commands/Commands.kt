@@ -1,6 +1,13 @@
 package com.github.secretx33.infernalmobsreloaded.commands
 
-import com.github.secretx33.infernalmobsreloaded.commands.subcommands.*
+import com.github.secretx33.infernalmobsreloaded.commands.subcommands.GetLootCommand
+import com.github.secretx33.infernalmobsreloaded.commands.subcommands.GetSpawnerCommand
+import com.github.secretx33.infernalmobsreloaded.commands.subcommands.InspectCommand
+import com.github.secretx33.infernalmobsreloaded.commands.subcommands.KillAllCommand
+import com.github.secretx33.infernalmobsreloaded.commands.subcommands.MultispawnCommand
+import com.github.secretx33.infernalmobsreloaded.commands.subcommands.ReloadCommand
+import com.github.secretx33.infernalmobsreloaded.commands.subcommands.SpawnCommand
+import com.github.secretx33.infernalmobsreloaded.commands.subcommands.SubCommand
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender

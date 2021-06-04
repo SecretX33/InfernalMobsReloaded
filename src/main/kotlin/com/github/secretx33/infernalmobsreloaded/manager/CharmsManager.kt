@@ -11,7 +11,12 @@ import com.github.secretx33.infernalmobsreloaded.utils.runSync
 import com.google.common.cache.CacheBuilder
 import com.google.common.collect.HashBasedTable
 import com.google.common.collect.MultimapBuilder
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.LivingEntity

@@ -5,7 +5,12 @@ import com.cryptomorin.xseries.XMaterial
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
-import com.github.secretx33.infernalmobsreloaded.model.items.*
+import com.github.secretx33.infernalmobsreloaded.model.items.BannerLootItem
+import com.github.secretx33.infernalmobsreloaded.model.items.LootBook
+import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
+import com.github.secretx33.infernalmobsreloaded.model.items.LootItemType
+import com.github.secretx33.infernalmobsreloaded.model.items.NormalLootItem
+import com.github.secretx33.infernalmobsreloaded.model.items.ShieldWithPatternLootItem
 import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
 import com.github.secretx33.infernalmobsreloaded.utils.pdc

@@ -5,9 +5,7 @@ import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.config.replace
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
-import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
-import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.CustomKoinComponent
 import com.github.secretx33.infernalmobsreloaded.utils.displayName
 import com.github.secretx33.infernalmobsreloaded.utils.inject
