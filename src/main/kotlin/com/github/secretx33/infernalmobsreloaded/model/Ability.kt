@@ -1,7 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
 import com.github.secretx33.infernalmobsreloaded.utils.capitalizeFully
-import java.util.*
+import java.util.Locale
 import kotlin.math.min
 
 enum class Ability {
@@ -25,6 +25,7 @@ enum class Ability {
     MOLTEN,
     MORPH,
     MOUNTED,
+    MULTI_GHASTLY,
     NECROMANCER,
     POISONOUS,
     POTIONS,

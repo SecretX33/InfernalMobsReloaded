@@ -47,7 +47,11 @@ class InspectCommand : SubCommand(), CustomKoinComponent {
             player.sendMessage(messages.get(MessageKeys.NOT_TARGETING_VALID_INFERNAL).replace("<group>", group))
             return
         }
-        val abilitiesString = mobsManager.getInfernalAbilities(target).joinToString { it.displayName }.takeIf { it.isNotBlank() }?.toComponent() ?: "<none>".toComponent(NamedTextColor.GRAY)
+        val abilitiesString = mobsManager.getInfernalAbilities(target)
+            .sortedBy { it.displayName }
+            .joinToString { it.displayName }
+            .takeIf { it.isNotBlank() }?.toComponent()
+            ?: "<none>".toComponent(NamedTextColor.GRAY)
 
         // send the list of abilities the mob he's targeting has
         player.sendMessage(messages.get(MessageKeys.TARGETING_INFERNAL)

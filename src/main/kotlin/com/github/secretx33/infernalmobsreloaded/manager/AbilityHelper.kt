@@ -82,7 +82,7 @@ import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.Vector
 import java.lang.StrictMath.pow
 import java.lang.reflect.Type
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import java.util.logging.Logger
 import kotlin.math.atan
@@ -278,6 +278,7 @@ class AbilityHelper (
                 Ability.CALL_THE_GANG -> makeCallTheGangTask(entity, target)
                 Ability.GHASTLY -> makeGhastlyTask(entity, target) // TODO("Make a damage modifier listener for this task")
                 Ability.MORPH -> makeMorphTask(entity, target)
+                Ability.MULTI_GHASTLY -> makeMultiGhastlyTask(entity, target)
                 Ability.NECROMANCER -> makeNecromancerTask(entity, target) // TODO("Make a damage modifier listener for this task")
                 Ability.POTIONS -> makePotionsTasks(entity, target)
                 Ability.TELEPORT -> makeTeleportTask(entity, target)
@@ -288,59 +289,6 @@ class AbilityHelper (
             }?.let { job -> jobList.add(job) }
         }
         return jobList
-    }
-
-    private fun makePotionsTasks(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
-        val nearbyRange = abilityConfig.getNearbyRange(Ability.POTIONS, 4.0)
-        val chance = abilityConfig.getAbilityChance(Ability.POTIONS, 0.05)
-        val recheckDelay = abilityConfig.getRecheckDelay(Ability.POTIONS, 1.0).toLongDelay()
-
-        while(isActive && !entity.isNotTargeting(target)) {
-            delay(recheckDelay)
-            if(random.nextDouble() > chance) continue
-            val amount = abilityConfig.getIntAmounts(Ability.POTIONS, 1, minValue = 1).random()
-            val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
-
-            for (i in 1..amount) {
-                victims.forEach { victim ->
-                    if (!isActive || entity.isNotTargeting(target)) return@launch
-                    // if potion type is invalid or empty, silently fail
-                    val type = abilityConfig.get(AbilityConfigKeys.POTIONS_ENABLED_TYPES, emptyList<String>())
-                        .randomOrNull()
-                        ?.let { name -> XPotion.matchXPotion(name).orElse(null)?.parsePotionEffectType() }
-                        ?: return@forEach
-
-                    entity.throwPotion(victim, type)
-                }
-                val throwDelay = abilityConfig.getDoublePair(AbilityConfigKeys.POTIONS_THROW_DELAY).random().toLongDelay()
-                delay(throwDelay)
-            }
-        }
-    }
-
-    private fun LivingEntity.throwPotion(victim: LivingEntity, type: PotionEffectType) {
-        val duration = abilityConfig.getDuration(Ability.POTIONS, 2.0).random()
-        val potency = abilityConfig.getAbilityPotency(Ability.POTIONS, 2, minValue = 1).random() - 1
-        val dir = shootDirection(victim).normalize().apply { y += 0.1 }.multiply(random.nextDouble() * 0.5 + 1)
-
-        val potionItem = ItemStack(randomPotionMaterial).modifyPotion(type, duration, potency)
-        runSync(plugin) {
-            world.spawn(eyeLocation, ThrownPotion::class.java) { potion ->
-                potion.item = potionItem
-                potion.velocity = dir
-            }
-        }
-    }
-
-    private val randomPotionMaterial
-        get() = if(random.nextDouble() <= 0.75) Material.LINGERING_POTION else Material.SPLASH_POTION
-
-    private fun ItemStack.modifyPotion(potionType: PotionEffectType, duration: Double, amplifier: Int): ItemStack {
-        require(type == Material.LINGERING_POTION || type == Material.SPLASH_POTION) { "ItemStack used as this for function modifyPotion needs to be lingering or splash potion, and $type is not" }
-        val meta = itemMeta as PotionMeta
-        meta.addCustomEffect(PotionEffect(potionType, (duration * 20).toInt().coerceAtLeast(0), amplifier), true)
-        itemMeta = meta
-        return this
     }
 
     private fun makeArcherTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
@@ -361,6 +309,33 @@ class AbilityHelper (
                     if(!isActive || entity.isNotTargeting(target)) return@launch
                     val dir = entity.shootDirection(it).normalize().add(Vector(0.0, 0.14, 0.0)).multiply(speed)
                     entity.shootProjectile(dir, Arrow::class.java)
+                }
+                delay(delay)
+            }
+        }
+    }
+
+    private fun makeMultiGhastlyTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+        val nearbyRange = abilityConfig.getNearbyRange(Ability.MULTI_GHASTLY, 4.0)
+        val delay = abilityConfig.getDouble(AbilityConfigKeys.MULTI_GHASTLY_FIREBALL_DELAY, minValue = 0.001).toLongDelay()
+        val recheckDelay = abilityConfig.getRecheckDelay(Ability.MULTI_GHASTLY, 2.0).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Ability.MULTI_GHASTLY, 0.25)
+        val speed = abilityConfig.getProjectileSpeed(Ability.MULTI_GHASTLY, 1.75)
+
+        println("Multi Ghastly, nearbyRange = $nearbyRange, delay = $delay, recheckDelay = $recheckDelay, chance = $chance, speed = $speed")
+
+        while(isActive && !entity.isNotTargeting(target)) {
+            delay(recheckDelay)
+            if(random.nextDouble() > chance) continue
+            val amount = abilityConfig.getIntPair(AbilityConfigKeys.MULTI_GHASTLY_FIREBALL_AMOUNT, minValue = 1).random()
+            println("Multi Ghastly amount = $amount")
+            val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
+
+            for (i in 1..amount) {
+                victims.forEach {
+                    if(!isActive || entity.isNotTargeting(target)) return@launch
+                    val dir = entity.shootDirection(it).multiply(speed)
+                    entity.shootProjectile(dir, Fireball::class.java)
                 }
                 delay(delay)
             }
@@ -452,6 +427,60 @@ class AbilityHelper (
                 entity.shootProjectile(dir, WitherSkull::class.java)
             }
         }
+    }
+
+    private fun makePotionsTasks(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+        val nearbyRange = abilityConfig.getNearbyRange(Ability.POTIONS, 4.0)
+        val chance = abilityConfig.getAbilityChance(Ability.POTIONS, 0.05)
+        val recheckDelay = abilityConfig.getRecheckDelay(Ability.POTIONS, 1.0).toLongDelay()
+
+        while(isActive && !entity.isNotTargeting(target)) {
+            delay(recheckDelay)
+            if(random.nextDouble() > chance) continue
+            val amount = abilityConfig.getIntAmounts(Ability.POTIONS, 1, minValue = 1).random()
+            val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
+
+            for (i in 1..amount) {
+                victims.forEach { victim ->
+                    if (!isActive || entity.isNotTargeting(target)) return@launch
+                    // if potion type is invalid or empty, silently fail
+                    val type = abilityConfig.get(AbilityConfigKeys.POTIONS_ENABLED_TYPES, emptyList<String>())
+                        .randomOrNull()
+                        ?.let { name -> XPotion.matchXPotion(name).orElse(null)?.parsePotionEffectType() }
+                        ?: return@forEach
+
+                    entity.throwPotion(victim, type)
+                }
+                val throwDelay = abilityConfig.getDoublePair(AbilityConfigKeys.POTIONS_THROW_DELAY).random().toLongDelay()
+                delay(throwDelay)
+            }
+        }
+    }
+
+    private fun LivingEntity.throwPotion(victim: LivingEntity, type: PotionEffectType) {
+        val duration = abilityConfig.getDuration(Ability.POTIONS, 2.0).random()
+        val potency = abilityConfig.getAbilityPotency(Ability.POTIONS, 2, minValue = 1).random() - 1
+        val dir = shootDirection(victim).normalize().apply { y += 0.1 }.multiply(random.nextDouble() * 0.5 + 1)
+
+        val potionItem = ItemStack(randomPotionMaterial).modifyPotion(type, duration, potency)
+        runSync(plugin) {
+            world.spawn(eyeLocation, ThrownPotion::class.java) { potion ->
+                potion.item = potionItem
+                potion.velocity = dir
+                potion.shooter = this
+            }
+        }
+    }
+
+    private val randomPotionMaterial
+        get() = if(random.nextDouble() <= 0.75) Material.LINGERING_POTION else Material.SPLASH_POTION
+
+    private fun ItemStack.modifyPotion(potionType: PotionEffectType, duration: Double, amplifier: Int): ItemStack {
+        require(type == Material.LINGERING_POTION || type == Material.SPLASH_POTION) { "ItemStack used as this for function modifyPotion needs to be lingering or splash potion, and $type is not" }
+        val meta = itemMeta as PotionMeta
+        meta.addCustomEffect(PotionEffect(potionType, (duration * 20).toInt().coerceAtLeast(0), amplifier), true)
+        itemMeta = meta
+        return this
     }
 
     private fun makeTeleportTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {

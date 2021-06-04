@@ -249,6 +249,7 @@ disabled-abilities: []
 #  - MOLTEN
 #  - MORPH
 #  - MOUNTED
+#  - MULTI_GHASTLY
 #  - NECROMANCER
 #  - POISONOUS
 #  - POTIONS

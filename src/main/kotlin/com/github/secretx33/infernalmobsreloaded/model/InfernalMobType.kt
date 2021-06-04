@@ -7,7 +7,9 @@ import net.kyori.adventure.text.Component
 import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
-import java.util.*
+import java.util.Locale
+import java.util.Objects
+import java.util.concurrent.ThreadLocalRandom
 
 data class InfernalMobType (
     val name: String,
@@ -77,22 +79,21 @@ data class InfernalMobType (
 
     fun getSpeedMulti() = speedMulti.random()
 
-    fun getLoots() = loots.asSequence().filter { random.nextDouble() <= it.value }.map { it.key.makeItem() }.toList()
+    fun getLoots() = loots.asSequence().filter { random.nextDouble() <= it.value }
+        .map { it.key.makeItem() }
+        .toList()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+        if (other !is InfernalMobType) return false
 
-        other as InfernalMobType
-        if (!name.equals(other.name, ignoreCase = true)) return false
         if (entityType != other.entityType) return false
+        if (!name.equals(other.name, ignoreCase = true)) return false
 
         return true
     }
 
     override fun hashCode() = Objects.hash(name.lowercase(Locale.US), entityType)
 
-    private companion object {
-        val random = Random()
-    }
+    private val random get() = ThreadLocalRandom.current()
 }

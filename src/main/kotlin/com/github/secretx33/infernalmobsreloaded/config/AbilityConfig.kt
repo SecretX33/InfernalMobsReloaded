@@ -7,7 +7,7 @@ import com.google.common.base.Enums
 import com.google.common.base.Predicate
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffectType
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
 import kotlin.math.max
@@ -210,6 +210,8 @@ enum class AbilityConfigKeys(val configEntry: String, val defaultValue: Any) {
     LIFESTEAL_HEALING_PERCENTAGE("${Ability.LIFESTEAL.configEntry}.healing-percentage", 0.5),
     LIGHTNING_DAMAGE_MULTIPLIER("${Ability.LIGHTNING.configEntry}.damage-multiplier", 1.0),
     MORPH_KEEP_HP_PERCENTAGE("${Ability.MORPH.configEntry}.keep-hp-percentage", true),
+    MULTI_GHASTLY_FIREBALL_AMOUNT("${Ability.MULTI_GHASTLY.configEntry}.fireball-amount", 5),
+    MULTI_GHASTLY_FIREBALL_DELAY("${Ability.MULTI_GHASTLY.configEntry}.fireball-delay", 0.5),
     POTIONS_ENABLED_TYPES("${Ability.POTIONS.configEntry}.enabled-types", setOf(PotionEffectType.HARM, PotionEffectType.POISON, PotionEffectType.SLOW)),
     POTIONS_THROW_DELAY("${Ability.POTIONS.configEntry}.throw-delay", 0.35),
     SPEEDY_BONUS("${Ability.SPEEDY.configEntry}.bonus", 1.5),
