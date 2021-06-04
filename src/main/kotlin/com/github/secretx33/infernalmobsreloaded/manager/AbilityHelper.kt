@@ -322,13 +322,10 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChance(Ability.MULTI_GHASTLY, 0.25)
         val speed = abilityConfig.getProjectileSpeed(Ability.MULTI_GHASTLY, 1.75)
 
-        println("Multi Ghastly, nearbyRange = $nearbyRange, delay = $delay, recheckDelay = $recheckDelay, chance = $chance, speed = $speed")
-
         while(isActive && !entity.isNotTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
             val amount = abilityConfig.getIntPair(AbilityConfigKeys.MULTI_GHASTLY_FIREBALL_AMOUNT, minValue = 1).random()
-            println("Multi Ghastly amount = $amount")
             val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
 
             for (i in 1..amount) {

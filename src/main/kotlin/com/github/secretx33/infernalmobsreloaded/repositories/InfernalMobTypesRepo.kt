@@ -102,8 +102,8 @@ class InfernalMobTypesRepo (
             healthMulti = getHealthMultiplierAmounts(name),
             speedMulti = getSpeedMultiplierAmounts(name),
             consoleCommands = getConsoleCommands(name),
-            forcedAbilities = getAbilitySet(name, "forced-abilities").also { println("$name forcedAbilities = $it") },
-            blacklistedAbilities = getAbilitySet(name, "blacklisted-abilities", false).also { println("$name blacklistedAbilities = $it") },
+            forcedAbilities = getAbilitySet(name, "forced-abilities"),
+            blacklistedAbilities = getAbilitySet(name, "blacklisted-abilities", false),
             loots = getMobLootTable(name) + globalDropsRepo.getGlobalDrops(),
         )
     }
