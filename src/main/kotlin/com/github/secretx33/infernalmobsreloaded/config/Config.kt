@@ -133,4 +133,5 @@ enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
     MOBS_THAT_CAN_BE_RIDED_BY_MOUNTED_INFERNALS("mobs-that-can-be-rided-by-mounted-infernals", emptySet<EntityType>()),
     TOWNY_REMOVE_INFERNAL_IN_TOWNS("remove-infernal-mobs-in-towns", true),
     TOWNY_REMOVE_INFERNAL_IN_TOWNS_DELAY("remove-infernal-mobs-in-towns-after", 5.0),
+    TOWNY_REMOVE_INFERNALS_ONLY_IF_HAS_MOBS_IS_DISABLED("remove-from-towns-only-if-has-mobs-is-disabled", true),
 }

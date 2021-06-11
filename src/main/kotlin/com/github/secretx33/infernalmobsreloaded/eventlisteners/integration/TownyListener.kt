@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit
 
 class TownyListener (
     private val plugin: Plugin,
-    config: Config,
+    private val config: Config,
     private val mobsManager: InfernalMobsManager,
     private val bossBarManager: BossBarManager,
 ): Listener {
@@ -41,7 +41,7 @@ class TownyListener (
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun EntityMoveEvent.onInfernalMove() {
-        if(!entity.isInfernalMobOrMount() || entity.isNotInsideAnyTown()) return
+        if(!entity.isInfernalMobOrMount() || !entity.isInsideProtectedTown()) return
 
         // infernal removal is already pending
         if(removalCache.getIfPresent(entity.uniqueId) != null) return
@@ -54,12 +54,15 @@ class TownyListener (
         val wEntity = WeakReference(entity)
         CoroutineScope(Dispatchers.Default).launch {
             delay(removalDelay)
-            val entity = wEntity.get()?.takeIf { it.isValid && !it.isDead && !it.isNotInsideAnyTown() } ?: return@launch
+            val entity = wEntity.get()?.takeIf { it.isValid && !it.isDead && it.isInsideProtectedTown() } ?: return@launch
             runSync(plugin) { entity.blackhole() }
         }.let { removalTaskCache.put(it, true) }
     }
 
-    private fun Entity.isNotInsideAnyTown() = towny.isWilderness(location)
+    private fun Entity.isInsideProtectedTown(): Boolean = when(requireHasMobsDisabled) {
+        true -> towny.getTown(location)?.hasMobs()?.not() ?: false
+        false -> !towny.isWilderness(location)
+    }
 
     private fun Entity.blackhole() {
         vehicle?.let {
@@ -87,4 +90,6 @@ class TownyListener (
     }
 
     private val towny get() = TownyAPI.getInstance()
+
+    private val requireHasMobsDisabled get() = config.get<Boolean>(ConfigKeys.TOWNY_REMOVE_INFERNALS_ONLY_IF_HAS_MOBS_IS_DISABLED)
 }
