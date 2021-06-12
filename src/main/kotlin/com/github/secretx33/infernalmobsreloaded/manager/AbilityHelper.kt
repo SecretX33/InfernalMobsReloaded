@@ -298,7 +298,7 @@ class AbilityHelper (
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.ARCHER, 1.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.ARCHER, 0.05)
 
-        while(isActive && !entity.isNotTargeting(target)) {
+        while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
             val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).random()
@@ -315,35 +315,11 @@ class AbilityHelper (
         }
     }
 
-    private fun makeMultiGhastlyTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
-        val nearbyRange = abilityConfig.getNearbyRange(Ability.MULTI_GHASTLY, 4.0)
-        val delay = abilityConfig.getDouble(AbilityConfigKeys.MULTI_GHASTLY_FIREBALL_DELAY, minValue = 0.001).toLongDelay()
-        val recheckDelay = abilityConfig.getRecheckDelay(Ability.MULTI_GHASTLY, 2.0).toLongDelay()
-        val chance = abilityConfig.getAbilityChance(Ability.MULTI_GHASTLY, 0.25)
-        val speed = abilityConfig.getProjectileSpeed(Ability.MULTI_GHASTLY, 1.75)
-
-        while(isActive && !entity.isNotTargeting(target)) {
-            delay(recheckDelay)
-            if(random.nextDouble() > chance) continue
-            val amount = abilityConfig.getIntPair(AbilityConfigKeys.MULTI_GHASTLY_FIREBALL_AMOUNT, minValue = 1).random()
-            val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
-
-            for (i in 1..amount) {
-                victims.forEach {
-                    if(!isActive || entity.isNotTargeting(target)) return@launch
-                    val dir = entity.shootDirection(it).multiply(speed)
-                    entity.shootProjectile(dir, Fireball::class.java)
-                }
-                delay(delay)
-            }
-        }
-    }
-
     private fun makeCallTheGangTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.CALL_THE_GANG, 2.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.CALL_THE_GANG, 0.025)
 
-        while(isActive && !entity.isNotTargeting(target)) {
+        while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
             val amount = abilityConfig.getIntAmounts(Ability.CALL_THE_GANG, 2).random()
@@ -369,7 +345,7 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChance(Ability.GHASTLY, 0.25)
         val speed = abilityConfig.getProjectileSpeed(Ability.GHASTLY, 1.75)
 
-        while(isActive && !entity.isNotTargeting(target)) {
+        while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
 
@@ -384,8 +360,8 @@ class AbilityHelper (
     private fun makeMorphTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.MORPH, 1.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.MORPH, 0.01)
-
-        while(isActive && !entity.isNotTargeting(target)) {
+        
+        while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
             val newType = infernalMobTypesRepo.getRandomInfernalType(entity)
@@ -395,16 +371,64 @@ class AbilityHelper (
                 entity.world.spawn(entity.location, newType.entityClass, SpawnReason.CUSTOM) {
                     Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(it as LivingEntity, newType))
                     if (keepHpPercent) it.copyHpPercentage(entity)
+                    it.getArmorFromOrDropNearby(entity)
                     if (it !is Mob) return@spawn
 
                     EntityTargetLivingEntityEvent(it, target, TargetReason.REINFORCEMENT_TARGET).let { event ->
                         Bukkit.getPluginManager().callEvent(event)
-                        if (!event.isCancelled) it.target = target
+                        if (!event.isCancelled) it.attack(target)
                     }
                 }
                 entity.remove()
             }
-            cancel()
+            return@launch
+        }
+    }
+
+    private fun LivingEntity.getArmorFromOrDropNearby(oldEntity: LivingEntity) {
+        val equip = oldEntity.equipment ?: return
+        val newEquip = equipment
+
+        // if entity cannot wear armor, just drop the items nearby
+        if(!canWearArmor() || newEquip == null) {
+            val world = oldEntity.world
+
+            EquipmentSlot.values().mapNotNull { slot -> equip.getItem(slot) }
+                .filter { !it.isAir() && it.isStolen() }
+                .forEach { world.dropItem(oldEntity.location, it) }
+
+            return
+        }
+
+        // equip the old equipment into the entity
+        EquipmentSlot.values().forEach { slot ->
+            val item = equip.getItem(slot) ?: return@forEach
+            newEquip.setItem(slot, item)
+            newEquip.setDropChance(slot, equip.getDropChance(slot))
+        }
+    }
+
+    private fun makeMultiGhastlyTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+        val nearbyRange = abilityConfig.getNearbyRange(Ability.MULTI_GHASTLY, 4.0)
+        val delay = abilityConfig.getDouble(AbilityConfigKeys.MULTI_GHASTLY_FIREBALL_DELAY, minValue = 0.001).toLongDelay()
+        val recheckDelay = abilityConfig.getRecheckDelay(Ability.MULTI_GHASTLY, 2.0).toLongDelay()
+        val chance = abilityConfig.getAbilityChance(Ability.MULTI_GHASTLY, 0.25)
+        val speed = abilityConfig.getProjectileSpeed(Ability.MULTI_GHASTLY, 1.75)
+
+        while(isActive && entity.isTargeting(target)) {
+            delay(recheckDelay)
+            if(random.nextDouble() > chance) continue
+            val amount = abilityConfig.getIntPair(AbilityConfigKeys.MULTI_GHASTLY_FIREBALL_AMOUNT, minValue = 1).random()
+            val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
+
+            for (i in 1..amount) {
+                victims.forEach {
+                    if(!isActive || entity.isNotTargeting(target)) return@launch
+                    val dir = entity.shootDirection(it).multiply(speed)
+                    entity.shootProjectile(dir, Fireball::class.java)
+                }
+                delay(delay)
+            }
         }
     }
 
@@ -414,7 +438,7 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChance(Ability.NECROMANCER, 0.25)
         val speed = abilityConfig.getProjectileSpeed(Ability.NECROMANCER, 1.7)
 
-        while(isActive && !entity.isNotTargeting(target)) {
+        while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
 
@@ -431,7 +455,7 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChance(Ability.POTIONS, 0.05)
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.POTIONS, 1.0).toLongDelay()
 
-        while(isActive && !entity.isNotTargeting(target)) {
+        while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
             val amount = abilityConfig.getIntAmounts(Ability.POTIONS, 1, minValue = 1).random()
@@ -484,7 +508,7 @@ class AbilityHelper (
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.TELEPORT, 2.5).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.TELEPORT, 0.6)
 
-        while(isActive && !entity.isNotTargeting(target)) {
+        while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
 
@@ -516,7 +540,7 @@ class AbilityHelper (
         val requireLoS = abilityConfig.doesRequireLineOfSight(Ability.THIEF)
         val sendMessage = abilityConfig.getSendMessage(Ability.THIEF)
 
-        while(isActive && !entity.isNotTargeting(target)) {
+        while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance || (requireLoS && !entity.hasLineOfSight(target))) continue
 
@@ -556,6 +580,8 @@ class AbilityHelper (
         return this
     }
 
+    private fun ItemStack.isStolen() = itemMeta?.pdc?.has(keyChain.stolenItemByThiefKey, PersistentDataType.SHORT) == true
+
     private fun makeTosserTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val nearbyRange = abilityConfig.getNearbyRange(Ability.TOSSER, 4.0)
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.TOSSER, 1.5).toLongDelay()
@@ -563,7 +589,7 @@ class AbilityHelper (
         val requireLoS = abilityConfig.doesRequireLineOfSight(Ability.TOSSER)
         val sneakerMultiplier = abilityConfig.getDouble(AbilityConfigKeys.TOSSER_SNEAK_MULTIPLIER_PERCENTAGE)
 
-        while(isActive && !entity.isNotTargeting(target)) {
+        while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance || (requireLoS && !entity.hasLineOfSight(target))) continue
 
@@ -585,7 +611,7 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChance(Ability.WEBBER, 0.08)
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.WEBBER, 1.5).toLongDelay()
 
-        while(isActive && !entity.isNotTargeting(target)) {
+        while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue
             launchCobweb(target)
@@ -657,8 +683,9 @@ class AbilityHelper (
         return src.direction
     }
 
-    private fun LivingEntity.isNotTargeting(target: LivingEntity) = isDead || !isValid  || target.isDead || !target.isValid || (this is Mob && this.target?.uniqueId != target.uniqueId)
+    private fun LivingEntity.isTargeting(target: LivingEntity) = !isDead && isValid  && !target.isDead && target.isValid && (this !is Mob || this.target?.uniqueId == target.uniqueId)
 
+    private fun LivingEntity.isNotTargeting(target: LivingEntity) = !isTargeting(target)
 
     // trigger on death abilities
 

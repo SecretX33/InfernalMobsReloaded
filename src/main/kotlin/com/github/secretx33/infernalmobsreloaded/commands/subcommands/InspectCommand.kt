@@ -57,6 +57,7 @@ class InspectCommand : SubCommand(), CustomKoinComponent {
         player.sendMessage(messages.get(MessageKeys.TARGETING_INFERNAL)
             .replace("<entity>", target.formattedTypeName())
             .replace("<abilities>", abilitiesString))
+//        player.sendMessage("Is entity persistent? ${target.isPersistent}. Is entity removeWhenFarAway? ${target.removeWhenFarAway}")
     }
 
     private fun LivingEntity.isPossibleInfernalMob() = isValid && !isDead && mobsManager.isPossibleInfernalMob(this)

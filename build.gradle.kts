@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "com.github.secretx33"
-version = "1.1.0.1"
+version = "1.1.0.2"
 
 repositories {
     mavenCentral()
