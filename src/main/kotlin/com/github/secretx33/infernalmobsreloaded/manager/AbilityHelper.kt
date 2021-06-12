@@ -19,9 +19,11 @@ import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.Cuboid
+import com.github.secretx33.infernalmobsreloaded.utils.contents
 import com.github.secretx33.infernalmobsreloaded.utils.displayName
 import com.github.secretx33.infernalmobsreloaded.utils.futureSync
 import com.github.secretx33.infernalmobsreloaded.utils.isAir
+import com.github.secretx33.infernalmobsreloaded.utils.mappedContents
 import com.github.secretx33.infernalmobsreloaded.utils.pdc
 import com.github.secretx33.infernalmobsreloaded.utils.random
 import com.github.secretx33.infernalmobsreloaded.utils.runSync
@@ -388,20 +390,16 @@ class AbilityHelper (
         val equip = oldEntity.equipment ?: return
         val newEquip = equipment
 
+        val items = equip.mappedContents.filter { it.value.isStolen() }
+
         // if entity cannot wear armor, just drop the items nearby
         if(!canWearArmor() || newEquip == null) {
-            val world = oldEntity.world
-
-            EquipmentSlot.values().mapNotNull { slot -> equip.getItem(slot) }
-                .filter { !it.isAir() && it.isStolen() }
-                .forEach { world.dropItem(oldEntity.location, it) }
-
+            items.values.forEach { oldEntity.world.dropItem(oldEntity.location, it) }
             return
         }
 
         // equip the old equipment into the entity
-        EquipmentSlot.values().forEach { slot ->
-            val item = equip.getItem(slot) ?: return@forEach
+        items.forEach { (slot, item) ->
             newEquip.setItem(slot, item)
             newEquip.setDropChance(slot, equip.getDropChance(slot))
         }
