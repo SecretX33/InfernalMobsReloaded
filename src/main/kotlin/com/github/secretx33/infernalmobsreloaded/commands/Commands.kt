@@ -14,7 +14,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.*
+import java.util.Locale
 
 class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
 

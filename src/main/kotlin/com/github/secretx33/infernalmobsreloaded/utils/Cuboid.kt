@@ -4,7 +4,7 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
-import java.util.*
+import java.util.Random
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min

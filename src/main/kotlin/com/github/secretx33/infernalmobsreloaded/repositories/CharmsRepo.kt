@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffectType
-import java.util.*
+import java.util.Locale
 import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.min

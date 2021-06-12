@@ -19,7 +19,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
-import java.util.*
+import java.util.UUID
 
 class FireworkAbilityListener (
     plugin: Plugin,

@@ -19,7 +19,7 @@ import org.bukkit.event.entity.EntityCombustByEntityEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.plugin.Plugin
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class LightningAbilityListener (

@@ -20,7 +20,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 class LethalPoisonListener (

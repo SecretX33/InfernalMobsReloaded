@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.utils
 
+import com.cryptomorin.xseries.XBlock.isAir
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
@@ -16,12 +17,14 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.inventory.EntityEquipment
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataHolder
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
 import java.util.concurrent.ThreadLocalRandom
@@ -106,5 +109,9 @@ val PersistentDataHolder.pdc
 fun LivingEntity.getHealthPercent(damageTaken: Double = 0.0) = getAttribute(Attribute.GENERIC_MAX_HEALTH)?.let { (health - damageTaken).coerceAtLeast(0.0) / it.value }?.toFloat() ?: 1f
 
 fun LivingEntity.getValidNearbyEntities(range: Double) = location.getNearbyLivingEntities(range) { !it.isDead && it.isValid }
+
+val EntityEquipment.contents get() = EquipmentSlot.values().mapNotNull { getItem(it) }.filter { !it.isAir() }
+
+val EntityEquipment.mappedContents get() = EquipmentSlot.values().mapNotNull { slot -> getItem(slot)?.let { slot to it } }.filter { !it.second.isAir() }.toMap()
 
 fun Regex.matchOrNull(line: String, index: Int): String? = this.matchEntire(line)?.groupValues?.get(index)

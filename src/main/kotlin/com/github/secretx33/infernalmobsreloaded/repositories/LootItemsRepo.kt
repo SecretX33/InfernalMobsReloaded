@@ -27,7 +27,8 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
-import java.util.*
+import java.util.EnumSet
+import java.util.Locale
 import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.min

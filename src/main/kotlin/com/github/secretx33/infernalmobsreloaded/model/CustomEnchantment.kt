@@ -2,7 +2,8 @@ package com.github.secretx33.infernalmobsreloaded.model
 
 import com.github.secretx33.infernalmobsreloaded.utils.random
 import org.bukkit.enchantments.Enchantment
-import java.util.*
+import java.util.Optional
+import java.util.Random
 
 data class CustomEnchantment (
     private val type: Enchantment,

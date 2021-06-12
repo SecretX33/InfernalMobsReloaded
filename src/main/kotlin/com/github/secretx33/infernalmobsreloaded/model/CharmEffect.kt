@@ -4,7 +4,8 @@ import com.github.secretx33.infernalmobsreloaded.utils.random
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.potion.PotionEffectType
-import java.util.*
+import java.util.EnumSet
+import java.util.Locale
 import kotlin.math.max
 
 class CharmEffect (

@@ -25,7 +25,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class CharmsManager(

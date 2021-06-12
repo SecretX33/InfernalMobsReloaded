@@ -23,7 +23,7 @@ class KillAllCommand : SubCommand(), CustomKoinComponent {
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
         Bukkit.getWorlds().forEach { world ->
             world.livingEntities.filter { mobsManager.isPossibleInfernalMob(it) || keyChain.hasMountKey(it) }.forEach {
-                it.remove()
+                mobsManager.removeAndDropStolenItems(it)
             }
         }
 

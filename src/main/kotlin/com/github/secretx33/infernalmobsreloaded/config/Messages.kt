@@ -7,7 +7,7 @@ import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.plugin.Plugin
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 
 class Messages(plugin: Plugin, private val adventureMessage: AdventureMessage) {

@@ -8,7 +8,7 @@ import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.inventory.ItemFlag
-import java.util.*
+import java.util.Locale
 
 open class NormalLootItem (
     final override val name: String,

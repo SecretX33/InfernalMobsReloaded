@@ -32,7 +32,6 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -360,7 +359,7 @@ class AbilityHelper (
     private fun makeMorphTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.MORPH, 1.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.MORPH, 0.01)
-        
+
         while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if(random.nextDouble() > chance) continue

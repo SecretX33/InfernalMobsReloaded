@@ -12,7 +12,10 @@ import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
+import com.github.secretx33.infernalmobsreloaded.utils.contents
+import com.github.secretx33.infernalmobsreloaded.utils.isAir
 import com.github.secretx33.infernalmobsreloaded.utils.pdc
+import com.github.secretx33.infernalmobsreloaded.utils.runSync
 import com.github.secretx33.infernalmobsreloaded.utils.toUuid
 import com.google.common.collect.MultimapBuilder
 import com.google.gson.Gson
@@ -31,13 +34,18 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
 import org.bukkit.entity.Monster
+import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.plugin.Plugin
 import java.lang.reflect.Type
-import java.util.*
+import java.util.Random
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.max
 
 class InfernalMobsManager (
+    private val plugin: Plugin,
     private val config: Config,
     private val keyChain: KeyChain,
     private val abilityConfig: AbilityConfig,
@@ -252,6 +260,28 @@ class InfernalMobsManager (
         infernalMobAbilityTasks[entity.uniqueId].forEach { it.cancel() }
         infernalMobAbilityTasks.removeAll(entity.uniqueId)
     }
+
+    fun removeAndDropStolenItems(entity: Entity) {
+        // if entity is not living entity, just remove it since it doesn't have any armor
+        if(entity !is LivingEntity) {
+            entity.remove()
+            return
+        }
+
+        val world = entity.world
+        val location = entity.location
+        val items = entity.equipment?.contents?.filter { it.isStolenItem() } ?: emptyList()
+
+        if(items.isNotEmpty()) {
+            runSync(plugin, 50L) {
+                // drop all the stolen pieces that this entity has
+                items.forEach { world.dropItem(location, it) }
+            }
+        }
+        entity.remove()
+    }
+
+    private fun ItemStack?.isStolenItem() = this != null && itemMeta?.pdc?.has(keyChain.stolenItemByThiefKey, PersistentDataType.SHORT) == true
 
     // util
 

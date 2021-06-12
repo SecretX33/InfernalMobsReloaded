@@ -17,7 +17,8 @@ import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.plugin.Plugin
-import java.util.*
+import java.util.EnumSet
+import java.util.Locale
 import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.min

@@ -7,7 +7,7 @@ import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import java.util.*
+import java.util.UUID
 
 class BossBarManager (
     private val config: Config,

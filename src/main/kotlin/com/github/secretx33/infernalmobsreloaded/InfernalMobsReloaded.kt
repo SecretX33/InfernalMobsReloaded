@@ -78,7 +78,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { AbilityHelper(get(),get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         single { GlobalDropsRepo(get(), get(), get()) }
         single { InfernalMobTypesRepo(get(), get(), get(), get(), get(), get()) }
-        single { InfernalMobsManager(get(), get(), get(), get(), get(), get()) }
+        single { InfernalMobsManager(get(), get(), get(), get(), get(), get(), get()) }
         single { FireworkAbilityListener(get(), get(), get(), get()) }
         single { LightningAbilityListener(get(), get(), get()) }
         single { MountRemovalListener(get(), get()) }
