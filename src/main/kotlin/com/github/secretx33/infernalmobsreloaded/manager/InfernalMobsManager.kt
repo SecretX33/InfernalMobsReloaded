@@ -12,10 +12,9 @@ import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
-import com.github.secretx33.infernalmobsreloaded.utils.contents
-import com.github.secretx33.infernalmobsreloaded.utils.isAir
-import com.github.secretx33.infernalmobsreloaded.utils.pdc
-import com.github.secretx33.infernalmobsreloaded.utils.runSync
+import com.github.secretx33.infernalmobsreloaded.utils.extension.contents
+import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
+import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
 import com.github.secretx33.infernalmobsreloaded.utils.toUuid
 import com.google.common.collect.MultimapBuilder
 import com.google.gson.Gson
@@ -34,7 +33,6 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
 import org.bukkit.entity.Monster
-import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin

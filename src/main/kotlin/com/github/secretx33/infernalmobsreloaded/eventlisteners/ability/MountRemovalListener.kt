@@ -1,7 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners.ability
 
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
-import com.github.secretx33.infernalmobsreloaded.utils.pdc
+import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler

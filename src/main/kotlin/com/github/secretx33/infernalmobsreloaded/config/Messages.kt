@@ -1,6 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
-import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
+import com.github.secretx33.infernalmobsreloaded.utils.other.YamlManager
 import me.mattstudios.msg.adventure.AdventureMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike

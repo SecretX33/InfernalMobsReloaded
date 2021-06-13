@@ -1,6 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
-import com.github.secretx33.infernalmobsreloaded.utils.pdc
+import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Entity
 import org.bukkit.persistence.PersistentDataType

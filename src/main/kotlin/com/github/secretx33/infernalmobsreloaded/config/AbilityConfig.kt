@@ -1,8 +1,8 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
 import com.github.secretx33.infernalmobsreloaded.model.Ability
-import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
 import com.github.secretx33.infernalmobsreloaded.utils.matchOrNull
+import com.github.secretx33.infernalmobsreloaded.utils.other.YamlManager
 import com.google.common.base.Enums
 import com.google.common.base.Predicate
 import org.bukkit.plugin.Plugin

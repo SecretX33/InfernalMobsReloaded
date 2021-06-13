@@ -3,8 +3,8 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners.ability
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
-import com.github.secretx33.infernalmobsreloaded.utils.pdc
-import com.github.secretx33.infernalmobsreloaded.utils.runSync
+import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
+import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
 import org.bukkit.Bukkit
 import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler

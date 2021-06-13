@@ -6,10 +6,10 @@ import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.config.replace
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
-import com.github.secretx33.infernalmobsreloaded.utils.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.displayName
-import com.github.secretx33.infernalmobsreloaded.utils.inject
-import com.github.secretx33.infernalmobsreloaded.utils.turnIntoSpawner
+import com.github.secretx33.infernalmobsreloaded.utils.extension.displayName
+import com.github.secretx33.infernalmobsreloaded.utils.extension.turnIntoSpawner
+import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
+import com.github.secretx33.infernalmobsreloaded.utils.other.inject
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.command.CommandSender

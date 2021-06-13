@@ -4,7 +4,7 @@ import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
-import com.github.secretx33.infernalmobsreloaded.utils.runSync
+import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
 import com.google.common.cache.CacheBuilder
 import com.palmergames.bukkit.towny.TownyAPI
 import io.papermc.paper.event.entity.EntityMoveEvent

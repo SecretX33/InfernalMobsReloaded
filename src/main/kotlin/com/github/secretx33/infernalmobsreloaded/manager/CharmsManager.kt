@@ -6,8 +6,8 @@ import com.github.secretx33.infernalmobsreloaded.model.CharmParticleMode
 import com.github.secretx33.infernalmobsreloaded.model.PotionEffectApplyMode
 import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
-import com.github.secretx33.infernalmobsreloaded.utils.isAir
-import com.github.secretx33.infernalmobsreloaded.utils.runSync
+import com.github.secretx33.infernalmobsreloaded.utils.extension.isAir
+import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
 import com.google.common.cache.CacheBuilder
 import com.google.common.collect.HashBasedTable
 import com.google.common.collect.MultimapBuilder

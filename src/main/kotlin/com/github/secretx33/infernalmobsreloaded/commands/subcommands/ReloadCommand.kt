@@ -11,8 +11,8 @@ import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.GlobalDropsRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
-import com.github.secretx33.infernalmobsreloaded.utils.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.inject
+import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
+import com.github.secretx33.infernalmobsreloaded.utils.other.inject
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 

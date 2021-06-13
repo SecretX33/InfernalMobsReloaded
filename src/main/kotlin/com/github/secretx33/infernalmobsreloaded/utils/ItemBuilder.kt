@@ -1,6 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.utils
 
 import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
+import com.github.secretx33.infernalmobsreloaded.utils.extension.markWithInfernalTag
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.DyeColor

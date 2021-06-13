@@ -19,14 +19,13 @@ import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.Cuboid
-import com.github.secretx33.infernalmobsreloaded.utils.contents
-import com.github.secretx33.infernalmobsreloaded.utils.displayName
-import com.github.secretx33.infernalmobsreloaded.utils.futureSync
-import com.github.secretx33.infernalmobsreloaded.utils.isAir
-import com.github.secretx33.infernalmobsreloaded.utils.mappedContents
-import com.github.secretx33.infernalmobsreloaded.utils.pdc
+import com.github.secretx33.infernalmobsreloaded.utils.extension.contentsMap
+import com.github.secretx33.infernalmobsreloaded.utils.extension.displayName
+import com.github.secretx33.infernalmobsreloaded.utils.extension.futureSync
+import com.github.secretx33.infernalmobsreloaded.utils.extension.isAir
+import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
+import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
 import com.github.secretx33.infernalmobsreloaded.utils.random
-import com.github.secretx33.infernalmobsreloaded.utils.runSync
 import com.github.secretx33.infernalmobsreloaded.utils.toUuid
 import com.google.common.collect.Sets
 import com.google.gson.Gson
@@ -109,10 +108,6 @@ class AbilityHelper (
 
     private val blockModifications = Sets.newConcurrentHashSet<BlockModification>()
     private val blocksBlackList = Sets.newConcurrentHashSet<Location>()
-
-    fun removeAbilityEffects(entity: LivingEntity) {
-        TODO("revert all attributes and chances and convert it back to a normal entity")
-    }
 
     // abilities that are applied when mob spawns
 
@@ -390,7 +385,7 @@ class AbilityHelper (
         val equip = oldEntity.equipment ?: return
         val newEquip = equipment
 
-        val items = equip.mappedContents.filter { it.value.isStolen() }
+        val items = equip.contentsMap.filter { it.value.isStolen() }
 
         // if entity cannot wear armor, just drop the items nearby
         if(!canWearArmor() || newEquip == null) {

@@ -1,8 +1,8 @@
 package com.github.secretx33.infernalmobsreloaded.model.items
 
 import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
-import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
-import com.github.secretx33.infernalmobsreloaded.utils.markWithInfernalTag
+import com.github.secretx33.infernalmobsreloaded.utils.extension.formattedTypeName
+import com.github.secretx33.infernalmobsreloaded.utils.extension.markWithInfernalTag
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.inventory.ItemFlag

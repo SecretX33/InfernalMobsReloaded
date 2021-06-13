@@ -1,4 +1,4 @@
-package com.github.secretx33.infernalmobsreloaded.utils
+package com.github.secretx33.infernalmobsreloaded.utils.other
 
 import kotlinx.coroutines.*
 import org.bukkit.Bukkit
@@ -102,8 +102,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
     }
 
     private val playerAmount: Int
-        get() {
-            return try {
+        get() = try {
                 // Around MC 1.8 the return type was changed from an array to a collection,
                 // This fixes java.lang.NoSuchMethodError:
                 // org.bukkit.Bukkit.getOnlinePlayers()Ljava/util/Collection;
@@ -114,7 +113,6 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
                 // Just use the new method if the reflection failed
                 Bukkit.getOnlinePlayers().size
             }
-        }
 
     /**
      * Creates a new MetricsBase class instance.
@@ -209,13 +207,13 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             val data = baseJsonBuilder.build()
 
             // Send the data
-            runCatching {
-                withContext(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
+                runCatching {
                     sendData(data)
-                }
-            }.exceptionOrNull()
-                ?.takeIf { logErrors }
-                ?.let { errorLogger.accept("Could not submit bStats metrics data", it) }
+                }.exceptionOrNull()
+                    ?.takeIf { logErrors }
+                    ?.let { errorLogger.accept("Could not submit bStats metrics data", it) }
+            }
         }
 
         private fun sendData(data: JsonObjectBuilder.JsonObject) {

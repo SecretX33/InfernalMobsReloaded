@@ -11,9 +11,9 @@ import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItemType
 import com.github.secretx33.infernalmobsreloaded.model.items.NormalLootItem
 import com.github.secretx33.infernalmobsreloaded.model.items.ShieldWithPatternLootItem
-import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
-import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
-import com.github.secretx33.infernalmobsreloaded.utils.pdc
+import com.github.secretx33.infernalmobsreloaded.utils.extension.formattedTypeName
+import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
+import com.github.secretx33.infernalmobsreloaded.utils.other.YamlManager
 import me.mattstudios.msg.adventure.AdventureMessage
 import net.kyori.adventure.text.Component
 import org.bukkit.Color

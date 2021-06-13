@@ -1,7 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners.charm
 
 import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
-import com.github.secretx33.infernalmobsreloaded.utils.runSync
+import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler

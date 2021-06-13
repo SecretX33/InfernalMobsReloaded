@@ -3,7 +3,7 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
-import com.github.secretx33.infernalmobsreloaded.utils.pdc
+import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.CreatureSpawner

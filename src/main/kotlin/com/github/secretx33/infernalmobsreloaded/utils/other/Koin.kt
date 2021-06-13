@@ -1,4 +1,4 @@
-package com.github.secretx33.infernalmobsreloaded.utils
+package com.github.secretx33.infernalmobsreloaded.utils.other
 
 import org.koin.core.Koin
 import org.koin.core.KoinApplication

@@ -1,4 +1,4 @@
-package com.github.secretx33.infernalmobsreloaded.utils
+package com.github.secretx33.infernalmobsreloaded.utils.other
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

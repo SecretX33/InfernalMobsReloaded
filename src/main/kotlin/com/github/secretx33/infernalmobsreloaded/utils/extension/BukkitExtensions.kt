@@ -1,13 +1,14 @@
-package com.github.secretx33.infernalmobsreloaded.utils
+package com.github.secretx33.infernalmobsreloaded.utils.extension
 
-import com.cryptomorin.xseries.XBlock.isAir
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
-import com.github.secretx33.infernalmobsreloaded.utils.Utils.keyChain
+import com.github.secretx33.infernalmobsreloaded.utils.capitalizeFully
+import com.github.secretx33.infernalmobsreloaded.utils.extension.Utils.keyChain
+import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
+import com.github.secretx33.infernalmobsreloaded.utils.other.inject
 import kotlinx.coroutines.delay
 import net.kyori.adventure.text.Component
-import org.apache.commons.lang.WordUtils
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -24,10 +25,9 @@ import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataHolder
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
-import java.util.UUID
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
-import java.util.concurrent.ThreadLocalRandom
+
 
 private object Utils: CustomKoinComponent {
     val keyChain by inject<KeyChain>()
@@ -35,7 +35,7 @@ private object Utils: CustomKoinComponent {
 
 fun ItemStack.turnIntoSpawner(infernalType: InfernalMobType): ItemStack {
     require(type == Material.SPAWNER) { "may only turn into spawn actual spawners, $type is not spawner" }
-   itemMeta.apply {
+    itemMeta.apply {
         displayName(infernalType.mobSpawnerName)
         pdc.set(keyChain.spawnerCategoryKey, PersistentDataType.STRING, infernalType.name)
         itemMeta = this
@@ -48,26 +48,12 @@ fun ItemMeta.markWithInfernalTag(itemName: String): ItemMeta {
     return this
 }
 
-fun Pair<Int, Int>.random(): Int {
-    val (minValue, maxValue) = this
-    return ThreadLocalRandom.current().nextInt(maxValue - minValue + 1) + minValue
-}
-
-fun Pair<Double, Double>.random(): Double {
-    val (minValue, maxValue) = this
-    return minValue + (maxValue - minValue) * ThreadLocalRandom.current().nextDouble()
-}
-
 fun Player.getTarget(range: Int): LivingEntity? = (world.rayTraceEntities(eyeLocation, eyeLocation.direction, range.toDouble()) { it is LivingEntity && type != EntityType.ENDER_DRAGON && it.uniqueId != uniqueId }?.hitEntity as? LivingEntity)?.takeIf { hasLineOfSight(it) }
 
-fun String.capitalizeFully(): String = WordUtils.capitalizeFully(this)
-
-fun String.toUuid(): UUID = UUID.fromString(this)
-
-fun runSync(plugin: Plugin, delay: Long = 0L, block: () -> Unit) {
+fun runSync(plugin: Plugin, delay: Long = 0L, runnable: Runnable) {
     if(delay < 0) return
-    if(delay == 0L) Bukkit.getScheduler().runTask(plugin, Runnable { block() })
-    else Bukkit.getScheduler().runTaskLater(plugin, Runnable { block() }, delay / 50L)
+    if(delay == 0L) Bukkit.getScheduler().runTask(plugin, runnable)
+    else Bukkit.getScheduler().runTaskLater(plugin, runnable, delay / 50L)
 }
 
 suspend fun <T> futureSync(plugin: Plugin, callable: Callable<T>): T = Bukkit.getScheduler().callSyncMethod(plugin, callable).await()
@@ -112,6 +98,5 @@ fun LivingEntity.getValidNearbyEntities(range: Double) = location.getNearbyLivin
 
 val EntityEquipment.contents get() = EquipmentSlot.values().mapNotNull { getItem(it) }.filter { !it.isAir() }
 
-val EntityEquipment.mappedContents get() = EquipmentSlot.values().mapNotNull { slot -> getItem(slot)?.let { slot to it } }.filter { !it.second.isAir() }.toMap()
-
-fun Regex.matchOrNull(line: String, index: Int): String? = this.matchEntire(line)?.groupValues?.get(index)
+@Suppress("UNNECESSARY_SAFE_CALL")
+val EntityEquipment.contentsMap get() = EquipmentSlot.values().mapNotNull { slot -> getItem(slot)?.let { slot to it } }.filter { !it.second.isAir() }.toMap()

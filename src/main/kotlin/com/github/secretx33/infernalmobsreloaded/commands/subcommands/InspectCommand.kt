@@ -5,10 +5,10 @@ import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.config.replace
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
-import com.github.secretx33.infernalmobsreloaded.utils.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
-import com.github.secretx33.infernalmobsreloaded.utils.getTarget
-import com.github.secretx33.infernalmobsreloaded.utils.inject
+import com.github.secretx33.infernalmobsreloaded.utils.extension.formattedTypeName
+import com.github.secretx33.infernalmobsreloaded.utils.extension.getTarget
+import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
+import com.github.secretx33.infernalmobsreloaded.utils.other.inject
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.LivingEntity

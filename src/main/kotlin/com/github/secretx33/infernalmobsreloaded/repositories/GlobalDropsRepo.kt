@@ -1,7 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.repositories
 
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
-import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
+import com.github.secretx33.infernalmobsreloaded.utils.other.YamlManager
 import org.bukkit.plugin.Plugin
 import java.util.logging.Logger
 import kotlin.math.max

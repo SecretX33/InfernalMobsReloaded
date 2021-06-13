@@ -3,8 +3,8 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs
 import com.github.secretx33.infernalmobsreloaded.events.InfernalHealedEvent
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
-import com.github.secretx33.infernalmobsreloaded.utils.getHealthPercent
-import com.github.secretx33.infernalmobsreloaded.utils.runSync
+import com.github.secretx33.infernalmobsreloaded.utils.extension.getHealthPercent
+import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

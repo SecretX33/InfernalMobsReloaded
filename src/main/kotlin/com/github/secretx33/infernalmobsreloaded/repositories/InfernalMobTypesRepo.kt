@@ -5,9 +5,9 @@ import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
-import com.github.secretx33.infernalmobsreloaded.utils.YamlManager
-import com.github.secretx33.infernalmobsreloaded.utils.formattedTypeName
+import com.github.secretx33.infernalmobsreloaded.utils.extension.formattedTypeName
 import com.github.secretx33.infernalmobsreloaded.utils.matchOrNull
+import com.github.secretx33.infernalmobsreloaded.utils.other.YamlManager
 import com.google.common.collect.ImmutableSet
 import com.google.common.collect.ImmutableSetMultimap
 import me.mattstudios.msg.adventure.AdventureMessage
