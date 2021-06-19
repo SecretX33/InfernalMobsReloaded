@@ -8,6 +8,7 @@ import com.github.secretx33.infernalmobsreloaded.commands.subcommands.Multispawn
 import com.github.secretx33.infernalmobsreloaded.commands.subcommands.ReloadCommand
 import com.github.secretx33.infernalmobsreloaded.commands.subcommands.SpawnCommand
 import com.github.secretx33.infernalmobsreloaded.commands.subcommands.SubCommand
+import com.github.secretx33.infernalmobsreloaded.commands.subcommands.ToggleCharmCommand
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -26,6 +27,7 @@ class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
         MultispawnCommand(),
         ReloadCommand(),
         SpawnCommand(),
+        ToggleCharmCommand(),
     )
 
     init {

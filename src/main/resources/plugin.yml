@@ -25,6 +25,7 @@ permissions:
       imr.multispawn: true
       imr.getloot: true
       imr.killall: true
+      imr.charms.toggle: true
 
   imr.reload:
     description: Allows one to reload all plugin configurations.
@@ -48,4 +49,8 @@ permissions:
 
   imr.killall:
     description: Allows player to use subcommand 'killall', which kill all infernals and their mounts from all worlds.
+    default: false
+
+  imr.charms.toggle:
+    description: Allows player to use subcommand 'togglecharm', which toggles a charm between the broken and normal state.
     default: false

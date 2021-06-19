@@ -45,13 +45,17 @@ class CharmsRepo (
 
     fun getCharmEffectsOrNull(name: String): Set<CharmEffect>? = charmsCache[name.lowercase(Locale.US)]
 
-    fun getCharmEffects(lootItemName: String) = getCharmEffectsOrNull(lootItemName) ?: throw IllegalStateException("Tried to get $lootItemName charm effect but there's none")
+    fun getCharmEffects(lootItemName: String): Set<CharmEffect> = getCharmEffectsOrNull(lootItemName) ?: throw IllegalStateException("Tried to get $lootItemName charm effect but there's none")
 
     fun getCharmEffects(item: ItemStack): Set<CharmEffect> = getCharmEffects(lootItemsRepo.getLootItemTag(item))
 
-    fun isItemRequiredByCharm(item: ItemStack): Boolean {
-        val name = item.itemMeta?.pdc?.get(keyChain.infernalItemNameKey, PersistentDataType.STRING) ?: return false
-        return charmsCache.containsKey(name)
+    // effectively, this checks if the item is a charm
+    fun isItemRequiredByCharmEffect(item: ItemStack, acceptBroken: Boolean = false): Boolean {
+        val pdc = item.itemMeta?.pdc ?: return false
+        pdc.apply {
+            val name = get(keyChain.infernalItemNameKey, PersistentDataType.STRING) ?: return false
+            return (acceptBroken || !has(keyChain.brokenCharmKey, PersistentDataType.SHORT)) && charmsCache.containsKey(name)
+        }
     }
 
     fun getHighestEffectDelay(): Double = charmsCache.values().maxOfOrNull { it.getMaxDelay() } ?: 0.0
@@ -165,13 +169,13 @@ class CharmsRepo (
 
         // particle is invalid/non existent
         val particleMode = CharmParticleMode.values().firstOrNull { it.name.equals(typedParticleMode, ignoreCase = true) } ?: run {
-            log.warning("Inside charm effect '$name', $key '$typedParticleMode' is invalid or doesn't exist, please fix your charms configurations and reload. Defaulting $name $key to NONE")
+            log.warning("Inside charm effect '$name', $key '$typedParticleMode' is invalid or doesn't exist, please fix your charms configurations and reload. Defaulting $name $key to NONE.")
             return CharmParticleMode.NONE
         }
 
         // particleMode is incompatible with effectMode, warn and disable particles
         if(effectMode !in particleMode.validApplyModes) {
-            log.warning("Inside charm effect '$name', $key '$typedParticleMode' cannot be used in conjunction with $effectMode, valid modes for $typedParticleMode are: '${particleMode.validApplyModes.joinToString()}, please fix your charms configurations and reload. Defaulting $name $key to NONE")
+            log.warning("Inside charm effect '$name', $key '$typedParticleMode' cannot be used in conjunction with $effectMode, valid modes for $typedParticleMode are: '${particleMode.validApplyModes.joinToString()}, please fix your charms configurations and reload. Defaulting $name $key to NONE.")
             return CharmParticleMode.NONE
         }
         return particleMode

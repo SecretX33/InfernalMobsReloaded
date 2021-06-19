@@ -38,6 +38,7 @@ class Messages(plugin: Plugin, private val adventureMessage: AdventureMessage) {
 
 enum class MessageKeys(val default: Any) {
     ABILITY_DOESNT_EXIST("<#FF5555>Sorry, there is no ability named <ability>, please type a valid ability."),
+    BROKEN_CHARM_SUFFIX(" <#b3b3b3>(broken)"),
     CONFIGS_RELOADED("<#55FF55>Reloaded configs."),
     CONSOLE_CANNOT_USE("<#FF5555>Sorry, the console cannot use this command."),
     INFERNAL_MOB_DEATH_MESSAGES(""),
@@ -46,6 +47,7 @@ enum class MessageKeys(val default: Any) {
     INVALID_NUMBER("<#FF5555>Sorry, <#FFAA00><number> <#FF5555>is not a number."),
     KILLED_ALL_INFERNALS("<#55FF55>Killed all infernals from all worlds."),
     LOOT_ITEM_DOESNT_EXIST("<#FF5555>Sorry, loot item named <#FFAA00><item> <#FF5555>doesn't exist."),
+    NOT_HOLDING_CHARM("<#FF5555>You are not holding a charm, this command may only be used when holding charms."),
     NOT_TARGETING_INFERNAL("<#FF5555>The entity you're currently targeting is not an Infernal Mob, please target an Infernal Mob and try again."),
     NOT_TARGETING_LIVING_ENTITY("<#FF5555>You are not targeting an entity, please aim to an entity and try again."),
     NOT_TARGETING_VALID_INFERNAL("<#FF5555>The entity you're currently targeting was an Infernal Mob from mob category <group>, but this mob category is not present on your mobs.yml file, so it's not currently considered an Infernal Mob."),
@@ -53,7 +55,9 @@ enum class MessageKeys(val default: Any) {
     RUST_CORRODE_TOOLS_MESSAGE("<#c27c21>You feel your tools corroding at your hands."),
     TARGETING_INFERNAL("<#55FF55>The <#00AA00><entity> <#55FF55>you're currently targeting has the following abilities: <#ffb319><abilities>."),
     THIEF_MESSAGE_TO_TARGET("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item>."),
-    THIEF_MESSAGE_TO_TARGET_ITEM_BROKE("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item><#55FFFF>, and unfortunately it broke in the process.");
+    THIEF_MESSAGE_TO_TARGET_ITEM_BROKE("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item><#55FFFF>, and unfortunately it broke in the process."),
+    YOU_HAVE_BROKEN_YOUR_CHARM("<#55FF55>You just broke your charm <charm>, it'll no longer works!"),
+    YOU_HAVE_RESTORED_YOUR_CHARM("<#55FF55>You just restored your charm <charm>, hopefully it'll work again.");
 
     val configEntry = name.lowercase(Locale.US).replace('_','-')
 }

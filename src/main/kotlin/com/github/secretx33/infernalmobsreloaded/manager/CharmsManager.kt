@@ -53,7 +53,7 @@ class CharmsManager(
         }
 
         val invMap = player.inventoryMap
-        val charms = invMap.filterKeys { charmsRepo.isItemRequiredByCharm(it) }
+        val charms = invMap.filterKeys { charmsRepo.isItemRequiredByCharmEffect(it) }
         // if player has no charms in his inventory
         if(charms.isEmpty()) {
             cancelAllCharmTasks(player)
@@ -117,7 +117,7 @@ class CharmsManager(
     }
 
     private fun LivingEntity.spawnCharmParticles(charmEffect: CharmEffect) {
-        if((this as? Player)?.isInvisibleOrVanished() == true) return
+        if(this is Player && isInvisibleOrVanished()) return
         val particle = charmEffect.particle?.takeIf { charmEffect.particleMode != CharmParticleMode.NONE } ?: return
         world.spawnParticle(particle, eyeLocation, 100, 0.5, 1.0, 0.5)
     }
@@ -126,6 +126,7 @@ class CharmsManager(
 //        println("Triggering on hit effects")
         targetEffects.get(player.uniqueId).filter { it.isNotCooldown(player) }.forEach {
 //            println("Triggering ${it.name} on ${target.name}")
+            // effects
             if(it.effectApplyMode == PotionEffectApplyMode.SELF_ON_HIT || it.effectApplyMode == PotionEffectApplyMode.BOTH_ON_HIT)
                 player.addPotionEffect(PotionEffect(it.potionEffect, (it.getDuration() * 20.0).toInt(), it.getPotency()))
 
