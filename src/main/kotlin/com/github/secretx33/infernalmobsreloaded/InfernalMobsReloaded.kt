@@ -114,7 +114,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         // if worldguard is enabled, replace dummy module with real one
         if(isWorldGuardEnabled) {
             // creation of the WorldGuardChecker happens here because WG is bae and requires hooking to happen on method onLoad
-            mod.single<WorldGuardChecker>(override = true) { WorldGuardCheckerImpl() }
+            mod.single<WorldGuardChecker> { WorldGuardCheckerImpl() }
         }
     }
 

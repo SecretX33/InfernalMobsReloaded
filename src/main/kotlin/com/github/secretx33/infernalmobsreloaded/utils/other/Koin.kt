@@ -41,7 +41,7 @@ private object CustomScope : KoinContext {
 
     override fun startKoin(koinApplication: KoinApplication): KoinApplication = synchronized(this) {
         register(koinApplication)
-        koinApplication.createEagerInstances()
+        koinApplication.koin.createEagerInstances()
         return koinApplication
     }
 
@@ -49,7 +49,7 @@ private object CustomScope : KoinContext {
         val koinApplication = KoinApplication.init()
         register(koinApplication)
         appDeclaration(koinApplication)
-        koinApplication.createEagerInstances()
+        koinApplication.koin.createEagerInstances()
         return koinApplication
     }
 

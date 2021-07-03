@@ -6,19 +6,19 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.1.0-beta5") {
+        classpath("com.guardsquare:proguard-gradle:7.1.0") {
             exclude("com.android.tools.build")
         }
     }
 }
 
 plugins {
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.5.20"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 group = "com.github.secretx33"
-version = "1.1.0.2"
+version = "1.1.1"
 
 repositories {
     mavenCentral()
@@ -39,13 +39,13 @@ dependencies {
     compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT") // Paper API dependency
     compileOnly(fileTree("libs"))      // Paper server dependency
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.+")
-    val koin_version = "3.0.+"
+    val koin_version = "3.1.+"
     implementation("io.insert-koin:koin-core:$koin_version")
     testCompileOnly("io.insert-koin:koin-test:$koin_version")
-    implementation("com.github.cryptomorin:XSeries:7.9.1.1")
+    implementation("com.github.cryptomorin:XSeries:8.1.0")
     implementation("me.mattstudios:triumph-msg-adventure:2.2.4-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0")
-    compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.4")
+    compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.5")
     compileOnly("com.github.TownyAdvanced:Towny:0.97.0.0")
 }
 

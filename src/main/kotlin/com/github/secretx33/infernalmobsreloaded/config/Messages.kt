@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer
 import org.bukkit.plugin.Plugin
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
@@ -57,7 +58,9 @@ enum class MessageKeys(val default: Any) {
     THIEF_MESSAGE_TO_TARGET("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item>."),
     THIEF_MESSAGE_TO_TARGET_ITEM_BROKE("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item><#55FFFF>, and unfortunately it broke in the process."),
     YOU_HAVE_BROKEN_YOUR_CHARM("<#55FF55>You just broke your charm <charm>, it'll no longer works!"),
-    YOU_HAVE_RESTORED_YOUR_CHARM("<#55FF55>You just restored your charm <charm>, hopefully it'll work again.");
+    YOU_DONT_HAVE_PERMISSION_TO_BREAK_CHARMS("<#FF5555>You are holding a working charm, but you don't have permission to break charms!"),
+    YOU_HAVE_RESTORED_YOUR_CHARM("<#55FF55>You just restored your charm <charm>, hopefully it'll work again."),
+    YOU_DONT_HAVE_PERMISSION_TO_RESTORE_CHARMS("<#FF5555>You are holding a broken charm, but you don't have permission to fix charms!");
 
     val configEntry = name.lowercase(Locale.US).replace('_','-')
 }
@@ -71,3 +74,5 @@ fun Component.replace(oldText: String, newText: String) = replaceText { it.match
 fun Component.replace(oldText: String, newText: String, color: NamedTextColor) = replaceText { it.match(oldText).replacement(newText.toComponent(color)) }
 
 fun Component.replace(oldText: String, newText: ComponentLike) = replaceText { it.match(oldText).replacement(newText) }
+
+fun Component.toPlainText() = PlainComponentSerializer.plain().serialize(this)
