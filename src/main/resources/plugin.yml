@@ -26,6 +26,8 @@ permissions:
       imr.getloot: true
       imr.killall: true
       imr.charms.toggle: true
+      imr.charms.toggle.break: true
+      imr.charms.toggle.restore: true
 
   imr.reload:
     description: Allows one to reload all plugin configurations.
@@ -53,4 +55,12 @@ permissions:
 
   imr.charms.toggle:
     description: Allows player to use subcommand 'togglecharm', which toggles a charm between the broken and normal state.
+    default: false
+
+  imr.charms.toggle.break:
+    description: Allows player to use subcommand 'togglecharm' to break a working charm.
+    default: false
+
+  imr.charms.toggle.restore:
+    description: Allows player to use subcommand 'togglecharm' to fix a broken charm.
     default: false

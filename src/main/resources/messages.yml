@@ -39,4 +39,6 @@ targeting-infernal: "<#55FF55>The <#00AA00><entity> <#55FF55>you're currently ta
 thief-message-to-target-item-broke: "<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item><#55FFFF>, and unfortunately it broke in the process."
 thief-message-to-target: "<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item>."
 you-have-broken-your-charm: "<#55FF55>You just broke your charm <charm>, it'll no longer works!"
+you-dont-have-permission-to-break-charms: "<#FF5555>You are holding a working charm, but you don't have permission to break charms!"
 you-have-restored-your-charm: "<#55FF55>You just restored your charm <charm>, hopefully it'll work again."
+you-dont-have-permission-to-restore-charms: "<#FF5555>You are holding a broken charm, but you don't have permission to fix charms!"

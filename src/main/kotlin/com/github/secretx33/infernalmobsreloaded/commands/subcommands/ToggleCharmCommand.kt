@@ -3,6 +3,7 @@ package com.github.secretx33.infernalmobsreloaded.commands.subcommands
 import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.config.replace
+import com.github.secretx33.infernalmobsreloaded.config.toPlainText
 import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
@@ -31,33 +32,68 @@ class ToggleCharmCommand: SubCommand(), CustomKoinComponent {
     private val charmsManager by inject<CharmsManager>()
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
-        val item = player.inventory.itemInMainHand
+        val intention = player.getIntention()
 
-        // player not holding a charm
-        if(item.isAir() || !charmsRepo.isItemRequiredByCharmEffect(item, acceptBroken = true)) {
+        // player is not holding a charm
+        if(intention == Intention.NOT_A_CHARM) {
             player.sendMessage(messages.get(MessageKeys.NOT_HOLDING_CHARM))
             return
         }
-        val message: Component
-        val itemName = item.displayName
 
-        val newItem = item.clone()
-        newItem.itemMeta.apply {
-            if(pdc.has(keyChain.brokenCharmKey, PersistentDataType.SHORT)) {
-                restoreCharm(item)
-                message = messages.get(MessageKeys.YOU_HAVE_RESTORED_YOUR_CHARM).replace("<charm>", displayName()
-                    ?: throw IllegalStateException("Item ${item.type} doesn't have a display name after being restored by ${player.name}, this should not happen."))
-            } else {
-                breakCharm(itemName)
-                message = messages.get(MessageKeys.YOU_HAVE_BROKEN_YOUR_CHARM).replace("<charm>", itemName)
-            }
-            newItem.itemMeta = this
+        // player dont have permission to break charms
+        if(intention == Intention.BREAK_BUT_NO_PERMISSION) {
+            player.sendMessage(messages.get(MessageKeys.YOU_DONT_HAVE_PERMISSION_TO_BREAK_CHARMS))
+            return
         }
 
+        // player dont have permission to restore/fix charms
+        if(intention == Intention.RESTORE_BUT_NO_PERMISSION) {
+            player.sendMessage(messages.get(MessageKeys.YOU_DONT_HAVE_PERMISSION_TO_RESTORE_CHARMS))
+            return
+        }
+
+        val item = player.inventory.itemInMainHand
+        val message: Component
+        val itemName = item.displayName
+        val newMeta = item.itemMeta
+
+        message = when(intention) {
+            Intention.RESTORE -> {
+                newMeta.restoreCharm(item)
+                messages.get(MessageKeys.YOU_HAVE_RESTORED_YOUR_CHARM).replace("<charm>", newMeta.displayName()
+                    ?: throw IllegalStateException("Item ${item.type} doesn't have a display name after being restored by ${player.name}, this should not happen."))
+            }
+            Intention.BREAK -> {
+                newMeta.breakCharm(itemName)
+                messages.get(MessageKeys.YOU_HAVE_BROKEN_YOUR_CHARM).replace("<charm>", itemName)
+            }
+            else -> throw IllegalStateException("Intention $intention should have been treated before entering this 'when' block, but it was not.")
+        }
+
+        val newItem = item.clone().apply { itemMeta = newMeta }
         player.inventory.setItemInMainHand(newItem)
         player.updateInventory()
         charmsManager.updateCharmEffects(player)
         player.sendMessage(message)
+    }
+
+    private fun Player.getIntention(): Intention {
+        val heldItem = inventory.itemInMainHand
+
+        // player not holding a charm
+        if(heldItem.isAir() || !charmsRepo.isItemRequiredByCharmEffect(heldItem, acceptBroken = true)) {
+            return Intention.NOT_A_CHARM
+        }
+
+        val isItemBroken = heldItem.itemMeta?.pdc?.has(keyChain.brokenCharmKey, PersistentDataType.SHORT) == true
+
+        return when {
+            !isItemBroken && !hasPermission("imr.charms.toggle.break") -> Intention.BREAK_BUT_NO_PERMISSION
+            !isItemBroken -> Intention.BREAK
+            isItemBroken && !hasPermission("imr.charms.toggle.restore") -> Intention.RESTORE_BUT_NO_PERMISSION
+            isItemBroken -> Intention.RESTORE
+            else -> throw IllegalStateException("Unknown Intention for item ${heldItem.displayName.toPlainText()}")
+        }
     }
 
     private fun ItemMeta.restoreCharm(item: ItemStack) {
@@ -83,4 +119,8 @@ class ToggleCharmCommand: SubCommand(), CustomKoinComponent {
 
     override fun getCompletor(sender: CommandSender, length: Int, hint: String, strings: Array<String>): List<String>
         = emptyList()
+
+    private enum class Intention {
+        BREAK, RESTORE, NOT_A_CHARM, BREAK_BUT_NO_PERMISSION, RESTORE_BUT_NO_PERMISSION
+    }
 }
