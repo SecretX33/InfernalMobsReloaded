@@ -2,7 +2,7 @@
 -outjars build/libs/InfernalMobsReloaded-min.jar
 
 -libraryjars "C:\Program Files\Java\jdk1.8.0_291\jre\lib\rt.jar"
--libraryjars "D:\Local Disk\Users\User\Documents\GitHub\InfernalMobsReloaded\libs\paper-1.16.5-744.jar"
+-libraryjars "D:\Local Disk\Users\User\Documents\GitHub\InfernalMobsReloaded\libs\paper-1.16.5-779.jar"
 
 -dontwarn net.minecraft.**
 -dontwarn org.bukkit.**

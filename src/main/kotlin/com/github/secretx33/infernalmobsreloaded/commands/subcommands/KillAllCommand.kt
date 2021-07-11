@@ -21,11 +21,9 @@ class KillAllCommand : SubCommand(), CustomKoinComponent {
     private val keyChain by inject<KeyChain>()
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
-        Bukkit.getWorlds().forEach { world ->
-            world.livingEntities.filter { mobsManager.isPossibleInfernalMob(it) || keyChain.hasMountKey(it) }.forEach {
-                mobsManager.removeAndDropStolenItems(it)
-            }
-        }
+        Bukkit.getWorlds().flatMap { it.livingEntities }
+            .filter { mobsManager.isPossibleInfernalMob(it) || keyChain.hasMountKey(it) }
+            .forEach { mobsManager.removeAndDropStolenItems(it) }
 
         // notify player that all infernals got killed
         player.sendMessage(messages.get(MessageKeys.KILLED_ALL_INFERNALS))

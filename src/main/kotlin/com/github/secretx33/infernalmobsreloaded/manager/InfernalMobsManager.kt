@@ -33,6 +33,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
 import org.bukkit.entity.Monster
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
@@ -260,6 +261,9 @@ class InfernalMobsManager (
     }
 
     fun removeAndDropStolenItems(entity: Entity) {
+        // cannot remove players
+        if(entity is Player) return
+
         // if entity is not living entity, just remove it since it doesn't have any armor
         if(entity !is LivingEntity) {
             entity.remove()
