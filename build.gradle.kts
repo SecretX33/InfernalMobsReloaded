@@ -41,9 +41,9 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
     testImplementation("org.mockito:mockito-inline:3.12.4")
     testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
+//    testImplementation("net.bytebuddy:byte-buddy:1.11.13")
+//    testImplementation("net.bytebuddy:byte-buddy-agent:1.11.13")
     testImplementation("com.github.seeseemelk:MockBukkit-v1.17:1.7.0")
-//    testImplementation("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
-//    testImplementation(fileTree("libs"))
     testImplementation("net.kyori:adventure-api:4.8.1")
     // DI
     val koin_version = "3.1.+"

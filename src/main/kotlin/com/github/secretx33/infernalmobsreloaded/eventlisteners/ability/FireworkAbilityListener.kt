@@ -31,7 +31,7 @@ class FireworkAbilityListener (
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    private fun EntityDamageByEntityEvent.fireworkDamagingOwner() {
+    private fun EntityDamageByEntityEvent.callEventMethods() {
         if(!isFireworkDamagingLivingEntity() || !cannotDamageItself) return
 
         val ownerUuid = damager.pdc.get(keyChain.fireworkOwnerUuidKey, PersistentDataType.STRING)?.toUuid() ?: return
@@ -56,7 +56,10 @@ class FireworkAbilityListener (
 
     private fun Entity.wasFiredByInfernal() = pdc.has(keyChain.fireworkOwnerUuidKey, PersistentDataType.STRING)
 
-    private fun EntityDamageByEntityEvent.isFireworkDamagingLivingEntity() = damager.type == EntityType.FIREWORK && cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION && entity is LivingEntity
+    private fun EntityDamageByEntityEvent.isFireworkDamagingLivingEntity()
+        = damager.type == EntityType.FIREWORK &&
+            cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION &&
+            entity is LivingEntity
 
     private fun Entity.isOwnerOrMountUuid(uuid: UUID) = uniqueId == uuid || passengers.any { it.uniqueId == uuid }
 
