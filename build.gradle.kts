@@ -2,23 +2,22 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
     repositories {
-        google()
         mavenCentral()
     }
     dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.1.0") {
+        classpath("com.guardsquare:proguard-gradle:7.1.1") {
             exclude("com.android.tools.build")
         }
     }
 }
 
 plugins {
-    kotlin("jvm") version "1.5.20"
+    kotlin("jvm") version "1.5.30"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 group = "com.github.secretx33"
-version = "1.2.0"
+version = "1.2.1"
 
 repositories {
     mavenCentral()
@@ -33,20 +32,31 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test-junit5"))
+    // Kotlin
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.+")
+    // Unit Testing
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.5.30")
+    testImplementation("org.jetbrains.kotlin:kotlin-reflect:1.5.30")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
-    compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT") // Paper API dependency
-    compileOnly(fileTree("libs"))      // Paper server dependency
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.+")
+    testImplementation("org.mockito:mockito-inline:3.12.4")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.17:1.7.0")
+//    testImplementation("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
+//    testImplementation(fileTree("libs"))
+    testImplementation("net.kyori:adventure-api:4.8.1")
+    // DI
     val koin_version = "3.1.+"
     implementation("io.insert-koin:koin-core:$koin_version")
-    testCompileOnly("io.insert-koin:koin-test:$koin_version")
-    implementation("com.github.cryptomorin:XSeries:8.1.0")
+    // API dependency
+    compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT") // Paper API dependency
+    compileOnly(fileTree("libs"))     // Paper server dependency
+    // Bukkit specific dependencies
+    implementation("com.github.cryptomorin:XSeries:8.4.0")
     implementation("me.mattstudios:triumph-msg-adventure:2.2.4-SNAPSHOT")
-    compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0")
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.5")
-    compileOnly("com.github.TownyAdvanced:Towny:0.97.0.0")
+    compileOnly("com.github.TownyAdvanced:Towny:0.97.1.0")
 }
 
 tasks.test {
@@ -83,13 +93,15 @@ tasks.register<proguard.gradle.ProGuardTask>("proguard") {
 
 //tasks.build.get().finalizedBy(tasks.getByName("proguard"))
 
+val javaVersion = JavaVersion.VERSION_16.toString()
+
 tasks.withType<JavaCompile> {
-    sourceCompatibility = "1.8"
-    targetCompatibility = "1.8"
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
     options.encoding = "UTF-8"
 }
 
-tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "1.8" }
+tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = javaVersion }
 
 tasks.processResources {
     val main_class = "${project.group}.${project.name.toLowerCase()}.${project.name}"
