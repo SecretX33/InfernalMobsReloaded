@@ -1,6 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
-import com.github.secretx33.infernalmobsreloaded.utils.capitalizeFully
+import com.github.secretx33.infernalmobsreloaded.utils.extension.capitalizeFully
 import java.util.Locale
 import kotlin.math.min
 
