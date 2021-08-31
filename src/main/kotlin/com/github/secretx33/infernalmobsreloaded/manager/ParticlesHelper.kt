@@ -11,9 +11,9 @@ import kotlinx.coroutines.launch
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.entity.LivingEntity
-import java.util.logging.Logger
+import org.bukkit.util.Vector
 
-class ParticlesHelper(private val config: Config, private val log: Logger) {
+class ParticlesHelper(private val config: Config) {
 
     fun sendParticle(loc: Location, particle: Particle, spread: Double, amount: Int = particleAmount) {
         if(!globalEffectsEnabled) return
@@ -34,8 +34,8 @@ class ParticlesHelper(private val config: Config, private val log: Logger) {
     fun sendParticle(entity: LivingEntity, ability: Ability) {
         CoroutineScope(Dispatchers.Default).launch {
             when(ability) {
-                Ability.SECOND_WIND -> XParticle.circle(entity.width * 1.2, entity.width * 1.5, 0.5, 1.0, 2.0, ParticleDisplay(Particle.TOTEM, entity.location, 20, 0.25, 0.25, 0.25))
-                Ability.THORNMAIL -> XParticle.filledCircle(1.0, 0.5, 0.5, ParticleDisplay(Particle.WARPED_SPORE, entity.location.add(0.0, entity.height * 0.5, 0.0), 100, 0.25, 0.25, 0.25))
+                Ability.SECOND_WIND -> XParticle.circle(entity.width * 1.2, entity.width * 1.5, 0.5, 1.0, 2.0, ParticleDisplay(Particle.TOTEM, entity.location, 20, defaultOffsetVector))
+                Ability.THORNMAIL -> XParticle.filledCircle(1.0, 0.5, 0.5, ParticleDisplay(Particle.WARPED_SPORE, entity.location.add(0.0, entity.height * 0.5, 0.0), 100, defaultOffsetVector))
                 else -> {}
             }
         }
@@ -46,4 +46,8 @@ class ParticlesHelper(private val config: Config, private val log: Logger) {
 
     private val particleAmount
         get() = config.get<Int>(ConfigKeys.INFERNAL_PARTICLES_AMOUNT)
+
+    private companion object {
+        val defaultOffsetVector = Vector(0.25, 0.25, 0.25)
+    }
 }
