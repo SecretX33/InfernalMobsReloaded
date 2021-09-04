@@ -119,7 +119,6 @@ open class InfernalMobsReloaded: JavaPlugin, CustomKoinComponent {
         single { TownyListener(get(), get(), get(), get()) }
         single { Commands(get()) }
         single { Metrics(get(), 11253) }
-        single<WorldGuardChecker> { WorldGuardCheckerDummy() }
     }
 
     override fun onLoad() {
@@ -127,6 +126,8 @@ open class InfernalMobsReloaded: JavaPlugin, CustomKoinComponent {
         if(isWorldGuardEnabled) {
             // creation of the WorldGuardChecker happens here because WG is bae and requires hooking to happen on method onLoad
             mod.single<WorldGuardChecker> { WorldGuardCheckerImpl() }
+        } else {
+            mod.single<WorldGuardChecker> { WorldGuardCheckerDummy() }
         }
     }
 

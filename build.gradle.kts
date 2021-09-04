@@ -35,8 +35,8 @@ dependencies {
     // Kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.+")
     // Unit Testing
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.5.30")
-    testImplementation("org.jetbrains.kotlin:kotlin-reflect:1.5.30")
+    testImplementation(kotlin("test-junit5"))
+    testImplementation(kotlin("reflect"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
     testImplementation("org.mockito:mockito-inline:3.12.4")
