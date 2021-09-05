@@ -1,7 +1,7 @@
 name: ${name}
 version: ${version}
 main: ${mainClass}
-api-version: 1.16
+api-version: 1.17
 authors: [SecretX]
 description: Introduce Infernal Mobs, adding so much to any Survival Multiplayer experience.
 website: https://github.com/SecretX33
