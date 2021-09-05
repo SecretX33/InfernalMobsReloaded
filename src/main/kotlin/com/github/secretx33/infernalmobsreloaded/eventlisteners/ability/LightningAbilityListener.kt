@@ -5,7 +5,7 @@ import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.events.InfernalLightningStrike
-import com.github.secretx33.infernalmobsreloaded.utils.random
+import com.github.secretx33.infernalmobsreloaded.utils.extension.random
 import com.google.common.cache.CacheBuilder
 import org.bukkit.Bukkit
 import org.bukkit.Location

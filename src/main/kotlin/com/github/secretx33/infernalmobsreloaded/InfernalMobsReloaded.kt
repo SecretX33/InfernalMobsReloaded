@@ -55,12 +55,24 @@ import com.github.secretx33.infernalmobsreloaded.utils.other.unloadKoinModules
 import me.mattstudios.msg.adventure.AdventureMessage
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
+import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.plugin.java.JavaPluginLoader
 import org.koin.core.logger.Level
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import java.io.File
 
-class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
+open class InfernalMobsReloaded: JavaPlugin, CustomKoinComponent {
+
+    constructor() : super()
+
+    constructor(
+        loader: JavaPluginLoader,
+        description: PluginDescriptionFile,
+        dataFolder: File,
+        file: File
+    ) : super(loader, description, dataFolder, file)
 
     private val mod = module {
         single<Plugin> { this@InfernalMobsReloaded } bind JavaPlugin::class
@@ -71,7 +83,7 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { AbilityConfig(get(), get()) }
         single { KeyChain(get()) }
         single { BossBarManager(get(), get()) }
-        single { ParticlesHelper(get(), get()) }
+        single { ParticlesHelper(get()) }
         single { LootItemsRepo(get(), get(), get(), get()) }
         single { CharmsRepo(get(), get(), get(), get(), get()) }
         single { CharmsManager(get(), get(), get()) }
@@ -107,7 +119,6 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         single { TownyListener(get(), get(), get(), get()) }
         single { Commands(get()) }
         single { Metrics(get(), 11253) }
-        single<WorldGuardChecker> { WorldGuardCheckerDummy() }
     }
 
     override fun onLoad() {
@@ -115,6 +126,8 @@ class InfernalMobsReloaded : JavaPlugin(), CustomKoinComponent {
         if(isWorldGuardEnabled) {
             // creation of the WorldGuardChecker happens here because WG is bae and requires hooking to happen on method onLoad
             mod.single<WorldGuardChecker> { WorldGuardCheckerImpl() }
+        } else {
+            mod.single<WorldGuardChecker> { WorldGuardCheckerDummy() }
         }
     }
 

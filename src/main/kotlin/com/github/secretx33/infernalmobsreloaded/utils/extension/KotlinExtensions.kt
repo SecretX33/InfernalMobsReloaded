@@ -1,4 +1,4 @@
-package com.github.secretx33.infernalmobsreloaded.utils
+package com.github.secretx33.infernalmobsreloaded.utils.extension
 
 import org.apache.commons.lang.WordUtils
 import java.util.UUID

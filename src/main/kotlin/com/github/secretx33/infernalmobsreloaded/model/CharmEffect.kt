@@ -1,6 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
-import com.github.secretx33.infernalmobsreloaded.utils.random
+import com.github.secretx33.infernalmobsreloaded.utils.extension.random
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.potion.PotionEffectType
