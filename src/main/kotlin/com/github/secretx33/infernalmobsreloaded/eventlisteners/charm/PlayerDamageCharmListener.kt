@@ -9,8 +9,10 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
-class PlayerDamageCharmListener  (
+@InjectConstructor
+class PlayerDamageCharmListener (
     plugin: Plugin,
     private val charmsManager: CharmsManager,
 ) : Listener {

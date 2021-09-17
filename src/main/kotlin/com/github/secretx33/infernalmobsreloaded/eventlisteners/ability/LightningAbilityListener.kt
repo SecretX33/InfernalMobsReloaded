@@ -19,9 +19,11 @@ import org.bukkit.event.entity.EntityCombustByEntityEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
+@InjectConstructor
 class LightningAbilityListener (
     plugin: Plugin,
     private val config: Config,

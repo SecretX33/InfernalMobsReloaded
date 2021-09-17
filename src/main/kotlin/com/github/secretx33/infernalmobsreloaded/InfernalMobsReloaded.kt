@@ -1,69 +1,36 @@
 package com.github.secretx33.infernalmobsreloaded
 
-import com.github.secretx33.infernalmobsreloaded.commands.Commands
-import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
+import com.github.secretx33.infernalmobsreloaded.annotations.PluginId
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
-import com.github.secretx33.infernalmobsreloaded.config.Messages
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.FireworkAbilityListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.LightningAbilityListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.MountRemovalListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.ability.ThiefAbilityListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.charm.CancelCharmEffectsListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.charm.PlayerDamageCharmListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.charm.PlayerItemMoveListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDamageEntityListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDeathListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntitySpawnListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.BossBarListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalDamageDoneListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalDamageTakenListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalDeathListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalSpawnListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalTargetListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.integration.TownyListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.LethalPoisonListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerMoveListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerBreakListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerInteractListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerPlaceListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerSpawnListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.world.EntityLoadListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.world.EntityUnloadListener
 import com.github.secretx33.infernalmobsreloaded.manager.AbilityHelper
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
-import com.github.secretx33.infernalmobsreloaded.manager.ParticlesHelper
 import com.github.secretx33.infernalmobsreloaded.manager.WorldGuardChecker
 import com.github.secretx33.infernalmobsreloaded.manager.WorldGuardCheckerDummy
 import com.github.secretx33.infernalmobsreloaded.manager.WorldGuardCheckerImpl
-import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.packetlisteners.InvisibleEntitiesEquipVanisherListener
-import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
-import com.github.secretx33.infernalmobsreloaded.repositories.GlobalDropsRepo
-import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
-import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
-import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
+import com.github.secretx33.infernalmobsreloaded.scanning.Rules
+import com.github.secretx33.infernalmobsreloaded.scanning.implementations.ZISScanner
 import com.github.secretx33.infernalmobsreloaded.utils.other.Metrics
-import com.github.secretx33.infernalmobsreloaded.utils.other.get
-import com.github.secretx33.infernalmobsreloaded.utils.other.getOrNull
-import com.github.secretx33.infernalmobsreloaded.utils.other.loadKoinModules
-import com.github.secretx33.infernalmobsreloaded.utils.other.startKoin
-import com.github.secretx33.infernalmobsreloaded.utils.other.stopKoin
-import com.github.secretx33.infernalmobsreloaded.utils.other.unloadKoinModules
 import me.mattstudios.msg.adventure.AdventureMessage
 import org.bukkit.Bukkit
+import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.JavaPluginLoader
-import org.koin.core.logger.Level
-import org.koin.dsl.bind
-import org.koin.dsl.module
+import toothpick.Scope
+import toothpick.ktp.KTP
+import toothpick.ktp.binding.bind
+import toothpick.ktp.binding.module
+import toothpick.ktp.extension.getInstance
 import java.io.File
+import java.util.logging.Logger
 
-open class InfernalMobsReloaded: JavaPlugin, CustomKoinComponent {
+open class InfernalMobsReloaded: JavaPlugin {
 
     constructor() : super()
 
@@ -75,112 +42,54 @@ open class InfernalMobsReloaded: JavaPlugin, CustomKoinComponent {
     ) : super(loader, description, dataFolder, file)
 
     private val mod = module {
-        single<Plugin> { this@InfernalMobsReloaded } bind JavaPlugin::class
-        single { get<Plugin>().logger }
-        single { AdventureMessage.create() }
-        single { Config(get(), get()) }
-        single { Messages(get(), get()) }
-        single { AbilityConfig(get(), get()) }
-        single { KeyChain(get()) }
-        single { BossBarManager(get(), get()) }
-        single { ParticlesHelper(get()) }
-        single { LootItemsRepo(get(), get(), get(), get()) }
-        single { CharmsRepo(get(), get(), get(), get(), get()) }
-        single { CharmsManager(get(), get(), get()) }
-        single { AbilityHelper(get(),get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-        single { GlobalDropsRepo(get(), get(), get()) }
-        single { InfernalMobTypesRepo(get(), get(), get(), get(), get(), get()) }
-        single { InfernalMobsManager(get(), get(), get(), get(), get(), get(), get()) }
-        single { FireworkAbilityListener(get(), get(), get(), get()) }
-        single { LightningAbilityListener(get(), get(), get()) }
-        single { MountRemovalListener(get(), get()) }
-        single { ThiefAbilityListener(get(), get(), get()) }
-        single { CancelCharmEffectsListener(get(), get()) }
-        single { PlayerDamageCharmListener(get(), get()) }
-        single { PlayerItemMoveListener(get(), get()) }
-        single { EntityDamageEntityListener(get(), get(), get()) }
-        single { EntityDeathListener(get(), get()) }
-        single { EntitySpawnListener(get(), get(), get(), get()) }
-        single { BossBarListener(get(), get(), get()) }
-        single { InfernalDamageDoneListener(get(), get()) }
-        single { InfernalDamageTakenListener(get(), get()) }
-        single { InfernalDeathListener(get(), get(), get(), get(), get(), get(), get()) }
-        single { InfernalSpawnListener(get(), get(), get(), get()) }
-        single { InfernalTargetListener(get(), get()) }
-        single { LethalPoisonListener(get(), get()) }
-        single { PlayerMoveListener(get(), get(), get()) }
-        single { SpawnerBreakListener(get(), get(), get(), get()) }
-        single { SpawnerInteractListener(get(), get(), get(), get()) }
-        single { SpawnerPlaceListener(get(), get(), get()) }
-        single { SpawnerSpawnListener(get(), get(), get()) }
-        single { EntityLoadListener(get(), get(), get(), get()) }
-        single { EntityUnloadListener(get(), get(), get()) }
-        single { InvisibleEntitiesEquipVanisherListener(get(), get(), get()) }
-        single { TownyListener(get(), get(), get(), get()) }
-        single { Commands(get()) }
-        single { Metrics(get(), 11253) }
+        bind<Plugin>().toInstance(this@InfernalMobsReloaded)
+        bind<JavaPlugin>().toInstance(this@InfernalMobsReloaded)
+        bind<Logger>().toInstance(this@InfernalMobsReloaded.logger)
+        bind<AdventureMessage>().toInstance(AdventureMessage.create())
+        bind<Int>().withName(PluginId::class).toInstance(11253)
     }
 
     override fun onLoad() {
         // if worldguard is enabled, replace dummy module with real one
         if(isWorldGuardEnabled) {
             // creation of the WorldGuardChecker happens here because WG is bae and requires hooking to happen on method onLoad
-            mod.single<WorldGuardChecker> { WorldGuardCheckerImpl() }
+            mod.bind<WorldGuardChecker>().toClass<WorldGuardCheckerImpl>()
         } else {
-            mod.single<WorldGuardChecker> { WorldGuardCheckerDummy() }
+            mod.bind<WorldGuardChecker>().toClass<WorldGuardCheckerDummy>()
         }
     }
 
+    private lateinit var scope: Scope
+
     override fun onEnable() {
-        startKoin {
-            printLogger(Level.ERROR)
-            loadKoinModules(mod)
-        }
-        get<FireworkAbilityListener>()
-        get<LightningAbilityListener>()
-        get<MountRemovalListener>()
-        get<ThiefAbilityListener>()
-        get<CancelCharmEffectsListener>()
-        get<PlayerDamageCharmListener>()
-        get<PlayerItemMoveListener>()
-        get<EntityDamageEntityListener>()
-        get<EntityDeathListener>()
-        get<EntitySpawnListener>()
-        get<InfernalDamageDoneListener>()
-        get<InfernalDamageTakenListener>()
-        get<InfernalDeathListener>()
-        get<InfernalSpawnListener>()
-        get<InfernalTargetListener>()
-        get<BossBarListener>()
-        get<LethalPoisonListener>()
-        get<PlayerMoveListener>()
-        get<SpawnerBreakListener>()
-        get<SpawnerInteractListener>()
-        get<SpawnerPlaceListener>()
-        get<SpawnerSpawnListener>()
-        get<EntityUnloadListener>()
-        get<EntityLoadListener>()
-        get<Commands>()
+        scope = KTP.openScope("InfernalMobsReloaded").installModules(mod)
         if(isProtocolLibEnabled)
-            get<InvisibleEntitiesEquipVanisherListener>()
+            scope.getInstance<InvisibleEntitiesEquipVanisherListener>()
         if(isTownyHookEnabled) {
             logger.info("Enabling Towny hook.")
-            get<TownyListener>()
+            scope.getInstance<TownyListener>()
         }
-        get<Metrics>()
-        get<InfernalMobsManager>().loadAllInfernals()
-        get<BossBarManager>().showBarsOfNearbyInfernalsForAllPlayers()
-        get<CharmsManager>().startAllCharmTasks()
+        scope.getInstance<Metrics>()
+        scope.getInstance<InfernalMobsManager>().loadAllInfernals()
+        scope.getInstance<BossBarManager>().showBarsOfNearbyInfernalsForAllPlayers()
+        scope.getInstance<CharmsManager>().startAllCharmTasks()
+        val scanner = ZISScanner.create(this::class.java, "com.github.secretx33.infernalmobsreloaded")
+        val rules = Rules.builder<Any>().typeExtends(Listener::class.java).disallowMutableClasses().build()
+        scanner.classes(rules)
+            .map { scope.getInstance(it) }
+            .forEach { Bukkit.getPluginManager().registerEvents(it, this) }
     }
 
     override fun onDisable() {
-        get<InfernalMobsManager>().unloadAllInfernals()
-        get<BossBarManager>().hideAllBarsFromAllPlayers()
-        get<CharmsManager>().stopAllCharmTasks()
-        get<AbilityHelper>().revertPendingBlockModifications()
-        getOrNull<TownyListener>()?.cancelRemovalTasks()
-        unloadKoinModules(mod)
-        stopKoin()
+        if(!KTP.isScopeOpen("InfernalMobsReloaded")) return
+        scope.apply {
+            getInstance<InfernalMobsManager>().unloadAllInfernals()
+            getInstance<BossBarManager>().hideAllBarsFromAllPlayers()
+            getInstance<CharmsManager>().stopAllCharmTasks()
+            getInstance<AbilityHelper>().revertPendingBlockModifications()
+            if(isTownyHookEnabled) getInstance<TownyListener>().cancelRemovalTasks()
+        }
+        KTP.closeScope("InfernalMobsReloaded")
     }
 
     private val isWorldGuardEnabled
@@ -190,5 +99,5 @@ open class InfernalMobsReloaded: JavaPlugin, CustomKoinComponent {
         get() = Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")
 
     private val isTownyHookEnabled
-        get() = Bukkit.getPluginManager().isPluginEnabled("Towny") && get<Config>().get(ConfigKeys.TOWNY_REMOVE_INFERNAL_IN_TOWNS)
+        get() = Bukkit.getPluginManager().isPluginEnabled("Towny") && scope.getInstance<Config>().get(ConfigKeys.TOWNY_REMOVE_INFERNAL_IN_TOWNS)
 }

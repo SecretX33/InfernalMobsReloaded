@@ -10,8 +10,10 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
 // to update the boss bars
+@InjectConstructor
 class PlayerMoveListener (
     plugin: Plugin,
     private val config: Config,

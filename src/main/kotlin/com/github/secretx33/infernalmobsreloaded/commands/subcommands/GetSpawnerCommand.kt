@@ -8,15 +8,16 @@ import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.utils.extension.displayName
 import com.github.secretx33.infernalmobsreloaded.utils.extension.turnIntoSpawner
-import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.other.inject
+
+
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import toothpick.ktp.delegate.inject
 
-class GetSpawnerCommand: SubCommand(), CustomKoinComponent {
+class GetSpawnerCommand: SubCommand() {
 
     override val name: String = "getspawner"
     override val permission: String = "getspawner"

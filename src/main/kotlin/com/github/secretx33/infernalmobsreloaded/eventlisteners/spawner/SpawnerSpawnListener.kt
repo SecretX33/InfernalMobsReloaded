@@ -13,6 +13,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.SpawnerSpawnEvent
 import org.bukkit.plugin.Plugin
 
+@InjectConstructor
 class SpawnerSpawnListener (
     plugin: Plugin,
     private val infernalMobTypeRepo: InfernalMobTypesRepo,

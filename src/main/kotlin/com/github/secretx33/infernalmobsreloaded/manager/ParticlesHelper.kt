@@ -2,6 +2,7 @@ package com.github.secretx33.infernalmobsreloaded.manager
 
 import com.cryptomorin.xseries.particles.ParticleDisplay
 import com.cryptomorin.xseries.particles.XParticle
+import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.Ability
@@ -13,6 +14,7 @@ import org.bukkit.Particle
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
 
+@InjectSingleton
 class ParticlesHelper(private val config: Config) {
 
     fun sendParticle(loc: Location, particle: Particle, spread: Double, amount: Int = particleAmount) {

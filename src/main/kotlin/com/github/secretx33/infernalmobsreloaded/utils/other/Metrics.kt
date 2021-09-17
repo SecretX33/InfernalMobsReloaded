@@ -1,9 +1,11 @@
 package com.github.secretx33.infernalmobsreloaded.utils.other
 
+import com.github.secretx33.infernalmobsreloaded.annotations.PluginId
 import kotlinx.coroutines.*
 import org.bukkit.Bukkit
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
+import toothpick.InjectConstructor
 import java.io.*
 import java.net.URL
 import java.nio.charset.StandardCharsets
@@ -20,7 +22,8 @@ import javax.net.ssl.HttpsURLConnection
  * @param plugin Your plugin instance.
  * @param serviceId The id of the service. It can be found at [What is my plugin id?](https://bstats.org/what-is-my-plugin-id)
  */
-class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
+@InjectConstructor
+class Metrics(private val plugin: JavaPlugin, @PluginId serviceId: Int) {
 
     private val metricsBase: MetricsBase
 

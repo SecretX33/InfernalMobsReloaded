@@ -13,6 +13,7 @@ buildscript {
 
 plugins {
     kotlin("jvm") version "1.5.30"
+    kotlin("kapt") version "1.5.30"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
@@ -32,6 +33,9 @@ repositories {
 }
 
 dependencies {
+    // API dependency
+    compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT") // Paper API dependency
+    compileOnly(fileTree("libs"))     // Paper server dependency
     // Kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.+")
     // Unit Testing
@@ -41,16 +45,13 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
     testImplementation("org.mockito:mockito-inline:3.12.4")
     testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
-//    testImplementation("net.bytebuddy:byte-buddy:1.11.13")
-//    testImplementation("net.bytebuddy:byte-buddy-agent:1.11.13")
     testImplementation("com.github.seeseemelk:MockBukkit-v1.17:1.7.0")
     testImplementation("net.kyori:adventure-api:4.8.1")
     // DI
-    val koin_version = "3.1.+"
-    implementation("io.insert-koin:koin-core:$koin_version")
-    // API dependency
-    compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT") // Paper API dependency
-    compileOnly(fileTree("libs"))     // Paper server dependency
+    val toothpick_version = "3.1.+"
+    implementation("com.github.stephanenicolas.toothpick:ktp:$toothpick_version")
+    kapt("com.github.stephanenicolas.toothpick:toothpick-compiler:$toothpick_version")
+    testImplementation("com.github.stephanenicolas.toothpick:toothpick-testing-junit5:$toothpick_version")
     // Bukkit specific dependencies
     implementation("com.github.cryptomorin:XSeries:8.4.0")
     implementation("me.mattstudios:triumph-msg-adventure:2.2.4-SNAPSHOT")

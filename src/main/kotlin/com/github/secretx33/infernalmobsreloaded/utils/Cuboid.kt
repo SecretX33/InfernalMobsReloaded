@@ -9,7 +9,6 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-
 class Cuboid(point1: Location, point2: Location) {
 
     private val xMin: Int = min(point1.blockX, point2.blockX)

@@ -1,6 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.repositories
 
 import com.cryptomorin.xseries.XPotion
+import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.model.CharmEffect
 import com.github.secretx33.infernalmobsreloaded.model.CharmParticleMode
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
@@ -17,11 +18,14 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffectType
+import toothpick.InjectConstructor
 import java.util.Locale
 import java.util.logging.Logger
+import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 
+@InjectSingleton
 class CharmsRepo (
     plugin: Plugin,
     private val log: Logger,

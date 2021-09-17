@@ -7,14 +7,14 @@ import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.utils.extension.formattedTypeName
 import com.github.secretx33.infernalmobsreloaded.utils.extension.getTarget
-import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.other.inject
+
+
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 
-class InspectCommand : SubCommand(), CustomKoinComponent {
+class InspectCommand : SubCommand() {
 
     override val name: String = "inspect"
     override val permission: String = "inspect"

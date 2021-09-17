@@ -8,16 +8,17 @@ import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
-import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.other.inject
+
+
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
+import toothpick.ktp.delegate.inject
 
-class SpawnCommand: SubCommand(), CustomKoinComponent {
+class SpawnCommand: SubCommand() {
 
     override val name: String = "spawn"
     override val permission: String = "spawn"

@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.repositories
 
+import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
 import com.github.secretx33.infernalmobsreloaded.utils.other.YamlManager
 import org.bukkit.plugin.Plugin
@@ -7,6 +8,7 @@ import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.min
 
+@InjectSingleton
 class GlobalDropsRepo (
     plugin: Plugin,
     private val logger: Logger,

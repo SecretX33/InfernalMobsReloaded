@@ -11,8 +11,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import kotlin.math.max
 
+@InjectConstructor
 class InfernalSpawnListener (
     plugin: Plugin,
     private val config: Config,

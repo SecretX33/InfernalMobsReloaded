@@ -2,6 +2,7 @@ package com.github.secretx33.infernalmobsreloaded.repositories
 
 import com.cryptomorin.xseries.XEnchantment
 import com.cryptomorin.xseries.XMaterial
+import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
@@ -33,6 +34,7 @@ import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.min
 
+@InjectSingleton
 class LootItemsRepo (
     plugin: Plugin,
     private val logger: Logger,

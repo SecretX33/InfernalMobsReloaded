@@ -13,7 +13,9 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
+@InjectConstructor
 class SpawnerPlaceListener (
     plugin: Plugin,
     private val infernalMobTypeRepo: InfernalMobTypesRepo,

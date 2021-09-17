@@ -20,9 +20,11 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import toothpick.InjectConstructor
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
+@InjectConstructor
 class LethalPoisonListener (
     private val plugin: Plugin,
     private val config: Config,

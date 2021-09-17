@@ -5,17 +5,20 @@ import com.sk89q.worldguard.WorldGuard
 import com.sk89q.worldguard.protection.flags.Flags
 import org.bukkit.Bukkit
 import org.bukkit.block.Block
+import javax.inject.Singleton
 
 interface WorldGuardChecker {
     fun canMobGriefBlock(block: Block): Boolean
 }
 
 // Used when WorldGuard is absent
+@Singleton
 class WorldGuardCheckerDummy : WorldGuardChecker {
     override fun canMobGriefBlock(block: Block) = true
 }
 
 // Used when WorldGuard is present
+@Singleton
 class WorldGuardCheckerImpl : WorldGuardChecker {
 
     override fun canMobGriefBlock(block: Block): Boolean {

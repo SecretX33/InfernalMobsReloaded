@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.repositories
 
+import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.Ability
@@ -17,12 +18,15 @@ import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.util.EnumSet
 import java.util.Locale
 import java.util.logging.Logger
+import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 
+@InjectSingleton
 class InfernalMobTypesRepo (
     plugin: Plugin,
     private val log: Logger,

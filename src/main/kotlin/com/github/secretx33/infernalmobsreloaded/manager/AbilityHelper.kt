@@ -1,6 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.manager
 
 import com.cryptomorin.xseries.XPotion
+import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.Config
@@ -93,6 +94,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
+@InjectSingleton
 class AbilityHelper (
     private val plugin: Plugin,
     private val config: Config,

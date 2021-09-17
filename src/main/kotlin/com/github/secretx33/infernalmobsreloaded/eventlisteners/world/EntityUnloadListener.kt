@@ -10,7 +10,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
+@InjectConstructor
 class EntityUnloadListener (
     plugin: Plugin,
     private val mobsManager: InfernalMobsManager,

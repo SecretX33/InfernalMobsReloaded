@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
+import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.utils.extension.matchOrNull
 import com.github.secretx33.infernalmobsreloaded.utils.other.YamlManager
@@ -14,6 +15,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
+@InjectSingleton
 class AbilityConfig (
     plugin: Plugin,
     private val log: Logger,

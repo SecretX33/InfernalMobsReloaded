@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.manager
 
+import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.manager.InvisibilityHelper.isInvisibleOrVanished
 import com.github.secretx33.infernalmobsreloaded.model.CharmEffect
 import com.github.secretx33.infernalmobsreloaded.model.CharmParticleMode
@@ -28,6 +29,7 @@ import org.bukkit.potion.PotionEffectType
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
+@InjectSingleton
 class CharmsManager(
     private val plugin: Plugin,
     private val charmsRepo: CharmsRepo,

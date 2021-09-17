@@ -8,13 +8,14 @@ import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.extension.displayName
-import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.other.inject
+
+
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import toothpick.ktp.delegate.inject
 
-class GetLootCommand: SubCommand(), CustomKoinComponent {
+class GetLootCommand: SubCommand() {
 
     override val name: String = "getloot"
     override val permission: String = "getloot"

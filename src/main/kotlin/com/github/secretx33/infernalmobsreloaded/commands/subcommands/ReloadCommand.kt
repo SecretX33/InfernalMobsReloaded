@@ -11,12 +11,13 @@ import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.GlobalDropsRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
-import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.other.inject
+
+
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import toothpick.ktp.delegate.inject
 
-class ReloadCommand : SubCommand(), CustomKoinComponent {
+class ReloadCommand : SubCommand() {
 
     override val name: String = "reload"
     override val permission: String = "reload"

@@ -9,7 +9,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
+@InjectConstructor
 class EntityDeathListener(plugin: Plugin, private val mobsManager: InfernalMobsManager): Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }

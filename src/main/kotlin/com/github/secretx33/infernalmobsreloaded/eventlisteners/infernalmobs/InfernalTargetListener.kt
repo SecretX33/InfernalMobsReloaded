@@ -9,8 +9,10 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
-class InfernalTargetListener  (
+@InjectConstructor
+class InfernalTargetListener (
     plugin: Plugin,
     private val mobsManager: InfernalMobsManager,
 ): Listener {

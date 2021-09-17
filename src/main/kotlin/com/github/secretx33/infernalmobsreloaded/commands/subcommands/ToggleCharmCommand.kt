@@ -10,8 +10,8 @@ import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.extension.displayName
 import com.github.secretx33.infernalmobsreloaded.utils.extension.isAir
 import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
-import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.other.inject
+
+
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.command.CommandSender
@@ -19,8 +19,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
+import toothpick.ktp.delegate.inject
 
-class ToggleCharmCommand: SubCommand(), CustomKoinComponent {
+class ToggleCharmCommand: SubCommand() {
 
     override val name: String = "togglecharm"
     override val permission: String = "charms.toggle"
