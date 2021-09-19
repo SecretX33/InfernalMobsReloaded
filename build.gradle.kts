@@ -101,7 +101,12 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
-tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = javaVersion }
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=all")
+        jvmTarget = javaVersion
+    }
+}
 
 tasks.processResources {
     val main_class = "${project.group}.${project.name.toLowerCase()}.${project.name}"
