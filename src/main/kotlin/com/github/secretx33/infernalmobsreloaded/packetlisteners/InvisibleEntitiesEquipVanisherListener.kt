@@ -15,9 +15,8 @@ import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
-import toothpick.InjectConstructor
 
-@InjectConstructor
+
 class InvisibleEntitiesEquipVanisherListener (
     private val plugin: Plugin,
     private val abilityConfig: AbilityConfig,

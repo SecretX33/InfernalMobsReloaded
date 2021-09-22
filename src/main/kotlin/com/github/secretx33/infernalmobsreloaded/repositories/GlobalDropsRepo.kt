@@ -1,6 +1,5 @@
 package com.github.secretx33.infernalmobsreloaded.repositories
 
-import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
 import com.github.secretx33.infernalmobsreloaded.utils.other.YamlManager
 import org.bukkit.plugin.Plugin
@@ -8,14 +7,13 @@ import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.min
 
-@InjectSingleton
 class GlobalDropsRepo (
     plugin: Plugin,
-    private val logger: Logger,
     private val lootItemsRepo: LootItemsRepo,
 ) {
     private val manager = YamlManager(plugin, "global_drops")
     private var globalDrops = emptyMap<LootItem, Double>()
+    private val logger: Logger = plugin.logger
 
     init { reload() }
 

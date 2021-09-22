@@ -24,6 +24,10 @@ class Rules<R>(val rules: List<Predicate<ElementWrapper>>) {
 
         private val rules = ArrayList<Predicate<ElementWrapper>>()
 
+        init {
+            doesntHaveAnnotation(Hidden::class.java)
+        }
+
         fun add(rule: Predicate<ElementWrapper>): Builder<R> {
             rules.add(rule)
             return this
@@ -66,17 +70,31 @@ class Rules<R>(val rules: List<Predicate<ElementWrapper>>) {
             return addType { element: Class<*> -> !Modifier.isAbstract(element.modifiers) && !element.isInterface }
         }
 
-        fun hasAnnotation(annotation: Class<out Annotation?>): Builder<R> {
+        fun hasAnnotation(annotation: Class<out Annotation>): Builder<R> {
             return hasAnnotation(AnnotationWrapper(annotation))
+        }
+
+        fun doesntHaveAnnotation(annotation: Class<out Annotation>): Builder<R> {
+            return doesntHaveAnnotation(AnnotationWrapper(annotation))
         }
 
         fun hasAnnotation(annotation: Annotation): Builder<R> {
             return hasAnnotation(AnnotationWrapper(annotation))
         }
 
+        fun doesntHaveAnnotation(annotation: Annotation): Builder<R> {
+            return doesntHaveAnnotation(AnnotationWrapper(annotation))
+        }
+
         private fun hasAnnotation(annotationWrapper: AnnotationWrapper): Builder<R> {
-            return addAnnotated { element: AnnotatedElement ->
-                AnnotationUtils.isAnnotationPresent(element, annotationWrapper)
+            return addAnnotated {
+                AnnotationUtils.isAnnotationPresent(it, annotationWrapper)
+            }
+        }
+
+        private fun doesntHaveAnnotation(annotationWrapper: AnnotationWrapper): Builder<R> {
+            return addAnnotated {
+                !AnnotationUtils.isAnnotationPresent(it, annotationWrapper)
             }
         }
 
@@ -87,14 +105,6 @@ class Rules<R>(val rules: List<Predicate<ElementWrapper>>) {
 
         fun build(): Rules<R> {
             return Rules(rules)
-        }
-
-        init {
-            addAnnotated { element: AnnotatedElement ->
-                !element.isAnnotationPresent(
-                    Hidden::class.java
-                )
-            }
         }
     }
 }

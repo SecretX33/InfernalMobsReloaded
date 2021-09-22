@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.commands.subcommands
 
+
 import com.cryptomorin.xseries.XItemStack
 import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
@@ -8,23 +9,21 @@ import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.utils.extension.displayName
 import com.github.secretx33.infernalmobsreloaded.utils.extension.turnIntoSpawner
-
-
+import com.github.secretx33.infernalmobsreloaded.utils.other.WrappedInjector
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import toothpick.ktp.delegate.inject
 
-class GetSpawnerCommand: SubCommand() {
+class GetSpawnerCommand(injector: WrappedInjector): SubCommand() {
 
     override val name: String = "getspawner"
     override val permission: String = "getspawner"
     override val aliases: List<String> = listOf(name, "spawner", "gs")
 
-    private val messages by inject<Messages>()
-    private val infernalMobTypesRepo by inject<InfernalMobTypesRepo>()
+    private val messages = injector.getInstance<Messages>()
+    private val infernalMobTypesRepo = injector.getInstance<InfernalMobTypesRepo>()
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
         if(strings.size < 2) {

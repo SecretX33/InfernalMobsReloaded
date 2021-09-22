@@ -1,7 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.manager
 
 import com.cryptomorin.xseries.XPotion
-import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.Config
@@ -25,8 +24,8 @@ import com.github.secretx33.infernalmobsreloaded.utils.extension.displayName
 import com.github.secretx33.infernalmobsreloaded.utils.extension.futureSync
 import com.github.secretx33.infernalmobsreloaded.utils.extension.isAir
 import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
-import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
 import com.github.secretx33.infernalmobsreloaded.utils.extension.random
+import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
 import com.github.secretx33.infernalmobsreloaded.utils.extension.toUuid
 import com.google.common.collect.Sets
 import com.google.gson.Gson
@@ -94,7 +93,6 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-@InjectSingleton
 class AbilityHelper (
     private val plugin: Plugin,
     private val config: Config,
@@ -105,11 +103,11 @@ class AbilityHelper (
     private val wgChecker: WorldGuardChecker,
     private val particlesHelper: ParticlesHelper,
     private val infernalMobTypesRepo: InfernalMobTypesRepo,
-    private val logger: Logger,
 ){
 
     private val blockModifications = Sets.newConcurrentHashSet<BlockModification>()
     private val blocksBlackList = Sets.newConcurrentHashSet<Location>()
+    private val logger: Logger = plugin.logger
 
     // abilities that are applied when mob spawns
 

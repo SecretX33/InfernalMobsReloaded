@@ -4,21 +4,20 @@ import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
-
+import com.github.secretx33.infernalmobsreloaded.utils.other.WrappedInjector
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import toothpick.ktp.delegate.inject
 
-class KillAllCommand : SubCommand() {
+class KillAllCommand(injector: WrappedInjector) : SubCommand() {
 
     override val name: String = "killall"
     override val permission: String = "killall"
     override val aliases: List<String> = listOf(name, "ka")
 
-    private val messages by inject<Messages>()
-    private val mobsManager by inject<InfernalMobsManager>()
-    private val keyChain by inject<KeyChain>()
+    private val messages = injector.getInstance<Messages>()
+    private val mobsManager = injector.getInstance<InfernalMobsManager>()
+    private val keyChain = injector.getInstance<KeyChain>()
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
         Bukkit.getWorlds().flatMap { it.livingEntities }

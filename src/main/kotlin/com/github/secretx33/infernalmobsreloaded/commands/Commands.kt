@@ -9,6 +9,7 @@ import com.github.secretx33.infernalmobsreloaded.commands.subcommands.ReloadComm
 import com.github.secretx33.infernalmobsreloaded.commands.subcommands.SpawnCommand
 import com.github.secretx33.infernalmobsreloaded.commands.subcommands.SubCommand
 import com.github.secretx33.infernalmobsreloaded.commands.subcommands.ToggleCharmCommand
+import com.github.secretx33.infernalmobsreloaded.utils.other.WrappedInjector
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -17,17 +18,17 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.Locale
 
-class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
+class Commands(plugin: JavaPlugin, injector: WrappedInjector) : CommandExecutor, TabCompleter {
 
     private val subcommands: Set<SubCommand> = setOf(
-        GetLootCommand(),
-        GetSpawnerCommand(),
-        InspectCommand(),
-        KillAllCommand(),
-        MultispawnCommand(),
-        ReloadCommand(),
-        SpawnCommand(),
-        ToggleCharmCommand(),
+        GetLootCommand(injector),
+        GetSpawnerCommand(injector),
+        InspectCommand(injector),
+        KillAllCommand(injector),
+        MultispawnCommand(injector),
+        ReloadCommand(injector),
+        SpawnCommand(injector),
+        ToggleCharmCommand(injector),
     )
 
     init {

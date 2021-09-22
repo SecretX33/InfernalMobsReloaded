@@ -1,6 +1,5 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners.integration
 
-import com.github.secretx33.infernalmobsreloaded.annotations.SkippedSingleton
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
@@ -21,13 +20,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
-import toothpick.InjectConstructor
 import java.lang.ref.WeakReference
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-@SkippedSingleton
-@InjectConstructor
 class TownyListener (
     private val plugin: Plugin,
     private val config: Config,

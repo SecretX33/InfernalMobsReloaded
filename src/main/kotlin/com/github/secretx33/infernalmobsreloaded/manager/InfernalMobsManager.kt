@@ -1,6 +1,5 @@
 package com.github.secretx33.infernalmobsreloaded.manager
 
-import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.Config
@@ -44,7 +43,6 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.max
 
-@InjectSingleton
 class InfernalMobsManager (
     private val plugin: Plugin,
     private val config: Config,

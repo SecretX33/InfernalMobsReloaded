@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.commands.subcommands
 
+
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
@@ -11,28 +12,26 @@ import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.GlobalDropsRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
-
-
+import com.github.secretx33.infernalmobsreloaded.utils.other.WrappedInjector
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import toothpick.ktp.delegate.inject
 
-class ReloadCommand : SubCommand() {
+class ReloadCommand(injector: WrappedInjector) : SubCommand() {
 
     override val name: String = "reload"
     override val permission: String = "reload"
     override val aliases: List<String> = listOf(name, "rel", "r")
 
-    private val config by inject<Config>()
-    private val messages by inject<Messages>()
-    private val abilityConfig by inject<AbilityConfig>()
-    private val lootItemsRepo by inject<LootItemsRepo>()
-    private val globalDropsRepo by inject<GlobalDropsRepo>()
-    private val infernalMobTypesRepo by inject<InfernalMobTypesRepo>()
-    private val charmsRepo by inject<CharmsRepo>()
-    private val infernalMobsManager by inject<InfernalMobsManager>()
-    private val bossBarManager by inject<BossBarManager>()
-    private val charmsManager by inject<CharmsManager>()
+    private val config = injector.getInstance<Config>()
+    private val messages = injector.getInstance<Messages>()
+    private val abilityConfig = injector.getInstance<AbilityConfig>()
+    private val lootItemsRepo = injector.getInstance<LootItemsRepo>()
+    private val globalDropsRepo = injector.getInstance<GlobalDropsRepo>()
+    private val infernalMobTypesRepo = injector.getInstance<InfernalMobTypesRepo>()
+    private val charmsRepo = injector.getInstance<CharmsRepo>()
+    private val infernalMobsManager = injector.getInstance<InfernalMobsManager>()
+    private val bossBarManager = injector.getInstance<BossBarManager>()
+    private val charmsManager = injector.getInstance<CharmsManager>()
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
         onCommandByConsole(player, alias, strings)

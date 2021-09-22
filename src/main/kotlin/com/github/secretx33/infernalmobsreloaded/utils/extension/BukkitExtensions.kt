@@ -4,8 +4,6 @@ import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.utils.extension.Utils.keyChain
-
-
 import kotlinx.coroutines.delay
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -26,10 +24,11 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
+import kotlin.properties.Delegates
 
-
-private object Utils: CustomKoinComponent {
-    val keyChain by inject<KeyChain>()
+// I'm sorry, OOP
+object Utils {
+    var keyChain by Delegates.notNull<KeyChain>()
 }
 
 fun ItemStack.turnIntoSpawner(infernalType: InfernalMobType): ItemStack {

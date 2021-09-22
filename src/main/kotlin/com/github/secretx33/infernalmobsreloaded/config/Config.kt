@@ -1,6 +1,5 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
-import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
 import com.github.secretx33.infernalmobsreloaded.model.KilledByPoison
@@ -17,11 +16,11 @@ import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.min
 
-@InjectSingleton
-class Config(plugin: Plugin, private val log: Logger) {
+class Config(plugin: Plugin) {
 
     private val manager = YamlManager(plugin, "config")
     private val cache = ConcurrentHashMap<String, Any>()
+    private val log: Logger = plugin.logger
 
     fun reload() {
         cache.clear()

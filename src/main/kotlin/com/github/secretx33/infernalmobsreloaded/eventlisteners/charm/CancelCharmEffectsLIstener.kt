@@ -14,9 +14,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.plugin.Plugin
-import toothpick.InjectConstructor
 
-@InjectConstructor
 class CancelCharmEffectsListener (
     private val plugin: Plugin,
     private val charmsManager: CharmsManager,

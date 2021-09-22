@@ -1,6 +1,5 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
-import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.utils.extension.matchOrNull
 import com.github.secretx33.infernalmobsreloaded.utils.other.YamlManager
@@ -15,11 +14,8 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-@InjectSingleton
-class AbilityConfig (
-    plugin: Plugin,
-    private val log: Logger,
-) {
+class AbilityConfig(plugin: Plugin) {
+    private val logger: Logger = plugin.logger
     private val manager = YamlManager(plugin, "abilities")
     private val cache = ConcurrentHashMap<String, Any>()
 
@@ -32,7 +28,7 @@ class AbilityConfig (
     fun <T> get(key: String, default: T): T {
         return cache.getOrPut(key) {
             manager.get(key, default) as? T ?: run {
-                log.severe("On ability entry $key, expected value of type ${default!!::class.java.simpleName} but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+                logger.severe("On ability entry $key, expected value of type ${default!!::class.java.simpleName} but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
                 default
             }
         } as T
@@ -46,7 +42,7 @@ class AbilityConfig (
     fun getInt(key: String, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Int {
         return cache.getOrPut(key) {
             (manager.get(key, default) as? Int)?.let { int -> max(minValue, min(maxValue, int)) } ?: run {
-                log.severe("On ability entry $key, expected value of type Int but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+                logger.severe("On ability entry $key, expected value of type Int but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
                 default
             }
         } as Int
@@ -58,7 +54,7 @@ class AbilityConfig (
     fun getDouble(key: String, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Double {
         return cache.getOrPut(key) {
             (manager.get(key, default) as? Double)?.let { double -> max(minValue, min(maxValue, double)) } ?: run {
-                log.severe("On ability entry $key, expected value of type Double but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+                logger.severe("On ability entry $key, expected value of type Double but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
                 default
             }
         } as Double
@@ -133,7 +129,7 @@ class AbilityConfig (
                 ?.let { return@getOrPut Pair(it[0], max(it[0], it[1])) }
 
             // typed amount is not an integer
-            log.severe("Oops, while trying to get ability '$key' value, could not parse '$values' because it's not an integer, please fix your configurations and reload. Defaulting '$key' value to $default.")
+            logger.severe("Oops, while trying to get ability '$key' value, could not parse '$values' because it's not an integer, please fix your configurations and reload. Defaulting '$key' value to $default.")
             return@getOrPut Pair(default, default)
         } as Pair<Int, Int>
     }
@@ -162,7 +158,7 @@ class AbilityConfig (
                 ?.let { return@getOrPut Pair(it[0], max(it[0], it[1])) }
 
             // typed amount is not a double
-            log.severe("Oops, while trying to get ability '$key' value, could not parse '$values' because it's not a double nor a double range, please fix your configurations and reload. Defaulting '$key' value to $default.")
+            logger.severe("Oops, while trying to get ability '$key' value, could not parse '$values' because it's not a double nor a double range, please fix your configurations and reload. Defaulting '$key' value to $default.")
             return@getOrPut Pair(default, default)
         } as Pair<Double, Double>
     }
@@ -176,7 +172,7 @@ class AbilityConfig (
             if(!manager.contains(key.configEntry)) return@getOrPut key.defaultValue
             manager.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
                 val optional = Enums.getIfPresent(clazz, item.uppercase(Locale.US)).takeIf { opt -> opt.isPresent }?.get() ?: run {
-                    log.severe("Error while trying to get ability key '$key', value passed '${item.uppercase(Locale.US)}' is an invalid value, please fix this entry in the ${manager.fileName} and reload the configs")
+                    logger.severe("Error while trying to get ability key '$key', value passed '${item.uppercase(Locale.US)}' is an invalid value, please fix this entry in the ${manager.fileName} and reload the configs")
                     return@mapNotNullTo null
                 }
                 optional.takeIf { predicate == null || predicate.apply(it as T) }

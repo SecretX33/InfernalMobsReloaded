@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.commands.subcommands
 
+
 import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.config.replace
@@ -7,21 +8,20 @@ import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.utils.extension.formattedTypeName
 import com.github.secretx33.infernalmobsreloaded.utils.extension.getTarget
-
-
+import com.github.secretx33.infernalmobsreloaded.utils.other.WrappedInjector
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 
-class InspectCommand : SubCommand() {
+class InspectCommand(injector: WrappedInjector) : SubCommand() {
 
     override val name: String = "inspect"
     override val permission: String = "inspect"
     override val aliases: List<String> = listOf(name, "insp", "ins", "in", "i")
 
-    private val messages by inject<Messages>()
-    private val mobsManager by inject<InfernalMobsManager>()
+    private val messages = injector.getInstance<Messages>()
+    private val mobsManager = injector.getInstance<InfernalMobsManager>()
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
         // if player is not targeting an entity

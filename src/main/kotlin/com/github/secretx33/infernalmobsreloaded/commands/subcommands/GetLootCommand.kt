@@ -8,22 +8,20 @@ import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.extension.displayName
-
-
+import com.github.secretx33.infernalmobsreloaded.utils.other.WrappedInjector
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import toothpick.ktp.delegate.inject
 
-class GetLootCommand: SubCommand() {
+class GetLootCommand(injector: WrappedInjector): SubCommand() {
 
     override val name: String = "getloot"
     override val permission: String = "getloot"
     override val aliases: List<String> = listOf(name, "loot", "gl", "l")
 
-    private val messages by inject<Messages>()
-    private val lootItemsRepo by inject<LootItemsRepo>()
-    private val charmsManager by inject<CharmsManager>()
+    private val messages = injector.getInstance<Messages>()
+    private val lootItemsRepo = injector.getInstance<LootItemsRepo>()
+    private val charmsManager = injector.getInstance<CharmsManager>()
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
         if(strings.size < 2) {

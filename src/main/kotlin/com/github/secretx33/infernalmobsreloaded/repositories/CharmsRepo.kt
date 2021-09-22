@@ -1,13 +1,12 @@
 package com.github.secretx33.infernalmobsreloaded.repositories
 
 import com.cryptomorin.xseries.XPotion
-import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.model.CharmEffect
 import com.github.secretx33.infernalmobsreloaded.model.CharmParticleMode
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.model.PotionEffectApplyMode
-import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
 import com.github.secretx33.infernalmobsreloaded.utils.extension.matchOrNull
+import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
 import com.github.secretx33.infernalmobsreloaded.utils.other.YamlManager
 import com.google.common.collect.ImmutableSetMultimap
 import me.mattstudios.msg.adventure.AdventureMessage
@@ -18,17 +17,13 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffectType
-import toothpick.InjectConstructor
 import java.util.Locale
 import java.util.logging.Logger
-import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 
-@InjectSingleton
 class CharmsRepo (
     plugin: Plugin,
-    private val log: Logger,
     private val adventureMessage: AdventureMessage,
     private val lootItemsRepo: LootItemsRepo,
     private val keyChain: KeyChain,
@@ -36,6 +31,7 @@ class CharmsRepo (
     private val manager = YamlManager(plugin, "charms")
     private var charmsCache = ImmutableSetMultimap.of<String, CharmEffect>()    // lowercase lootItemName, charmEffect
     private var worldWhitelist = emptySet<String>()
+    private val log: Logger = plugin.logger
 
     init { reload() }
 

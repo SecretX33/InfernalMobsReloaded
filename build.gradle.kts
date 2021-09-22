@@ -1,19 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.1.1") {
-            exclude("com.android.tools.build")
-        }
-    }
-}
-
 plugins {
     kotlin("jvm") version "1.5.30"
-    kotlin("kapt") version "1.5.30"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
@@ -48,16 +36,17 @@ dependencies {
     testImplementation("com.github.seeseemelk:MockBukkit-v1.17:1.7.0")
     testImplementation("net.kyori:adventure-api:4.8.1")
     // DI
-    val toothpick_version = "3.1.+"
-    implementation("com.github.stephanenicolas.toothpick:ktp:$toothpick_version")
-    kapt("com.github.stephanenicolas.toothpick:toothpick-compiler:$toothpick_version")
-    testImplementation("com.github.stephanenicolas.toothpick:toothpick-testing-junit5:$toothpick_version")
+    implementation("com.google.inject:guice:5.0.1")
     // Bukkit specific dependencies
     implementation("com.github.cryptomorin:XSeries:8.4.0")
     implementation("me.mattstudios:triumph-msg-adventure:2.2.4-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.5")
     compileOnly("com.github.TownyAdvanced:Towny:0.97.1.0")
+//    compileOnly("org.javassist:javassist:3.28.0-GA")
+    implementation("org.ow2.asm:asm:9.2")
+    implementation("org.ow2.asm:asm-util:9.2")
+
 }
 
 tasks.test {
@@ -88,12 +77,6 @@ tasks.shadowJar {
     exclude("META-INF/**")
 }
 
-tasks.register<proguard.gradle.ProGuardTask>("proguard") {
-    configuration("proguard-rules.pro")
-}
-
-//tasks.build.get().finalizedBy(tasks.getByName("proguard"))
-
 val javaVersion = JavaVersion.VERSION_16.toString()
 
 tasks.withType<JavaCompile> {
@@ -102,7 +85,11 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
-tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = javaVersion }
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = javaVersion
+}
+
+tasks.create("hack")
 
 tasks.processResources {
     val main_class = "${project.group}.${project.name.toLowerCase()}.${project.name}"

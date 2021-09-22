@@ -19,9 +19,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.plugin.Plugin
-import toothpick.InjectConstructor
 
-@InjectConstructor
 class BossBarListener (
     private val plugin: Plugin,
     private val mobsManager: InfernalMobsManager,

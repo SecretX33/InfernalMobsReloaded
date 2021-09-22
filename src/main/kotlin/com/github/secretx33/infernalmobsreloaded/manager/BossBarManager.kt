@@ -1,6 +1,5 @@
 package com.github.secretx33.infernalmobsreloaded.manager
 
-import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.utils.extension.getHealthPercent
@@ -10,7 +9,6 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import java.util.UUID
 
-@InjectSingleton
 class BossBarManager (
     private val config: Config,
     private val mobsManager: InfernalMobsManager,

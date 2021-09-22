@@ -62,9 +62,7 @@ class ZISScanner private constructor(private val classes: Set<Class<*>>) : Scann
         private fun loadClass(loader: ClassLoader, name: String): Class<*>? {
             return try {
                 loader.loadClass(name)
-            } catch (e: ClassNotFoundException) {
-                null
-            } catch (e: NoClassDefFoundError) {
+            } catch (e: Exception) {
                 null
             }
         }

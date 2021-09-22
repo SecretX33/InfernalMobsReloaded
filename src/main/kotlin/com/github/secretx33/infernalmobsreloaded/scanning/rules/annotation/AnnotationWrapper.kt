@@ -9,10 +9,11 @@ class AnnotationWrapper private constructor(
     val annotationInstance: Annotation?
 ) {
     constructor(annotation: Class<out Annotation>) : this(annotation, null)
-
     constructor(annotation: Annotation) : this(null, annotation)
 
     init {
         require(annotationClass != null || annotationInstance != null) { "Both annotation class & instance are null in an AnnotationWrapper." }
     }
+
+
 }

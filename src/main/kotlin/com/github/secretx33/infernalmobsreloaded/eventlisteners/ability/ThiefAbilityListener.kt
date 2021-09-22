@@ -17,9 +17,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
-import toothpick.InjectConstructor
 
-@InjectConstructor
 class ThiefAbilityListener (
     private val plugin: Plugin,
     private val abilityConfig: AbilityConfig,

@@ -19,10 +19,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
-import toothpick.InjectConstructor
 import java.util.UUID
 
-@InjectConstructor
 class FireworkAbilityListener (
     plugin: Plugin,
     private val config: Config,

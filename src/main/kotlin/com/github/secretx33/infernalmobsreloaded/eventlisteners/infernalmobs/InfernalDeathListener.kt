@@ -20,11 +20,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
-import toothpick.InjectConstructor
 import java.util.Random
 import kotlin.math.max
 
-@InjectConstructor
 class InfernalDeathListener (
     plugin: Plugin,
     private val config: Config,

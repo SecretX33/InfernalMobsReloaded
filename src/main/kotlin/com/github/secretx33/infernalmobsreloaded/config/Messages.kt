@@ -1,6 +1,5 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
-import com.github.secretx33.infernalmobsreloaded.annotations.InjectSingleton
 import com.github.secretx33.infernalmobsreloaded.utils.other.YamlManager
 import me.mattstudios.msg.adventure.AdventureMessage
 import net.kyori.adventure.text.Component
@@ -12,7 +11,6 @@ import org.bukkit.plugin.Plugin
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 
-@InjectSingleton
 class Messages(plugin: Plugin, private val adventureMessage: AdventureMessage) {
     private val manager = YamlManager(plugin, "messages")
     private val stringCache = ConcurrentHashMap<MessageKeys, Component>()
