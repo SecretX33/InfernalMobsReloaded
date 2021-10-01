@@ -12,12 +12,12 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.5.30"
+    kotlin("jvm") version "1.5.31"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 group = "com.github.secretx33"
-version = "1.2.1"
+version = "1.2.2"
 
 repositories {
     mavenCentral()
@@ -29,6 +29,7 @@ repositories {
     maven("https://jitpack.io")
     maven("https://maven.enginehub.org/repo/")
     maven("https://repo.mattstudios.me/artifactory/public")
+    maven("https://repo.dustplanet.de/artifactory/libs-release-local")
 }
 
 dependencies {
@@ -57,6 +58,9 @@ dependencies {
     compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.5")
     compileOnly("com.github.TownyAdvanced:Towny:0.97.1.0")
+    compileOnly("de.dustplanet:silkspawners:7.1.0") {
+        exclude(group = "*")
+    }
 }
 
 tasks.test {
