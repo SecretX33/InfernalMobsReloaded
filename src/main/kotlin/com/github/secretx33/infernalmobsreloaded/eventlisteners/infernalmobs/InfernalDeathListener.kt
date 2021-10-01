@@ -37,14 +37,16 @@ class InfernalDeathListener (
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    private fun InfernalDeathEvent.onInfernalDeath() {
+    private fun InfernalDeathEvent.onInfernalPossibleDeath() {
         val lives = entity.getLives()
+        if(lives <= 1) return
         // if entity got more than one life, cancel its death and subtract one life
-        if(lives > 1) {
-            isCancelled = true
-            triggerSecondWind(lives)
-            return
-        }
+        isCancelled = true
+        triggerSecondWind(lives)
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private fun InfernalDeathEvent.onInfernalDeath() {
         mobsManager.triggerOnDeathAbilities(entity)
         mobsManager.unloadInfernalMob(entity)
         bossBarManager.removeBossBar(entity)

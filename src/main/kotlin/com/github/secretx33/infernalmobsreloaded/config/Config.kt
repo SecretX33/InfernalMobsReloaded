@@ -131,6 +131,7 @@ enum class ConfigKeys(val configEntry: String, val defaultValue: Any) {
     LETHAL_POISON_TARGETS("entities-killed-by-poison", KilledByPoison.NONE),
     MOB_TYPES_THAT_CAN_WEAR_ARMOR("mob-types-that-can-wear-armor", emptySet<EntityType>()),
     MOBS_THAT_CAN_BE_RIDED_BY_MOUNTED_INFERNALS("mobs-that-can-be-rided-by-mounted-infernals", emptySet<EntityType>()),
+    SILKSPAWNERS_HANDLES_SPAWNER_DROP("silkspawners-handles-spawner-drop", true),
     TOWNY_REMOVE_INFERNAL_IN_TOWNS("remove-infernal-mobs-in-towns", true),
     TOWNY_REMOVE_INFERNAL_IN_TOWNS_DELAY("remove-infernal-mobs-in-towns-after", 5.0),
     TOWNY_REMOVE_INFERNALS_ONLY_IF_HAS_MOBS_IS_DISABLED("remove-from-towns-only-if-has-mobs-is-disabled", true),
