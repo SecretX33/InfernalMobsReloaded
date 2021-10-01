@@ -24,8 +24,8 @@ import com.github.secretx33.infernalmobsreloaded.utils.extension.displayName
 import com.github.secretx33.infernalmobsreloaded.utils.extension.futureSync
 import com.github.secretx33.infernalmobsreloaded.utils.extension.isAir
 import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
-import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
 import com.github.secretx33.infernalmobsreloaded.utils.extension.random
+import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
 import com.github.secretx33.infernalmobsreloaded.utils.extension.toUuid
 import com.google.common.collect.Sets
 import com.google.gson.Gson

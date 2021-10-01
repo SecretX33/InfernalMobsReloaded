@@ -5,7 +5,7 @@ api-version: 1.17
 authors: [SecretX]
 description: Introduce Infernal Mobs, adding so much to any Survival Multiplayer experience.
 website: https://github.com/SecretX33
-softdepend: [ProtocolLib, Towny, WorldGuard]
+softdepend: [ProtocolLib, SilkSpawners, Towny, WorldGuard]
 
 commands:
   imr:

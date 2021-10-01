@@ -21,6 +21,7 @@ import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.Inf
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalDeathListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalSpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalTargetListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.integration.SpawnerBreakWithSilkSpawnersListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.integration.TownyListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.LethalPoisonListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerMoveListener
@@ -116,6 +117,7 @@ open class InfernalMobsReloaded: JavaPlugin, CustomKoinComponent {
         single { EntityLoadListener(get(), get(), get(), get()) }
         single { EntityUnloadListener(get(), get(), get()) }
         single { InvisibleEntitiesEquipVanisherListener(get(), get(), get()) }
+        single { SpawnerBreakWithSilkSpawnersListener(get(), get(), get(), get()) }
         single { TownyListener(get(), get(), get(), get()) }
         single { Commands(get()) }
         single { Metrics(get(), 11253) }
@@ -154,19 +156,25 @@ open class InfernalMobsReloaded: JavaPlugin, CustomKoinComponent {
         get<BossBarListener>()
         get<LethalPoisonListener>()
         get<PlayerMoveListener>()
-        get<SpawnerBreakListener>()
+        if(silkSpawnerHandlesSpawnerDrops) {
+            logger.info("Enabling SilkSpawners hook.")
+            get<SpawnerBreakWithSilkSpawnersListener>()
+        } else {
+            get<SpawnerBreakListener>()
+        }
         get<SpawnerInteractListener>()
         get<SpawnerPlaceListener>()
         get<SpawnerSpawnListener>()
         get<EntityUnloadListener>()
         get<EntityLoadListener>()
-        get<Commands>()
         if(isProtocolLibEnabled)
+            logger.info("Enabling ProtocolLib hook.")
             get<InvisibleEntitiesEquipVanisherListener>()
         if(isTownyHookEnabled) {
             logger.info("Enabling Towny hook.")
             get<TownyListener>()
         }
+        get<Commands>()
         get<Metrics>()
         get<InfernalMobsManager>().loadAllInfernals()
         get<BossBarManager>().showBarsOfNearbyInfernalsForAllPlayers()
@@ -191,4 +199,7 @@ open class InfernalMobsReloaded: JavaPlugin, CustomKoinComponent {
 
     private val isTownyHookEnabled
         get() = Bukkit.getPluginManager().isPluginEnabled("Towny") && get<Config>().get(ConfigKeys.TOWNY_REMOVE_INFERNAL_IN_TOWNS)
+
+    private val silkSpawnerHandlesSpawnerDrops
+        get() = Bukkit.getPluginManager().isPluginEnabled("SilkSpawners") && get<Config>().get(ConfigKeys.SILKSPAWNERS_HANDLES_SPAWNER_DROP)
 }
