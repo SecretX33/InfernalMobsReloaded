@@ -13,7 +13,7 @@ buildscript {
 
 plugins {
     kotlin("jvm") version "1.5.31"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow")
 }
 
 group = "com.github.secretx33"
@@ -60,6 +60,14 @@ dependencies {
     compileOnly("com.github.TownyAdvanced:Towny:0.97.1.0")
     compileOnly("de.dustplanet:silkspawners:7.1.0") {
         exclude(group = "*")
+    }
+}
+
+tasks.build {
+    doLast {
+        ConstructorAnnotationAsm.patch(projectDir, sourceSets) {
+            it.startsWith("${project.group}.${project.name.toLowerCase()}.")
+        }
     }
 }
 
