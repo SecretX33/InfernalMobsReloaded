@@ -33,9 +33,8 @@ class ReloadCommand : SubCommand(), CustomKoinComponent {
     private val bossBarManager by inject<BossBarManager>()
     private val charmsManager by inject<CharmsManager>()
 
-    override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
+    override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) =
         onCommandByConsole(player, alias, strings)
-    }
 
     override fun onCommandByConsole(sender: CommandSender, alias: String, strings: Array<String>) {
         infernalMobsManager.unloadAllInfernals()
@@ -51,9 +50,5 @@ class ReloadCommand : SubCommand(), CustomKoinComponent {
         bossBarManager.showBarsOfNearbyInfernalsForAllPlayers()
         charmsManager.reload()
         sender.sendMessage(messages.get(MessageKeys.CONFIGS_RELOADED))
-    }
-
-    override fun getCompletor(sender: CommandSender, length: Int, hint: String, strings: Array<String>): List<String> {
-        return emptyList()
     }
 }

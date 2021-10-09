@@ -6,7 +6,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.plugin.Plugin
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
@@ -46,7 +46,8 @@ enum class MessageKeys(val default: Any) {
     INFERNAL_MOB_SPAWN_MESSAGES(""),
     INFERNAL_MOB_TYPE_DOESNT_EXIST("<#FF5555>Sorry, the infernal type <type> <#FF5555>doesn't exist in your <#FFAA00>mobs.yml <#FF5555>file, please type a valid name."),
     INVALID_NUMBER("<#FF5555>Sorry, <#FFAA00><number> <#FF5555>is not a number."),
-    KILLED_ALL_INFERNALS("<#55FF55>Killed all infernals from all worlds."),
+    KILLED_ALL_INFERNALS("<#55FF55>Killed all loaded infernals from all worlds."),
+    KILLED_ALL_INFERNALS_ON_WORLD("<#55FF55>Killed all loaded infernals from world <#FFAA00><world><#55FF55>."),
     LOOT_ITEM_DOESNT_EXIST("<#FF5555>Sorry, loot item named <#FFAA00><item> <#FF5555>doesn't exist."),
     NOT_HOLDING_CHARM("<#FF5555>You are not holding a charm, this command may only be used when holding charms."),
     NOT_TARGETING_INFERNAL("<#FF5555>The entity you're currently targeting is not an Infernal Mob, please target an Infernal Mob and try again."),
@@ -57,6 +58,7 @@ enum class MessageKeys(val default: Any) {
     TARGETING_INFERNAL("<#55FF55>The <#00AA00><entity> <#55FF55>you're currently targeting has the following abilities: <#ffb319><abilities>."),
     THIEF_MESSAGE_TO_TARGET("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item>."),
     THIEF_MESSAGE_TO_TARGET_ITEM_BROKE("<#55FFFF>Woah, beware! <entity> <#55FFFF>stole your <#FFFFFF><item><#55FFFF>, and unfortunately it broke in the process."),
+    WORLD_NOT_FOUND("<#FF5555>World named <#FFAA00><world> <#FF5555>could not be found, please double check if that world exist and is loaded, then try again."),
     YOU_HAVE_BROKEN_YOUR_CHARM("<#55FF55>You just broke your charm <charm>, it'll no longer works!"),
     YOU_DONT_HAVE_PERMISSION_TO_BREAK_CHARMS("<#FF5555>You are holding a working charm, but you don't have permission to break charms!"),
     YOU_HAVE_RESTORED_YOUR_CHARM("<#55FF55>You just restored your charm <charm>, hopefully it'll work again."),
@@ -75,4 +77,4 @@ fun Component.replace(oldText: String, newText: String, color: NamedTextColor) =
 
 fun Component.replace(oldText: String, newText: ComponentLike) = replaceText { it.match(oldText).replacement(newText) }
 
-fun Component.toPlainText() = PlainComponentSerializer.plain().serialize(this)
+fun Component.toPlainText() = PlainTextComponentSerializer.plainText().serialize(this)

@@ -65,6 +65,4 @@ class InspectCommand : SubCommand(), CustomKoinComponent {
     override fun onCommandByConsole(sender: CommandSender, alias: String, strings: Array<String>) {
         sender.sendMessage(messages.get(MessageKeys.CONSOLE_CANNOT_USE))
     }
-
-    override fun getCompletor(sender: CommandSender, length: Int, hint: String, strings: Array<String>): List<String> = emptyList()
 }

@@ -17,7 +17,7 @@ plugins {
 }
 
 group = "com.github.secretx33"
-version = "1.2.2"
+version = "1.2.3"
 
 repositories {
     mavenCentral()
@@ -43,8 +43,6 @@ dependencies {
     testImplementation("org.mockito:mockito-inline:3.12.4")
     testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
     testImplementation("com.github.seeseemelk:MockBukkit-v1.17:1.7.0")
-//    testImplementation("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
-//    testImplementation(fileTree("libs"))
     testImplementation("net.kyori:adventure-api:4.8.1")
     // DI
     val koin_version = "3.1.+"
@@ -55,6 +53,7 @@ dependencies {
     // Bukkit specific dependencies
     implementation("com.github.cryptomorin:XSeries:8.4.0")
     implementation("me.mattstudios:triumph-msg-adventure:2.2.4-SNAPSHOT")
+//    implementation("net.kyori:adventure-text-serializer-plain:4.9.1")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.5")
     compileOnly("com.github.TownyAdvanced:Towny:0.97.1.0")
@@ -74,7 +73,7 @@ tasks.jar { enabled = false }
 artifacts.archives(tasks.shadowJar)
 
 tasks.shadowJar {
-    archiveFileName.set(rootProject.name + ".jar")
+    archiveFileName.set("${rootProject.name}.jar")
     val dependencyPackage = "${rootProject.group}.dependencies.${rootProject.name.toLowerCase()}"
     relocate("com.zaxxer.hikari", "${dependencyPackage}.hikari")
     relocate("okio", ".${dependencyPackage}.moshi.okio")

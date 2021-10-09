@@ -23,7 +23,6 @@ class CharmEffect (
     requiredItems: Set<String>,
     val requiredSlots: Set<Int>,
 ) {
-
     val requiredItems: Set<String> = if(requiredMainHand != null) requiredItems + requiredMainHand else requiredItems
 
     init {
@@ -65,7 +64,7 @@ class CharmEffect (
      * For a given inventory (mapped to itemName, slot), it validates if all items are on the correct slots
      * for the effect to be granted from (or revoked of) the holder
      *
-     * @param inventory Map<Int, String> a list containing all loot items owned, mapped as (lootItemTag <-> slot)
+     * @param inventory Map<String, Int> a list containing all loot items owned, mapped as (lootItemTag <-> slot)
      * @return Boolean if effect can be granted to the holder
      */
     fun validateEffect(inventory: Map<String, Int>, mainHand: String?): Boolean {
@@ -88,10 +87,10 @@ class CharmEffect (
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        return name.equals((other as CharmEffect).name, ignoreCase = true)
+        return name.lowercase(Locale.US) == (other as CharmEffect).name.lowercase(Locale.US)
     }
 
-    override fun hashCode() = name.lowercase(Locale.US).hashCode()
+    override fun hashCode(): Int = name.lowercase(Locale.US).hashCode()
 
     override fun toString(): String = "CharmEffect(name='$name', potionEffect=$potionEffect, potency=$potency, duration=$duration, delay=$delay, effectApplyMode=$effectApplyMode, particle=$particle, particleMode=$particleMode, requiredItems=$requiredItems, requiredSlots=$requiredSlots)"
 }
