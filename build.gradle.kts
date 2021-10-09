@@ -53,7 +53,6 @@ dependencies {
     // Bukkit specific dependencies
     implementation("com.github.cryptomorin:XSeries:8.4.0")
     implementation("me.mattstudios:triumph-msg-adventure:2.2.4-SNAPSHOT")
-//    implementation("net.kyori:adventure-text-serializer-plain:4.9.1")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.5")
     compileOnly("com.github.TownyAdvanced:Towny:0.97.1.0")
