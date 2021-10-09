@@ -40,13 +40,13 @@ class ToggleCharmCommand: SubCommand(), CustomKoinComponent {
             return
         }
 
-        // player dont have permission to break charms
+        // player don't have permission to break charms
         if(intention == Intention.BREAK_BUT_NO_PERMISSION) {
             player.sendMessage(messages.get(MessageKeys.YOU_DONT_HAVE_PERMISSION_TO_BREAK_CHARMS))
             return
         }
 
-        // player dont have permission to restore/fix charms
+        // player don't have permission to restore/fix charms
         if(intention == Intention.RESTORE_BUT_NO_PERMISSION) {
             player.sendMessage(messages.get(MessageKeys.YOU_DONT_HAVE_PERMISSION_TO_RESTORE_CHARMS))
             return
@@ -116,9 +116,6 @@ class ToggleCharmCommand: SubCommand(), CustomKoinComponent {
     override fun onCommandByConsole(sender: CommandSender, alias: String, strings: Array<String>) {
         sender.sendMessage(messages.get(MessageKeys.CONSOLE_CANNOT_USE))
     }
-
-    override fun getCompletor(sender: CommandSender, length: Int, hint: String, strings: Array<String>): List<String>
-        = emptyList()
 
     private enum class Intention {
         BREAK, RESTORE, NOT_A_CHARM, BREAK_BUT_NO_PERMISSION, RESTORE_BUT_NO_PERMISSION
