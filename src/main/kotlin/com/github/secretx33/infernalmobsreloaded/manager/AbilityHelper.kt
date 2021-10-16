@@ -53,6 +53,7 @@ import org.bukkit.entity.Arrow
 import org.bukkit.entity.Bat
 import org.bukkit.entity.Bee
 import org.bukkit.entity.ComplexLivingEntity
+import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Fireball
 import org.bukkit.entity.Firework
@@ -502,7 +503,7 @@ class AbilityHelper (
 
         while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
-            if(random.nextDouble() > chance) continue
+            if(random.nextDouble() > chance || !entity.isWithinDistance(40.0, target)) continue
 
             val world = entity.world
             val dest = target.location.apply {
@@ -521,6 +522,8 @@ class AbilityHelper (
             world.playSound(target.location, Sound.ENTITY_ENDERMAN_TELEPORT, 0.85f, random.nextFloat() * 0.8f + 0.7f)
         }
     }
+
+    private fun Entity.isWithinDistance(distance: Double, other: Entity): Boolean = world.uid == other.world.uid && location.distance(other.location) < distance
 
     private fun makeThiefTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         // if thief ability should affect only players and target is not one, return
