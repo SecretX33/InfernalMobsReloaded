@@ -1,35 +1,24 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.1.1") {
-            exclude("com.android.tools.build")
-        }
-    }
-}
-
 plugins {
     kotlin("jvm") version "1.5.31"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 group = "com.github.secretx33"
-version = "1.2.3"
+version = "1.2.4"
 
 repositories {
     mavenCentral()
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://papermc.io/repo/repository/maven-public/")
     maven("https://oss.sonatype.org/content/groups/public/")
     maven("https://repo.codemc.org/repository/maven-public/")
-    maven("https://papermc.io/repo/repository/maven-public/")
     maven("https://plugins.gradle.org/m2/")
-    maven("https://jitpack.io")
     maven("https://maven.enginehub.org/repo/")
     maven("https://repo.mattstudios.me/artifactory/public")
     maven("https://repo.dustplanet.de/artifactory/libs-release-local")
+    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -89,28 +78,21 @@ tasks.shadowJar {
     exclude("META-INF/**")
 }
 
-tasks.register<proguard.gradle.ProGuardTask>("proguard") {
-    configuration("proguard-rules.pro")
-}
-
-//tasks.build.get().finalizedBy(tasks.getByName("proguard"))
-
-val javaVersion = JavaVersion.VERSION_16.toString()
-
 tasks.withType<JavaCompile> {
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
+    sourceCompatibility = "16"
+    targetCompatibility = "16"
     options.encoding = "UTF-8"
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=all")
-        jvmTarget = javaVersion
+        jvmTarget = "16"
     }
 }
 
 tasks.processResources {
+    outputs.upToDateWhen { false }
     val main_class = "${project.group}.${project.name.toLowerCase()}.${project.name}"
     expand("name" to project.name, "version" to project.version, "mainClass" to main_class)
 }
