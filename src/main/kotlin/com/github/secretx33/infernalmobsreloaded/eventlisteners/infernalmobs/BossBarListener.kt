@@ -5,10 +5,6 @@ import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.utils.extension.getHealthPercent
 import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
@@ -47,18 +43,12 @@ class BossBarListener(
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerTeleportEvent.onPlayerTeleport() {
-        CoroutineScope(Dispatchers.Default).launch {
-            delay(50L)
-            runSync(plugin) { bossBarManager.showBarOfNearbyInfernals(player) }
-        }
+        runSync(plugin, 50L) { bossBarManager.showBarOfNearbyInfernals(player) }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerChangedWorldEvent.onPlayerSwitchWorld() {
-        CoroutineScope(Dispatchers.Default).launch {
-            delay(150L)
-            runSync(plugin) { bossBarManager.showBarOfNearbyInfernals(player) }
-        }
+        runSync(plugin, 150L) { bossBarManager.showBarOfNearbyInfernals(player) }
     }
 
     private fun LivingEntity.isInfernalMob() = mobsManager.isValidInfernalMob(this)
