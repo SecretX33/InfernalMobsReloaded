@@ -11,9 +11,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.SpawnerSpawnEvent
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 
-class SpawnerSpawnListener (
+class SpawnerSpawnListener(
     plugin: Plugin,
     private val infernalMobTypeRepo: InfernalMobTypesRepo,
     private val keyChain: KeyChain,
@@ -30,5 +31,5 @@ class SpawnerSpawnListener (
         InfernalSpawnEvent(entity, infernoType).callEvent()
     }
 
-    private fun CreatureSpawner.getSpawnerCategory() = pdc.get(keyChain.spawnerCategoryKey, org.bukkit.persistence.PersistentDataType.STRING)
+    private fun CreatureSpawner.getSpawnerCategory() = pdc.get(keyChain.spawnerCategoryKey, PersistentDataType.STRING)
 }

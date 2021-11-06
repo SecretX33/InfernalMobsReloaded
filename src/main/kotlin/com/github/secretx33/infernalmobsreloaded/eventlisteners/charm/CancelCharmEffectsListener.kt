@@ -15,7 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.plugin.Plugin
 
-class CancelCharmEffectsListener (
+class CancelCharmEffectsListener(
     private val plugin: Plugin,
     private val charmsManager: CharmsManager,
 ) : Listener {
@@ -24,7 +24,7 @@ class CancelCharmEffectsListener (
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerJoinEvent.onPlayerJoin() {
-        if(!player.isOnCharmEnabledWorld()) return
+        if (!player.isOnCharmEnabledWorld()) return
         player.updateCharmEffects()
     }
 
@@ -46,7 +46,7 @@ class CancelCharmEffectsListener (
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerChangedWorldEvent.onWorldChange() {
         runSync(plugin, 50L) {
-            if(player.isOnCharmEnabledWorld()) player.updateCharmEffects()
+            if (player.isOnCharmEnabledWorld()) player.updateCharmEffects()
             else player.cancelCharmEffects()
         }
     }
@@ -54,7 +54,7 @@ class CancelCharmEffectsListener (
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerTeleportEvent.onPlayerTeleport() {
         runSync(plugin, 50L) {
-            if(player.isOnCharmEnabledWorld()) player.updateCharmEffects()
+            if (player.isOnCharmEnabledWorld()) player.updateCharmEffects()
             else player.cancelCharmEffects()
         }
     }
@@ -63,5 +63,5 @@ class CancelCharmEffectsListener (
 
     private fun Player.cancelCharmEffects() = charmsManager.cancelAllCharmTasks(this)
 
-    private fun Player.isOnCharmEnabledWorld() = charmsManager.areCharmsAllowedOnWorld(world)
+    private fun Player.isOnCharmEnabledWorld(): Boolean = charmsManager.areCharmsAllowedOnWorld(world)
 }

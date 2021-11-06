@@ -10,7 +10,6 @@ import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.manager.ParticlesHelper
 import com.github.secretx33.infernalmobsreloaded.model.Ability
-import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.utils.extension.turnIntoSpawner
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -23,15 +22,13 @@ import org.bukkit.plugin.Plugin
 import java.util.Random
 import kotlin.math.max
 
-
-class InfernalDeathListener (
+class InfernalDeathListener(
     plugin: Plugin,
     private val config: Config,
     private val messages: Messages,
     private val particlesHelper: ParticlesHelper,
     private val mobsManager: InfernalMobsManager,
     private val bossBarManager: BossBarManager,
-    private val keyChain: KeyChain,
 ) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
@@ -39,7 +36,7 @@ class InfernalDeathListener (
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun InfernalDeathEvent.onInfernalPossibleDeath() {
         val lives = entity.getLives()
-        if(lives <= 1) return
+        if (lives <= 1) return
         // if entity got more than one life, cancel its death and subtract one life
         isCancelled = true
         triggerSecondWind(lives)
@@ -70,13 +67,13 @@ class InfernalDeathListener (
     }
 
     private fun InfernalDeathEvent.dropMobSpawner() {
-        if(!dropSpawners || random.nextDouble() > infernalType.mobSpawnerDropChance) return
+        if (!dropSpawners || random.nextDouble() > infernalType.mobSpawnerDropChance) return
         val spawner = ItemStack(Material.SPAWNER).turnIntoSpawner(infernalType)
         world.dropItemNaturally(entity.location, spawner)
     }
 
     private fun InfernalDeathEvent.sendDeathMessage() {
-        if(!deathMessageEnabled) return
+        if (!deathMessageEnabled) return
         val player = entity.killer ?: return
         val msg = deathMessages.randomOrNull()?.replace("<player>", player.displayName()) ?: return
         val range = max(0, messageRange).toDouble()

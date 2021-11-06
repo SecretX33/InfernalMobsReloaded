@@ -11,7 +11,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
 
-class EntityUnloadListener (
+class EntityUnloadListener(
     plugin: Plugin,
     private val mobsManager: InfernalMobsManager,
     private val barManager: BossBarManager,
@@ -22,7 +22,7 @@ class EntityUnloadListener (
     @EventHandler(priority = EventPriority.MONITOR)
     private fun EntityRemoveFromWorldEvent.onInfernalMobsDespawn() {
         // when infernal mob gets removed from the world
-        if(!entity.isInfernalMob()) return
+        if (!entity.isInfernalMob()) return
         mobsManager.unloadInfernalMob(entity as LivingEntity)
         barManager.removeBossBar(entity as LivingEntity)
     }

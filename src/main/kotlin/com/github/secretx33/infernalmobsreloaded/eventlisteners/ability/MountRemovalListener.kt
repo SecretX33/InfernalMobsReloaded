@@ -18,7 +18,7 @@ class MountRemovalListener(plugin: Plugin, private val keyChain: KeyChain) : Lis
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun EntityDeathEvent.onMountedMobDeath() {
         val mount = entity.vehicle as? LivingEntity ?: return
-        if(!mount.isBatMount()) return
+        if (!mount.isBatMount()) return
         mount.remove()  // despawn bat mount (flying ability) if the rider dies
     }
 

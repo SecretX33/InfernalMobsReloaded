@@ -1,6 +1,5 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner
 
-import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
@@ -15,9 +14,8 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 
-class SpawnerInteractListener (
+class SpawnerInteractListener(
     plugin: Plugin,
-    private val config: Config,
     private val infernalMobTypeRepo: InfernalMobTypesRepo,
     private val keyChain: KeyChain,
 ) : Listener {
@@ -26,17 +24,16 @@ class SpawnerInteractListener (
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun PlayerInteractEvent.onInfernalSpawnerInteract() {
-        if(!isRightClickSpawner()) return
+        if (!isRightClickSpawner()) return
 
-        val block = clickedBlock ?: return
-        val spawnerState = block.state as CreatureSpawner
+        val spawnerState = clickedBlock?.state as? CreatureSpawner ?: return
         // get spawner category, or return if none
         val spawnerType = spawnerState.getSpawnerCategory() ?: return
 
         // prevent any change of the type of this spawner using egg
         isCancelled = true
         // if spawner is from a removed type
-        if(!infernalMobTypeRepo.isValidInfernalType(spawnerType)) {
+        if (!infernalMobTypeRepo.isValidInfernalType(spawnerType)) {
             spawnerState.pdc.remove(keyChain.spawnerCategoryKey)
             spawnerState.update(true, true)
             return

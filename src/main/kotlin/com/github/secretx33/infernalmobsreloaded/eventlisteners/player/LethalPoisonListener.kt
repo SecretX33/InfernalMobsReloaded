@@ -23,7 +23,7 @@ import org.bukkit.potion.PotionEffectType
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
-class LethalPoisonListener (
+class LethalPoisonListener(
     private val plugin: Plugin,
     private val config: Config,
 ) : Listener {
@@ -34,7 +34,7 @@ class LethalPoisonListener (
 
     @EventHandler
     private fun EntityDamageEvent.onPoisonTick() {
-        if(isNotPoison() || lethalPoisonDisabled) return
+        if (isNotPoison() || lethalPoisonDisabled) return
 
         val entity = entity as? LivingEntity ?: return
         val killedBy = killedByPoison
@@ -55,7 +55,7 @@ class LethalPoisonListener (
         val poison = getAffectedPoison() ?: return
 
         // If lethal tick is already scheduled
-        if(uniqueId in scheduledLethalTicks) return
+        if (uniqueId in scheduledLethalTicks) return
 
         // add entity to the lethal ticks schedule
         scheduledLethalTicks.add(uniqueId)
@@ -63,7 +63,7 @@ class LethalPoisonListener (
         CoroutineScope(Dispatchers.Default).launch {
             delay(poison.getTickDelay())
             // if entity is not poisoned anymore, or has its health above the threshold, don't do anything
-            if(isDead || !isValid || !isPoisoned() || uniqueId !in scheduledLethalTicks || health > (MIN_HP_VALUE_TO_DIE_OF_POISON + 0.5)) {
+            if (isDead || !isValid || !isPoisoned() || uniqueId !in scheduledLethalTicks || health > (MIN_HP_VALUE_TO_DIE_OF_POISON + 0.5)) {
                 scheduledLethalTicks.remove(uniqueId)
                 return@launch
             }
@@ -71,9 +71,10 @@ class LethalPoisonListener (
         }
     }
 
-    private fun LivingEntity.getAffectedPoison(): PotionEffect? = activePotionEffects.firstOrNull { it.type == PotionEffectType.POISON }
+    private fun LivingEntity.getAffectedPoison(): PotionEffect? =
+        activePotionEffects.firstOrNull { it.type == PotionEffectType.POISON }
 
-    private fun LivingEntity.isPoisoned() = getAffectedPoison() != null
+    private fun LivingEntity.isPoisoned(): Boolean = getAffectedPoison() != null
 
     private fun PotionEffect.getTickDelay(): Long {
         var delay = 500.0 // delay in milliseconds
@@ -86,7 +87,7 @@ class LethalPoisonListener (
 
     @EventHandler
     private fun PlayerQuitEvent.onPlayerQuit() {
-        if(lethalPoisonDisabled || player.uniqueId !in scheduledLethalTicks) return
+        if (lethalPoisonDisabled || player.uniqueId !in scheduledLethalTicks) return
         // If player tries to logs off and he is on the scheduledLethalTicks, he's low hp and probably logging off to avoid dying poisoned, so he'll be killed to prevent this exploit
         player.killByPoison()
     }
@@ -94,17 +95,17 @@ class LethalPoisonListener (
     private fun LivingEntity.killByPoison() {
         runSync(plugin) {
             val event = EntityDamageEvent(this, DamageCause.POISON, 100_000.0)
-            if(!event.callEvent()) return@runSync
+            if (!event.callEvent()) return@runSync
             lastDamageCause = event
             damage(event.finalDamage)
             scheduledLethalTicks.remove(uniqueId)
         }
     }
 
-    private val killedByPoison
-        get() = config.getEnum<KilledByPoison>(ConfigKeys.LETHAL_POISON_TARGETS)
+    private val killedByPoison: KilledByPoison
+        get() = config.getEnum(ConfigKeys.LETHAL_POISON_TARGETS)
 
-    private val lethalPoisonDisabled
+    private val lethalPoisonDisabled: Boolean
         get() = killedByPoison == KilledByPoison.NONE
 
     private companion object {

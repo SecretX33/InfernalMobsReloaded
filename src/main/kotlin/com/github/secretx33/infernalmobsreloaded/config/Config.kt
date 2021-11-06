@@ -77,6 +77,9 @@ class Config(plugin: Plugin, private val log: Logger) {
         } as T
     }
 
+    inline fun <reified T : Enum<T>> getEnumSet(key: ConfigKeys, predicate: Predicate<T>? = null): Set<T>
+        = getEnumSet(key, T::class.java, predicate)
+
     @Suppress("UNCHECKED_CAST")
     fun <T : Enum<T>> getEnumSet(key: ConfigKeys, clazz: Class<out Enum<T>>, predicate: Predicate<T>? = null): Set<T> {
         return cache.getOrPut(key.configEntry) {

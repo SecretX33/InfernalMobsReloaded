@@ -21,7 +21,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 import java.util.UUID
 
-class FireworkAbilityListener (
+class FireworkAbilityListener(
     plugin: Plugin,
     private val config: Config,
     private val abilityConfig: AbilityConfig,
@@ -32,11 +32,11 @@ class FireworkAbilityListener (
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     private fun EntityDamageByEntityEvent.fireworkDamagingOwner() {
-        if(!isFireworkDamagingLivingEntity() || !cannotDamageItself) return
+        if (!isFireworkDamagingLivingEntity() || !cannotDamageItself) return
 
         val ownerUuid = damager.pdc.get(keyChain.fireworkOwnerUuidKey, PersistentDataType.STRING)?.toUuid() ?: return
         // if the firework was not fired by the damaged entity (or its rider), return
-        if(!entity.isOwnerOrMountUuid(ownerUuid)) return
+        if (!entity.isOwnerOrMountUuid(ownerUuid)) return
         // prevent the infernal mob, owner of that firework, from damaging itself or its mount
         isCancelled = true
         damage = 0.0
@@ -45,20 +45,24 @@ class FireworkAbilityListener (
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun EntityDamageByEntityEvent.onFireworkExplosion() {
         // it's not a firework or the firework was not fired by an infernal
-        if(!isFireworkDamagingLivingEntity() || !damager.wasFiredByInfernal()) return
+        if (!isFireworkDamagingLivingEntity() || !damager.wasFiredByInfernal()) return
 
         // multiply the damage caused by fireworks
         damage *= fireworkDmgMulti
     }
 
-    private val fireworkDmgMulti
+    private val fireworkDmgMulti: Double
         get() = abilityConfig.getDoublePair(AbilityConfigKeys.FIREWORK_DAMAGE_MULTIPLIER).random()
 
-    private fun Entity.wasFiredByInfernal() = pdc.has(keyChain.fireworkOwnerUuidKey, PersistentDataType.STRING)
+    private fun Entity.wasFiredByInfernal(): Boolean = pdc.has(keyChain.fireworkOwnerUuidKey, PersistentDataType.STRING)
 
-    private fun EntityDamageByEntityEvent.isFireworkDamagingLivingEntity() = damager.type == EntityType.FIREWORK && cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION && entity is LivingEntity
+    private fun EntityDamageByEntityEvent.isFireworkDamagingLivingEntity(): Boolean =
+        damager.type == EntityType.FIREWORK
+                && cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION
+                && entity is LivingEntity
 
-    private fun Entity.isOwnerOrMountUuid(uuid: UUID) = uniqueId == uuid || passengers.any { it.uniqueId == uuid }
+    private fun Entity.isOwnerOrMountUuid(uuid: UUID): Boolean =
+        uniqueId == uuid || passengers.any { it.uniqueId == uuid }
 
     private val cannotDamageItself
         get() = config.get<Boolean>(ConfigKeys.INFERNALS_CANNOT_DAMAGE_THEMSELVES)

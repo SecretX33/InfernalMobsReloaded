@@ -18,7 +18,7 @@ import org.bukkit.inventory.meta.Damageable
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 
-class ThiefAbilityListener (
+class ThiefAbilityListener(
     private val plugin: Plugin,
     private val abilityConfig: AbilityConfig,
     private val keyChain: KeyChain,
@@ -28,11 +28,11 @@ class ThiefAbilityListener (
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun EntityPickupItemEvent.onStolenItemPickup() {
-        val item = item.itemStack
-        if(!item.isStolenItem()) return
+        val item = item.itemStack.takeIf { it.isStolenItem() }
+            ?: return
 
         // entity picking up the item is human, no further action necessary
-        if(entityType == EntityType.PLAYER) {
+        if (entityType == EntityType.PLAYER) {
             item.removeStolenTag()
             return
         }
@@ -48,12 +48,11 @@ class ThiefAbilityListener (
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private fun EntityDeathEvent.onEntityDeathEvent() {
         // players don't need to have theirs drops parsed, since they'll never have stolen items
-        if(entityType == EntityType.PLAYER) return
+        if (entityType == EntityType.PLAYER) return
         // restore the durability that the items had before they were stolen
         drops.asSequence().withIndex()
             .filter { it.value?.isStolenItem() == true }
-            .forEach { (index, item) ->
-                drops[index] = item.restoreDurability().removeStolenTag() }
+            .forEach { (index, item) -> drops[index] = item.restoreDurability().removeStolenTag() }
     }
 
     private fun ItemStack?.isStolenItem() = this != null && itemMeta?.pdc?.has(keyChain.stolenItemByThiefKey, PersistentDataType.SHORT) == true
@@ -76,6 +75,6 @@ class ThiefAbilityListener (
         return this
     }
 
-    private val stolenItemDropChance
+    private val stolenItemDropChance: Float
         get() = abilityConfig.getDouble(AbilityConfigKeys.THIEF_DROP_STOLEN_ITEM_CHANCE, maxValue = 1.0).toFloat()
 }

@@ -8,7 +8,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
 
-class InfernalDamageDoneListener (
+class InfernalDamageDoneListener(
     plugin: Plugin,
     private val mobsManager: InfernalMobsManager,
 ) : Listener {

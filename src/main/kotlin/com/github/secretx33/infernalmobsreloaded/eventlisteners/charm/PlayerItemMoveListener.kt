@@ -18,7 +18,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.plugin.Plugin
 
-class PlayerItemMoveListener (
+class PlayerItemMoveListener(
     private val plugin: Plugin,
     private val charmsManager: CharmsManager,
 ) : Listener {
@@ -30,7 +30,7 @@ class PlayerItemMoveListener (
         val player = whoClicked as? Player ?: return
         val topInvSize = view.topInventory.size.takeIf { view.topInventory != view.bottomInventory } ?: 0
         // player didn't drag any items inside his inventory
-        if(rawSlots.all { it < topInvSize }) return
+        if (rawSlots.all { it < topInvSize }) return
         // update charm tasks
         runSync(plugin, 50L) { player.updateCharmEffects() }
     }
@@ -38,13 +38,15 @@ class PlayerItemMoveListener (
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun InventoryClickEvent.onItemMove() {
 //        println("clickedInventory.type = ${clickedInventory?.type}, action = $action, inventory.type = ${inventory.type}")
-        if(didNothing()) return
+        if (didNothing()) return
         val player = whoClicked as? Player ?: return
         // update charm tasks
         runSync(plugin, 50L) { player.updateCharmEffects() }
     }
 
-    private fun InventoryClickEvent.didNothing() = clickedInventory == null || clickedInventory?.type != InventoryType.PLAYER || action == InventoryAction.NOTHING
+    private fun InventoryClickEvent.didNothing() = clickedInventory == null
+            || clickedInventory?.type != InventoryType.PLAYER
+            || action == InventoryAction.NOTHING
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerDropItemEvent.onItemDrop() {

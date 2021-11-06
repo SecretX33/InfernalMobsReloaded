@@ -16,10 +16,10 @@ class EntityDeathListener(plugin: Plugin, private val mobsManager: InfernalMobsM
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun EntityDeathEvent.onEntityDeath() {
-        if(!entity.isInfernalMob()) return
+        if (!entity.isInfernalMob()) return
         val infernalType = mobsManager.getInfernalTypeOrNull(entity) ?: return
         val event = InfernalDeathEvent(entity, infernalType)
-        if(!event.callEvent()) isCancelled = true
+        if (!event.callEvent()) isCancelled = true
     }
 
     private fun LivingEntity.isInfernalMob() = mobsManager.isValidInfernalMob(this)

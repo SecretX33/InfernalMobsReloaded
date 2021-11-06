@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 
-class SpawnerPlaceListener (
+class SpawnerPlaceListener(
     plugin: Plugin,
     private val infernalMobTypeRepo: InfernalMobTypesRepo,
     private val keyChain: KeyChain,
@@ -24,7 +24,7 @@ class SpawnerPlaceListener (
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun BlockPlaceEvent.infernalSpawnerPlace() {
-        if(blockPlaced.type != Material.SPAWNER) return
+        if (blockPlaced.type != Material.SPAWNER) return
 
         val category = itemInHand.getSpawnerCategory() ?: return
         val infernalType = infernalMobTypeRepo.getInfernalTypeOrNull(category) ?: return
@@ -36,6 +36,6 @@ class SpawnerPlaceListener (
         }
     }
 
-    private fun ItemStack.getSpawnerCategory() = itemMeta.pdc.get(keyChain.spawnerCategoryKey, org.bukkit.persistence.PersistentDataType.STRING)
+    private fun ItemStack.getSpawnerCategory() = itemMeta.pdc.get(keyChain.spawnerCategoryKey, PersistentDataType.STRING)
 }
 

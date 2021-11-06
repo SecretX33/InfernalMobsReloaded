@@ -1,4 +1,4 @@
-package com.github.secretx33.infernalmobsreloaded.eventlisteners.integration
+package com.github.secretx33.infernalmobsreloaded.eventlisteners.hook
 
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
@@ -9,13 +9,11 @@ import com.github.secretx33.infernalmobsreloaded.utils.extension.turnIntoSpawner
 import de.dustplanet.silkspawners.events.SilkSpawnersSpawnerBreakEvent
 import de.dustplanet.util.SilkUtil
 import org.bukkit.Bukkit
-import org.bukkit.GameMode
 import org.bukkit.block.CreatureSpawner
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
-import java.util.EnumSet
 
 class SpawnerBreakWithSilkSpawnersListener(
     plugin: Plugin,
@@ -37,15 +35,8 @@ class SpawnerBreakWithSilkSpawnersListener(
         drop = spawnerItemStack.turnIntoSpawner(infernalType)
     }
 
-    private val dropSpawners
-        get() = config.get<Boolean>(ConfigKeys.ENABLE_SPAWNER_DROPS)
+    private val dropSpawners: Boolean
+        get() = config.get(ConfigKeys.ENABLE_SPAWNER_DROPS)
 
     private fun CreatureSpawner.getSpawnerCategory() = pdc.get(keyChain.spawnerCategoryKey, org.bukkit.persistence.PersistentDataType.STRING)
-
-    private companion object {
-        /**
-         * What gamemodes the player can be in that are allowed to drop infernal mob spawners.
-         */
-        val allowedGameModes: Set<GameMode> = EnumSet.of(GameMode.SURVIVAL, GameMode.ADVENTURE)
-    }
 }

@@ -22,7 +22,7 @@ import org.bukkit.plugin.Plugin
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-class LightningAbilityListener (
+class LightningAbilityListener(
     plugin: Plugin,
     private val config: Config,
     private val abilityConfig: AbilityConfig,
@@ -39,11 +39,11 @@ class LightningAbilityListener (
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     private fun EntityDamageByEntityEvent.lightningDamagingOwner() {
-        if(!isLightningDamagingLivingEntity() || !cannotDamageItself) return
+        if (!isLightningDamagingLivingEntity() || !cannotDamageItself) return
 
         val ownerUuid = strikeLocations.asMap().entries.firstOrNull { it.key.isAt(damager.location) }?.value ?: return
         // if the lightning was not fired by the damaged entity (or its rider), return
-        if(!entity.isOwnerOrMountUuid(ownerUuid)) return
+        if (!entity.isOwnerOrMountUuid(ownerUuid)) return
         // prevent the infernal mob, owner of that lightning, from damaging itself or its mount
         isCancelled = true
         damage = 0.0
@@ -51,11 +51,11 @@ class LightningAbilityListener (
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     private fun EntityCombustByEntityEvent.lightningCombustingOwner() {
-        if(!isLightningDamagingLivingEntity() || !combuster.isInfernalLightning()) return
+        if (!isLightningDamagingLivingEntity() || !combuster.isInfernalLightning()) return
 
         val ownerUuid = strikeLocations.asMap().entries.firstOrNull { it.key.isAt(combuster.location) }?.value ?: return
         // if the lightning was not fired by the damaged entity (or its rider), return
-        if(!entity.isOwnerOrMountUuid(ownerUuid)) return
+        if (!entity.isOwnerOrMountUuid(ownerUuid)) return
         // prevent the infernal mob, owner of that lightning, from combusting itself or its mount
         isCancelled = true
         duration = 0
@@ -63,7 +63,7 @@ class LightningAbilityListener (
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun EntityDamageByEntityEvent.lightningDamageIncrease() {
-        if(!isLightningDamagingLivingEntity() || !damager.isInfernalLightning()) return
+        if (!isLightningDamagingLivingEntity() || !damager.isInfernalLightning()) return
 
         // multiply the damage caused by lightnings
         damage *= lightningDmgMulti
@@ -71,25 +71,31 @@ class LightningAbilityListener (
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun EntityCombustByEntityEvent.lightningCombustionEvent() {
-        if(!isLightningDamagingLivingEntity() || !combuster.isInfernalLightning()) return
+        if (!isLightningDamagingLivingEntity() || !combuster.isInfernalLightning()) return
 
         // multiply the damage caused by lightnings
         duration = (duration.toDouble() * lightningDmgMulti).toInt()
     }
 
-    private val lightningDmgMulti
+    private val lightningDmgMulti: Double
         get() = abilityConfig.getDoublePair(AbilityConfigKeys.LIGHTNING_DAMAGE_MULTIPLIER).random()
 
-    private fun Entity.isInfernalLightning() = strikeLocations.asMap().entries.firstOrNull { it.key.isAt(location) }?.value != null
+    private fun Entity.isInfernalLightning(): Boolean =
+        strikeLocations.asMap().entries.firstOrNull { it.key.isAt(location) }?.value != null
 
-    private fun Location.isAt(other: Location) = x == other.x && y == other.y && z == other.z && world.uid == other.world.uid
+    private fun Location.isAt(other: Location): Boolean =
+        x == other.x && y == other.y && z == other.z && world.uid == other.world.uid
 
-    private fun Entity.isOwnerOrMountUuid(uuid: UUID) = uniqueId == uuid || passengers.any { it.uniqueId == uuid }
+    private fun Entity.isOwnerOrMountUuid(uuid: UUID): Boolean = uniqueId == uuid || passengers.any { it.uniqueId == uuid }
 
-    private fun EntityDamageByEntityEvent.isLightningDamagingLivingEntity() = damager.type == EntityType.LIGHTNING && cause == EntityDamageEvent.DamageCause.LIGHTNING && entity is LivingEntity
+    private fun EntityDamageByEntityEvent.isLightningDamagingLivingEntity(): Boolean =
+        damager.type == EntityType.LIGHTNING
+                && cause == EntityDamageEvent.DamageCause.LIGHTNING
+                && entity is LivingEntity
 
-    private fun EntityCombustByEntityEvent.isLightningDamagingLivingEntity() = combuster.type == EntityType.LIGHTNING && entity is LivingEntity
+    private fun EntityCombustByEntityEvent.isLightningDamagingLivingEntity(): Boolean =
+        combuster.type == EntityType.LIGHTNING && entity is LivingEntity
 
-    private val cannotDamageItself
-        get() = config.get<Boolean>(ConfigKeys.INFERNALS_CANNOT_DAMAGE_THEMSELVES)
+    private val cannotDamageItself: Boolean
+        get() = config.get(ConfigKeys.INFERNALS_CANNOT_DAMAGE_THEMSELVES)
 }

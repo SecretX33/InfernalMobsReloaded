@@ -6,6 +6,7 @@ import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -30,7 +31,7 @@ class InfernalSpawnListener (
     }
 
     private fun InfernalSpawnEvent.sendSpawnMessage() {
-        if(!spawnMessageEnabled) return
+        if (!spawnMessageEnabled) return
         val msg = spawnMessages.randomOrNull() ?: return
         val range = max(0, messageRange).toDouble()
         entity.getNearbyEntities(range, range, range).forEach {
@@ -38,7 +39,7 @@ class InfernalSpawnListener (
         }
     }
 
-    private val spawnMessageEnabled get() = config.get<Boolean>(ConfigKeys.ENABLE_INFERNAL_SPAWN_MESSAGE)
-    private val spawnMessages get() = messages.getList(MessageKeys.INFERNAL_MOB_SPAWN_MESSAGES)
-    private val messageRange get() = config.get<Int>(ConfigKeys.INFERNAL_SPAWN_MESSAGE_RADIUS)
+    private val spawnMessageEnabled: Boolean get() = config.get(ConfigKeys.ENABLE_INFERNAL_SPAWN_MESSAGE)
+    private val spawnMessages: List<Component> get() = messages.getList(MessageKeys.INFERNAL_MOB_SPAWN_MESSAGES)
+    private val messageRange: Int get() = config.get(ConfigKeys.INFERNAL_SPAWN_MESSAGE_RADIUS)
 }

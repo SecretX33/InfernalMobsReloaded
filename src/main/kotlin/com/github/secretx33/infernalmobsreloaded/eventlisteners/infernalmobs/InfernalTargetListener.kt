@@ -2,7 +2,6 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs
 
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import org.bukkit.Bukkit
-import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -19,12 +18,11 @@ class InfernalTargetListener(
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun EntityTargetLivingEntityEvent.onInfernalTarget() {
-        if (!entity.isInfernalMob()) return
-        val entity = entity as LivingEntity
+        val entity = (entity as? LivingEntity)?.takeIf { it.isInfernalMob() } ?: return
         mobsManager.cancelAbilityTasks(entity)
         val target = target ?: return
         mobsManager.startTargetAbilityTasks(entity, target)
     }
 
-    private fun Entity.isInfernalMob(): Boolean = this is LivingEntity && mobsManager.isValidInfernalMob(this)
+    private fun LivingEntity.isInfernalMob(): Boolean = mobsManager.isValidInfernalMob(this)
 }

@@ -15,14 +15,14 @@ import com.github.secretx33.infernalmobsreloaded.eventlisteners.charm.PlayerItem
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDamageEntityListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntityDeathListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.entity.EntitySpawnListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.hook.SpawnerBreakWithSilkSpawnersListener
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.hook.TownyListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.BossBarListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalDamageDoneListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalDamageTakenListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalDeathListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalSpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.infernalmobs.InfernalTargetListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.integration.SpawnerBreakWithSilkSpawnersListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.integration.TownyListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.LethalPoisonListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.player.PlayerMoveListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerBreakListener
@@ -105,13 +105,13 @@ open class InfernalMobsReloaded: JavaPlugin, CustomKoinComponent {
         single { BossBarListener(get(), get(), get()) }
         single { InfernalDamageDoneListener(get(), get()) }
         single { InfernalDamageTakenListener(get(), get()) }
-        single { InfernalDeathListener(get(), get(), get(), get(), get(), get(), get()) }
+        single { InfernalDeathListener(get(), get(), get(), get(), get(), get()) }
         single { InfernalSpawnListener(get(), get(), get(), get()) }
         single { InfernalTargetListener(get(), get()) }
         single { LethalPoisonListener(get(), get()) }
         single { PlayerMoveListener(get(), get(), get()) }
         single { SpawnerBreakListener(get(), get(), get(), get()) }
-        single { SpawnerInteractListener(get(), get(), get(), get()) }
+        single { SpawnerInteractListener(get(), get(), get()) }
         single { SpawnerPlaceListener(get(), get(), get()) }
         single { SpawnerSpawnListener(get(), get(), get()) }
         single { EntityLoadListener(get(), get(), get(), get()) }

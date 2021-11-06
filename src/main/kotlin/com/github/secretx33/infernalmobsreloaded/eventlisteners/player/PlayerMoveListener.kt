@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.plugin.Plugin
 
 // to update the boss bars
-class PlayerMoveListener (
+class PlayerMoveListener(
     plugin: Plugin,
     private val config: Config,
     private val bossBarManager: BossBarManager,
@@ -22,13 +22,14 @@ class PlayerMoveListener (
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerMoveEvent.whenPlayerMoves() {
-        if(!bossBarEnabled || !player.world.isWhitelisted()) return
+        if (!bossBarEnabled || !player.world.isWhitelisted()) return
         bossBarManager.showBarOfNearbyInfernals(player)
     }
 
-    private fun World.isWhitelisted() = validWorlds.let { worlds -> worlds.contains("<ALL>") || worlds.any { it.equals(name, ignoreCase = true) } }
+    private fun World.isWhitelisted(): Boolean =
+        validWorlds.let { worlds -> "<ALL>" in worlds || worlds.any { it.equals(name, ignoreCase = true) } }
 
-    private val validWorlds get() = config.get<List<String>>(ConfigKeys.INFERNAL_ALLOWED_WORLDS)
+    private val validWorlds: List<String> get() = config.get(ConfigKeys.INFERNAL_ALLOWED_WORLDS)
 
-    private val bossBarEnabled get() = config.get<Boolean>(ConfigKeys.ENABLE_BOSS_BARS)
+    private val bossBarEnabled: Boolean get() = config.get(ConfigKeys.ENABLE_BOSS_BARS)
 }

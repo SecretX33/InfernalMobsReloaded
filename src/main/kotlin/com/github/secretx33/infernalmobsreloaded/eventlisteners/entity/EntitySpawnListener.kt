@@ -23,7 +23,7 @@ class EntitySpawnListener (
     private val config: Config,
     private val infernalManager: InfernalMobsManager,
     private val infernalTypesRepo: InfernalMobTypesRepo,
-): Listener {
+) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
@@ -37,19 +37,21 @@ class EntitySpawnListener (
         Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(entity, infernalType, spawnReason))
     }
 
-    private fun LivingEntity.cannotBeInfernal() = !infernalTypesRepo.canTypeBecomeInfernal(type) || (this is Ageable && !isAdult && blacklistedBabies.contains(type)) || infernalManager.isMountOfAnotherInfernal(this)
+    private fun LivingEntity.cannotBeInfernal(): Boolean = !infernalTypesRepo.canTypeBecomeInfernal(type)
+            || (this is Ageable && !isAdult && blacklistedBabies.contains(type))
+            || infernalManager.isMountOfAnotherInfernal(this)
 
-    private fun LivingEntity.alreadyIsInfernal() = infernalManager.isPossibleInfernalMob(this)
+    private fun LivingEntity.alreadyIsInfernal(): Boolean = infernalManager.isPossibleInfernalMob(this)
 
-    private fun SpawnReason.isAllowed() = validReasons.contains(this)
+    private fun SpawnReason.isAllowed(): Boolean = this in validReasons
 
-    private fun World.isWhitelisted() = validWorlds.let { worlds -> worlds.contains("<ALL>") || worlds.any { it.equals(name, ignoreCase = true) } }
+    private fun World.isWhitelisted(): Boolean = validWorlds.let { worlds -> "<ALL>" in worlds || worlds.any { it.equals(name, ignoreCase = true) } }
 
-    private val validWorlds get() = config.get<List<String>>(ConfigKeys.INFERNAL_ALLOWED_WORLDS)
+    private val validWorlds: List<String> get() = config.get(ConfigKeys.INFERNAL_ALLOWED_WORLDS)
 
-    private val validReasons get() = config.getEnumSet(ConfigKeys.INFERNAL_ALLOWED_SPAWN_REASONS, SpawnReason::class.java)
+    private val validReasons get() = config.getEnumSet<SpawnReason>(ConfigKeys.INFERNAL_ALLOWED_SPAWN_REASONS)
 
-    private val blacklistedBabies get() = config.getEnumSet(ConfigKeys.INFERNAL_BLACKLISTED_BABY_MOBS, EntityType::class.java)
+    private val blacklistedBabies get() = config.getEnumSet<EntityType>(ConfigKeys.INFERNAL_BLACKLISTED_BABY_MOBS)
 
     private companion object {
         val random = Random()

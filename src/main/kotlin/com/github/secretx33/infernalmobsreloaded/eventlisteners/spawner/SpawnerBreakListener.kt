@@ -14,9 +14,10 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 
-class SpawnerBreakListener (
+class SpawnerBreakListener(
     plugin: Plugin,
     private val config: Config,
     private val infernalMobTypeRepo: InfernalMobTypesRepo,
@@ -27,7 +28,7 @@ class SpawnerBreakListener (
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun BlockBreakEvent.infernalSpawnerBreak() {
-        if(block.type != Material.SPAWNER || !dropSpawners) return
+        if (block.type != Material.SPAWNER || !dropSpawners) return
         val spawner = block.state as CreatureSpawner
 
         val spawnerType = spawner.getSpawnerCategory() ?: return
@@ -42,5 +43,6 @@ class SpawnerBreakListener (
     private val dropSpawners
         get() = config.get<Boolean>(ConfigKeys.ENABLE_SPAWNER_DROPS)
 
-    private fun CreatureSpawner.getSpawnerCategory() = pdc.get(keyChain.spawnerCategoryKey, org.bukkit.persistence.PersistentDataType.STRING)
+    private fun CreatureSpawner.getSpawnerCategory() =
+        pdc.get(keyChain.spawnerCategoryKey, PersistentDataType.STRING)
 }

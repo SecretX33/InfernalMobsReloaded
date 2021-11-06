@@ -10,7 +10,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.plugin.Plugin
 
-class PlayerDamageCharmListener  (
+class PlayerDamageCharmListener(
     plugin: Plugin,
     private val charmsManager: CharmsManager,
 ) : Listener {
@@ -22,9 +22,9 @@ class PlayerDamageCharmListener  (
         val player = damager as? Player ?: return
         val target = entity as? LivingEntity ?: return
 
-        if(!player.isOnCharmEnabledWorld()) return
+        if (!player.isOnCharmEnabledWorld()) return
         charmsManager.triggerOnHitCharms(player, target)
     }
 
-    private fun Player.isOnCharmEnabledWorld() = charmsManager.areCharmsAllowedOnWorld(world)
+    private fun Player.isOnCharmEnabledWorld(): Boolean = charmsManager.areCharmsAllowedOnWorld(world)
 }
