@@ -29,7 +29,7 @@ class TownyListener (
     private val config: Config,
     private val mobsManager: InfernalMobsManager,
     private val bossBarManager: BossBarManager,
-): Listener {
+) : Listener {
 
     private val removalDelay = (config.get<Double>(ConfigKeys.TOWNY_REMOVE_INFERNAL_IN_TOWNS_DELAY) * 1000.0).toLong().coerceAtLeast(0)
 

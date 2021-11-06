@@ -26,7 +26,7 @@ class FireworkAbilityListener (
     private val config: Config,
     private val abilityConfig: AbilityConfig,
     private val keyChain: KeyChain,
-): Listener {
+) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 

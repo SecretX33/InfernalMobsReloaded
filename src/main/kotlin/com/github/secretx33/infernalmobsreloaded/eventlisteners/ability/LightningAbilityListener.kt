@@ -26,7 +26,7 @@ class LightningAbilityListener (
     plugin: Plugin,
     private val config: Config,
     private val abilityConfig: AbilityConfig,
-): Listener {
+) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 

@@ -18,7 +18,7 @@ class EntityLoadListener(
     private val config: Config,
     private val mobsManager: InfernalMobsManager,
     private val bossBarManager: BossBarManager,
-): Listener {
+) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 

@@ -18,7 +18,7 @@ class EntityDamageEntityListener (
     plugin: Plugin,
     private val config: Config,
     private val mobsManager: InfernalMobsManager,
-): Listener {
+) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 

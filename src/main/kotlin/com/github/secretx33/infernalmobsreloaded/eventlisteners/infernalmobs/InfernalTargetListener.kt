@@ -10,21 +10,21 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent
 import org.bukkit.plugin.Plugin
 
-class InfernalTargetListener  (
+class InfernalTargetListener(
     plugin: Plugin,
     private val mobsManager: InfernalMobsManager,
-): Listener {
+) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun EntityTargetLivingEntityEvent.onInfernalTarget() {
-        if(!entity.isInfernalMob()) return
+        if (!entity.isInfernalMob()) return
         val entity = entity as LivingEntity
         mobsManager.cancelAbilityTasks(entity)
         val target = target ?: return
         mobsManager.startTargetAbilityTasks(entity, target)
     }
 
-    private fun Entity.isInfernalMob() = this is LivingEntity && mobsManager.isValidInfernalMob(this)
+    private fun Entity.isInfernalMob(): Boolean = this is LivingEntity && mobsManager.isValidInfernalMob(this)
 }

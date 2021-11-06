@@ -20,18 +20,18 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.plugin.Plugin
 
-class BossBarListener (
+class BossBarListener(
     private val plugin: Plugin,
     private val mobsManager: InfernalMobsManager,
     private val bossBarManager: BossBarManager,
-): Listener {
+) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun EntityDamageEvent.updateBossBarHealth() {
         val entity = entity
-        if(entity !is LivingEntity || !entity.isInfernalMob()) return
+        if (entity !is LivingEntity || !entity.isInfernalMob()) return
         bossBarManager.updateBossBar(entity, entity.getHealthPercent(finalDamage))
     }
 

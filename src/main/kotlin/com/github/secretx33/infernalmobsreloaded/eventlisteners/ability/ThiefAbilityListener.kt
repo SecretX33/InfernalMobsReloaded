@@ -22,7 +22,7 @@ class ThiefAbilityListener (
     private val plugin: Plugin,
     private val abilityConfig: AbilityConfig,
     private val keyChain: KeyChain,
-): Listener {
+) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 

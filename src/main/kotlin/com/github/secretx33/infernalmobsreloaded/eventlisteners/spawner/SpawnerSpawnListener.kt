@@ -17,7 +17,7 @@ class SpawnerSpawnListener (
     plugin: Plugin,
     private val infernalMobTypeRepo: InfernalMobTypesRepo,
     private val keyChain: KeyChain,
-): Listener {
+) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 

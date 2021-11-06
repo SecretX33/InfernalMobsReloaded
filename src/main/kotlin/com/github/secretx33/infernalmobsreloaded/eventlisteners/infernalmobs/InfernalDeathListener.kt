@@ -32,7 +32,7 @@ class InfernalDeathListener (
     private val mobsManager: InfernalMobsManager,
     private val bossBarManager: BossBarManager,
     private val keyChain: KeyChain,
-): Listener {
+) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 

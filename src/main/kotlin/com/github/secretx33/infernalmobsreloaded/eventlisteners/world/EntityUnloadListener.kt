@@ -15,7 +15,7 @@ class EntityUnloadListener (
     plugin: Plugin,
     private val mobsManager: InfernalMobsManager,
     private val barManager: BossBarManager,
-): Listener {
+) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 

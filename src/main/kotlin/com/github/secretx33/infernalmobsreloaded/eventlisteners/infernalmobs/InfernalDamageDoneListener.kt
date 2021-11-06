@@ -11,7 +11,7 @@ import org.bukkit.plugin.Plugin
 class InfernalDamageDoneListener (
     plugin: Plugin,
     private val mobsManager: InfernalMobsManager,
-): Listener {
+) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 

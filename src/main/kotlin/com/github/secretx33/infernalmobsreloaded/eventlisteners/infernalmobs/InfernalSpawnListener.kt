@@ -18,7 +18,7 @@ class InfernalSpawnListener (
     private val config: Config,
     private val messages: Messages,
     private val mobsManager: InfernalMobsManager,
-): Listener {
+) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 

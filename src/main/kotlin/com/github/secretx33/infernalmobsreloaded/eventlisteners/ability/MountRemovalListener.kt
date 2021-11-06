@@ -11,7 +11,7 @@ import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 
-class MountRemovalListener(plugin: Plugin, private val keyChain: KeyChain): Listener {
+class MountRemovalListener(plugin: Plugin, private val keyChain: KeyChain) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 

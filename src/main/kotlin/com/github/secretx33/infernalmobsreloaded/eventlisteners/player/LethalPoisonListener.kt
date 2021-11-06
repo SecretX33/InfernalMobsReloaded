@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap
 class LethalPoisonListener (
     private val plugin: Plugin,
     private val config: Config,
-): Listener {
+) : Listener {
 
     init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
