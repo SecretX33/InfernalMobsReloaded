@@ -5,7 +5,6 @@ import me.mattstudios.msg.adventure.AdventureMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.plugin.Plugin
 import java.util.Locale
@@ -66,8 +65,6 @@ enum class MessageKeys(val default: Any) {
 
     val configEntry = name.lowercase(Locale.US).replace('_','-')
 }
-
-fun String.toComponent(r: Int, g: Int, b: Int) = Component.text(this, TextColor.color(r, g, b))
 
 fun String.toComponent(color: NamedTextColor? = null) = if(color == null) Component.text(this) else Component.text(this, color)
 

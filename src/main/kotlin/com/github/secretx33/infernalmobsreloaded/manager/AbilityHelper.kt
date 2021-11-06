@@ -13,6 +13,7 @@ import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageTakenEvent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalHealedEvent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalLightningStrike
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
+import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardChecker
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.BlockModification
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
@@ -548,7 +549,7 @@ class AbilityHelper (
 
             // set air in that slot, removing the item from player's inventory
             equip.setItem(chosenSlot, ItemStack(Material.AIR))
-            // drop the stolen item in the thief's feet if its not broken
+            // drop the stolen item in the thief's feet if it's not broken
             if(!damagedItem.isAir()) runSync(plugin) { entity.world.dropItem(entity.location, damagedItem) }
 
             (target as? Player)?.apply {

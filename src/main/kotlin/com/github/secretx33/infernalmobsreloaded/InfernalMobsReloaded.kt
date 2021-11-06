@@ -36,9 +36,9 @@ import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.manager.ParticlesHelper
-import com.github.secretx33.infernalmobsreloaded.manager.WorldGuardChecker
-import com.github.secretx33.infernalmobsreloaded.manager.WorldGuardCheckerDummy
-import com.github.secretx33.infernalmobsreloaded.manager.WorldGuardCheckerImpl
+import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardChecker
+import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardCheckerDummy
+import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardCheckerImpl
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.packetlisteners.InvisibleEntitiesEquipVanisherListener
 import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo

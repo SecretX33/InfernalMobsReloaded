@@ -9,10 +9,8 @@ import com.github.secretx33.infernalmobsreloaded.utils.other.inject
 import kotlinx.coroutines.delay
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
-import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
@@ -47,10 +45,12 @@ fun ItemMeta.markWithInfernalTag(itemName: String): ItemMeta {
     return this
 }
 
-fun Player.getTarget(range: Int): LivingEntity? = (world.rayTraceEntities(eyeLocation, eyeLocation.direction, range.toDouble()) { it is LivingEntity && type != EntityType.ENDER_DRAGON && it.uniqueId != uniqueId }?.hitEntity as? LivingEntity)?.takeIf { hasLineOfSight(it) }
+fun Player.getTarget(range: Int): LivingEntity? = (world.rayTraceEntities(eyeLocation, eyeLocation.direction, range.toDouble()) { it is LivingEntity && type != EntityType.ENDER_DRAGON && it.uniqueId != uniqueId }
+    ?.hitEntity as? LivingEntity)
+    ?.takeIf { hasLineOfSight(it) }
 
 fun runSync(plugin: Plugin, delay: Long = 0L, runnable: Runnable) {
-    if(delay < 0) return
+    if(delay < 0L) return
     if(delay == 0L) Bukkit.getScheduler().runTask(plugin, runnable)
     else Bukkit.getScheduler().runTaskLater(plugin, runnable, delay / 50L)
 }
@@ -64,15 +64,9 @@ suspend fun <T> Future<T>.await(): T {
     return get()
 }
 
-fun Block.isAir() = type.isAir
-
 fun ItemStack.isAir() = type.isAir
 
-fun Location.formattedString(): String = "Location(world=${world?.name ?: "Unknown"}, x=${x.toLong()}, y=${y.toLong()}, z=${z.toLong()})"
-
 fun Material.formattedTypeName(): String = name.replace('_', ' ').capitalizeFully()
-
-fun Block.formattedTypeName(): String = type.formattedTypeName()
 
 fun ItemStack.formattedTypeName(): String = type.formattedTypeName()
 
@@ -86,16 +80,13 @@ fun Entity.formattedTypeName(): String = type.formattedTypeName()
 val Entity.displayName: Component
     get() = customName() ?: type.formattedTypeName().toComponent()
 
-fun Player.isInventoryFull() = inventory.firstEmpty() == -1
-
 val PersistentDataHolder.pdc
     get() = persistentDataContainer
 
 fun LivingEntity.getHealthPercent(damageTaken: Double = 0.0) = getAttribute(Attribute.GENERIC_MAX_HEALTH)?.let { (health - damageTaken).coerceAtLeast(0.0) / it.value }?.toFloat() ?: 1f
 
-fun LivingEntity.getValidNearbyEntities(range: Double) = location.getNearbyLivingEntities(range) { !it.isDead && it.isValid }
-
+@Suppress("UselessCallOnCollection")
 val EntityEquipment.contents get() = EquipmentSlot.values().mapNotNull { getItem(it) }.filter { !it.isAir() }
 
-@Suppress("UNNECESSARY_SAFE_CALL")
+@Suppress("UNNECESSARY_SAFE_CALL", "UselessCallOnCollection")
 val EntityEquipment.contentsMap get() = EquipmentSlot.values().mapNotNull { slot -> getItem(slot)?.let { slot to it } }.filter { !it.second.isAir() }.toMap()

@@ -1,4 +1,4 @@
-package com.github.secretx33.infernalmobsreloaded.manager
+package com.github.secretx33.infernalmobsreloaded.manager.hook
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldguard.WorldGuard

@@ -30,7 +30,7 @@ class CharmsRepo (
     private val keyChain: KeyChain,
 ) {
     private val manager = YamlManager(plugin, "charms")
-    private var charmsCache = ImmutableSetMultimap.of<String, CharmEffect>()    // lowercase lootItemName, charmEffect
+    private var charmsCache = ImmutableSetMultimap.of<String, CharmEffect>()   // lowercase lootItemName, charmEffect
     private var worldWhitelist = emptySet<String>()
 
     init { reload() }
@@ -41,7 +41,7 @@ class CharmsRepo (
         loadWorldWhitelist()
     }
 
-    fun areCharmsAllowedOnWorld(world: World): Boolean = worldWhitelist.contains("<all>") || worldWhitelist.contains(world.name.lowercase(Locale.US))
+    fun areCharmsAllowedOnWorld(world: World): Boolean = "<all>" in worldWhitelist || world.name.lowercase(Locale.US) in worldWhitelist
 
     fun getCharmEffectsOrNull(name: String): Set<CharmEffect>? = charmsCache[name.lowercase(Locale.US)]
 
@@ -126,7 +126,6 @@ class CharmsRepo (
             PotionEffectType.LUCK
         }
     }
-
 
     private fun getEffectApplyMode(name: String, key: String): PotionEffectApplyMode {
         val applyMode = manager.getString("charm-effects.$name.$key") ?: ""

@@ -14,7 +14,7 @@ class WrapperPlayServerEntityEquipment : AbstractPacket {
         handle.modifier.writeDefaults()
     }
 
-    constructor(packet: PacketContainer) : super(packet, TYPE) {}
+    constructor(packet: PacketContainer) : super(packet, TYPE)
 
     var entityID: Int
         /**
