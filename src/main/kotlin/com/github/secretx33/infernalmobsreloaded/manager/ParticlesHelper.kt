@@ -34,12 +34,15 @@ class ParticlesHelper(private val config: Config) {
     fun sendParticle(entity: LivingEntity, ability: Ability) {
         CoroutineScope(Dispatchers.Default).launch {
             when(ability) {
-                Ability.SECOND_WIND -> XParticle.circle(entity.width * 1.2, entity.width * 1.5, 0.5, 1.0, 2.0, ParticleDisplay(Particle.TOTEM, entity.location, 20, defaultOffsetVector))
-                Ability.THORNMAIL -> XParticle.filledCircle(1.0, 0.5, 0.5, ParticleDisplay(Particle.WARPED_SPORE, entity.location.add(0.0, entity.height * 0.5, 0.0), 100, defaultOffsetVector))
+                Ability.SECOND_WIND -> XParticle.circle(entity.width * 1.2, entity.width * 1.5, 0.5, 1.0, 2.0, particleDisplay(Particle.TOTEM, entity.location, 20, defaultOffsetVector))
+                Ability.THORNMAIL -> XParticle.filledCircle(1.0, 0.5, 0.5, particleDisplay(Particle.WARPED_SPORE, entity.location.add(0.0, entity.height * 0.5, 0.0), 100, defaultOffsetVector))
                 else -> {}
             }
         }
     }
+
+    private fun particleDisplay(particle: Particle, location: Location?, count: Int, offset: Vector): ParticleDisplay =
+        ParticleDisplay.simple(location, particle).withCount(count).offset(offset)
 
     private val globalEffectsEnabled
         get() = config.get<Boolean>(ConfigKeys.ENABLE_GLOBAL_PARTICLE_EFFECTS)

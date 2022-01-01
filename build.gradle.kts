@@ -1,12 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.31"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    kotlin("jvm") version "1.6.10"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "com.github.secretx33"
-version = "1.2.4"
+version = "1.2.5"
 
 repositories {
     mavenCentral()
@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
     // Kotlin
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.+")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
     // Unit Testing
     testImplementation(kotlin("test-junit5"))
     testImplementation(kotlin("reflect"))
@@ -31,16 +31,15 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
     testImplementation("org.mockito:mockito-inline:3.12.4")
     testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
-    testImplementation("com.github.seeseemelk:MockBukkit-v1.17:1.7.0")
-    testImplementation("net.kyori:adventure-api:4.8.1")
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.18:1.15.0")
+    testImplementation("net.kyori:adventure-api:4.9.3")
     // DI
     val koin_version = "3.1.+"
     implementation("io.insert-koin:koin-core:$koin_version")
     // API dependency
-    compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT") // Paper API dependency
-    compileOnly(fileTree("libs"))     // Paper server dependency
+    compileOnly("io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT")
     // Bukkit specific dependencies
-    implementation("com.github.cryptomorin:XSeries:8.4.0")
+    implementation("com.github.cryptomorin:XSeries:8.5.0.1")
     implementation("me.mattstudios:triumph-msg-adventure:2.2.4-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.5")
@@ -79,15 +78,15 @@ tasks.shadowJar {
 }
 
 tasks.withType<JavaCompile> {
-    sourceCompatibility = "16"
-    targetCompatibility = "16"
+    sourceCompatibility = "17"
+    targetCompatibility = "17"
     options.encoding = "UTF-8"
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=all")
-        jvmTarget = "16"
+        jvmTarget = "17"
     }
 }
 
