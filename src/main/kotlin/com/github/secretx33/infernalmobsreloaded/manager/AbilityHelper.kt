@@ -135,7 +135,7 @@ class AbilityHelper (
     }
 
     private fun LivingEntity.addArmouredAbility() {
-        if(equipWithArmor()) return
+        if (equipWithArmor()) return
         // fallback to potion effect if entity cannot wear armor
         addArmouredPotionEffect()
     }
@@ -149,7 +149,7 @@ class AbilityHelper (
      * @return Boolean returns true if entity was successfully equipped with armor
      */
     private fun LivingEntity.equipWithArmor(): Boolean {
-        if(!canWearArmor()) return false
+        if (!canWearArmor()) return false
         val equip = equipment ?: return false
         val dropChance = abilityConfig.getDouble(AbilityConfigKeys.ARMOURED_ARMOR_DROP_CHANCE).toFloat()
 
@@ -193,7 +193,7 @@ class AbilityHelper (
 
     private fun LivingEntity.addInvisibleAbility() {
         addPermanentPotion(PotionEffectType.INVISIBILITY, Ability.INVISIBLE)
-        if(invisibleMakesNoSound) isSilent = true
+        if (invisibleMakesNoSound) isSilent = true
     }
 
     private val invisibleMakesNoSound: Boolean
@@ -204,12 +204,12 @@ class AbilityHelper (
     private fun LivingEntity.addMountedAbility() {
         vehicle?.apply {
             removePassenger(this)
-            if(passengers.isEmpty()) remove()
+            if (passengers.isEmpty()) remove()
         }
         val mounts = rideableMounts
 
         // if player emptied the mount list, do not mount the entity
-        if(mounts.isEmpty()) return
+        if (mounts.isEmpty()) return
         // get a random mount entity class
         val mountClass = mounts.random().entityClass ?: return
         // spawn it, applying the necessary changes
@@ -218,8 +218,11 @@ class AbilityHelper (
         mount.addPassenger(this)
     }
 
-    private val rideableMounts
-        get() = config.getEnumSet(ConfigKeys.MOBS_THAT_CAN_BE_RIDED_BY_MOUNTED_INFERNALS, EntityType::class.java) { it != null && it.isSpawnable && !ComplexLivingEntity::class.java.isAssignableFrom(it.entityClass as Class<*>) && LivingEntity::class.java.isAssignableFrom(it.entityClass as Class<*>) }
+    private val rideableMounts: Set<EntityType>
+        get() = config.getEnumSet(ConfigKeys.MOBS_THAT_CAN_BE_RIDED_BY_MOUNTED_INFERNALS) { it != null
+                && it.isSpawnable
+                && !ComplexLivingEntity::class.java.isAssignableFrom(it.entityClass as Class<*>)
+                && LivingEntity::class.java.isAssignableFrom(it.entityClass as Class<*>) }
 
     private fun LivingEntity.turnIntoMount(tag: NamespacedKey, enablePotionParticles: Boolean = true) {
         // if entity that will be turned into a mount spawns mounted on something, remove that mount
@@ -232,7 +235,7 @@ class AbilityHelper (
         (this as? Tameable)?.isTamed = true
         (this as? Colorable)?.color = DyeColor.values().random()
 
-        if(type == EntityType.HORSE) {
+        if (type == EntityType.HORSE) {
             (this as Horse).apply {
                 color = Horse.Color.values().random()
                 style = Horse.Style.values().random()
@@ -251,7 +254,7 @@ class AbilityHelper (
     }
 
     private fun LivingEntity.addSpeedyAbility() {
-        val movSpeed = (if(doesFly()) getAttribute(Attribute.GENERIC_FLYING_SPEED) else getAttribute(Attribute.GENERIC_MOVEMENT_SPEED))
+        val movSpeed = (if (doesFly()) getAttribute(Attribute.GENERIC_FLYING_SPEED) else getAttribute(Attribute.GENERIC_MOVEMENT_SPEED))
             ?: return
         val speedBonus = abilityConfig.getDoublePair(AbilityConfigKeys.SPEEDY_BONUS).random()
         val mod = AttributeModifier(movSpeedUID, Ability.SPEEDY.name, speedBonus, AttributeModifier.Operation.ADD_SCALAR)
@@ -260,7 +263,7 @@ class AbilityHelper (
     }
 
     private fun LivingEntity.addThiefAbility() {
-        if(!canWearArmor()) return
+        if (!canWearArmor()) return
         canPickupItems = true
     }
 
@@ -298,13 +301,13 @@ class AbilityHelper (
 
         while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
-            if(random.nextDouble() > chance) continue
+            if (random.nextDouble() > chance) continue
             val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).random()
             val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
 
             for (i in 1..amount) {
                 victims.forEach {
-                    if(!isActive || entity.isNotTargeting(target)) return@launch
+                    if (!isActive || entity.isNotTargeting(target)) return@launch
                     val dir = entity.shootDirection(it).normalize().add(Vector(0.0, 0.14, 0.0)).multiply(speed)
                     entity.shootProjectile(dir, Arrow::class.java)
                 }
@@ -319,7 +322,7 @@ class AbilityHelper (
 
         while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
-            if(random.nextDouble() > chance) continue
+            if (random.nextDouble() > chance) continue
             val amount = abilityConfig.getIntAmounts(Ability.CALL_THE_GANG, 2).random()
             val potency = abilityConfig.getAbilityPotency(Ability.CALL_THE_GANG, 3).random()
             val potionDuration = abilityConfig.getDuration(Ability.CALL_THE_GANG, 8.0).random()
@@ -345,7 +348,7 @@ class AbilityHelper (
 
         while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
-            if(random.nextDouble() > chance) continue
+            if (random.nextDouble() > chance) continue
 
             val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
             victims.forEach {
@@ -361,7 +364,7 @@ class AbilityHelper (
 
         while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
-            if(random.nextDouble() > chance) continue
+            if (random.nextDouble() > chance) continue
             val newType = infernalMobTypesRepo.getRandomInfernalType(entity)
             val keepHpPercent = abilityConfig.get<Boolean>(AbilityConfigKeys.MORPH_KEEP_HP_PERCENTAGE)
 
@@ -373,8 +376,7 @@ class AbilityHelper (
                     if (it !is Mob) return@spawn
 
                     EntityTargetLivingEntityEvent(it, target, TargetReason.REINFORCEMENT_TARGET).let { event ->
-                        Bukkit.getPluginManager().callEvent(event)
-                        if (!event.isCancelled) it.attack(target)
+                        if (event.callEvent()) it.attack(target)
                     }
                 }
                 entity.remove()
@@ -390,7 +392,7 @@ class AbilityHelper (
         val items = equip.contentsMap.filter { it.value.isStolen() }
 
         // if entity cannot wear armor, just drop the items nearby
-        if(!canWearArmor() || newEquip == null) {
+        if (!canWearArmor() || newEquip == null) {
             items.values.forEach { oldEntity.world.dropItem(oldEntity.location, it) }
             return
         }
@@ -411,13 +413,13 @@ class AbilityHelper (
 
         while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
-            if(random.nextDouble() > chance) continue
+            if (random.nextDouble() > chance) continue
             val amount = abilityConfig.getIntPair(AbilityConfigKeys.MULTI_GHASTLY_FIREBALL_AMOUNT, minValue = 1).random()
             val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
 
             for (i in 1..amount) {
                 victims.forEach {
-                    if(!isActive || entity.isNotTargeting(target)) return@launch
+                    if (!isActive || entity.isNotTargeting(target)) return@launch
                     val dir = entity.shootDirection(it).multiply(speed)
                     entity.shootProjectile(dir, Fireball::class.java)
                 }
@@ -434,7 +436,7 @@ class AbilityHelper (
 
         while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
-            if(random.nextDouble() > chance) continue
+            if (random.nextDouble() > chance) continue
 
             val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
             victims.forEach {
@@ -451,7 +453,7 @@ class AbilityHelper (
 
         while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
-            if(random.nextDouble() > chance) continue
+            if (random.nextDouble() > chance) continue
             val amount = abilityConfig.getIntAmounts(Ability.POTIONS, 1, minValue = 1).random()
             val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
 
@@ -488,7 +490,7 @@ class AbilityHelper (
     }
 
     private val randomPotionMaterial
-        get() = if(random.nextDouble() <= 0.75) Material.LINGERING_POTION else Material.SPLASH_POTION
+        get() = if (random.nextDouble() <= 0.75) Material.LINGERING_POTION else Material.SPLASH_POTION
 
     private fun ItemStack.modifyPotion(potionType: PotionEffectType, duration: Double, amplifier: Int): ItemStack {
         require(type == Material.LINGERING_POTION || type == Material.SPLASH_POTION) { "ItemStack used as this for function modifyPotion needs to be lingering or splash potion, and $type is not" }
@@ -504,7 +506,7 @@ class AbilityHelper (
 
         while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
-            if(random.nextDouble() > chance || !entity.isWithinDistance(40.0, target)) continue
+            if (random.nextDouble() > chance || !entity.isWithinDistance(40.0, target)) continue
 
             val world = entity.world
             val dest = target.location.apply {
@@ -513,7 +515,7 @@ class AbilityHelper (
                 z += random.nextDouble() * 2 - 1
             }
             // if the block that the entity will teleport at won't make it suffocate
-            if(world.getBlockAt(dest).isPassable && (entity.height <= 1 || world.getBlockAt(dest.clone().apply { y += 1 }).isPassable)) {
+            if (world.getBlockAt(dest).isPassable && (entity.height <= 1 || world.getBlockAt(dest.clone().apply { y += 1 }).isPassable)) {
                 entity.teleportAsync(dest)
                 world.playSound(dest, Sound.ENTITY_ENDERMAN_TELEPORT, 0.85f, random.nextFloat() * 0.8f + 0.7f)
                 continue
@@ -529,7 +531,7 @@ class AbilityHelper (
     private fun makeThiefTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
         // if thief ability should affect only players and target is not one, return
         val affectOnlyPlayers = abilityConfig.getAffectsOnlyPlayers(Ability.THIEF, true)
-        if(affectOnlyPlayers && target.type != EntityType.PLAYER || target.equipment == null) return@launch
+        if (affectOnlyPlayers && target.type != EntityType.PLAYER || target.equipment == null) return@launch
 
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.THIEF, 3.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.THIEF, 0.05)
@@ -538,7 +540,7 @@ class AbilityHelper (
 
         while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
-            if(random.nextDouble() > chance || (requireLoS && !entity.hasLineOfSight(target))) continue
+            if (random.nextDouble() > chance || (requireLoS && !entity.hasLineOfSight(target))) continue
 
             val equip = target.equipment ?: return@launch
             // slot chosen to have its equipment stolen, skipping this interaction if there's none (and yeah EntityEquipment#getItem returns null even if its annotated with @NonNull)
@@ -550,13 +552,13 @@ class AbilityHelper (
             // set air in that slot, removing the item from player's inventory
             equip.setItem(chosenSlot, ItemStack(Material.AIR))
             // drop the stolen item in the thief's feet if it's not broken
-            if(!damagedItem.isAir()) runSync(plugin) { entity.world.dropItem(entity.location, damagedItem) }
+            if (!damagedItem.isAir()) runSync(plugin) { entity.world.dropItem(entity.location, damagedItem) }
 
             (target as? Player)?.apply {
                 updateInventory()
                 // send message to player warning the fact, if this option is enabled
-                if(!sendMessage) return@apply
-                val message = if(!damagedItem.isAir()) messages.get(MessageKeys.THIEF_MESSAGE_TO_TARGET) else messages.get(MessageKeys.THIEF_MESSAGE_TO_TARGET_ITEM_BROKE)
+                if (!sendMessage) return@apply
+                val message = if (!damagedItem.isAir()) messages.get(MessageKeys.THIEF_MESSAGE_TO_TARGET) else messages.get(MessageKeys.THIEF_MESSAGE_TO_TARGET_ITEM_BROKE)
                 target.sendMessage(message
                     .replace("<entity>", entity.displayName)
                     .replace("<item>", item.displayName))
@@ -565,7 +567,7 @@ class AbilityHelper (
     }
 
     private fun ItemStack.markAsStolen(): ItemStack {
-        if(isAir()) return this
+        if (isAir()) return this
         itemMeta?.let { meta ->
             meta.pdc.apply {
                 set(keyChain.stolenItemByThiefKey, PersistentDataType.SHORT, 1)
@@ -587,17 +589,17 @@ class AbilityHelper (
 
         while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
-            if(random.nextDouble() > chance || (requireLoS && !entity.hasLineOfSight(target))) continue
+            if (random.nextDouble() > chance || (requireLoS && !entity.hasLineOfSight(target))) continue
 
             val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
 
             // toss victim and all nearby entities
             victims.forEach {
                 val x = 1.3 * abilityConfig.getDistanceMultiplier(Ability.TOSSER) * (random.nextDouble() * 2 - 1)
-                val y = 0.75 * abilityConfig.getHeightMultiplier(Ability.TOSSER) + (abilityConfig.getHeightMultiplier(Ability.TOSSER) * random.nextDouble() * 0.5).let { h -> if(h <= 1.0) h else sqrt(h) }
+                val y = 0.75 * abilityConfig.getHeightMultiplier(Ability.TOSSER) + (abilityConfig.getHeightMultiplier(Ability.TOSSER) * random.nextDouble() * 0.5).let { h -> if (h <= 1.0) h else sqrt(h) }
                 val z = 1.3 * abilityConfig.getDistanceMultiplier(Ability.TOSSER) * (random.nextDouble() * 2 - 1)
 
-                val victimMulti = if((it as? Player)?.isSneaking == true) sneakerMultiplier else 1.0
+                val victimMulti = if ((it as? Player)?.isSneaking == true) sneakerMultiplier else 1.0
                 it.velocity = Vector(x, y, z).multiply(victimMulti)
             }
         }
@@ -609,7 +611,7 @@ class AbilityHelper (
 
         while(isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
-            if(random.nextDouble() > chance) continue
+            if (random.nextDouble() > chance) continue
             launchCobweb(target)
         }
     }
@@ -656,7 +658,7 @@ class AbilityHelper (
     }
 
     private fun LivingEntity.shootDirection(): Vector? {
-        if(this !is Mob) return eyeLocation.direction
+        if (this !is Mob) return eyeLocation.direction
         val target = target ?: return null
         return shootDirection(target)
     }
@@ -699,7 +701,7 @@ class AbilityHelper (
     private fun LivingEntity.triggerGhost() {
         val target: LivingEntity? = (this as? Mob)?.target
         val haunted = random.nextDouble() <= abilityConfig.getDouble(AbilityConfigKeys.GHOST_EVIL_CHANCE)
-        val hauntedPrefix = if(haunted) "haunted_" else ""
+        val hauntedPrefix = if (haunted) "haunted_" else ""
         val itemDropChance = abilityConfig.getDouble(AbilityConfigKeys.GHOST_ITEM_DROP_CHANCE, maxValue = 1.0).toFloat()
 
         val infernalType = infernalMobTypesRepo.getInfernalTypeOrNull("${hauntedPrefix}ghost") ?: run {
@@ -707,7 +709,7 @@ class AbilityHelper (
             return
         }
 
-        val abilitySet = if(haunted) setOf(Ability.BLINDING, Ability.FLYING, Ability.NECROMANCER, Ability.WITHERING) else setOf(Ability.CONFUSION, Ability.FLYING, Ability.GHASTLY, Ability.HUNGER)
+        val abilitySet = if (haunted) setOf(Ability.BLINDING, Ability.FLYING, Ability.NECROMANCER, Ability.WITHERING) else setOf(Ability.CONFUSION, Ability.FLYING, Ability.GHASTLY, Ability.HUNGER)
 
         val ghost = world.spawn(location, Zombie::class.java, SpawnReason.CUSTOM) {
             it.setAdult()
@@ -727,7 +729,7 @@ class AbilityHelper (
             it.target = target
         }
 
-        if(haunted) {
+        if (haunted) {
             ghost.world.playSound(ghost.eyeLocation, Sound.ENTITY_ENDERMAN_SCREAM, 0.9f, 1f)
             CoroutineScope(Dispatchers.Default).launch {
                 delay(300L)
@@ -738,7 +740,7 @@ class AbilityHelper (
 
         CoroutineScope(Dispatchers.Default).launch {
             repeat(6) {
-                if(haunted) particlesHelper.sendParticle(ghost, Particle.SMOKE_LARGE, 2.5, 90)
+                if (haunted) particlesHelper.sendParticle(ghost, Particle.SMOKE_LARGE, 2.5, 90)
                 else particlesHelper.sendParticle(ghost, Particle.CLOUD, 2.0, 35)
                 delay(150L)
             }
@@ -785,7 +787,7 @@ class AbilityHelper (
 
     private fun InfernalDamageDoneEvent.triggerBlinding() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.BLINDING, 0.75)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         // blinds the defender for some time
         val duration = abilityConfig.getDuration(Ability.BLINDING, 7.0).random()
@@ -794,7 +796,7 @@ class AbilityHelper (
 
     private fun InfernalDamageDoneEvent.triggerConfusion() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.CONFUSION, 0.4)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         // makes the defender nauseated for some time
         val duration = abilityConfig.getDuration(Ability.CONFUSION, 8.0).random()
@@ -803,7 +805,7 @@ class AbilityHelper (
 
     private fun InfernalDamageDoneEvent.triggerHunger() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.HUNGER, 0.7)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         // makes the defender hunger for some time
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.HUNGER, 8).random() - 1)
@@ -813,7 +815,7 @@ class AbilityHelper (
 
     private fun InfernalDamageDoneEvent.triggerLevitate() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.LEVITATE, 0.4)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         // makes the defender levitate for some time
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.LEVITATE, 6).random() - 1)
@@ -823,7 +825,7 @@ class AbilityHelper (
 
     private fun InfernalDamageDoneEvent.triggerLightning() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.LIGHTNING, 0.25)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         val strikeLocation = defender.location
         InfernalLightningStrike(entity, infernalType, strikeLocation).callEvent()
@@ -832,11 +834,11 @@ class AbilityHelper (
 
     private fun InfernalDamageDoneEvent.triggerLifesteal() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.LIFESTEAL, 0.75)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         val healingAmount = abilityConfig.getDoublePair(AbilityConfigKeys.LIFESTEAL_HEALING_PERCENTAGE).random()
         val effectiveHealed = entity.heal(damage * healingAmount)
-        if(effectiveHealed <= 0.0) return
+        if (effectiveHealed <= 0.0) return
 
         // notify that this entity has been healed so its boss bar can be updated
         InfernalHealedEvent(entity, infernalType, effectiveHealed).callEvent()
@@ -853,7 +855,7 @@ class AbilityHelper (
 
     private fun InfernalDamageDoneEvent.triggerMolten() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.MOLTEN, 0.6)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         // sets the attacker on defender
         val duration = abilityConfig.getDuration(Ability.MOLTEN, 8.0).random()
@@ -862,7 +864,7 @@ class AbilityHelper (
 
     private fun InfernalDamageDoneEvent.triggerPoisonous() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.POISONOUS, 0.8)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         // poisons the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.POISONOUS, 6).random() - 1)
@@ -872,7 +874,7 @@ class AbilityHelper (
 
     private fun InfernalDamageDoneEvent.triggerRust() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.RUST, 0.6)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
         val mhDurabilityLoss = abilityConfig.getDurabilityLoss(Ability.RUST, 0.15).random()
         val ohDurabilityLoss = abilityConfig.getDurabilityLoss(Ability.RUST, 0.15).random()
         val sendMessage = abilityConfig.getSendMessage(Ability.RUST)
@@ -881,32 +883,32 @@ class AbilityHelper (
         val randomNum = random.nextInt(3) // 0 = mh, 1 = oh, 2 = both hands
         defender.equipment?.apply {
             // damaged when 0 or 2
-            if(randomNum != 1) {
+            if (randomNum != 1) {
                 val item = itemInMainHand.damageItemBy(mhDurabilityLoss)
-                if(item.isDamageable()) corrodedSomething = true
+                if (item.isDamageable()) corrodedSomething = true
                 setItemInMainHand(item, true)
             }
             // damaged when 1 or 2
-            if(randomNum != 0) {
+            if (randomNum != 0) {
                 val item = itemInOffHand.damageItemBy(ohDurabilityLoss)
-                if(item.isDamageable()) corrodedSomething = true
+                if (item.isDamageable()) corrodedSomething = true
                 setItemInOffHand(item, true)
             }
         }
         (defender as? Player)?.apply {
             updateInventory()
-            if(sendMessage && corrodedSomething) sendMessage(messages.get(MessageKeys.RUST_CORRODE_TOOLS_MESSAGE))
+            if (sendMessage && corrodedSomething) sendMessage(messages.get(MessageKeys.RUST_CORRODE_TOOLS_MESSAGE))
         }
     }
 
     private fun ItemStack.damageItemBy(damageAmount: Double): ItemStack {
         val meta = itemMeta
         // return the unmodified item if the item is not damageable (second check for Damageable is for the auto cast)
-        if(!isDamageable() || meta !is Damageable) return this
+        if (!isDamageable() || meta !is Damageable) return this
         val damage = (type.maxDurability * damageAmount).toInt()
         meta.damage = min(type.maxDurability.toInt(), meta.damage + damage)
         // if item broke while damaging it, return air
-        if(meta.damage >= type.maxDurability) return ItemStack(Material.AIR)
+        if (meta.damage >= type.maxDurability) return ItemStack(Material.AIR)
         itemMeta = meta
         return this
     }
@@ -915,7 +917,7 @@ class AbilityHelper (
 
     private fun InfernalDamageDoneEvent.triggerSlowness() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.SLOWNESS, 0.7)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         // gives slow effect to the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.SLOWNESS, 3).random() - 1)
@@ -925,7 +927,7 @@ class AbilityHelper (
 
     private fun InfernalDamageDoneEvent.triggerWeakness() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.WEAKNESS, 0.7)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         // gives weakness effect to the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.WEAKNESS, 1, minValue = 1).random() - 1)
@@ -935,7 +937,7 @@ class AbilityHelper (
 
     private fun InfernalDamageDoneEvent.triggerWithering() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.WITHERING, 0.65)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         // gives wither effect to the defender
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.WITHERING, 1).random() - 1)
@@ -967,7 +969,7 @@ class AbilityHelper (
 
     private fun InfernalDamageTakenEvent.triggerFirework() {
         val chance = abilityConfig.getAbilityChanceOnDamageTaken(Ability.FIREWORK, 0.25)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         world.spawn(attacker.location.apply {
             x += random.nextDouble() - 0.5
@@ -984,11 +986,11 @@ class AbilityHelper (
             .trail(random.nextBoolean())
 
         // randomly add more colors and fade effects
-        if(random.nextBoolean()) effect.withColor(randomColor)
-        if(random.nextInt(3) == 0) effect.withColor(randomColor)
-        if(random.nextBoolean()) effect.withFade(randomColor)
-        if(random.nextBoolean()) effect.withFade(randomColor)
-        if(random.nextInt(3) == 0) effect.withFade(randomColor)
+        if (random.nextBoolean()) effect.withColor(randomColor)
+        if (random.nextInt(3) == 0) effect.withColor(randomColor)
+        if (random.nextBoolean()) effect.withFade(randomColor)
+        if (random.nextBoolean()) effect.withFade(randomColor)
+        if (random.nextInt(3) == 0) effect.withFade(randomColor)
 
         meta.clearEffects()
         meta.addEffect(effect.build())
@@ -1001,9 +1003,9 @@ class AbilityHelper (
     private val randomColor get() = Color.fromRGB(random.nextInt(255), random.nextInt(255), random.nextInt(255))
 
     private fun InfernalDamageTakenEvent.triggerMolten() {
-        if(cause.isNotMelee()) return
+        if (cause.isNotMelee()) return
         val chance = abilityConfig.getAbilityChanceOnDamageTaken(Ability.MOLTEN, 0.4)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         // sets the attacker on fire
         val duration = abilityConfig.getDuration(Ability.MOLTEN, 8.0).random()
@@ -1011,9 +1013,9 @@ class AbilityHelper (
     }
 
     private fun InfernalDamageTakenEvent.triggerPoisonous() {
-        if(cause.isNotMelee()) return
+        if (cause.isNotMelee()) return
         val chance = abilityConfig.getAbilityChanceOnDamageTaken(Ability.POISONOUS, 0.2)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         // poisons the attacker
         val potency = max(0, abilityConfig.getAbilityPotency(Ability.POISONOUS, 6).random() - 1)
@@ -1023,7 +1025,7 @@ class AbilityHelper (
 
     private fun InfernalDamageTakenEvent.triggerThornmail() {
         val chance = abilityConfig.getAbilityChance(Ability.THORNMAIL, 0.6)
-        if(random.nextDouble() > chance) return
+        if (random.nextDouble() > chance) return
 
         // reflect part of the damage to the attacker
         val reflectPercentage = abilityConfig.getDoublePair(AbilityConfigKeys.THORMAIL_REFLECTED_AMOUNT).random()
@@ -1031,7 +1033,11 @@ class AbilityHelper (
         attacker.damage(damage * reflectPercentage, entity)
     }
 
-    private fun EntityDamageEvent.DamageCause.isNotMelee() = this != EntityDamageEvent.DamageCause.ENTITY_ATTACK && this != EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK && this != EntityDamageEvent.DamageCause.CONTACT && this != EntityDamageEvent.DamageCause.CRAMMING && this != EntityDamageEvent.DamageCause.THORNS
+    private fun EntityDamageEvent.DamageCause.isNotMelee(): Boolean = this != EntityDamageEvent.DamageCause.ENTITY_ATTACK
+            && this != EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK
+            && this != EntityDamageEvent.DamageCause.CONTACT
+            && this != EntityDamageEvent.DamageCause.CRAMMING
+            && this != EntityDamageEvent.DamageCause.THORNS
 
     // utility functions
 
@@ -1079,20 +1085,21 @@ class AbilityHelper (
         addPotionEffect(PotionEffect(effectType, Int.MAX_VALUE, amplifier, isAmbient, emitParticles))
     }
 
-    private fun LivingEntity.doesFly() = this is Bee || this is Parrot
+    private fun LivingEntity.doesFly(): Boolean = this is Bee || this is Parrot
 
     private fun LivingEntity.getAbilities(): Set<Ability>? = pdc.get(keyChain.abilityListKey, PersistentDataType.STRING)?.toAbilitySet()
 
-    private fun String.toAbilitySet() = gson.fromJson<Set<Ability>>(this, infernalAbilitySetToken)
+    private fun String.toAbilitySet(): Set<Ability> = gson.fromJson(this, infernalAbilitySetToken)
 
     fun revertPendingBlockModifications() {
         blockModifications.forEach { it.unmake() }
         blockModifications.clear()
     }
 
+    private val random: ThreadLocalRandom
+        get() = ThreadLocalRandom.current()
+
     private companion object {
-        val random: ThreadLocalRandom
-            get() = ThreadLocalRandom.current()
         val gson = Gson()
         val infernalAbilitySetToken: Type = object : TypeToken<Set<Ability>>() {}.type
         val movSpeedUID: UUID = "57202f4c-2e52-46cb-ad37-77550e99edb2".toUuid()

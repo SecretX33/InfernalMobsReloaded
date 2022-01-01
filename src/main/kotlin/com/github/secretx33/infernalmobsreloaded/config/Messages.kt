@@ -11,26 +11,26 @@ import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 
 class Messages(plugin: Plugin, private val adventureMessage: AdventureMessage) {
-    private val manager = YamlManager(plugin, "messages")
+    private val file = YamlManager(plugin, "messages")
     private val stringCache = ConcurrentHashMap<MessageKeys, Component>()
     private val listCache = ConcurrentHashMap<MessageKeys, List<Component>>()
 
     fun get(key: MessageKeys, default: String? = null): Component {
         return stringCache.getOrPut(key) {
-            manager.getString(key.configEntry)?.parse() ?: default?.parse() ?: (key.default as? Component) ?: (key.default as String).parse()
+            file.getString(key.configEntry)?.parse() ?: default?.parse() ?: (key.default as? Component) ?: (key.default as String).parse()
         }
     }
 
     fun getList(key: MessageKeys): List<Component> {
         return listCache.getOrPut(key) {
-            manager.getStringList(key.configEntry).map { it.parse() }
+            file.getStringList(key.configEntry).map { it.parse() }
         }
     }
 
     fun reload() {
         stringCache.clear()
         listCache.clear()
-        manager.reload()
+        file.reload()
     }
 
     private fun String.parse(): Component = adventureMessage.parse(this)

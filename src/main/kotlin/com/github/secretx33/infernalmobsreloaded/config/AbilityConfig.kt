@@ -18,33 +18,33 @@ class AbilityConfig (
     plugin: Plugin,
     private val log: Logger,
 ) {
-    private val manager = YamlManager(plugin, "abilities")
+    private val file = YamlManager(plugin, "abilities")
     private val cache = ConcurrentHashMap<String, Any>()
 
     fun reload() {
         cache.clear()
-        manager.reload()
+        file.reload()
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> get(key: String, default: T): T {
+    fun <T : Any> get(key: String, default: T): T {
         return cache.getOrPut(key) {
-            manager.get(key, default) as? T ?: run {
-                log.severe("On ability entry $key, expected value of type ${default!!::class.java.simpleName} but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+            file.get(key, default) as? T ?: run {
+                log.severe("On ability entry $key, expected value of type ${default::class.java.simpleName} but got ${file.get(key)?.javaClass?.simpleName} instead, please fix your ${file.fileName} file and reload")
                 default
             }
         } as T
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> get(key: AbilityConfigKeys): T = get(key.configEntry, key.defaultValue) as T
+    fun <T : Any> get(key: AbilityConfigKeys): T = get(key.configEntry, key.defaultValue) as T
 
-    fun <T> get(key: AbilityConfigKeys, default: T): T = get(key.configEntry, default)
+    fun <T : Any> get(key: AbilityConfigKeys, default: T): T = get(key.configEntry, default)
 
     fun getInt(key: String, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Int {
         return cache.getOrPut(key) {
-            (manager.get(key, default) as? Int)?.let { int -> max(minValue, min(maxValue, int)) } ?: run {
-                log.severe("On ability entry $key, expected value of type Int but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+            (file.get(key, default) as? Int)?.let { int -> max(minValue, min(maxValue, int)) } ?: run {
+                log.severe("On ability entry $key, expected value of type Int but got ${file.get(key)?.javaClass?.simpleName} instead, please fix your ${file.fileName} file and reload")
                 default
             }
         } as Int
@@ -55,8 +55,8 @@ class AbilityConfig (
 
     fun getDouble(key: String, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Double {
         return cache.getOrPut(key) {
-            (manager.get(key, default) as? Double)?.let { double -> max(minValue, min(maxValue, double)) } ?: run {
-                log.severe("On ability entry $key, expected value of type Double but got ${manager.get(key)?.javaClass?.simpleName} instead, please fix your ${manager.fileName} file and reload")
+            (file.get(key, default) as? Double)?.let { double -> max(minValue, min(maxValue, double)) } ?: run {
+                log.severe("On ability entry $key, expected value of type Double but got ${file.get(key)?.javaClass?.simpleName} instead, please fix your ${file.fileName} file and reload")
                 default
             }
         } as Double
@@ -114,7 +114,7 @@ class AbilityConfig (
     @Suppress("UNCHECKED_CAST")
     fun getIntPair(key: String, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Pair<Int, Int> {
         return cache.getOrPut(key) {
-            val values = manager.getString(key) ?: ""
+            val values = file.getString(key) ?: ""
 
             // if there's no amount field, return pair with default values
             if(values.isBlank()) return@getOrPut Pair(default, default)
@@ -143,7 +143,7 @@ class AbilityConfig (
     @Suppress("UNCHECKED_CAST")
     fun getDoublePair(key: String, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Pair<Double, Double> {
         return cache.getOrPut(key) {
-            val values = manager.getString(key) ?: ""
+            val values = file.getString(key) ?: ""
 
             // if there's no amount field, return pair with default values
             if(values.isBlank()) return@getOrPut Pair(default, default)
@@ -169,15 +169,15 @@ class AbilityConfig (
         = getDoublePair(key.configEntry, default, minValue, maxValue)
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : Enum<T>> getEnumSet(key: AbilityConfigKeys, clazz: Class<out Enum<T>>, predicate: Predicate<T>? = null): Set<T> {
+    fun <T : Enum<T>> getEnumSet(key: AbilityConfigKeys, clazz: Class<T>, predicate: Predicate<T>? = null): Set<T> {
         return cache.getOrPut(key.configEntry) {
-            if(!manager.contains(key.configEntry)) return@getOrPut key.defaultValue
-            manager.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
+            if(!file.contains(key.configEntry)) return@getOrPut key.defaultValue
+            file.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
                 val optional = Enums.getIfPresent(clazz, item.uppercase(Locale.US)).takeIf { opt -> opt.isPresent }?.get() ?: run {
-                    log.severe("Error while trying to get ability key '$key', value passed '${item.uppercase(Locale.US)}' is an invalid value, please fix this entry in the ${manager.fileName} and reload the configs")
+                    log.severe("Error while trying to get ability key '$key', value passed '${item.uppercase(Locale.US)}' is an invalid value, please fix this entry in the ${file.fileName} and reload the configs")
                     return@mapNotNullTo null
                 }
-                optional.takeIf { predicate == null || predicate.apply(it as T) }
+                optional.takeIf { predicate == null || predicate.apply(it) }
             }
         } as Set<T>
     }

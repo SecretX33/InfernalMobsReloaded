@@ -32,10 +32,10 @@ private object Utils: CustomKoinComponent {
 
 fun ItemStack.turnIntoSpawner(infernalType: InfernalMobType): ItemStack {
     require(type == Material.SPAWNER) { "may only turn into spawn actual spawners, $type is not spawner" }
-    itemMeta.apply {
-        displayName(infernalType.mobSpawnerName)
-        pdc.set(keyChain.spawnerCategoryKey, PersistentDataType.STRING, infernalType.name)
-        itemMeta = this
+    itemMeta.let {
+        it.displayName(infernalType.mobSpawnerName)
+        it.pdc.set(keyChain.spawnerCategoryKey, PersistentDataType.STRING, infernalType.name)
+        itemMeta = it
     }
     return this
 }
@@ -50,8 +50,8 @@ fun Player.getTarget(range: Int): LivingEntity? = (world.rayTraceEntities(eyeLoc
     ?.takeIf { hasLineOfSight(it) }
 
 fun runSync(plugin: Plugin, delay: Long = 0L, runnable: Runnable) {
-    if(delay < 0L) return
-    if(delay == 0L) Bukkit.getScheduler().runTask(plugin, runnable)
+    if (delay < 0L) return
+    if (delay == 0L) Bukkit.getScheduler().runTask(plugin, runnable)
     else Bukkit.getScheduler().runTaskLater(plugin, runnable, delay / 50L)
 }
 
@@ -64,7 +64,7 @@ suspend fun <T> Future<T>.await(): T {
     return get()
 }
 
-fun ItemStack.isAir() = type.isAir
+fun ItemStack.isAir(): Boolean = type.isAir
 
 fun Material.formattedTypeName(): String = name.replace('_', ' ').capitalizeFully()
 
@@ -83,10 +83,18 @@ val Entity.displayName: Component
 val PersistentDataHolder.pdc
     get() = persistentDataContainer
 
-fun LivingEntity.getHealthPercent(damageTaken: Double = 0.0) = getAttribute(Attribute.GENERIC_MAX_HEALTH)?.let { (health - damageTaken).coerceAtLeast(0.0) / it.value }?.toFloat() ?: 1f
+fun LivingEntity.getHealthPercent(damageTaken: Double = 0.0): Float =
+    getAttribute(Attribute.GENERIC_MAX_HEALTH)?.let { (health - damageTaken).coerceAtLeast(0.0) / it.value }?.toFloat() ?: 1f
 
 @Suppress("UselessCallOnCollection")
-val EntityEquipment.contents get() = EquipmentSlot.values().mapNotNull { getItem(it) }.filter { !it.isAir() }
+val EntityEquipment.contents: List<ItemStack>
+    get() = EquipmentSlot.values()
+        .mapNotNull { getItem(it) }
+        .filter { !it.isAir() }
 
 @Suppress("UNNECESSARY_SAFE_CALL", "UselessCallOnCollection")
-val EntityEquipment.contentsMap get() = EquipmentSlot.values().mapNotNull { slot -> getItem(slot)?.let { slot to it } }.filter { !it.second.isAir() }.toMap()
+val EntityEquipment.contentsMap: Map<EquipmentSlot, ItemStack>
+    get() = EquipmentSlot.values()
+        .mapNotNull { slot -> getItem(slot)?.let { slot to it } }
+        .filter { !it.second.isAir() }
+        .toMap()
