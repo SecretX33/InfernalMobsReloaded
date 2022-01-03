@@ -38,6 +38,7 @@ dependencies {
     implementation("io.insert-koin:koin-core:$koin_version")
     // API dependency
     compileOnly("io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT")
+    compileOnly("org.apache.logging.log4j:log4j-core:2.17.1")
     // Bukkit specific dependencies
     implementation("com.github.cryptomorin:XSeries:8.5.0.1")
     implementation("me.mattstudios:triumph-msg-adventure:2.2.4-SNAPSHOT")

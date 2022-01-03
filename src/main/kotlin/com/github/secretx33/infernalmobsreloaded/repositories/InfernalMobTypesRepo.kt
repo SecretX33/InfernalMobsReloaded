@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableSetMultimap
 import me.mattstudios.msg.adventure.AdventureMessage
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
@@ -36,6 +37,7 @@ class InfernalMobTypesRepo (
     private var infernalTypeCache = emptyMap<String, InfernalMobType>()    // lowercase groupName, infernalType
     private var infernalTypeMultimap = ImmutableSetMultimap.of<EntityType, InfernalMobType>()  // entityType, set<infernalType>
     private var userDefinedInfernalTypes = emptyList<Pair<EntityType, InfernalMobType>>()      // list containing all mobs types, except the internal ones like 'ghost' and 'evil_ghost', used as cache for the 'getRandomInfernalType' method
+    private var infernalMobPlainTextDisplayNames = emptySet<String>()      // plain text serialized infernal display name for cancelling console messages of "Named entity died
 
     init { reload() }
 
@@ -53,10 +55,14 @@ class InfernalMobTypesRepo (
 
     fun isValidInfernalType(name: String) = infernalTypeCache.containsKey(name.lowercase(Locale.US))
 
-    fun getAllInfernalTypeNames() = infernalTypeNames
+    fun getAllInfernalTypeNames(): List<String> = infernalTypeNames
 
     // try to get another type of infernal, but if there's just a single type of mob, just return one of those as fallback
-    fun getRandomInfernalType(morphingEntity: LivingEntity) = userDefinedInfernalTypes.filter { morphingEntity.type != it.first }.randomOrNull()?.second ?: userDefinedInfernalTypes.random().second
+    fun getRandomInfernalType(morphingEntity: LivingEntity) = userDefinedInfernalTypes
+        .filter { morphingEntity.type != it.first }.randomOrNull()?.second
+        ?: userDefinedInfernalTypes.random().second
+
+    fun isInfernalMobDisplayName(mobName: String): Boolean = mobName in infernalMobPlainTextDisplayNames
 
     private fun ensureUniqueKeys() {
         val duplicatedKeys = manager.getKeys(false).groupBy { it.lowercase(Locale.US) }.filterValues { it.size > 1 }
@@ -80,6 +86,7 @@ class InfernalMobTypesRepo (
             .mapValues { (type, list) -> list.map { Pair(type, it) } }
             .values.flatten()
             .filter { (_, infernal) -> !infernal.name.equals("ghost", ignoreCase = true) && !infernal.name.equals("haunted_ghost", ignoreCase = true) }
+        infernalMobPlainTextDisplayNames = infernalTypeCache.mapNotNullTo(HashSet()) { PlainTextComponentSerializer.plainText().serializeOrNull(it.value.displayName) }
     }
 
     private fun makeMobType(name: String): InfernalMobType {

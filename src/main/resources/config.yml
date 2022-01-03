@@ -43,6 +43,9 @@ infernals-are-persistent: false
 # When infernal persistence is turned off and this option is turned on, any infernal mob that gets loaded and is persistent will be removed. Basically, an option to "purge" persistent infernals from your worlds when you change your mind and don't want persistence anymore. As side effect, it'll also remove infernals that have thief ability and have picked up items when their chunk is unloaded, since they are marked as persistent as soon as they grab some item off the ground.
 infernals-persistence-purge-mode: false
 
+# Prevents the log on the console of messages like "Named entity EntitySkeletonWither['Wither Skeleton123'/357, uuid='d647ceaf-dc5d-4cab-a973-36620594ee97', l='ServerLevel[world]', x=682.66, y=72.00, z=-54.21, cpos=[42, -4], tl=45, v=true] died: Wither Skeleton123 was slain by SecretX" when the mob is an infernal mob, thus completely eliminating the spam of these useless messages.
+prevent-named-entity-console-messages-for-infernal-mobs: true
+
 ####################
 ####  Spawners  ####
 ####################

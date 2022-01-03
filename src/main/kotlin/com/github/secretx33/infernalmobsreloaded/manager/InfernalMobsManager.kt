@@ -52,7 +52,6 @@ class InfernalMobsManager (
     private val particlesHelper: ParticlesHelper,
     private val abilityHelper: AbilityHelper,
 ) {
-
     private val infernalMobParticleTasks = ConcurrentHashMap<UUID, Job>()   // stores the job currently emitting infernal particles
     private val infernalMobAbilityTasks = MultimapBuilder.hashKeys().arrayListValues().build<UUID, Job>()  // for abilities that require a target
 
@@ -68,6 +67,8 @@ class InfernalMobsManager (
 
     fun getInfernalTypeOrNull(entity: LivingEntity) = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)
         ?.let { infernalMobTypesRepo.getInfernalTypeOrNull(it) }
+
+    fun isInfernalMobDisplayName(mobName: String): Boolean = infernalMobTypesRepo.isInfernalMobDisplayName(mobName)
 
     fun getLives(entity: LivingEntity): Int = entity.pdc.get(keyChain.livesKey, PersistentDataType.INTEGER) ?: throw IllegalStateException("Entity ${entity.type.name} doesn't have a ${keyChain.livesKey.key} key on its pdc, but tried to query its lives")
 

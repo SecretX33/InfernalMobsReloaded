@@ -31,6 +31,7 @@ import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerP
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerSpawnListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.world.EntityLoadListener
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.world.EntityUnloadListener
+import com.github.secretx33.infernalmobsreloaded.filter.InfernalDeathConsoleMessageFilter
 import com.github.secretx33.infernalmobsreloaded.manager.AbilityHelper
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
@@ -54,6 +55,9 @@ import com.github.secretx33.infernalmobsreloaded.utils.other.startKoin
 import com.github.secretx33.infernalmobsreloaded.utils.other.stopKoin
 import com.github.secretx33.infernalmobsreloaded.utils.other.unloadKoinModules
 import me.mattstudios.msg.adventure.AdventureMessage
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.core.Filter
+import org.apache.logging.log4j.core.Logger
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.PluginDescriptionFile
@@ -119,6 +123,7 @@ open class InfernalMobsReloaded: JavaPlugin, CustomKoinComponent {
         single { InvisibleEntitiesEquipVanisherListener(get(), get(), get()) }
         single { SpawnerBreakWithSilkSpawnersListener(get(), get(), get(), get()) }
         single { TownyListener(get(), get(), get(), get()) }
+        single { InfernalDeathConsoleMessageFilter(get(), get()) }
         single { Commands(get()) }
         single { Metrics(get(), 11253) }
     }
@@ -174,6 +179,7 @@ open class InfernalMobsReloaded: JavaPlugin, CustomKoinComponent {
             logger.info("Enabling Towny hook.")
             get<TownyListener>()
         }
+        registerLoggerFilters(get<InfernalDeathConsoleMessageFilter>())
         get<Commands>()
         get<Metrics>()
         get<InfernalMobsManager>().loadAllInfernals()
@@ -202,4 +208,9 @@ open class InfernalMobsReloaded: JavaPlugin, CustomKoinComponent {
 
     private val silkSpawnerHandlesSpawnerDrops
         get() = Bukkit.getPluginManager().isPluginEnabled("SilkSpawners") && get<Config>().get(ConfigKeys.SILKSPAWNERS_HANDLES_SPAWNER_DROP)
+
+    private fun registerLoggerFilters(vararg filters: Filter) {
+        val rootLogger = LogManager.getRootLogger() as? Logger ?: return
+        filters.forEach { rootLogger.addFilter(it) }
+    }
 }
