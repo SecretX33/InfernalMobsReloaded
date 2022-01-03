@@ -13,7 +13,7 @@ class BlockModification (
     private val blockBlacklist: MutableSet<Location>,
     private val makeTask: (List<Block>) -> Unit,
 ) {
-    val blockLocations = blocks.map { it.location }
+    val blockLocations = blocks.mapTo(HashSet()) { it.location }
     private val blockState: List<BlockState> = blocks.map { it.state }
     private val unmade = AtomicBoolean(false)
 
@@ -32,7 +32,7 @@ class BlockModification (
 
     fun unmake(){
         // don't try to revert the block states back if they got reverted already
-        if(!unmade.compareAndSet(false, true)) return
+        if (!unmade.compareAndSet(false, true)) return
         blockState.forEach { it.update(true, true) }
         blockBlacklist.removeAll(blockLocations)
         blockModificationList.remove(this)

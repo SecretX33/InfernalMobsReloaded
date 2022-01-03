@@ -107,7 +107,6 @@ class AbilityHelper (
     private val infernalMobTypesRepo: InfernalMobTypesRepo,
     private val logger: Logger,
 ){
-
     private val blockModifications = Sets.newConcurrentHashSet<BlockModification>()
     private val blocksBlackList = Sets.newConcurrentHashSet<Location>()
 
@@ -309,7 +308,7 @@ class AbilityHelper (
                 victims.forEach {
                     if (!isActive || entity.isNotTargeting(target)) return@launch
                     val dir = entity.shootDirection(it).normalize().add(Vector(0.0, 0.14, 0.0)).multiply(speed)
-                    entity.shootProjectile(dir, Arrow::class.java)
+                    entity.shootProjectile<Arrow>(dir)
                 }
                 delay(delay)
             }
@@ -353,7 +352,7 @@ class AbilityHelper (
             val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
             victims.forEach {
                 val dir = entity.shootDirection(it).multiply(speed)
-                entity.shootProjectile(dir, Fireball::class.java)
+                entity.shootProjectile<Fireball>(dir)
             }
         }
     }
@@ -421,7 +420,7 @@ class AbilityHelper (
                 victims.forEach {
                     if (!isActive || entity.isNotTargeting(target)) return@launch
                     val dir = entity.shootDirection(it).multiply(speed)
-                    entity.shootProjectile(dir, Fireball::class.java)
+                    entity.shootProjectile<Fireball>(dir)
                 }
                 delay(delay)
             }
@@ -441,7 +440,7 @@ class AbilityHelper (
             val victims = target.getValidNearbyTargetsAsync(nearbyRange) - entity
             victims.forEach {
                 val dir = entity.shootDirection(it).multiply(speed)
-                entity.shootProjectile(dir, WitherSkull::class.java)
+                entity.shootProjectile<WitherSkull>(dir)
             }
         }
     }
@@ -619,19 +618,22 @@ class AbilityHelper (
     private fun launchCobweb(target: LivingEntity) {
         val trapDensity = abilityConfig.getDoublePair(AbilityConfigKeys.WEBBER_TRAP_DENSITY, maxValue = 1.0).random()
         val duration = abilityConfig.getDuration(Ability.WEBBER, 5.0, minValue = 0.1).random().toLongDelay()
-        val blocks = target.makeCuboidAround().blockList().filter { random.nextDouble() <= trapDensity && it.canMobGrief() }
-        val blockMod = BlockModification(blocks, blockModifications, blocksBlackList) { list -> list.forEach { it.type = Material.COBWEB } }
-        blocksBlackList.addAll(blockMod.blockLocations)
-        blockModifications.add(blockMod)
-
-        runSync(plugin) { blockMod.make() }
-        CoroutineScope(Dispatchers.Default).launch {
-            delay(duration)
-            runSync(plugin) { blockMod.unmake() }
+        runSync(plugin) {
+            val blocks = target.makeCuboidAround().blockList()
+                .filter { random.nextDouble() <= trapDensity && it.canMobGrief() }
+            val blockMod = BlockModification(blocks, blockModifications, blocksBlackList) { blocks ->
+                blocks.forEach { it.type = Material.COBWEB }
+            }
+            blocksBlackList.addAll(blockMod.blockLocations)
+            blockModifications.add(blockMod)
+            blockMod.make()
+            runSync(plugin, duration) { blockMod.unmake() }
         }
     }
 
-    private fun Block.canMobGrief(): Boolean = type != Material.BEDROCK && isPassable && !blocksBlackList.contains(location) && wgChecker.canMobGriefBlock(this)
+    private fun Block.canMobGrief(): Boolean = type != Material.BEDROCK && isPassable
+            && location !in blocksBlackList
+            && wgChecker.canMobGriefBlock(this)
 
     private fun LivingEntity.makeCuboidAround(): Cuboid {
         val maxRadius = abilityConfig.getIntPair(AbilityConfigKeys.WEBBER_MAX_RADIUS).random()
@@ -647,10 +649,10 @@ class AbilityHelper (
         return Cuboid(lowerBound, upperBound)
     }
 
-    private fun <T : Projectile> LivingEntity.shootProjectile(dir: Vector, proj: Class<out T>) {
+    private inline fun <reified T : Projectile> LivingEntity.shootProjectile(dir: Vector) {
         val loc = eyeLocation.apply { y -= height / 12 }
         runSync(plugin) {
-            world.spawn(loc, proj, SpawnReason.CUSTOM) {
+            world.spawn(loc, T::class.java, SpawnReason.CUSTOM) {
                 it.velocity = dir
                 (it as Projectile).shooter = this
             }
@@ -681,7 +683,10 @@ class AbilityHelper (
         return src.direction
     }
 
-    private fun LivingEntity.isTargeting(target: LivingEntity) = !isDead && isValid  && !target.isDead && target.isValid && (this !is Mob || this.target?.uniqueId == target.uniqueId)
+    private fun LivingEntity.isTargeting(target: LivingEntity): Boolean =
+        !isDead && isValid
+                && !target.isDead && target.isValid
+                && (this !is Mob || this.target?.uniqueId == target.uniqueId)
 
     private fun LivingEntity.isNotTargeting(target: LivingEntity) = !isTargeting(target)
 
@@ -692,7 +697,7 @@ class AbilityHelper (
         abilities.forEach {
             when(it) {
                 Ability.GHOST -> entity.triggerGhost()
-                Ability.KAMIKAZE -> entity.triggerKamizake()
+                Ability.KAMIKAZE -> entity.triggerKamikaze()
                 else -> {}
             }
         }
@@ -747,10 +752,10 @@ class AbilityHelper (
         }
     }
 
-    private fun LivingEntity.triggerKamizake() {
-        val power = abilityConfig.getDouble(AbilityConfigKeys.KAMIZAZE_EXPLOSION_POWER).toFloat()
-        val setFire = abilityConfig.get<Boolean>(AbilityConfigKeys.KAMIZAZE_SET_ON_FIRE)
-        val breakBlocks = abilityConfig.get<Boolean>(AbilityConfigKeys.KAMIZAZE_BREAK_BLOCKS)
+    private fun LivingEntity.triggerKamikaze() {
+        val power = abilityConfig.getDouble(AbilityConfigKeys.KAMIKAZE_EXPLOSION_POWER).toFloat()
+        val setFire = abilityConfig.get<Boolean>(AbilityConfigKeys.KAMIKAZE_SET_ON_FIRE)
+        val breakBlocks = abilityConfig.get<Boolean>(AbilityConfigKeys.KAMIKAZE_BREAK_BLOCKS)
 
         location.createExplosion(this, power, setFire, breakBlocks)
     }
@@ -913,7 +918,9 @@ class AbilityHelper (
         return this
     }
 
-    private fun ItemStack.isDamageable() = !isAir() && type.maxDurability > 0.toShort() && itemMeta.let { it != null && it is Damageable }
+    private fun ItemStack.isDamageable(): Boolean = !isAir()
+            && type.maxDurability > 0.toShort()
+            && itemMeta.let { it != null && it is Damageable }
 
     private fun InfernalDamageDoneEvent.triggerSlowness() {
         val chance = abilityConfig.getAbilityChanceOnDamageDone(Ability.SLOWNESS, 0.7)
@@ -1000,7 +1007,8 @@ class AbilityHelper (
         pdc.set(keyChain.fireworkOwnerUuidKey, PersistentDataType.STRING, owner.uniqueId.toString())
     }
 
-    private val randomColor get() = Color.fromRGB(random.nextInt(255), random.nextInt(255), random.nextInt(255))
+    private val randomColor: Color
+        get() = Color.fromRGB(random.nextInt(255), random.nextInt(255), random.nextInt(255))
 
     private fun InfernalDamageTakenEvent.triggerMolten() {
         if (cause.isNotMelee()) return
@@ -1075,12 +1083,24 @@ class AbilityHelper (
      * @param isAmbient [Boolean] If isAmbient attribute should be turned on
      * @param emitParticles [Boolean] If potion should have visible particles
      */
-    private fun LivingEntity.addPotion(effectType: PotionEffectType, ability: Ability, duration: Double, amplifier: Int = 0, isAmbient: Boolean = abilityConfig.getPotionIsAmbient(ability), emitParticles: Boolean = abilityConfig.getPotionEmitParticles(ability)) {
+    private fun LivingEntity.addPotion(
+        effectType: PotionEffectType,
+        ability: Ability,
+        duration: Double,
+        amplifier: Int = 0,
+        isAmbient: Boolean = abilityConfig.getPotionIsAmbient(ability),
+        emitParticles: Boolean = abilityConfig.getPotionEmitParticles(ability)) {
         // add a temporary potion effect to the living entity
         addPotionEffect(PotionEffect(effectType, (duration * 20.0).toInt().coerceAtLeast(0), amplifier, isAmbient, emitParticles))
     }
 
-    private fun LivingEntity.addPermanentPotion(effectType: PotionEffectType, ability: Ability, amplifier: Int = 0, isAmbient: Boolean = abilityConfig.getPotionIsAmbient(ability), emitParticles: Boolean = abilityConfig.getPotionEmitParticles(ability)) {
+    private fun LivingEntity.addPermanentPotion(
+        effectType: PotionEffectType,
+        ability: Ability,
+        amplifier: Int = 0,
+        isAmbient: Boolean = abilityConfig.getPotionIsAmbient(ability),
+        emitParticles: Boolean = abilityConfig.getPotionEmitParticles(ability)
+    ) {
         // add a permanent potion effect to the living entity
         addPotionEffect(PotionEffect(effectType, Int.MAX_VALUE, amplifier, isAmbient, emitParticles))
     }
