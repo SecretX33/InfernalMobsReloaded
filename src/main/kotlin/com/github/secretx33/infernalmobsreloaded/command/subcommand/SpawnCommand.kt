@@ -38,7 +38,7 @@ class SpawnCommand(
             player.sendMessage(messages.get(MessageKeys.INFERNAL_MOB_TYPE_DOESNT_EXIST).replace("<type>", strings[1].toComponent(NamedTextColor.GOLD)))
             return
         }
-        val abilities = HashSet<Ability>()
+        val abilities = hashSetOf<Ability>()
 
         // if player specified infernal abilities in command
         if (strings.size > 2) {

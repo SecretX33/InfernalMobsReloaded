@@ -27,7 +27,7 @@ class Cuboid(point1: Location, point2: Location) {
     private val world: World = point1.world ?: throw IllegalArgumentException("World cannot be null")
 
     fun bordersBlockList(): Set<Block> {
-        val blockList = HashSet<Block>()
+        val blockList = hashSetOf<Block>()
 
         // For all heights
         for (y in yMin..yMax) {
@@ -51,7 +51,7 @@ class Cuboid(point1: Location, point2: Location) {
     }
 
     fun getFloorAndCeil(): Set<Block> {
-        val blockList = HashSet<Block>()
+        val blockList = hashSetOf<Block>()
 
         // Adding floor and ceil of cube
         for (x in xMin..xMax) {
@@ -69,7 +69,7 @@ class Cuboid(point1: Location, point2: Location) {
         // There is no walls on this cuboid, just floor and ceil
         if (yMax - yMin < 2) return emptySet()
 
-        val blockList = HashSet<Block>()
+        val blockList = hashSetOf<Block>()
         // For all block in between floor and ceil
         for (y in yMin + 1..yMax - 1) {
             // Get North and South Walls

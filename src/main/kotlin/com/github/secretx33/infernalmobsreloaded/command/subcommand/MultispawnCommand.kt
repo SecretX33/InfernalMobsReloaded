@@ -45,7 +45,7 @@ class MultispawnCommand(
             player.sendMessage(messages.get(MessageKeys.INFERNAL_MOB_TYPE_DOESNT_EXIST).replace("<type>", strings[2].toComponent(NamedTextColor.GOLD)))
             return
         }
-        val abilities = HashSet<Ability>()
+        val abilities = hashSetOf<Ability>()
 
         // if player specified infernal abilities in command
         if (strings.size > 2) {
