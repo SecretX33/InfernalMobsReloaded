@@ -1,5 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReload
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.util.extension.matchOrNull
 import com.github.secretx33.infernalmobsreloaded.util.other.YamlManager
@@ -18,14 +20,19 @@ import kotlin.math.sqrt
 
 @Singleton
 @InjectConstructor
-class AbilityConfig(plugin: Plugin, private val log: Logger) {
-
+class AbilityConfig(
+    plugin: Plugin,
+    eventBus: EventBus,
+    private val log: Logger,
+) {
     private val file = YamlManager(plugin, "abilities")
     private val cache = ConcurrentHashMap<String, Any>()
 
-    fun reload() {
-        cache.clear()
-        file.reload()
+    init {
+        eventBus.subscribe<PluginReload>(this, 40) {
+            cache.clear()
+            file.reload()
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

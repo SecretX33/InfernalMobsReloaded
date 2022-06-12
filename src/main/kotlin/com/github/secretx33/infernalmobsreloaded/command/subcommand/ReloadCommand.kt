@@ -1,32 +1,18 @@
 package com.github.secretx33.infernalmobsreloaded.command.subcommand
 
-import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
-import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
-import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
-import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
-import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
-import com.github.secretx33.infernalmobsreloaded.repository.CharmsRepo
-import com.github.secretx33.infernalmobsreloaded.repository.GlobalDropsRepo
-import com.github.secretx33.infernalmobsreloaded.repository.InfernalMobTypesRepo
-import com.github.secretx33.infernalmobsreloaded.repository.LootItemsRepo
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReload
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReloaded
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import toothpick.InjectConstructor
 
 @InjectConstructor
 class ReloadCommand(
-    private val config: Config,
     private val messages: Messages,
-    private val abilityConfig: AbilityConfig,
-    private val lootItemsRepo: LootItemsRepo,
-    private val globalDropsRepo: GlobalDropsRepo,
-    private val infernalMobTypesRepo: InfernalMobTypesRepo,
-    private val charmsRepo: CharmsRepo,
-    private val infernalMobsManager: InfernalMobsManager,
-    private val bossBarManager: BossBarManager,
-    private val charmsManager: CharmsManager,
+    private val eventBus: EventBus,
 ) : SubCommand() {
 
     override val name: String = "reload"
@@ -37,18 +23,8 @@ class ReloadCommand(
         onCommandByConsole(player, alias, strings)
 
     override fun onCommandByConsole(sender: CommandSender, alias: String, strings: Array<String>) {
-        infernalMobsManager.unloadAllInfernals()
-        bossBarManager.hideAllBarsFromAllPlayers()
-        config.reload()
-        messages.reload()
-        abilityConfig.reload()
-        lootItemsRepo.reload()
-        globalDropsRepo.reload()
-        infernalMobTypesRepo.reload()
-        charmsRepo.reload()
-        infernalMobsManager.loadAllInfernals()
-        bossBarManager.showBarsOfNearbyInfernalsForAllPlayers()
-        charmsManager.reload()
+        eventBus.post(PluginReload())
+        eventBus.post(PluginReloaded())
         sender.sendMessage(messages.get(MessageKeys.CONFIGS_RELOADED))
     }
 }

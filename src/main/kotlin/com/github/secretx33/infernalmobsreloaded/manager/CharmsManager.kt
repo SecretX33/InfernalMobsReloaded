@@ -2,6 +2,7 @@ package com.github.secretx33.infernalmobsreloaded.manager
 
 import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
 import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginLoad
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReloaded
 import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
 import com.github.secretx33.infernalmobsreloaded.manager.InvisibilityHelper.isInvisibleOrVanished
 import com.github.secretx33.infernalmobsreloaded.model.CharmEffect
@@ -31,6 +32,7 @@ import org.bukkit.potion.PotionEffectType
 import toothpick.InjectConstructor
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import java.util.logging.Logger
 import javax.inject.Singleton
 
 @Singleton
@@ -39,12 +41,14 @@ class CharmsManager(
     private val plugin: Plugin,
     private val charmsRepo: CharmsRepo,
     private val lootItemsRepo: LootItemsRepo,
+    private val log: Logger,
     eventBus: EventBus,
 ) {
 
     init {
         eventBus.subscribe<PluginLoad>(this, 20) { startAllCharmTasks() }
         eventBus.subscribe<PluginUnload>(this, 20) { stopAllCharmTasks() }
+        eventBus.subscribe<PluginReloaded>(this, 20) { reload() }
     }
 
     private val permanentEffects = HashBasedTable.create<UUID, CharmEffect, PotionEffectType>()               // PlayerUuid, charmEffect, PotionEffect
@@ -52,7 +56,9 @@ class CharmsManager(
     private val targetEffects    = MultimapBuilder.hashKeys().hashSetValues().build<UUID, CharmEffect>()      // PlayerUuid, charmEffect
     private var cooldowns        = makeCooldownsCache()
 
-    private fun makeCooldownsCache() = CacheBuilder.newBuilder().expireAfterWrite((charmsRepo.getHighestEffectDelay() * 1000.0).toLong(), TimeUnit.MILLISECONDS).build<Pair<UUID, CharmEffect>, Long>()
+    private fun makeCooldownsCache() = CacheBuilder.newBuilder()
+        .expireAfterWrite((charmsRepo.getHighestEffectDelay() * 1000.0).toLong(), TimeUnit.MILLISECONDS)
+        .build<Pair<UUID, CharmEffect>, Long>()
 
     fun areCharmsAllowedOnWorld(world: World) = charmsRepo.areCharmsAllowedOnWorld(world)
 
@@ -184,21 +190,23 @@ class CharmsManager(
         targetEffects.removeAll(player.uniqueId)
     }
 
-    fun reload() {
+    private fun reload() {
         stopAllCharmTasks()
         cooldowns = makeCooldownsCache().apply { putAll(cooldowns.asMap()) }
         startAllCharmTasks()
     }
 
-    fun stopAllCharmTasks() {
-        Bukkit.getOnlinePlayers().forEach { cancelAllCharmTasks(it) }
+    private fun stopAllCharmTasks() {
+        log.info("Disabling player charms")
+        Bukkit.getOnlinePlayers().forEach(::cancelAllCharmTasks)
         // most probably not needed, just as precaution
         permanentEffects.clear()
         periodicEffects.clear()
         targetEffects.clear()
     }
 
-    fun startAllCharmTasks() {
-        Bukkit.getOnlinePlayers().forEach { updateCharmEffects(it) }
+    private fun startAllCharmTasks() {
+        log.info("Enabling player charms")
+        Bukkit.getOnlinePlayers().forEach(::updateCharmEffects)
     }
 }

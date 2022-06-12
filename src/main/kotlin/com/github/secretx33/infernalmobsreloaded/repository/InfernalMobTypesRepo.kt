@@ -2,6 +2,8 @@ package com.github.secretx33.infernalmobsreloaded.repository
 
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReload
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
@@ -30,6 +32,7 @@ import kotlin.math.min
 @InjectConstructor
 class InfernalMobTypesRepo (
     plugin: Plugin,
+    eventBus: EventBus,
     private val log: Logger,
     private val config: Config,
     private val adventureMessage: AdventureMessage,
@@ -43,9 +46,12 @@ class InfernalMobTypesRepo (
     private var userDefinedInfernalTypes = emptyList<Pair<EntityType, InfernalMobType>>()      // list containing all mobs types, except the internal ones like 'ghost' and 'evil_ghost', used as cache for the 'getRandomInfernalType' method
     private var infernalMobPlainTextDisplayNames = emptySet<String>()      // plain text serialized infernal display name for cancelling console messages of "Named entity died
 
-    init { reload() }
+    init {
+        reload()
+        eventBus.subscribe<PluginReload>(this, 70) { reload() }
+    }
 
-    fun reload() {
+    private fun reload() {
         manager.reload()
         ensureUniqueKeys()
         loadMobTypes()

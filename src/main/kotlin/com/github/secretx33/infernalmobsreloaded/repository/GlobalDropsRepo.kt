@@ -1,5 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.repository
 
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReload
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
 import com.github.secretx33.infernalmobsreloaded.util.other.YamlManager
 import org.bukkit.plugin.Plugin
@@ -13,17 +15,21 @@ import kotlin.math.min
 @InjectConstructor
 class GlobalDropsRepo (
     plugin: Plugin,
+    eventBus: EventBus,
     private val logger: Logger,
     private val lootItemsRepo: LootItemsRepo,
 ) {
     private val manager = YamlManager(plugin, "global_drops")
     private var globalDrops = emptyMap<LootItem, Double>()
 
-    init { reload() }
+    init {
+        reload()
+        eventBus.subscribe<PluginReload>(this, 60) { reload() }
+    }
 
     fun getGlobalDrops() = globalDrops
 
-    fun reload() {
+    private fun reload() {
         manager.reload()
         loadGlobalDrops()
     }

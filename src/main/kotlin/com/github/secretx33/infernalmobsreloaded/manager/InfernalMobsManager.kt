@@ -9,6 +9,8 @@ import com.github.secretx33.infernalmobsreloaded.event.InfernalDamageTakenEvent
 import com.github.secretx33.infernalmobsreloaded.event.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
 import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginLoad
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReload
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReloaded
 import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
@@ -44,6 +46,7 @@ import toothpick.InjectConstructor
 import java.util.Random
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import java.util.logging.Logger
 import javax.inject.Singleton
 import kotlin.math.max
 
@@ -57,6 +60,7 @@ class InfernalMobsManager (
     private val infernalMobTypesRepo: InfernalMobTypesRepo,
     private val particlesHelper: ParticlesHelper,
     private val abilityHelper: AbilityHelper,
+    private val log: Logger,
     eventBus: EventBus,
 ) {
     private val infernalMobParticleTasks = ConcurrentHashMap<UUID, Job>()   // stores the job currently emitting infernal particles
@@ -65,6 +69,8 @@ class InfernalMobsManager (
     init {
         eventBus.subscribe<PluginLoad>(this, 0) { loadAllInfernals() }
         eventBus.subscribe<PluginUnload>(this, 0) { unloadAllInfernals() }
+        eventBus.subscribe<PluginReload>(this, 0) { unloadAllInfernals() }
+        eventBus.subscribe<PluginReloaded>(this, 0) { loadAllInfernals() }
     }
 
     fun isValidInfernalMob(entity: LivingEntity) = infernalMobTypesRepo.canTypeBecomeInfernal(entity.type) && entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)?.let { infernalMobTypesRepo.isValidInfernalType(it) } == true
@@ -233,17 +239,13 @@ class InfernalMobsManager (
         get() = config.get<Double>(ConfigKeys.INFERNAL_PARTICLES_SPREAD)
 
     fun loadAllInfernals() {
-        Bukkit.getWorlds().forEach { world ->
-            world.livingEntities.filter { isValidInfernalMob(it) }.forEach {
-                loadInfernalMob(it)
-            }
-        }
+        log.info("Loading all infernal mobs")
+        Bukkit.getWorlds().flatMap { it.livingEntities }.forEach(::loadInfernalMob)
     }
 
     fun unloadAllInfernals() {
-        Bukkit.getWorlds().forEach { world ->
-            world.livingEntities.forEach { unloadInfernalMob(it) }
-        }
+        log.info("Unloading all infernal mobs")
+        Bukkit.getWorlds().flatMap { it.livingEntities }.forEach(::unloadInfernalMob)
         infernalMobParticleTasks.forEach { (_, job) -> job.cancel() }
         infernalMobParticleTasks.clear()
     }

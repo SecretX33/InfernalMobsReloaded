@@ -1,5 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReload
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
 import com.github.secretx33.infernalmobsreloaded.model.KilledByPoison
@@ -20,14 +22,19 @@ import kotlin.math.min
 
 @Singleton
 @InjectConstructor
-class Config(plugin: Plugin, private val log: Logger) {
-
+class Config(
+    plugin: Plugin,
+    eventBus: EventBus,
+    private val log: Logger,
+) {
     private val file = YamlManager(plugin, "config")
     private val cache = ConcurrentHashMap<String, Any>()
 
-    fun reload() {
-        cache.clear()
-        file.reload()
+    init {
+        eventBus.subscribe<PluginReload>(this, 20) {
+            cache.clear()
+            file.reload()
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

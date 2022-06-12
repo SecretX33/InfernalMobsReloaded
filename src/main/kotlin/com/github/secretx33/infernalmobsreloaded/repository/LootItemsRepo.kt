@@ -3,6 +3,8 @@ package com.github.secretx33.infernalmobsreloaded.repository
 import com.cryptomorin.xseries.XEnchantment
 import com.cryptomorin.xseries.XMaterial
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReload
 import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.model.items.BannerLootItem
@@ -39,6 +41,7 @@ import kotlin.math.min
 @InjectConstructor
 class LootItemsRepo (
     plugin: Plugin,
+    eventBus: EventBus,
     private val logger: Logger,
     private val keyChain: KeyChain,
     private val adventureMessage: AdventureMessage,
@@ -48,9 +51,12 @@ class LootItemsRepo (
     private var lootItemCache = emptyMap<String, LootItem>()     // lowercase lootNames, LootItem
     private var lootItemNames = emptyList<String>()              // original lootNames
 
-    init { reload() }
+    init {
+        reload()
+        eventBus.subscribe<PluginReload>(this, 50) { reload() }
+    }
 
-    fun reload() {
+    private fun reload() {
         manager.reload()
         loadLootTable()
     }

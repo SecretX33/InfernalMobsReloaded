@@ -25,6 +25,7 @@ import toothpick.InjectConstructor
 import java.lang.ref.WeakReference
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import java.util.logging.Logger
 import javax.inject.Singleton
 
 @Singleton
@@ -34,6 +35,7 @@ class TownyListener(
     private val config: Config,
     private val mobsManager: InfernalMobsManager,
     private val bossBarManager: BossBarManager,
+    private val log: Logger,
     eventBus: EventBus,
 ) : Listener {
 
@@ -104,6 +106,7 @@ class TownyListener(
      * Finalize task that must be run before plugin is unloaded.
      */
     private fun cancelRemovalTasks() {
+        log.info("[Towny Hook] Cancelling scheduled mob removal from towns tasks")
         removalTaskCache.asMap().forEach { (job, _) -> job.cancel() }
         removalTaskCache.invalidateAll()
     }

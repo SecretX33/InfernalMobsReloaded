@@ -102,11 +102,11 @@ open class InfernalMobsReloaded : JavaPlugin {
             .filterNotTo(mutableSetOf()) { it.hasAnnotation<SkipAutoRegistration>() }
 
         if (silkSpawnerHandlesSpawnerDrops) {
-            logger.info("Enabling SilkSpawners hook.")
+            logger.info("Enabling SilkSpawners hook")
             listeners.replace(SpawnerBreakListener::class, SpawnerBreakWithSilkSpawnersListener::class)
         }
         if (isTownyHookEnabled) {
-            logger.info("Enabling Towny hook.")
+            logger.info("Enabling Towny hook")
             listeners += TownyListener::class
         }
 
@@ -114,7 +114,7 @@ open class InfernalMobsReloaded : JavaPlugin {
             .forEach { Bukkit.getPluginManager().registerEvents(it, this) }
 
         if (isProtocolLibEnabled) {
-            logger.info("Enabling ProtocolLib hook.")
+            logger.info("Enabling ProtocolLib hook")
             val packetListeners = findClasspathPacketListeners()
                 .filterNotTo(mutableSetOf()) { it.hasAnnotation<SkipAutoRegistration>() }
 

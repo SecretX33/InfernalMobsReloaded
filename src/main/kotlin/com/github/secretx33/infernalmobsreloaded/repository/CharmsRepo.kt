@@ -1,6 +1,8 @@
 package com.github.secretx33.infernalmobsreloaded.repository
 
 import com.cryptomorin.xseries.XPotion
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReload
 import com.github.secretx33.infernalmobsreloaded.model.CharmEffect
 import com.github.secretx33.infernalmobsreloaded.model.CharmParticleMode
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
@@ -28,6 +30,7 @@ import kotlin.math.min
 @InjectConstructor
 class CharmsRepo (
     plugin: Plugin,
+    eventBus: EventBus,
     private val log: Logger,
     private val adventureMessage: AdventureMessage,
     private val lootItemsRepo: LootItemsRepo,
@@ -37,9 +40,12 @@ class CharmsRepo (
     private var charmsCache = ImmutableSetMultimap.of<String, CharmEffect>()   // lowercase lootItemName, charmEffect
     private var worldWhitelist = emptySet<String>()
 
-    init { reload() }
+    init {
+        reload()
+        eventBus.subscribe<PluginReload>(this, 80) { reload() }
+    }
 
-    fun reload() {
+    private fun reload() {
         manager.reload()
         loadCharmEffects()
         loadWorldWhitelist()

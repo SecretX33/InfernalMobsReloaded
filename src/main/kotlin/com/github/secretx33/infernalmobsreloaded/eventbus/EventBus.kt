@@ -66,6 +66,7 @@ class EventBus(private val log: Logger) {
             .filter { it.eventType.isInstance(event) }
             .sorted()
             .forEach {
+                //log.info("Dispatching event ${event::class.simpleName} to ${it.ownerName} (${it.order})!")
                 try {
                     it.onEvent(event)
                 } catch (e: Exception) {

@@ -110,7 +110,7 @@ class AbilityHelper (
     private val wgChecker: WorldGuardChecker,
     private val particlesHelper: ParticlesHelper,
     private val infernalMobTypesRepo: InfernalMobTypesRepo,
-    private val logger: Logger,
+    private val log: Logger,
     eventBus: EventBus,
 ){
     private val blockModifications = Sets.newConcurrentHashSet<BlockModification>()
@@ -720,7 +720,7 @@ class AbilityHelper (
         val itemDropChance = abilityConfig.getDouble(AbilityConfigKeys.GHOST_ITEM_DROP_CHANCE, maxValue = 1.0).toFloat()
 
         val infernalType = infernalMobTypesRepo.getInfernalTypeOrNull("${hauntedPrefix}ghost") ?: run {
-            logger.severe("Oops, seems like you have removed '${hauntedPrefix}ghost' from your mobs.yml configuration file, without it, the Ghost ability don't work, please re-add the missing ghost types and reload. If you prefer, you may also just delete your mobs.yml and let it regenerate automatically using the reload command.")
+            log.severe("Oops, seems like you have removed '${hauntedPrefix}ghost' from your mobs.yml configuration file, without it, the Ghost ability don't work, please re-add the missing ghost types and reload. If you prefer, you may also just delete your mobs.yml and let it regenerate automatically using the reload command.")
             return
         }
 
@@ -1121,7 +1121,8 @@ class AbilityHelper (
 
     private fun String.toAbilitySet(): Set<Ability> = gson.fromJson(this, infernalAbilitySetToken)
 
-    fun revertPendingBlockModifications() {
+    private fun revertPendingBlockModifications() {
+        log.info("Reverting pending infernal mobs block modifications")
         blockModifications.forEach { it.unmake() }
         blockModifications.clear()
     }
