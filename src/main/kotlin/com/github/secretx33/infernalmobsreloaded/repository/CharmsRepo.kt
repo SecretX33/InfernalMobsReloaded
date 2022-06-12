@@ -110,7 +110,7 @@ class CharmsRepo (
     private fun getDelay(name: String, mode: PotionEffectApplyMode): Pair<Double, Double> {
         val delay = getDoublePair(name, "delay", default = 0.0)
 
-        if(mode == PotionEffectApplyMode.SELF_RECURRENT && delay.first <= 0.1) {
+        if (mode == PotionEffectApplyMode.SELF_RECURRENT && delay.first <= 0.1) {
             log.warning("Warning: You have set the minimum delay of '$name' charm effect to ${delay.first}s, which is less or equal to 100ms, this might overload or even crash your server and/or your players clients")
         }
         return delay
@@ -118,7 +118,7 @@ class CharmsRepo (
 
     private fun getComponentMessage(name: String, key: String): Component? {
         val message = manager.getString("charm-effects.$name.$key") ?: ""
-        if(message.isBlank()) return null
+        if (message.isBlank()) return null
         return adventureMessage.parse(message)
     }
 
@@ -126,7 +126,7 @@ class CharmsRepo (
         val potionEffect = manager.getString("charm-effects.$name.$key") ?: ""
 
         // if type is absent or blank
-        if(potionEffect.isBlank()) {
+        if (potionEffect.isBlank()) {
             log.warning("You must provide a $key for the charm type '$name'! Please fix your charms configurations and reload, defaulting $name $key to Luck.")
             return PotionEffectType.LUCK
         }
@@ -141,7 +141,7 @@ class CharmsRepo (
         val applyMode = manager.getString("charm-effects.$name.$key") ?: ""
 
         // if type is absent or blank
-        if(applyMode.isBlank()) {
+        if (applyMode.isBlank()) {
             log.warning("You must provide a $key for the charm type '$name'! Please fix your charms configurations and reload, defaulting $name $key to SELF_PERMANENT.")
             return PotionEffectApplyMode.SELF_PERMANENT
         }
@@ -156,7 +156,7 @@ class CharmsRepo (
         val particleEffect = manager.getString("charm-effects.$name.$key") ?: ""
 
         // if type is absent or blank
-        if(particleEffect.isBlank()) return null
+        if (particleEffect.isBlank()) return null
 
         return Particle.values().firstOrNull { it.name.equals(particleEffect, ignoreCase = true) } ?: run {
             log.warning("Inside charm effect '$name', $key '$particleEffect' is invalid or doesn't exist, please fix your charms configurations. Disablind particle effects for $name $key")
@@ -166,12 +166,12 @@ class CharmsRepo (
 
     private fun getParticleMode(name: String, key: String, particle: Particle?, effectMode: PotionEffectApplyMode): CharmParticleMode {
         // no particle selected
-        if(particle == null) return CharmParticleMode.NONE
+        if (particle == null) return CharmParticleMode.NONE
 
         val typedParticleMode = manager.getString("charm-effects.$name.$key") ?: ""
 
         // if type is absent or blank
-        if(typedParticleMode.isBlank()) {
+        if (typedParticleMode.isBlank()) {
             log.warning("You must provide a $key for the charm type '$name'! Please fix your charms configurations and reload, defaulting $name $key to NONE.")
             return CharmParticleMode.NONE
         }
@@ -183,7 +183,7 @@ class CharmsRepo (
         }
 
         // particleMode is incompatible with effectMode, warn and disable particles
-        if(effectMode !in particleMode.validApplyModes) {
+        if (effectMode !in particleMode.validApplyModes) {
             log.warning("Inside charm effect '$name', $key '$typedParticleMode' cannot be used in conjunction with $effectMode, valid modes for $typedParticleMode are: '${particleMode.validApplyModes.joinToString()}, please fix your charms configurations and reload. Defaulting $name $key to NONE.")
             return CharmParticleMode.NONE
         }
@@ -193,7 +193,7 @@ class CharmsRepo (
     private fun getRequiredMainHand(name: String, key: String): String? {
         val item = manager.getString("charm-effects.$name.$key")?.takeIf { it.isNotBlank() } ?: return null
 
-        if(!lootItemsRepo.hasLootItem(item)) {
+        if (!lootItemsRepo.hasLootItem(item)) {
             log.warning("Inside ${manager.fileName} key '$name.$key', loot item named '$item' was not found, please fix your charm configurations and reload.")
             return null
         }
@@ -233,7 +233,7 @@ class CharmsRepo (
         val values = manager.getString("charm-effects.$name.$key") ?: ""
 
         // if there's no amount field, return pair with default values
-        if(values.isBlank()) return Pair(default, default)
+        if (values.isBlank()) return Pair(default, default)
 
         // value is only one value
         SIGNED_INT.matchOrNull(values, 1)
@@ -256,7 +256,7 @@ class CharmsRepo (
         val values = manager.getString("charm-effects.$name.$key") ?: ""
 
         // if there's no amount field, return pair with default values
-        if(values.isBlank()) return Pair(default, default)
+        if (values.isBlank()) return Pair(default, default)
 
         // value is only one value
         SIGNED_DOUBLE.matchOrNull(values, 1)

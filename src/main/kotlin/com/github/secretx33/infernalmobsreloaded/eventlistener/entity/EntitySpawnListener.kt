@@ -28,7 +28,7 @@ class EntitySpawnListener (
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun CreatureSpawnEvent.onNaturalEntitySpawn() {
         val world = entity.world
-        if(!spawnReason.isAllowed() || entity.cannotBeInfernal() || entity.alreadyIsInfernal() || !world.isWhitelisted()) return
+        if (!spawnReason.isAllowed() || entity.cannotBeInfernal() || entity.alreadyIsInfernal() || !world.isWhitelisted()) return
         val infernalType = infernalTypesRepo.getInfernalTypes(entityType).firstOrNull { random.nextDouble() <= it.spawnChance } ?: return
 
         // fire event InfernalMobSpawnEvent to spawn a new infernal

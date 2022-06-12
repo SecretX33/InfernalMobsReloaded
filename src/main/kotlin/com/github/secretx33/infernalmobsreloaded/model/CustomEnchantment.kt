@@ -18,7 +18,7 @@ data class CustomEnchantment (
 
     fun get(): Optional<Pair<Enchantment, Int>> {
         // returns empty optional if the 'try' for get the enchantment is not successful
-        if(random.nextDouble() > chance) return Optional.empty()
+        if (random.nextDouble() > chance) return Optional.empty()
         return Optional.of(Pair(type, levels.random()))
     }
 

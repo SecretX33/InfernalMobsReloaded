@@ -76,7 +76,7 @@ enum class MessageKeys(val default: Any) {
     val configEntry = name.lowercase(Locale.US).replace('_','-')
 }
 
-fun String.toComponent(color: NamedTextColor? = null) = if(color == null) Component.text(this) else Component.text(this, color)
+fun String.toComponent(color: NamedTextColor? = null) = if (color == null) Component.text(this) else Component.text(this, color)
 
 fun Component.replace(oldText: String, newText: String) = replaceText { it.match(oldText).replacement(newText) }
 

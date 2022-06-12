@@ -24,12 +24,12 @@ class InvisibleEntitiesEquipVanisherListener (
 ) : PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_EQUIPMENT) {
 
     override fun onPacketSending(event: PacketEvent) {
-        if(event.packetType != PacketType.Play.Server.ENTITY_EQUIPMENT || event.isCancelled || !disableEquipVisibility) return
+        if (event.packetType != PacketType.Play.Server.ENTITY_EQUIPMENT || event.isCancelled || !disableEquipVisibility) return
 
         val wrapper = WrapperPlayServerEntityEquipment(event.packet)
         val entity = wrapper.getEntity(event) as? LivingEntity ?: return
         // if entity is not invisible inferno, no need to alter its equipments
-        if(!entity.isInvisibleInfernal()) return
+        if (!entity.isInvisibleInfernal()) return
 
         // setting air as item in all lists pairs of slot <-> item for the invisible infernal
         wrapper.handle.slotStackPairLists.apply {

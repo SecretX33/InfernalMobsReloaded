@@ -22,7 +22,7 @@ class WorldGuardCheckerDummy : WorldGuardChecker {
 class WorldGuardCheckerImpl : WorldGuardChecker {
 
     override fun canMobGriefBlock(block: Block): Boolean {
-        if(!isWorldGuardEnabled) return true
+        if (!isWorldGuardEnabled) return true
 
         val loc = BukkitAdapter.adapt(block.location)
         val container = WorldGuard.getInstance().platform.regionContainer

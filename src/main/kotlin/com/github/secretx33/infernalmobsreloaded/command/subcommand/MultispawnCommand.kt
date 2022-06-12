@@ -29,7 +29,7 @@ class MultispawnCommand(
     override val aliases: List<String> = listOf(name, "mspawn", "multis", "ms")
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
-        if(strings.size < 3) {
+        if (strings.size < 3) {
             player.sendMessage("Usage: /$alias $name <amount> <entity_type> [abilities]".toComponent(NamedTextColor.RED))
             return
         }
@@ -48,7 +48,7 @@ class MultispawnCommand(
         val abilities = HashSet<Ability>()
 
         // if player specified infernal abilities in command
-        if(strings.size > 2) {
+        if (strings.size > 2) {
             for(i in 3..strings.lastIndex) {
                 val ability = Ability.getOrNull(strings[i]) ?: run {
                     player.sendMessage(messages.get(MessageKeys.ABILITY_DOESNT_EXIST).replace("<ability>", strings[i].toComponent(NamedTextColor.GOLD)))
@@ -75,10 +75,10 @@ class MultispawnCommand(
     }
 
     override fun getCompletor(sender: CommandSender, length: Int, hint: String, strings: Array<String>): List<String> {
-        if(sender !is Player || length < 2) return emptyList()
+        if (sender !is Player || length < 2) return emptyList()
 
-        if(length == 2) return if(hint.isBlank()) listOf("<number>") else emptyList()
-        if(length == 3) return infernalMobTypesRepo.getAllInfernalTypeNames().filter { it.startsWith(hint, ignoreCase = true) }
+        if (length == 2) return if (hint.isBlank()) listOf("<number>") else emptyList()
+        if (length == 3) return infernalMobTypesRepo.getAllInfernalTypeNames().filter { it.startsWith(hint, ignoreCase = true) }
 
         return Ability.LOWERCASE_VALUES.filter { it.startsWith(hint, ignoreCase = true) }
     }

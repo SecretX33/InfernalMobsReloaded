@@ -26,7 +26,7 @@ class GetSpawnerCommand(
     override val aliases: List<String> = listOf(name, "spawner", "gs")
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
-        if(strings.size < 2) {
+        if (strings.size < 2) {
             player.sendMessage("Usage: /$alias $name <entity_type> [amount]".toComponent(NamedTextColor.RED))
             return
         }
@@ -39,7 +39,7 @@ class GetSpawnerCommand(
         val spawner = ItemStack(Material.SPAWNER).turnIntoSpawner(infernalType)
 
         // Material.maxStackSize * 36 is the upper limit here because https://github.com/CryptoMorin/XSeries/issues/119
-        val amount = if(strings.size < 3) spawner.amount else strings[2].toIntOrNull()?.coerceIn(1, spawner.type.maxStackSize * 36) ?: run {
+        val amount = if (strings.size < 3) spawner.amount else strings[2].toIntOrNull()?.coerceIn(1, spawner.type.maxStackSize * 36) ?: run {
             player.sendMessage(messages.get(MessageKeys.INVALID_NUMBER).replace("<number>", strings[2]))
             return
         }
@@ -57,7 +57,7 @@ class GetSpawnerCommand(
     }
 
     override fun getCompletor(sender: CommandSender, length: Int, hint: String, strings: Array<String>): List<String> {
-        if(sender !is Player || length < 2) return emptyList()
+        if (sender !is Player || length < 2) return emptyList()
 
         return when {
             length == 2 -> infernalMobTypesRepo.getAllInfernalTypeNames().filter { it.startsWith(hint, ignoreCase = true) }

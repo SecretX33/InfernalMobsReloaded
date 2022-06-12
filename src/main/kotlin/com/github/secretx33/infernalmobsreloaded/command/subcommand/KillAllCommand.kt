@@ -27,7 +27,7 @@ class KillAllCommand(
 
     override fun onCommandByConsole(sender: CommandSender, alias: String, strings: Array<String>) {
         // killall [world]
-        if(strings.size < 2) {
+        if (strings.size < 2) {
             killAllInfernals(sender)
             return
         }
@@ -55,7 +55,7 @@ class KillAllCommand(
         .forEach { mobsManager.removeAndDropStolenItems(it) }
 
     override fun getCompletor(sender: CommandSender, length: Int, hint: String, strings: Array<String>): List<String> {
-        if(length != 2) return emptyList()
+        if (length != 2) return emptyList()
         return Bukkit.getWorlds()
             .filter { it.name.startsWith(hint, ignoreCase = true) }
             .map { it.name }

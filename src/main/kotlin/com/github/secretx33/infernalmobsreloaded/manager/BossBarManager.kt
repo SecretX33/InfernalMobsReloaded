@@ -35,7 +35,7 @@ class BossBarManager (
     }
 
     fun updateBossBar(entity: LivingEntity, newHealth: Float) {
-        if(!bossBarEnabled) return
+        if (!bossBarEnabled) return
         entity.getBossBar()?.progress(newHealth)
     }
 
@@ -47,14 +47,14 @@ class BossBarManager (
     }
 
     fun removeBossBar(entity: LivingEntity) {
-        if(!bossBarEnabled) return
+        if (!bossBarEnabled) return
         bossBarMap.remove(entity.uniqueId)?.let { bar ->
             entity.world.players.forEach { it.hideBossBar(bar) }
         }
     }
 
     private fun manageInfernalBossBarsVisibility(player: Player, nearbyInfernals: Collection<LivingEntity>) {
-        if(!bossBarEnabled) return
+        if (!bossBarEnabled) return
         val infernalUuids = nearbyInfernals.map { it.uniqueId }
         // filter the infernals further away and hide their bar from the player
         bossBarMap.filterKeys { it !in infernalUuids }.forEach { (_, bar) -> player.hideBossBar(bar) }
@@ -63,7 +63,7 @@ class BossBarManager (
     }
 
     fun showBarOfNearbyInfernals(player: Player) {
-        if(!bossBarEnabled) return
+        if (!bossBarEnabled) return
         val nearbyInfernals = player.getNearbyInfernals()
         manageInfernalBossBarsVisibility(player, nearbyInfernals)
     }
@@ -71,7 +71,7 @@ class BossBarManager (
     private fun Player.getNearbyInfernals() = location.getNearbyLivingEntities(bossBarShowDistance, bossBarShowHeight, bossBarShowDistance) { !it.isDead && it.isValid && mobsManager.isValidInfernalMob(it) && (!bossBarRequireLineOfSight || hasLineOfSight(it)) }
 
     fun showBossBarForNearbyPlayers(entity: LivingEntity) {
-        if(!bossBarEnabled) return
+        if (!bossBarEnabled) return
         val bossBar = entity.getBossBar() ?: return
         entity.location.getNearbyPlayers(bossBarShowDistance, bossBarShowHeight, bossBarShowDistance) { !it.isDead && it.isValid && (!bossBarRequireLineOfSight || it.hasLineOfSight(entity)) }.forEach {
             it.showBossBar(bossBar)
@@ -79,7 +79,7 @@ class BossBarManager (
     }
 
     fun showBarsOfNearbyInfernalsForAllPlayers() {
-        if(!bossBarEnabled) return
+        if (!bossBarEnabled) return
         log.info("Enabling infernal mobs boss bars")
         Bukkit.getOnlinePlayers().forEach(::showBarOfNearbyInfernals)
     }

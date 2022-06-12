@@ -62,7 +62,7 @@ class ItemBuilder private constructor(material: Material) {
     }
 
     fun dyeColor(dyeColor: DyeColor?): ItemBuilder {
-        if(dyeColor == null) return this
+        if (dyeColor == null) return this
         item.itemMeta = meta
         (item as? Colorable)?.color = dyeColor
         meta = item.itemMeta
@@ -70,17 +70,17 @@ class ItemBuilder private constructor(material: Material) {
     }
 
     fun bannerPatterns(patterns: List<Pattern>): ItemBuilder {
-        if(patterns.isEmpty()) return this
+        if (patterns.isEmpty()) return this
         (meta as? BannerMeta)?.patterns = patterns
         return this
     }
 
     fun shieldPatterns(baseColor: DyeColor?, patterns: Collection<Pattern>): ItemBuilder {
-        if(baseColor == null && patterns.isEmpty()) return this
+        if (baseColor == null && patterns.isEmpty()) return this
         val blockMeta = meta as? BlockStateMeta ?: return this
         val banner = blockMeta.blockState as? Banner ?: return this
         banner.let {
-            if(baseColor != null) it.baseColor = baseColor
+            if (baseColor != null) it.baseColor = baseColor
             patterns.forEach { pattern -> it.addPattern(pattern) }
             it.update()
             blockMeta.blockState = it

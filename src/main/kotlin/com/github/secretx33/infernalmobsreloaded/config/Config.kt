@@ -94,7 +94,7 @@ class Config(
     @Suppress("UNCHECKED_CAST")
     fun <T : Enum<T>> getEnumSet(key: ConfigKeys, clazz: Class<T>, predicate: Predicate<T>? = null): Set<T> {
         return cache.getOrPut(key.configEntry) {
-            if(!file.contains(key.configEntry)) return@getOrPut key.defaultValue
+            if (!file.contains(key.configEntry)) return@getOrPut key.defaultValue
             file.getStringList(key.configEntry).mapNotNullTo(hashSetOf()) { item ->
                 val optional = Enums.getIfPresent(clazz, item.uppercase(Locale.US)).takeIf { opt -> opt.isPresent }?.get() ?: run {
                     log.severe("Error while trying to get config key '$key', value passed '${item.uppercase(Locale.US)}' is an invalid value, please fix this entry in the ${file.fileName} and reload the configs")

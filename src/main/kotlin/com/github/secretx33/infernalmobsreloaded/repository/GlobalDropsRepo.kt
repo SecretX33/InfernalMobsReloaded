@@ -43,7 +43,7 @@ class GlobalDropsRepo (
         val loots = manager.getStringList("global-drops").filter { it.isNotBlank() }
 
         // if there's no loot
-        if(loots.isEmpty()) return emptyMap()
+        if (loots.isEmpty()) return emptyMap()
 
         // print error in console for any missing loot item
         loots.filter { !lootItemsRepo.hasLootItem(it.split(':')[0]) }.forEach {
@@ -56,7 +56,7 @@ class GlobalDropsRepo (
             val fields = line.split(':')
             val item = lootItemsRepo.getLootItem(fields[0])
 
-            if(fields.size == 1) {
+            if (fields.size == 1) {
                 lootItems[item] = 1.0
                 return@forEach
             }

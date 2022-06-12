@@ -36,14 +36,14 @@ class InspectCommand(
         }
 
         // if targeted entity is not an infernal entity
-        if(!mobsManager.isPossibleInfernalMob(target)) {
+        if (!mobsManager.isPossibleInfernalMob(target)) {
             player.sendMessage(messages.get(MessageKeys.NOT_TARGETING_INFERNAL))
             return
         }
         val group = mobsManager.getInfernalGroupNameOrNull(target) ?: return
 
         // if targeted entity is not an infernal entity
-        if(!mobsManager.isValidInfernalMob(target)) {
+        if (!mobsManager.isValidInfernalMob(target)) {
             player.sendMessage(messages.get(MessageKeys.NOT_TARGETING_VALID_INFERNAL).replace("<group>", group))
             return
         }

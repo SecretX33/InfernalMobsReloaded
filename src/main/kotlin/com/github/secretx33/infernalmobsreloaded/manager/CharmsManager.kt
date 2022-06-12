@@ -66,7 +66,7 @@ class CharmsManager(
 
     fun updateCharmEffects(player: Player) {
         // player is not on a charm effects enabled world
-        if(!player.isOnCharmEnabledWorld()) {
+        if (!player.isOnCharmEnabledWorld()) {
             cancelAllCharmTasks(player)
             return
         }
@@ -74,7 +74,7 @@ class CharmsManager(
         val invMap = player.inventoryMap
         val charms = invMap.filterKeys { charmsRepo.isItemRequiredByCharmEffect(it) }
         // if player has no charms in his inventory
-        if(charms.isEmpty()) {
+        if (charms.isEmpty()) {
             cancelAllCharmTasks(player)
             return
         }
@@ -87,7 +87,7 @@ class CharmsManager(
 
         // start valid effects and cancel invalid effects
         effects.forEach {
-            if(it.validateEffect(lootItems, mainHand)) player.startCharmEffect(it)
+            if (it.validateEffect(lootItems, mainHand)) player.startCharmEffect(it)
             else player.cancelCharmEffect(it)
         }
 //        println("2. lootItems = ${lootItems.keys.joinToString()}, effects = ${effects.joinToString(separator = ",\n")}")
@@ -111,7 +111,7 @@ class CharmsManager(
 
     private fun Player.addPermanentCharmEffect(charmEffect: CharmEffect) {
         // if effect is already applied
-        if(permanentEffects.contains(uniqueId, charmEffect)) return
+        if (permanentEffects.contains(uniqueId, charmEffect)) return
         addPotionEffect(PotionEffect(charmEffect.potionEffect, Int.MAX_VALUE, charmEffect.getPotency()))
         spawnCharmParticles(charmEffect)
         permanentEffects.put(uniqueId, charmEffect, charmEffect.potionEffect)
@@ -120,7 +120,7 @@ class CharmsManager(
 
     private fun Player.addRecurrentCharmEffect(charmEffect: CharmEffect) {
         // if effect task is already running
-        if(periodicEffects.contains(uniqueId, charmEffect)) return
+        if (periodicEffects.contains(uniqueId, charmEffect)) return
 
         val job = CoroutineScope(Dispatchers.Default).launch {
             delay((charmEffect.getDelay() * 1000.0).toLong())
@@ -136,7 +136,7 @@ class CharmsManager(
     }
 
     private fun LivingEntity.spawnCharmParticles(charmEffect: CharmEffect) {
-        if(this is Player && isInvisibleOrVanished()) return
+        if (this is Player && isInvisibleOrVanished()) return
         val particle = charmEffect.particle?.takeIf { charmEffect.particleMode != CharmParticleMode.NONE } ?: return
         world.spawnParticle(particle, eyeLocation, 100, 0.5, 1.0, 0.5)
     }
@@ -146,23 +146,23 @@ class CharmsManager(
         targetEffects.get(player.uniqueId).filter { it.isNotCooldown(player) }.forEach {
 //            println("Triggering ${it.name} on ${target.name}")
             // effects
-            if(it.effectApplyMode == PotionEffectApplyMode.SELF_ON_HIT || it.effectApplyMode == PotionEffectApplyMode.BOTH_ON_HIT)
+            if (it.effectApplyMode == PotionEffectApplyMode.SELF_ON_HIT || it.effectApplyMode == PotionEffectApplyMode.BOTH_ON_HIT)
                 player.addPotionEffect(PotionEffect(it.potionEffect, (it.getDuration() * 20.0).toInt(), it.getPotency()))
 
-            if(it.effectApplyMode == PotionEffectApplyMode.TARGET_ON_HIT || it.effectApplyMode == PotionEffectApplyMode.BOTH_ON_HIT)
+            if (it.effectApplyMode == PotionEffectApplyMode.TARGET_ON_HIT || it.effectApplyMode == PotionEffectApplyMode.BOTH_ON_HIT)
                 target.addPotionEffect(PotionEffect(it.potionEffect, (it.getDuration() * 20.0).toInt(), it.getPotency()))
 
             // particles
-            if(it.enabledSelfParticle) player.spawnCharmParticles(it)
-            if(it.enabledTargetParticle) target.spawnCharmParticles(it)
+            if (it.enabledSelfParticle) player.spawnCharmParticles(it)
+            if (it.enabledTargetParticle) target.spawnCharmParticles(it)
 
             // messages
             it.playerMessage?.let { msg -> player.sendMessage(msg) }
-            if(target is Player) it.targetMessage?.let { msg -> target.sendMessage(msg) }
+            if (target is Player) it.targetMessage?.let { msg -> target.sendMessage(msg) }
         }
     }
 
-    private fun CharmEffect.isNotCooldown(player: Player) = cooldowns.getIfPresent(Pair(player.uniqueId, this)).let { it == null || it < System.currentTimeMillis() }.also { if(it) cooldowns.put(Pair(player.uniqueId, this), System.currentTimeMillis() + (getDelay() * 1000.0).toLong()) }
+    private fun CharmEffect.isNotCooldown(player: Player) = cooldowns.getIfPresent(Pair(player.uniqueId, this)).let { it == null || it < System.currentTimeMillis() }.also { if (it) cooldowns.put(Pair(player.uniqueId, this), System.currentTimeMillis() + (getDelay() * 1000.0).toLong()) }
 
 
     private fun Player.cancelCharmEffect(charmEffect: CharmEffect) {

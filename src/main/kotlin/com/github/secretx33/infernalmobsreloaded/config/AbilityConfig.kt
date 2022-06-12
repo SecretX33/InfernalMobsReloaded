@@ -108,10 +108,10 @@ class AbilityConfig(
         = getDouble("${ability.configEntry}.nearby-entities-range", default, minValue, maxValue)
 
     fun getDistanceMultiplier(ability: Ability, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
-        = getDouble("${ability.configEntry}.distance-multiplier", default, minValue, maxValue).let { if(it <= 1.0) it else sqrt(it) }
+        = getDouble("${ability.configEntry}.distance-multiplier", default, minValue, maxValue).let { if (it <= 1.0) it else sqrt(it) }
 
     fun getHeightMultiplier(ability: Ability, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE)
-        = getDouble("${ability.configEntry}.height-multiplier", default, minValue, maxValue).let { if(it <= 1.0) it else sqrt(it) }
+        = getDouble("${ability.configEntry}.height-multiplier", default, minValue, maxValue).let { if (it <= 1.0) it else sqrt(it) }
 
     fun doesRequireLineOfSight(ability: Ability, default: Boolean = true) = get("${ability.configEntry}.require-line-of-sight", default)
 
@@ -126,7 +126,7 @@ class AbilityConfig(
             val values = file.getString(key) ?: ""
 
             // if there's no amount field, return pair with default values
-            if(values.isBlank()) return@getOrPut Pair(default, default)
+            if (values.isBlank()) return@getOrPut Pair(default, default)
 
             // value is only one value
             SIGNED_INT.matchOrNull(values, 1)
@@ -155,7 +155,7 @@ class AbilityConfig(
             val values = file.getString(key) ?: ""
 
             // if there's no amount field, return pair with default values
-            if(values.isBlank()) return@getOrPut Pair(default, default)
+            if (values.isBlank()) return@getOrPut Pair(default, default)
 
             // value is only one value
             SIGNED_DOUBLE.matchOrNull(values, 1)
@@ -180,7 +180,7 @@ class AbilityConfig(
     @Suppress("UNCHECKED_CAST")
     fun <T : Enum<T>> getEnumSet(key: AbilityConfigKeys, clazz: Class<T>, predicate: Predicate<T>? = null): Set<T> {
         return cache.getOrPut(key.configEntry) {
-            if(!file.contains(key.configEntry)) return@getOrPut key.defaultValue
+            if (!file.contains(key.configEntry)) return@getOrPut key.defaultValue
             file.getStringList(key.configEntry).mapNotNullTo(hashSetOf()) { item ->
                 val optional = Enums.getIfPresent(clazz, item.uppercase(Locale.US)).takeIf { opt -> opt.isPresent }?.get() ?: run {
                     log.severe("Error while trying to get ability key '$key', value passed '${item.uppercase(Locale.US)}' is an invalid value, please fix this entry in the ${file.fileName} and reload the configs")

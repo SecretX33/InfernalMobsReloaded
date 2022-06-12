@@ -138,7 +138,7 @@ class InfernalMobsManager (
     private fun LivingEntity.addCustomNameToInfernal(infernalType: InfernalMobType) {
         val displayMode = config.getEnum<DisplayCustomNameMode>(ConfigKeys.DISPLAY_INFERNAL_NAME_MODE)
         removeWhenFarAway = !config.get<Boolean>(ConfigKeys.INFERNALS_ARE_PERSISTENT)
-        if(displayMode.addCustomName) customName(infernalType.displayName)
+        if (displayMode.addCustomName) customName(infernalType.displayName)
         isCustomNameVisible = displayMode.customNameVisible
     }
 
@@ -146,7 +146,7 @@ class InfernalMobsManager (
         val disabledAbilities = disabledAbilities + infernalType.blacklistedAbilities
         val abilitySet = (event.abilitySet.takeIf { !event.randomAbilities }
             ?: Ability.random(infernalType.getAbilityNumber(), disabledAbilities)).removeConflicts(disabledAbilities) + infernalType.forcedAbilities
-        val livesNumber = if(Ability.SECOND_WIND in abilitySet) 2 else 1
+        val livesNumber = if (Ability.SECOND_WIND in abilitySet) 2 else 1
 
         pdc.apply {
             set(keyChain.infernalCategoryKey, PersistentDataType.STRING, infernalType.name)
@@ -158,8 +158,8 @@ class InfernalMobsManager (
     private fun Set<Ability>.removeConflicts(disabledAbilities: Set<Ability>): Set<Ability> {
         val newSet = HashSet(this)
         // filter conflicts
-        if(contains(Ability.FLYING) && contains(Ability.MOUNTED)) {
-            if(random.nextBoolean()) {
+        if (contains(Ability.FLYING) && contains(Ability.MOUNTED)) {
+            if (random.nextBoolean()) {
                 newSet.remove(Ability.FLYING)
             } else {
                 newSet.remove(Ability.MOUNTED)
@@ -196,7 +196,7 @@ class InfernalMobsManager (
         val savedType = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING) ?: return
 
         // is type of that infernal is missing, convert it back to a normal entity
-        if(!infernalMobTypesRepo.isValidInfernalType(savedType)) {
+        if (!infernalMobTypesRepo.isValidInfernalType(savedType)) {
             entity.unmakeInfernalMob()
             return
         }
@@ -207,7 +207,7 @@ class InfernalMobsManager (
 
     private fun startParticleEmissionTask(entity: LivingEntity) {
         cancelParticleTask(entity) // for safety
-        if(!infernalParticlesEnabled || entity.disableInvisibleParticles()) return
+        if (!infernalParticlesEnabled || entity.disableInvisibleParticles()) return
         val particleType = particleType
         val particleSpread = particleSpread
         val delay = delayBetweenParticleEmission
@@ -277,10 +277,10 @@ class InfernalMobsManager (
 
     fun removeAndDropStolenItems(entity: Entity) {
         // cannot remove players
-        if(entity is Player) return
+        if (entity is Player) return
 
         // if entity is not living entity, just remove it since it doesn't have any armor
-        if(entity !is LivingEntity) {
+        if (entity !is LivingEntity) {
             entity.remove()
             return
         }
@@ -289,7 +289,7 @@ class InfernalMobsManager (
         val location = entity.location
         val items = entity.equipment?.contents?.filter { it.isStolenItem() } ?: emptyList()
 
-        if(items.isNotEmpty()) {
+        if (items.isNotEmpty()) {
             runSync(plugin, 50L) {
                 // drop all the stolen pieces that this entity has
                 items.forEach { world.dropItem(location, it) }

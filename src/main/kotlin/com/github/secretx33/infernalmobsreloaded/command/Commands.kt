@@ -35,7 +35,7 @@ class Commands(
 
         val sub = strings[0].lowercase(Locale.US)
         subcommands.firstOrNull { it.hasPermission(sender) && (sub == it.name || sub in it.aliases) }?.let { cmd ->
-            if(sender is Player) {
+            if (sender is Player) {
                 cmd.onCommandByPlayer(sender, alias, strings)
             } else {
                 cmd.onCommandByConsole(sender, alias, strings)
@@ -45,9 +45,9 @@ class Commands(
     }
 
     override fun onTabComplete(sender: CommandSender, command: Command, alias: String, strings: Array<String>): List<String> {
-        if(strings.isEmpty()) return emptyList()
+        if (strings.isEmpty()) return emptyList()
         // mobs <subcommand> <args>
-        if(strings.size == 1) {
+        if (strings.size == 1) {
             return subcommands.asSequence()
                 .filter { cmd -> cmd.hasPermission(sender) && cmd.name.startsWith(strings[0], ignoreCase = true)}
                 .map { it.name }

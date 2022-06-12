@@ -25,7 +25,7 @@ class GetLootCommand(
     override val aliases: List<String> = listOf(name, "loot", "gl", "l")
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
-        if(strings.size < 2) {
+        if (strings.size < 2) {
             player.sendMessage("Usage: /$alias $name <loot_item> [amount]".toComponent(NamedTextColor.RED))
             return
         }
@@ -37,7 +37,7 @@ class GetLootCommand(
         val item = lootItem.makeItem()
 
         // Material.maxStackSize * 36 is the upper limit here because https://github.com/CryptoMorin/XSeries/issues/119
-        val amount = if(strings.size < 3) item.amount else strings[2].toIntOrNull()?.coerceIn(1, item.type.maxStackSize * 36) ?: run {
+        val amount = if (strings.size < 3) item.amount else strings[2].toIntOrNull()?.coerceIn(1, item.type.maxStackSize * 36) ?: run {
             player.sendMessage(messages.get(MessageKeys.INVALID_NUMBER).replace("<number>", strings[2]))
             return
         }
@@ -47,7 +47,7 @@ class GetLootCommand(
         player.sendMessage(messages.get(MessageKeys.RECEIVED_LOOT_ITEM).replace("<amount>", item.amount.toString())
             .replace("<item>", item.displayName))
         // and give the item to him
-        if(item.type.maxStackSize == 1)  {
+        if (item.type.maxStackSize == 1)  {
             repeat(amount.coerceAtMost(250)) {
                 XItemStack.giveOrDrop(player, true, lootItem.makeItem())
             }
@@ -62,10 +62,10 @@ class GetLootCommand(
     }
 
     override fun getCompletor(sender: CommandSender, length: Int, hint: String, strings: Array<String>): List<String> {
-        if(sender !is Player || length < 2) return emptyList()
+        if (sender !is Player || length < 2) return emptyList()
 
-        if(length == 2) return lootItemsRepo.getAllLootItems().filter { it.startsWith(hint, ignoreCase = true) }
-        if(length == 3 && hint.isBlank()) return listOf("<number>")
+        if (length == 2) return lootItemsRepo.getAllLootItems().filter { it.startsWith(hint, ignoreCase = true) }
+        if (length == 3 && hint.isBlank()) return listOf("<number>")
 
         return emptyList()
     }

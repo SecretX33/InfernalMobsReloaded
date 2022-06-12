@@ -77,7 +77,7 @@ class InfernalMobTypesRepo (
     private fun ensureUniqueKeys() {
         val duplicatedKeys = manager.getKeys(false).groupBy { it.lowercase(Locale.US) }.filterValues { it.size > 1 }
         // if there are duplicates in keys
-        if(duplicatedKeys.isNotEmpty()) {
+        if (duplicatedKeys.isNotEmpty()) {
             val sb = StringBuilder("Oops, seems like there are duplicate mob categories in file '${manager.fileName}', remember that categories are caSE inSenSiTiVe, so make sure that each category has a unique name. Duplicated mob categories: ")
             duplicatedKeys.entries.forEachIndexed { index, (k, v) ->
                 sb.append("\n${index + 1}) $k = {${v.joinToString()}}")
@@ -130,7 +130,7 @@ class InfernalMobTypesRepo (
         val forcedAbilities = manager.getStringList("$name.$subKey")
 
         // if forced abilities is absent or blank
-        if(forcedAbilities.isEmpty()) return emptySet()
+        if (forcedAbilities.isEmpty()) return emptySet()
 
         return forcedAbilities.mapNotNull { ability ->
             Ability.VALUES.firstOrNull { it.name.equals(ability, ignoreCase = true) } ?: run {
@@ -149,7 +149,7 @@ class InfernalMobTypesRepo (
         val mobType = manager.getString("$name.type") ?: ""
 
         // if type is absent or blank
-        if(mobType.isBlank()) {
+        if (mobType.isBlank()) {
             log.warning("You must provide a type of mob for the category '$name'! Please fix your mobs configurations and reload, defaulting $name mob type to Zombie.")
             return EntityType.ZOMBIE
         }
@@ -163,7 +163,7 @@ class InfernalMobTypesRepo (
     private fun getMobDisplayName(name: String, type: EntityType): Component {
         val displayName = manager.getString("$name.display-name") ?: ""
 
-        if(displayName.isBlank()) {
+        if (displayName.isBlank()) {
             log.warning("You must provide a display name for the mob category '$name'! Defaulting $name display name to its type.")
             return Component.text(type.formattedTypeName())
         }
@@ -174,8 +174,8 @@ class InfernalMobTypesRepo (
         val displayName = manager.getString("$name.boss-bar-text") ?: ""
 
         // if boss bar name is absent or blank, fallback to entity type
-        if(displayName.isBlank()) {
-            if(bossBarEnabled) log.warning("You must provide a boss bar name for the mob category '$name'! Defaulting $name display name to its type.")
+        if (displayName.isBlank()) {
+            if (bossBarEnabled) log.warning("You must provide a boss bar name for the mob category '$name'! Defaulting $name display name to its type.")
             return Component.text(type.formattedTypeName())
         }
         return adventureMessage.parse(displayName)
@@ -185,8 +185,8 @@ class InfernalMobTypesRepo (
         val barColor = manager.getString("$name.boss-bar-color") ?: ""
 
         // if boss bar color is absent or blank, fallback to PURPLE
-        if(barColor.isBlank()) {
-            if(bossBarEnabled) log.warning("You must provide a boss bar color for the mob category '$name'! Defaulting $name boss bar color to Purple.")
+        if (barColor.isBlank()) {
+            if (bossBarEnabled) log.warning("You must provide a boss bar color for the mob category '$name'! Defaulting $name boss bar color to Purple.")
             return BossBar.Color.PURPLE
         }
 
@@ -200,8 +200,8 @@ class InfernalMobTypesRepo (
         val bossBarOverlay = manager.getString("$name.boss-bar-overlay") ?: ""
 
         // if boss bar overlay style is absent or blank, fallback to NOTCHED_12
-        if(bossBarOverlay.isBlank()) {
-            if(bossBarEnabled) log.warning("You must provide a boss bar overlay style for the mob category '$name'! Defaulting $name boss bar overlay style to NOTCHED_12.")
+        if (bossBarOverlay.isBlank()) {
+            if (bossBarEnabled) log.warning("You must provide a boss bar overlay style for the mob category '$name'! Defaulting $name boss bar overlay style to NOTCHED_12.")
             return BossBar.Overlay.NOTCHED_12
         }
 
@@ -215,7 +215,7 @@ class InfernalMobTypesRepo (
         val bossBarFlags = manager.getStringList("$name.boss-bar-flags")
 
         // if there's no flag set or boss bars are disabled, return empty set
-        if(bossBarFlags.isEmpty() || !bossBarEnabled) return emptySet()
+        if (bossBarFlags.isEmpty() || !bossBarEnabled) return emptySet()
 
         return bossBarFlags.mapNotNullTo(EnumSet.noneOf(BossBar.Flag::class.java)) { line ->
             BossBar.Flag.values().firstOrNull { it.name.equals(line, ignoreCase = true) } ?: run {
@@ -229,7 +229,7 @@ class InfernalMobTypesRepo (
         val spawnChance = manager.getDouble("$name.spawn-chance", Double.NEGATIVE_INFINITY)
 
         // if user forgot to insert the spawnChance of that mob category
-        if(spawnChance == Double.NEGATIVE_INFINITY) {
+        if (spawnChance == Double.NEGATIVE_INFINITY) {
             log.warning("You must provide a spawn chance for the mob category '$name'! Please fix your mobs configurations and reload, defaulting $name spawn chance to 15%.")
             return 0.15
         }
@@ -240,7 +240,7 @@ class InfernalMobTypesRepo (
         val spawnerDropChance = manager.getDouble("$name.mob-spawn-drop-chance", Double.NEGATIVE_INFINITY)
 
         // if user didn't insert the spawnerDropChance of that mob category, means he doesn't want that infernal to drop any spawner
-        if(spawnerDropChance == Double.NEGATIVE_INFINITY) return 0.0
+        if (spawnerDropChance == Double.NEGATIVE_INFINITY) return 0.0
 
         return max(0.0, min(1.0, spawnerDropChance))
     }
@@ -249,8 +249,8 @@ class InfernalMobTypesRepo (
         val displayName = manager.getString("$name.mob-spawner-name") ?: ""
 
         // if boss bar name is absent or blank, fallback to entity type
-        if(displayName.isBlank()) {
-            if(dropChance > 0) log.warning("You must provide a mob spawner name for the mob category '$name'! Defaulting $name mob spawner name to its type.")
+        if (displayName.isBlank()) {
+            if (dropChance > 0) log.warning("You must provide a mob spawner name for the mob category '$name'! Defaulting $name mob spawner name to its type.")
             return Component.text("Mob Spawner (${type.formattedTypeName()})")
         }
         return adventureMessage.parse(displayName)
@@ -279,7 +279,7 @@ class InfernalMobTypesRepo (
         val values = manager.getString("$name.$key") ?: ""
 
         // if there's no amount field, return pair with default values
-        if(values.isBlank()) return Pair(default, default)
+        if (values.isBlank()) return Pair(default, default)
 
         // value is only one value
         SIGNED_INT.matchOrNull(values, 1)
@@ -302,7 +302,7 @@ class InfernalMobTypesRepo (
         val values = manager.getString("$name.$key") ?: ""
 
         // if there's no amount field, return pair with default values
-        if(values.isBlank()) return Pair(default, default)
+        if (values.isBlank()) return Pair(default, default)
 
         // value is only one value
         SIGNED_DOUBLE.matchOrNull(values, 1)
@@ -325,7 +325,7 @@ class InfernalMobTypesRepo (
         val loots = manager.getStringList("$name.loot-table")
 
         // if there's no loot
-        if(loots.isEmpty()) return emptyMap()
+        if (loots.isEmpty()) return emptyMap()
 
         // print error in console for any missing loot item
         loots.filter { !lootItemsRepo.hasLootItem(it.split(':')[0]) }.forEach {
@@ -338,7 +338,7 @@ class InfernalMobTypesRepo (
             val fields = line.split(':')
             val item = lootItemsRepo.getLootItem(fields[0])
 
-            if(fields.size == 1) {
+            if (fields.size == 1) {
                 lootItems[item] = 1.0
                 return@forEach
             }

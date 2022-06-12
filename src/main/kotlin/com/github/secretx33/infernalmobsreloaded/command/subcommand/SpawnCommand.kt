@@ -28,7 +28,7 @@ class SpawnCommand(
     override val aliases: List<String> = listOf(name, "summon", "sum", "spaw", "sp", "s")
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
-        if(strings.size < 2) {
+        if (strings.size < 2) {
             player.sendMessage("Usage: /$alias $name <entity_type> [abilities]".toComponent(NamedTextColor.RED))
             return
         }
@@ -41,7 +41,7 @@ class SpawnCommand(
         val abilities = HashSet<Ability>()
 
         // if player specified infernal abilities in command
-        if(strings.size > 2) {
+        if (strings.size > 2) {
             for(i in 2..strings.lastIndex) {
                 val ability = Ability.getOrNull(strings[i]) ?: run {
                     player.sendMessage(messages.get(MessageKeys.ABILITY_DOESNT_EXIST).replace("<ability>", strings[i].toComponent(NamedTextColor.GOLD)))
@@ -54,7 +54,7 @@ class SpawnCommand(
         // spawns the new mob as infernal mob
         val block = player.getTargetBlock(null, 5)
         player.world.spawnEntity(block.location.add(0.5, 1.2, 0.5), infernalType.entityType, SpawnReason.CUSTOM) { entity ->
-            if(entity !is LivingEntity) return@spawnEntity
+            if (entity !is LivingEntity) return@spawnEntity
             Bukkit.getPluginManager().callEvent(InfernalSpawnEvent(entity, infernalType, randomAbilities = abilities.isEmpty(), abilitySet = abilities))
             bossBarManager.showBossBarForNearbyPlayers(entity)
         }
@@ -65,9 +65,9 @@ class SpawnCommand(
     }
 
     override fun getCompletor(sender: CommandSender, length: Int, hint: String, strings: Array<String>): List<String> {
-        if(sender !is Player || length < 2) return emptyList()
+        if (sender !is Player || length < 2) return emptyList()
 
-        if(length == 2) return infernalMobTypesRepo.getAllInfernalTypeNames().filter { it.startsWith(hint, ignoreCase = true) }
+        if (length == 2) return infernalMobTypesRepo.getAllInfernalTypeNames().filter { it.startsWith(hint, ignoreCase = true) }
 
         return Ability.LOWERCASE_VALUES.filter { it.startsWith(hint, ignoreCase = true) }
     }

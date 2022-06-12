@@ -35,19 +35,19 @@ class ToggleCharmCommand(
         val intention = player.getIntention()
 
         // player is not holding a charm
-        if(intention == Intention.NOT_A_CHARM) {
+        if (intention == Intention.NOT_A_CHARM) {
             player.sendMessage(messages.get(MessageKeys.NOT_HOLDING_CHARM))
             return
         }
 
         // player don't have permission to break charms
-        if(intention == Intention.BREAK_BUT_NO_PERMISSION) {
+        if (intention == Intention.BREAK_BUT_NO_PERMISSION) {
             player.sendMessage(messages.get(MessageKeys.YOU_DONT_HAVE_PERMISSION_TO_BREAK_CHARMS))
             return
         }
 
         // player don't have permission to restore/fix charms
-        if(intention == Intention.RESTORE_BUT_NO_PERMISSION) {
+        if (intention == Intention.RESTORE_BUT_NO_PERMISSION) {
             player.sendMessage(messages.get(MessageKeys.YOU_DONT_HAVE_PERMISSION_TO_RESTORE_CHARMS))
             return
         }
@@ -81,7 +81,7 @@ class ToggleCharmCommand(
         val heldItem = inventory.itemInMainHand
 
         // player not holding a charm
-        if(heldItem.isAir() || !charmsRepo.isItemRequiredByCharmEffect(heldItem, acceptBroken = true)) {
+        if (heldItem.isAir() || !charmsRepo.isItemRequiredByCharmEffect(heldItem, acceptBroken = true)) {
             return Intention.NOT_A_CHARM
         }
 

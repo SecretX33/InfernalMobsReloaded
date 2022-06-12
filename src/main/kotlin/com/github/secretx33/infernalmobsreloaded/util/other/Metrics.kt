@@ -90,7 +90,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
 
     private fun appendPlatformData(builder: JsonObjectBuilder) {
         builder.appendField("playerAmount", playerAmount)
-        builder.appendField("onlineMode", if(Bukkit.getOnlineMode()) 1 else 0)
+        builder.appendField("onlineMode", if (Bukkit.getOnlineMode()) 1 else 0)
         builder.appendField("bukkitVersion", Bukkit.getVersion())
         builder.appendField("bukkitName", Bukkit.getName())
         builder.appendField("javaVersion", System.getProperty("java.version"))
@@ -153,7 +153,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
 
         init {
             checkRelocation()
-            if(bMetricsEnabled) {
+            if (bMetricsEnabled) {
                 startSubmitting()
             }
         }
@@ -220,7 +220,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
         }
 
         private fun sendData(data: JsonObjectBuilder.JsonObject) {
-            if(logSentData) {
+            if (logSentData) {
                 infoLogger.accept("Sent bStats metrics data: $data")
             }
             val url = String.format(REPORT_URL, platform)
@@ -312,7 +312,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
                     allSkipped = false
                     valuesBuilder.appendField(entry.key, entry.value)
                 }
-                if(allSkipped) return null // Null = skip the chart
+                if (allSkipped) return null // Null = skip the chart
                 return JsonObjectBuilder().appendField("values", valuesBuilder.build()).build()
             }
 
@@ -360,7 +360,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
                     allSkipped = false
                     valuesBuilder.appendField(entry.key, entry.value)
                 }
-                if(allSkipped) return null // Null = skip the chart
+                if (allSkipped) return null // Null = skip the chart
                 return JsonObjectBuilder().appendField("values", valuesBuilder.build()).build()
             }
 
@@ -390,7 +390,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
                     allSkipped = false
                     valuesBuilder.appendField(entry.key, entry.value)
                 }
-                if(allSkipped) return null // Null = skip the chart
+                if (allSkipped) return null // Null = skip the chart
                 return JsonObjectBuilder().appendField("values", valuesBuilder.build()).build()
             }
 
@@ -428,7 +428,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
         override val chartData: JsonObjectBuilder.JsonObject?
             get() {
                 val value = callable.call()
-                if(value == 0) return null // Null = skip the chart
+                if (value == 0) return null // Null = skip the chart
                 return JsonObjectBuilder().appendField("value", value).build()
             }
 
@@ -478,7 +478,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
                     }
                 }
                 // Null = skip the chart
-                if(reallyAllSkipped) return null
+                if (reallyAllSkipped) return null
                 return JsonObjectBuilder().appendField("values", valuesBuilder.build()).build()
             }
 
@@ -587,10 +587,10 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
          * @param escapedValue The escaped value of the field.
          */
         private fun appendFieldUnescaped(key: String, escapedValue: String) {
-            if(builder == null) {
+            if (builder == null) {
                 throw IllegalStateException("JSON has already been built")
             }
-            if(hasAtLeastOneField) {
+            if (hasAtLeastOneField) {
                 builder?.append(",")
             }
             builder?.append("\"")?.append(key.escape())?.append("\":")?.append(escapedValue)

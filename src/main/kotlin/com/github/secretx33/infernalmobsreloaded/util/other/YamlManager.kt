@@ -24,7 +24,7 @@ class YamlManager (
     init { reload() }
 
     fun reload() {
-        if(!plugin.dataFolder.exists()) plugin.dataFolder.mkdir()
+        if (!plugin.dataFolder.exists()) plugin.dataFolder.mkdir()
 
         try {
             file.createIfMissing()
@@ -35,7 +35,7 @@ class YamlManager (
     }
 
     private fun File.createIfMissing() {
-        if(exists()) return
+        if (exists()) return
 
         createParentDirs()
         createNewFile()
@@ -65,7 +65,7 @@ class YamlManager (
     }
 
     private fun getFullKeyOfLine(index: Int, lines: List<String>): String {
-        if(index < 0 || index >= lines.size) return ""
+        if (index < 0 || index >= lines.size) return ""
 
         val line = lines[index]
         val key = StringBuilder()
@@ -77,14 +77,14 @@ class YamlManager (
             ?: LIST_PATTERN.matchOrNull(line, 1)?.replace("-", "")?.trim().also { keyIsFromList = true }
             ?: return "")
 
-        if(depth <= 0 || index == 0) return key.toString()
+        if (depth <= 0 || index == 0) return key.toString()
 
         for(i in (index - 1) downTo 0) {
-            if(lines[i].isBlank() || COMMENT_PATTERN.matcher(lines[i]).matches()) continue
+            if (lines[i].isBlank() || COMMENT_PATTERN.matcher(lines[i]).matches()) continue
             val subDepth = lineDepth(lines[i])
             // if subKey has less depth than the original key, it means that this key is its parent
             // the list part is here because yaml is cancer and align the list entries with its parent key
-            if(subDepth < depth || keyIsFromList && depth == subDepth && KEY_PATTERN.matches(lines[i])) {
+            if (subDepth < depth || keyIsFromList && depth == subDepth && KEY_PATTERN.matches(lines[i])) {
                 key.insert(0, '.')
                 return key.insert(0, getFullKeyOfLine(i, lines)).toString()
             }
@@ -97,7 +97,7 @@ class YamlManager (
         val comments = ArrayList<Comment>(fileLines.size)
 
         for(index in fileLines.indices) {
-            if(lastStoredIndex >= index) continue
+            if (lastStoredIndex >= index) continue
             val line = fileLines[index]
             var commentMatcher = COMMENT_PATTERN.matcher(line)
 
@@ -111,13 +111,13 @@ class YamlManager (
                     lastStoredIndex++
                     commentArray.add(currentLine)
                     // breaks if we are on the last line already
-                    if(fileLines.lastIndex < (lastStoredIndex + 1)) break
+                    if (fileLines.lastIndex < (lastStoredIndex + 1)) break
                     // prepare the check on the next line
                     currentLine = fileLines[lastStoredIndex + 1]
                     commentMatcher = COMMENT_PATTERN.matcher(currentLine)
                 }
 
-                val commentType = if(commentArray.size > 1) CommentType.FULL_MULTILINE else CommentType.FULL_LINE
+                val commentType = if (commentArray.size > 1) CommentType.FULL_MULTILINE else CommentType.FULL_LINE
 
                 comments.add(
                     Comment(index = index,
@@ -130,7 +130,7 @@ class YamlManager (
             }
 
             // do nothing if there is no comment on this line
-            if(!commentMatcher.find()) continue
+            if (!commentMatcher.find()) continue
 
             // if it's a dangling comment on a key or entry of a list
             val keyOrEntryMatcher = KEY_PATTERN.matchEntire(line) ?: LIST_PATTERN.matchEntire(line)
@@ -158,25 +158,25 @@ class YamlManager (
             var placed = false
             while(newFile.size < comment.index) newFile.add("")
 
-            if(comment.lineBelow.isNotBlank()) {
+            if (comment.lineBelow.isNotBlank()) {
                 for(index in 0 until newFile.size) {
-                    if(getFullKeyOfLine(index, newFile) != comment.lineBelow) continue
+                    if (getFullKeyOfLine(index, newFile) != comment.lineBelow) continue
                     newFile.addAll(max(0,  index), comment.content)
                     placed = true
                     break
                 }
             }
-            if(placed) continue
+            if (placed) continue
 
-            if(comment.lineAbove.isNotBlank()) {
+            if (comment.lineAbove.isNotBlank()) {
                 for(index in 0 until newFile.size) {
-                    if(getFullKeyOfLine(index, newFile) != comment.lineAbove) continue
+                    if (getFullKeyOfLine(index, newFile) != comment.lineAbove) continue
                     newFile.addAll(max(0, index + 1), comment.content)
                     placed = true
                     break
                 }
             }
-            if(placed) continue
+            if (placed) continue
 
             newFile.addAll(comment.index, comment.content)
         }
@@ -235,7 +235,7 @@ class YamlManager (
     private fun File.createParentDirs() = com.google.common.io.Files.createParentDirs(this)
 
     private fun String.appendIfMissing(append: String, ignoreCase: Boolean = true): String {
-        if(!this.endsWith(append, ignoreCase = ignoreCase))
+        if (!this.endsWith(append, ignoreCase = ignoreCase))
             return "$this$append"
         return this
     }
@@ -258,7 +258,7 @@ class YamlManager (
         val content: List<String>
     ) {
         init {
-            if(type == CommentType.FULL_MULTILINE) require(content.size > 1) { "$type comment has a content size of ${content.size}, this should not happen" }
+            if (type == CommentType.FULL_MULTILINE) require(content.size > 1) { "$type comment has a content size of ${content.size}, this should not happen" }
             else require(content.size == 1) { "$type comment has a content size of ${content.size}, this should not happen" }
         }
     }

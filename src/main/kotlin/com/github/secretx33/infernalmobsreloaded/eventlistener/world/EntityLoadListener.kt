@@ -23,10 +23,10 @@ class EntityLoadListener(
     private fun EntityAddToWorldEvent.onInfernalMobsRespawn() {
         val entity = entity as? LivingEntity ?: return
         // when infernal mob gets respawned on the world
-        if(!entity.isPossibleInfernalMob()) return
+        if (!entity.isPossibleInfernalMob()) return
         // if mob is persistent, persistence mode is off and purge mode is on, remove the mob and return
 //        println("Loading ${entity.name}, isPurgeEnabled = $isPurgeEnabled, isPersistanceEnabled = $isPersistanceEnabled, entity.removeWhenFarAway = ${entity.removeWhenFarAway}")
-        if(isPurgeEnabled && !isPersistanceEnabled && !entity.removeWhenFarAway) {
+        if (isPurgeEnabled && !isPersistanceEnabled && !entity.removeWhenFarAway) {
 //            println("Purging ${entity.name}")
             entity.blackhole()
             return
@@ -43,7 +43,7 @@ class EntityLoadListener(
             .filter { !isDead && isValid }
             .forEach {
                 it.remove()
-                if(it !is LivingEntity || !it.isInfernalMobOrMount()) return@forEach
+                if (it !is LivingEntity || !it.isInfernalMobOrMount()) return@forEach
                 mobsManager.unloadInfernalMob(it)
                 bossBarManager.removeBossBar(it)
             }

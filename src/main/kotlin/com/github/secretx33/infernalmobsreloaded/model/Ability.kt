@@ -52,7 +52,7 @@ enum class Ability {
         fun random(number: Int, disabled: Set<Ability>): Set<Ability> {
             require(number >= 0) { "number cannot be lower than 0, number = $number" }
 
-            if(number == 0) return emptySet()
+            if (number == 0) return emptySet()
             return VALUES.filter { it !in disabled }.shuffled().let {
                 it.subList(0, min(it.size, min(VALUES.size, number))).toSet()
             }

@@ -64,7 +64,7 @@ open class InfernalMobsReloaded : JavaPlugin {
     }
 
     override fun onLoad() {
-        if(isWorldGuardEnabled) {
+        if (isWorldGuardEnabled) {
             mod.bind<WorldGuardChecker>().toInstance(WorldGuardCheckerImpl())
         } else {
             mod.bind<WorldGuardChecker>().toInstance(WorldGuardCheckerDummy())

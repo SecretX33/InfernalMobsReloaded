@@ -30,7 +30,7 @@ class SpawnerBreakWithSilkSpawnersListener(
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private fun SilkSpawnersSpawnerBreakEvent.infernalSpawnerBreak() {
-        if(!dropSpawners) return
+        if (!dropSpawners) return
 
         val spawnerType = spawner?.getSpawnerCategory() ?: return
         val infernalType = infernalMobTypeRepo.getInfernalTypeOrNull(spawnerType) ?: return
