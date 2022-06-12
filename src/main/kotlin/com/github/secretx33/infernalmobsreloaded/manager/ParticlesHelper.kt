@@ -12,11 +12,15 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
+import toothpick.InjectConstructor
+import javax.inject.Singleton
 
+@Singleton
+@InjectConstructor
 class ParticlesHelper(private val config: Config) {
 
     fun sendParticle(loc: Location, particle: Particle, spread: Double, amount: Int = particleAmount) {
-        if(!globalEffectsEnabled) return
+        if (!globalEffectsEnabled) return
         val world = loc.world ?: return
 
         // World#spawnParticle(Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ)
@@ -24,7 +28,7 @@ class ParticlesHelper(private val config: Config) {
     }
 
     fun sendParticle(entity: LivingEntity, particle: Particle, spread: Double, amount: Int = particleAmount) {
-        if(!globalEffectsEnabled) return
+        if (!globalEffectsEnabled) return
         val loc = entity.eyeLocation
 
         // World#spawnParticle(Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ)

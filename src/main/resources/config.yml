@@ -102,7 +102,7 @@ enable-boss-bars: true
 boss-bar-show-range-distance: 25.0
 # Min height that the player can approach an infernal before the boss bar is shown
 boss-bar-show-range-height: 10.0
-# If enabled, the player will require line of sight of the infernal to display the bar, this prevents random boss bars from appearing to player that cannot even see the infernal mob; as side effect, if you use "world fog" as parameter in your boss bars, it might looks weird in certain cases because the fog might keep showing and hiding as the player tries to flee from an infernal mob
+# If enabled, the player will require line of sight of the infernal to display the bar, this prevents random boss bars from appearing to player that cannot even see the infernal mob; as side effect, if you use "world fog" as parameter in your boss bars, it might look weird in certain cases because the fog might keep showing and hiding as the player tries to flee from an infernal mob
 boss-bar-require-line-of-sight: true
 
 ############################################################

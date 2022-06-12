@@ -1,13 +1,17 @@
 package com.github.secretx33.infernalmobsreloaded.manager
 
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginLoad
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReloaded
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
 import com.github.secretx33.infernalmobsreloaded.manager.InvisibilityHelper.isInvisibleOrVanished
 import com.github.secretx33.infernalmobsreloaded.model.CharmEffect
 import com.github.secretx33.infernalmobsreloaded.model.CharmParticleMode
 import com.github.secretx33.infernalmobsreloaded.model.PotionEffectApplyMode
-import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
-import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
-import com.github.secretx33.infernalmobsreloaded.utils.extension.isAir
-import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
+import com.github.secretx33.infernalmobsreloaded.repository.CharmsRepo
+import com.github.secretx33.infernalmobsreloaded.repository.LootItemsRepo
+import com.github.secretx33.infernalmobsreloaded.util.extension.isAir
+import com.github.secretx33.infernalmobsreloaded.util.extension.runSync
 import com.google.common.cache.CacheBuilder
 import com.google.common.collect.HashBasedTable
 import com.google.common.collect.MultimapBuilder
@@ -25,21 +29,36 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import toothpick.InjectConstructor
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import java.util.logging.Logger
+import javax.inject.Singleton
 
+@Singleton
+@InjectConstructor
 class CharmsManager(
     private val plugin: Plugin,
     private val charmsRepo: CharmsRepo,
     private val lootItemsRepo: LootItemsRepo,
+    private val log: Logger,
+    eventBus: EventBus,
 ) {
+
+    init {
+        eventBus.subscribe<PluginLoad>(this, 20) { startAllCharmTasks() }
+        eventBus.subscribe<PluginUnload>(this, 20) { stopAllCharmTasks() }
+        eventBus.subscribe<PluginReloaded>(this, 20) { reload() }
+    }
 
     private val permanentEffects = HashBasedTable.create<UUID, CharmEffect, PotionEffectType>()               // PlayerUuid, charmEffect, PotionEffect
     private val periodicEffects  = HashBasedTable.create<UUID, CharmEffect, Job>()                            // PlayerUuid, charmEffect, Coroutine
     private val targetEffects    = MultimapBuilder.hashKeys().hashSetValues().build<UUID, CharmEffect>()      // PlayerUuid, charmEffect
     private var cooldowns        = makeCooldownsCache()
 
-    private fun makeCooldownsCache() = CacheBuilder.newBuilder().expireAfterWrite((charmsRepo.getHighestEffectDelay() * 1000.0).toLong(), TimeUnit.MILLISECONDS).build<Pair<UUID, CharmEffect>, Long>()
+    private fun makeCooldownsCache() = CacheBuilder.newBuilder()
+        .expireAfterWrite((charmsRepo.getHighestEffectDelay() * 1000.0).toLong(), TimeUnit.MILLISECONDS)
+        .build<Pair<UUID, CharmEffect>, Long>()
 
     fun areCharmsAllowedOnWorld(world: World) = charmsRepo.areCharmsAllowedOnWorld(world)
 
@@ -47,7 +66,7 @@ class CharmsManager(
 
     fun updateCharmEffects(player: Player) {
         // player is not on a charm effects enabled world
-        if(!player.isOnCharmEnabledWorld()) {
+        if (!player.isOnCharmEnabledWorld()) {
             cancelAllCharmTasks(player)
             return
         }
@@ -55,7 +74,7 @@ class CharmsManager(
         val invMap = player.inventoryMap
         val charms = invMap.filterKeys { charmsRepo.isItemRequiredByCharmEffect(it) }
         // if player has no charms in his inventory
-        if(charms.isEmpty()) {
+        if (charms.isEmpty()) {
             cancelAllCharmTasks(player)
             return
         }
@@ -68,7 +87,7 @@ class CharmsManager(
 
         // start valid effects and cancel invalid effects
         effects.forEach {
-            if(it.validateEffect(lootItems, mainHand)) player.startCharmEffect(it)
+            if (it.validateEffect(lootItems, mainHand)) player.startCharmEffect(it)
             else player.cancelCharmEffect(it)
         }
 //        println("2. lootItems = ${lootItems.keys.joinToString()}, effects = ${effects.joinToString(separator = ",\n")}")
@@ -92,7 +111,7 @@ class CharmsManager(
 
     private fun Player.addPermanentCharmEffect(charmEffect: CharmEffect) {
         // if effect is already applied
-        if(permanentEffects.contains(uniqueId, charmEffect)) return
+        if (permanentEffects.contains(uniqueId, charmEffect)) return
         addPotionEffect(PotionEffect(charmEffect.potionEffect, Int.MAX_VALUE, charmEffect.getPotency()))
         spawnCharmParticles(charmEffect)
         permanentEffects.put(uniqueId, charmEffect, charmEffect.potionEffect)
@@ -101,7 +120,7 @@ class CharmsManager(
 
     private fun Player.addRecurrentCharmEffect(charmEffect: CharmEffect) {
         // if effect task is already running
-        if(periodicEffects.contains(uniqueId, charmEffect)) return
+        if (periodicEffects.contains(uniqueId, charmEffect)) return
 
         val job = CoroutineScope(Dispatchers.Default).launch {
             delay((charmEffect.getDelay() * 1000.0).toLong())
@@ -117,7 +136,7 @@ class CharmsManager(
     }
 
     private fun LivingEntity.spawnCharmParticles(charmEffect: CharmEffect) {
-        if(this is Player && isInvisibleOrVanished()) return
+        if (this is Player && isInvisibleOrVanished()) return
         val particle = charmEffect.particle?.takeIf { charmEffect.particleMode != CharmParticleMode.NONE } ?: return
         world.spawnParticle(particle, eyeLocation, 100, 0.5, 1.0, 0.5)
     }
@@ -127,23 +146,23 @@ class CharmsManager(
         targetEffects.get(player.uniqueId).filter { it.isNotCooldown(player) }.forEach {
 //            println("Triggering ${it.name} on ${target.name}")
             // effects
-            if(it.effectApplyMode == PotionEffectApplyMode.SELF_ON_HIT || it.effectApplyMode == PotionEffectApplyMode.BOTH_ON_HIT)
+            if (it.effectApplyMode == PotionEffectApplyMode.SELF_ON_HIT || it.effectApplyMode == PotionEffectApplyMode.BOTH_ON_HIT)
                 player.addPotionEffect(PotionEffect(it.potionEffect, (it.getDuration() * 20.0).toInt(), it.getPotency()))
 
-            if(it.effectApplyMode == PotionEffectApplyMode.TARGET_ON_HIT || it.effectApplyMode == PotionEffectApplyMode.BOTH_ON_HIT)
+            if (it.effectApplyMode == PotionEffectApplyMode.TARGET_ON_HIT || it.effectApplyMode == PotionEffectApplyMode.BOTH_ON_HIT)
                 target.addPotionEffect(PotionEffect(it.potionEffect, (it.getDuration() * 20.0).toInt(), it.getPotency()))
 
             // particles
-            if(it.enabledSelfParticle) player.spawnCharmParticles(it)
-            if(it.enabledTargetParticle) target.spawnCharmParticles(it)
+            if (it.enabledSelfParticle) player.spawnCharmParticles(it)
+            if (it.enabledTargetParticle) target.spawnCharmParticles(it)
 
             // messages
             it.playerMessage?.let { msg -> player.sendMessage(msg) }
-            if(target is Player) it.targetMessage?.let { msg -> target.sendMessage(msg) }
+            if (target is Player) it.targetMessage?.let { msg -> target.sendMessage(msg) }
         }
     }
 
-    private fun CharmEffect.isNotCooldown(player: Player) = cooldowns.getIfPresent(Pair(player.uniqueId, this)).let { it == null || it < System.currentTimeMillis() }.also { if(it) cooldowns.put(Pair(player.uniqueId, this), System.currentTimeMillis() + (getDelay() * 1000.0).toLong()) }
+    private fun CharmEffect.isNotCooldown(player: Player) = cooldowns.getIfPresent(Pair(player.uniqueId, this)).let { it == null || it < System.currentTimeMillis() }.also { if (it) cooldowns.put(Pair(player.uniqueId, this), System.currentTimeMillis() + (getDelay() * 1000.0).toLong()) }
 
 
     private fun Player.cancelCharmEffect(charmEffect: CharmEffect) {
@@ -171,21 +190,23 @@ class CharmsManager(
         targetEffects.removeAll(player.uniqueId)
     }
 
-    fun reload() {
+    private fun reload() {
         stopAllCharmTasks()
         cooldowns = makeCooldownsCache().apply { putAll(cooldowns.asMap()) }
         startAllCharmTasks()
     }
 
-    fun stopAllCharmTasks() {
-        Bukkit.getOnlinePlayers().forEach { cancelAllCharmTasks(it) }
+    private fun stopAllCharmTasks() {
+        log.info("Disabling player charms")
+        Bukkit.getOnlinePlayers().forEach(::cancelAllCharmTasks)
         // most probably not needed, just as precaution
         permanentEffects.clear()
         periodicEffects.clear()
         targetEffects.clear()
     }
 
-    fun startAllCharmTasks() {
-        Bukkit.getOnlinePlayers().forEach { updateCharmEffects(it) }
+    private fun startAllCharmTasks() {
+        log.info("Enabling player charms")
+        Bukkit.getOnlinePlayers().forEach(::updateCharmEffects)
     }
 }

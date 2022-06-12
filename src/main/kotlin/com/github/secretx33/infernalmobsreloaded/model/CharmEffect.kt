@@ -1,6 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
-import com.github.secretx33.infernalmobsreloaded.utils.extension.random
+import com.github.secretx33.infernalmobsreloaded.util.extension.random
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.potion.PotionEffectType
@@ -23,7 +23,7 @@ class CharmEffect (
     requiredItems: Set<String>,
     val requiredSlots: Set<Int>,
 ) {
-    val requiredItems: Set<String> = if(requiredMainHand != null) requiredItems + requiredMainHand else requiredItems
+    val requiredItems: Set<String> = if (requiredMainHand != null) requiredItems + requiredMainHand else requiredItems
 
     init {
         require(name.isNotBlank()) { "name cannot be blank, name = '$name'" }
@@ -69,13 +69,13 @@ class CharmEffect (
      */
     fun validateEffect(inventory: Map<String, Int>, mainHand: String?): Boolean {
         // no items should have this effect
-        if(requiredItems.isEmpty()) return false
+        if (requiredItems.isEmpty()) return false
 
         // inventory don't have all the required items
-        if(!inventory.keys.containsAll(requiredItems)) return false
+        if (!inventory.keys.containsAll(requiredItems)) return false
 
         // if player doesn't have the required charm in the main hand
-        if(requiredMainHand?.equals(mainHand, ignoreCase = true) == false) return false
+        if (requiredMainHand?.equals(mainHand, ignoreCase = true) == false) return false
 
         // all required items are in the correct slots (except main hand item)
         return (requiredItems - requiredMainHand).all { itemName ->

@@ -1,37 +1,47 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
-import com.github.secretx33.infernalmobsreloaded.utils.other.YamlManager
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReload
+import com.github.secretx33.infernalmobsreloaded.util.other.YamlManager
 import me.mattstudios.msg.adventure.AdventureMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Singleton
 
-class Messages(plugin: Plugin, private val adventureMessage: AdventureMessage) {
+@Singleton
+@InjectConstructor
+class Messages(
+    plugin: Plugin,
+    eventBus: EventBus,
+    private val adventureMessage: AdventureMessage,
+) {
     private val file = YamlManager(plugin, "messages")
     private val stringCache = ConcurrentHashMap<MessageKeys, Component>()
     private val listCache = ConcurrentHashMap<MessageKeys, List<Component>>()
 
-    fun get(key: MessageKeys, default: String? = null): Component {
-        return stringCache.getOrPut(key) {
+    init {
+        eventBus.subscribe<PluginReload>(this, 30) {
+            stringCache.clear()
+            listCache.clear()
+            file.reload()
+        }
+    }
+
+    fun get(key: MessageKeys, default: String? = null): Component =
+        stringCache.getOrPut(key) {
             file.getString(key.configEntry)?.parse() ?: default?.parse() ?: (key.default as? Component) ?: (key.default as String).parse()
         }
-    }
 
-    fun getList(key: MessageKeys): List<Component> {
-        return listCache.getOrPut(key) {
+    fun getList(key: MessageKeys): List<Component> =
+        listCache.getOrPut(key) {
             file.getStringList(key.configEntry).map { it.parse() }
         }
-    }
-
-    fun reload() {
-        stringCache.clear()
-        listCache.clear()
-        file.reload()
-    }
 
     private fun String.parse(): Component = adventureMessage.parse(this)
 }
@@ -66,7 +76,7 @@ enum class MessageKeys(val default: Any) {
     val configEntry = name.lowercase(Locale.US).replace('_','-')
 }
 
-fun String.toComponent(color: NamedTextColor? = null) = if(color == null) Component.text(this) else Component.text(this, color)
+fun String.toComponent(color: NamedTextColor? = null) = if (color == null) Component.text(this) else Component.text(this, color)
 
 fun Component.replace(oldText: String, newText: String) = replaceText { it.match(oldText).replacement(newText) }
 

@@ -13,7 +13,7 @@ class BlockModification (
     private val blockBlacklist: MutableSet<Location>,
     private val makeTask: (List<Block>) -> Unit,
 ) {
-    val blockLocations = blocks.mapTo(HashSet()) { it.location }
+    val blockLocations = blocks.mapTo(hashSetOf()) { it.location }
     private val blockState: List<BlockState> = blocks.map { it.state }
     private val unmade = AtomicBoolean(false)
 
@@ -21,7 +21,7 @@ class BlockModification (
     // this class will only be responsible for removing them, when the changes are reverted
     fun make(): Boolean {
         // don't try to modify the blocks if they already got "reverted" back
-        if(unmade.get()) return false
+        if (unmade.get()) return false
         blocks.forEach {
             (blockState as? InventoryHolder)?.inventory?.clear()
             it.type = Material.AIR

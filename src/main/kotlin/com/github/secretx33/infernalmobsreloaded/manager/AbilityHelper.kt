@@ -8,29 +8,31 @@ import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.MessageKeys
 import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.config.replace
-import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageDoneEvent
-import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageTakenEvent
-import com.github.secretx33.infernalmobsreloaded.events.InfernalHealedEvent
-import com.github.secretx33.infernalmobsreloaded.events.InfernalLightningStrike
-import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
+import com.github.secretx33.infernalmobsreloaded.event.InfernalDamageDoneEvent
+import com.github.secretx33.infernalmobsreloaded.event.InfernalDamageTakenEvent
+import com.github.secretx33.infernalmobsreloaded.event.InfernalHealedEvent
+import com.github.secretx33.infernalmobsreloaded.event.InfernalLightningStrike
+import com.github.secretx33.infernalmobsreloaded.event.InfernalSpawnEvent
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
 import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardChecker
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.BlockModification
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
-import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
-import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
-import com.github.secretx33.infernalmobsreloaded.utils.Cuboid
-import com.github.secretx33.infernalmobsreloaded.utils.extension.contentsMap
-import com.github.secretx33.infernalmobsreloaded.utils.extension.displayName
-import com.github.secretx33.infernalmobsreloaded.utils.extension.futureSync
-import com.github.secretx33.infernalmobsreloaded.utils.extension.isAir
-import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
-import com.github.secretx33.infernalmobsreloaded.utils.extension.random
-import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
-import com.github.secretx33.infernalmobsreloaded.utils.extension.toUuid
+import com.github.secretx33.infernalmobsreloaded.repository.InfernalMobTypesRepo
+import com.github.secretx33.infernalmobsreloaded.repository.LootItemsRepo
+import com.github.secretx33.infernalmobsreloaded.util.Cuboid
+import com.github.secretx33.infernalmobsreloaded.util.extension.contentsMap
+import com.github.secretx33.infernalmobsreloaded.util.extension.displayName
+import com.github.secretx33.infernalmobsreloaded.util.extension.futureSync
+import com.github.secretx33.infernalmobsreloaded.util.extension.gsonTypeToken
+import com.github.secretx33.infernalmobsreloaded.util.extension.isAir
+import com.github.secretx33.infernalmobsreloaded.util.extension.pdc
+import com.github.secretx33.infernalmobsreloaded.util.extension.random
+import com.github.secretx33.infernalmobsreloaded.util.extension.runSync
+import com.github.secretx33.infernalmobsreloaded.util.extension.toUuid
 import com.google.common.collect.Sets
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -82,11 +84,12 @@ import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.Vector
+import toothpick.InjectConstructor
 import java.lang.StrictMath.pow
-import java.lang.reflect.Type
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import java.util.logging.Logger
+import javax.inject.Singleton
 import kotlin.math.atan
 import kotlin.math.atan2
 import kotlin.math.ceil
@@ -95,6 +98,8 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
+@Singleton
+@InjectConstructor
 class AbilityHelper (
     private val plugin: Plugin,
     private val config: Config,
@@ -105,10 +110,15 @@ class AbilityHelper (
     private val wgChecker: WorldGuardChecker,
     private val particlesHelper: ParticlesHelper,
     private val infernalMobTypesRepo: InfernalMobTypesRepo,
-    private val logger: Logger,
+    private val log: Logger,
+    eventBus: EventBus,
 ){
     private val blockModifications = Sets.newConcurrentHashSet<BlockModification>()
     private val blocksBlackList = Sets.newConcurrentHashSet<Location>()
+
+    init {
+        eventBus.subscribe<PluginUnload>(this, 40) { revertPendingBlockModifications() }
+    }
 
     // abilities that are applied when mob spawns
 
@@ -462,7 +472,7 @@ class AbilityHelper (
                     // if potion type is invalid or empty, silently fail
                     val type = abilityConfig.get(AbilityConfigKeys.POTIONS_ENABLED_TYPES, emptyList<String>())
                         .randomOrNull()
-                        ?.let { name -> XPotion.matchXPotion(name).orElse(null)?.parsePotionEffectType() }
+                        ?.let { name -> XPotion.matchXPotion(name).orElse(null)?.potionEffectType }
                         ?: return@forEach
 
                     entity.throwPotion(victim, type)
@@ -710,7 +720,7 @@ class AbilityHelper (
         val itemDropChance = abilityConfig.getDouble(AbilityConfigKeys.GHOST_ITEM_DROP_CHANCE, maxValue = 1.0).toFloat()
 
         val infernalType = infernalMobTypesRepo.getInfernalTypeOrNull("${hauntedPrefix}ghost") ?: run {
-            logger.severe("Oops, seems like you have removed '${hauntedPrefix}ghost' from your mobs.yml configuration file, without it, the Ghost ability don't work, please re-add the missing ghost types and reload. If you prefer, you may also just delete your mobs.yml and let it regenerate automatically using the reload command.")
+            log.severe("Oops, seems like you have removed '${hauntedPrefix}ghost' from your mobs.yml configuration file, without it, the Ghost ability don't work, please re-add the missing ghost types and reload. If you prefer, you may also just delete your mobs.yml and let it regenerate automatically using the reload command.")
             return
         }
 
@@ -1111,7 +1121,8 @@ class AbilityHelper (
 
     private fun String.toAbilitySet(): Set<Ability> = gson.fromJson(this, infernalAbilitySetToken)
 
-    fun revertPendingBlockModifications() {
+    private fun revertPendingBlockModifications() {
+        log.info("Reverting pending infernal mobs block modifications")
         blockModifications.forEach { it.unmake() }
         blockModifications.clear()
     }
@@ -1121,7 +1132,7 @@ class AbilityHelper (
 
     private companion object {
         val gson = Gson()
-        val infernalAbilitySetToken: Type = object : TypeToken<Set<Ability>>() {}.type
+        val infernalAbilitySetToken = gsonTypeToken<Set<Ability>>()
         val movSpeedUID: UUID = "57202f4c-2e52-46cb-ad37-77550e99edb2".toUuid()
         val knockbackResistUID: UUID = "984e7a8c-188f-444b-82ea-5d02197ea8e4".toUuid()
         val healthUID: UUID = "18f1d8fb-6fed-4d47-a69b-df5c76693ad5".toUuid()

@@ -4,21 +4,26 @@ import com.github.secretx33.infernalmobsreloaded.config.AbilityConfig
 import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
-import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageDoneEvent
-import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageTakenEvent
-import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
+import com.github.secretx33.infernalmobsreloaded.event.InfernalDamageDoneEvent
+import com.github.secretx33.infernalmobsreloaded.event.InfernalDamageTakenEvent
+import com.github.secretx33.infernalmobsreloaded.event.InfernalSpawnEvent
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginLoad
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReload
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReloaded
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
-import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
-import com.github.secretx33.infernalmobsreloaded.utils.extension.contents
-import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
-import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
-import com.github.secretx33.infernalmobsreloaded.utils.extension.toUuid
+import com.github.secretx33.infernalmobsreloaded.repository.InfernalMobTypesRepo
+import com.github.secretx33.infernalmobsreloaded.util.extension.contents
+import com.github.secretx33.infernalmobsreloaded.util.extension.gsonTypeToken
+import com.github.secretx33.infernalmobsreloaded.util.extension.pdc
+import com.github.secretx33.infernalmobsreloaded.util.extension.runSync
+import com.github.secretx33.infernalmobsreloaded.util.extension.toUuid
 import com.google.common.collect.MultimapBuilder
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -37,12 +42,16 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
-import java.lang.reflect.Type
+import toothpick.InjectConstructor
 import java.util.Random
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import java.util.logging.Logger
+import javax.inject.Singleton
 import kotlin.math.max
 
+@Singleton
+@InjectConstructor
 class InfernalMobsManager (
     private val plugin: Plugin,
     private val config: Config,
@@ -51,9 +60,18 @@ class InfernalMobsManager (
     private val infernalMobTypesRepo: InfernalMobTypesRepo,
     private val particlesHelper: ParticlesHelper,
     private val abilityHelper: AbilityHelper,
+    private val log: Logger,
+    eventBus: EventBus,
 ) {
     private val infernalMobParticleTasks = ConcurrentHashMap<UUID, Job>()   // stores the job currently emitting infernal particles
     private val infernalMobAbilityTasks = MultimapBuilder.hashKeys().arrayListValues().build<UUID, Job>()  // for abilities that require a target
+
+    init {
+        eventBus.subscribe<PluginLoad>(this, 0) { loadAllInfernals() }
+        eventBus.subscribe<PluginUnload>(this, 0) { unloadAllInfernals() }
+        eventBus.subscribe<PluginReload>(this, 0) { unloadAllInfernals() }
+        eventBus.subscribe<PluginReloaded>(this, 0) { loadAllInfernals() }
+    }
 
     fun isValidInfernalMob(entity: LivingEntity) = infernalMobTypesRepo.canTypeBecomeInfernal(entity.type) && entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)?.let { infernalMobTypesRepo.isValidInfernalType(it) } == true
 
@@ -120,7 +138,7 @@ class InfernalMobsManager (
     private fun LivingEntity.addCustomNameToInfernal(infernalType: InfernalMobType) {
         val displayMode = config.getEnum<DisplayCustomNameMode>(ConfigKeys.DISPLAY_INFERNAL_NAME_MODE)
         removeWhenFarAway = !config.get<Boolean>(ConfigKeys.INFERNALS_ARE_PERSISTENT)
-        if(displayMode.addCustomName) customName(infernalType.displayName)
+        if (displayMode.addCustomName) customName(infernalType.displayName)
         isCustomNameVisible = displayMode.customNameVisible
     }
 
@@ -128,7 +146,7 @@ class InfernalMobsManager (
         val disabledAbilities = disabledAbilities + infernalType.blacklistedAbilities
         val abilitySet = (event.abilitySet.takeIf { !event.randomAbilities }
             ?: Ability.random(infernalType.getAbilityNumber(), disabledAbilities)).removeConflicts(disabledAbilities) + infernalType.forcedAbilities
-        val livesNumber = if(Ability.SECOND_WIND in abilitySet) 2 else 1
+        val livesNumber = if (Ability.SECOND_WIND in abilitySet) 2 else 1
 
         pdc.apply {
             set(keyChain.infernalCategoryKey, PersistentDataType.STRING, infernalType.name)
@@ -140,8 +158,8 @@ class InfernalMobsManager (
     private fun Set<Ability>.removeConflicts(disabledAbilities: Set<Ability>): Set<Ability> {
         val newSet = HashSet(this)
         // filter conflicts
-        if(contains(Ability.FLYING) && contains(Ability.MOUNTED)) {
-            if(random.nextBoolean()) {
+        if (contains(Ability.FLYING) && contains(Ability.MOUNTED)) {
+            if (random.nextBoolean()) {
                 newSet.remove(Ability.FLYING)
             } else {
                 newSet.remove(Ability.MOUNTED)
@@ -178,7 +196,7 @@ class InfernalMobsManager (
         val savedType = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING) ?: return
 
         // is type of that infernal is missing, convert it back to a normal entity
-        if(!infernalMobTypesRepo.isValidInfernalType(savedType)) {
+        if (!infernalMobTypesRepo.isValidInfernalType(savedType)) {
             entity.unmakeInfernalMob()
             return
         }
@@ -189,7 +207,7 @@ class InfernalMobsManager (
 
     private fun startParticleEmissionTask(entity: LivingEntity) {
         cancelParticleTask(entity) // for safety
-        if(!infernalParticlesEnabled || entity.disableInvisibleParticles()) return
+        if (!infernalParticlesEnabled || entity.disableInvisibleParticles()) return
         val particleType = particleType
         val particleSpread = particleSpread
         val delay = delayBetweenParticleEmission
@@ -221,17 +239,13 @@ class InfernalMobsManager (
         get() = config.get<Double>(ConfigKeys.INFERNAL_PARTICLES_SPREAD)
 
     fun loadAllInfernals() {
-        Bukkit.getWorlds().forEach { world ->
-            world.livingEntities.filter { isValidInfernalMob(it) }.forEach {
-                loadInfernalMob(it)
-            }
-        }
+        log.info("Loading all infernal mobs")
+        Bukkit.getWorlds().flatMap { it.livingEntities }.forEach(::loadInfernalMob)
     }
 
     fun unloadAllInfernals() {
-        Bukkit.getWorlds().forEach { world ->
-            world.livingEntities.forEach { unloadInfernalMob(it) }
-        }
+        log.info("Unloading all infernal mobs")
+        Bukkit.getWorlds().flatMap { it.livingEntities }.forEach(::unloadInfernalMob)
         infernalMobParticleTasks.forEach { (_, job) -> job.cancel() }
         infernalMobParticleTasks.clear()
     }
@@ -263,10 +277,10 @@ class InfernalMobsManager (
 
     fun removeAndDropStolenItems(entity: Entity) {
         // cannot remove players
-        if(entity is Player) return
+        if (entity is Player) return
 
         // if entity is not living entity, just remove it since it doesn't have any armor
-        if(entity !is LivingEntity) {
+        if (entity !is LivingEntity) {
             entity.remove()
             return
         }
@@ -275,7 +289,7 @@ class InfernalMobsManager (
         val location = entity.location
         val items = entity.equipment?.contents?.filter { it.isStolenItem() } ?: emptyList()
 
-        if(items.isNotEmpty()) {
+        if (items.isNotEmpty()) {
             runSync(plugin, 50L) {
                 // drop all the stolen pieces that this entity has
                 items.forEach { world.dropItem(location, it) }
@@ -297,7 +311,7 @@ class InfernalMobsManager (
     private companion object {
         val gson = Gson()
         val random = Random()
-        val infernalAbilitySetToken: Type = object : TypeToken<Set<Ability>>() {}.type
+        val infernalAbilitySetToken = gsonTypeToken<Set<Ability>>()
 
         val followRangeUID: UUID = "ff6d1ee3-8c7e-4826-b795-945689b5dc76".toUuid()
         val atkKnockbackUID: UUID = "0c9a9cf0-4507-47b7-b4db-77be78e7d55e".toUuid()

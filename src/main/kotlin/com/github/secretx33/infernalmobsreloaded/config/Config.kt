@@ -1,28 +1,40 @@
 package com.github.secretx33.infernalmobsreloaded.config
 
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReload
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
 import com.github.secretx33.infernalmobsreloaded.model.KilledByPoison
-import com.github.secretx33.infernalmobsreloaded.utils.other.YamlManager
+import com.github.secretx33.infernalmobsreloaded.util.other.YamlManager
 import com.google.common.base.Enums
 import com.google.common.base.Predicate
 import org.bukkit.Particle
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
+import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 
-class Config(plugin: Plugin, private val log: Logger) {
+@Singleton
+@InjectConstructor
+class Config(
+    plugin: Plugin,
+    eventBus: EventBus,
+    private val log: Logger,
+) {
     private val file = YamlManager(plugin, "config")
     private val cache = ConcurrentHashMap<String, Any>()
 
-    fun reload() {
-        cache.clear()
-        file.reload()
+    init {
+        eventBus.subscribe<PluginReload>(this, 20) {
+            cache.clear()
+            file.reload()
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -82,8 +94,8 @@ class Config(plugin: Plugin, private val log: Logger) {
     @Suppress("UNCHECKED_CAST")
     fun <T : Enum<T>> getEnumSet(key: ConfigKeys, clazz: Class<T>, predicate: Predicate<T>? = null): Set<T> {
         return cache.getOrPut(key.configEntry) {
-            if(!file.contains(key.configEntry)) return@getOrPut key.defaultValue
-            file.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
+            if (!file.contains(key.configEntry)) return@getOrPut key.defaultValue
+            file.getStringList(key.configEntry).mapNotNullTo(hashSetOf()) { item ->
                 val optional = Enums.getIfPresent(clazz, item.uppercase(Locale.US)).takeIf { opt -> opt.isPresent }?.get() ?: run {
                     log.severe("Error while trying to get config key '$key', value passed '${item.uppercase(Locale.US)}' is an invalid value, please fix this entry in the ${file.fileName} and reload the configs")
                     return@mapNotNullTo null
