@@ -1,8 +1,8 @@
 package com.github.secretx33.infernalmobsreloaded.model.items
 
 import com.github.secretx33.infernalmobsreloaded.model.CustomEnchantment
-import com.github.secretx33.infernalmobsreloaded.utils.ItemBuilder
-import com.github.secretx33.infernalmobsreloaded.utils.extension.random
+import com.github.secretx33.infernalmobsreloaded.util.ItemBuilder
+import com.github.secretx33.infernalmobsreloaded.util.extension.random
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.DyeColor

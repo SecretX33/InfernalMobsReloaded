@@ -1,6 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
-import com.github.secretx33.infernalmobsreloaded.utils.extension.random
+import com.github.secretx33.infernalmobsreloaded.util.extension.random
 import org.bukkit.enchantments.Enchantment
 import java.util.Optional
 import java.util.Random

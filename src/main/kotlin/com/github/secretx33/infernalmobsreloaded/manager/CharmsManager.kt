@@ -4,10 +4,10 @@ import com.github.secretx33.infernalmobsreloaded.manager.InvisibilityHelper.isIn
 import com.github.secretx33.infernalmobsreloaded.model.CharmEffect
 import com.github.secretx33.infernalmobsreloaded.model.CharmParticleMode
 import com.github.secretx33.infernalmobsreloaded.model.PotionEffectApplyMode
-import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
-import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
-import com.github.secretx33.infernalmobsreloaded.utils.extension.isAir
-import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
+import com.github.secretx33.infernalmobsreloaded.repository.CharmsRepo
+import com.github.secretx33.infernalmobsreloaded.repository.LootItemsRepo
+import com.github.secretx33.infernalmobsreloaded.util.extension.isAir
+import com.github.secretx33.infernalmobsreloaded.util.extension.runSync
 import com.google.common.cache.CacheBuilder
 import com.google.common.collect.HashBasedTable
 import com.google.common.collect.MultimapBuilder

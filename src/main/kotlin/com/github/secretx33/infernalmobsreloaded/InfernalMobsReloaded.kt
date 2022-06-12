@@ -2,13 +2,13 @@ package com.github.secretx33.infernalmobsreloaded
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.github.secretx33.infernalmobsreloaded.annotation.SkipAutoRegistration
-import com.github.secretx33.infernalmobsreloaded.commands.Commands
-import com.github.secretx33.infernalmobsreloaded.commands.subcommands.SubCommand
+import com.github.secretx33.infernalmobsreloaded.command.Commands
+import com.github.secretx33.infernalmobsreloaded.command.subcommand.SubCommand
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.hook.SpawnerBreakWithSilkSpawnersListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.hook.TownyListener
-import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerBreakListener
+import com.github.secretx33.infernalmobsreloaded.eventlistener.hook.SpawnerBreakWithSilkSpawnersListener
+import com.github.secretx33.infernalmobsreloaded.eventlistener.hook.TownyListener
+import com.github.secretx33.infernalmobsreloaded.eventlistener.spawner.SpawnerBreakListener
 import com.github.secretx33.infernalmobsreloaded.filter.InfernalDeathConsoleMessageFilter
 import com.github.secretx33.infernalmobsreloaded.manager.AbilityHelper
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
@@ -18,11 +18,10 @@ import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardChecker
 import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardCheckerDummy
 import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardCheckerImpl
 import com.github.secretx33.infernalmobsreloaded.model.Ability.Companion.getOrNull
-import com.github.secretx33.infernalmobsreloaded.packetlisteners.InvisibleEntitiesEquipVanisherListener
-import com.github.secretx33.infernalmobsreloaded.utils.extension.findClasses
-import com.github.secretx33.infernalmobsreloaded.utils.extension.replace
-import com.github.secretx33.infernalmobsreloaded.utils.other.Metrics
-import com.google.common.reflect.ClassPath
+import com.github.secretx33.infernalmobsreloaded.packetlistener.InvisibleEntitiesEquipVanisherListener
+import com.github.secretx33.infernalmobsreloaded.util.extension.findClasses
+import com.github.secretx33.infernalmobsreloaded.util.extension.replace
+import com.github.secretx33.infernalmobsreloaded.util.other.Metrics
 import me.mattstudios.msg.adventure.AdventureMessage
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.Filter
@@ -137,10 +136,10 @@ open class InfernalMobsReloaded : JavaPlugin {
     }
 
     private fun findClasspathListeners(): Set<KClass<out Listener>> =
-        findClasses("$PLUGIN_PACKAGE.eventlisteners") { !it.isAbstract && Listener::class.isSuperclassOf(it) }
+        findClasses("$PLUGIN_PACKAGE.eventlistener") { !it.isAbstract && Listener::class.isSuperclassOf(it) }
 
     private fun findClasspathSubcommands(): Set<KClass<out SubCommand>> =
-        findClasses("$PLUGIN_PACKAGE.commands") { !it.isAbstract && SubCommand::class.isSuperclassOf(it) }
+        findClasses("$PLUGIN_PACKAGE.command") { !it.isAbstract && SubCommand::class.isSuperclassOf(it) }
 
     private val isWorldGuardEnabled
         get() = Bukkit.getPluginManager().getPlugin("WorldGuard") != null

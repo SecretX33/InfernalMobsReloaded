@@ -2,7 +2,7 @@ package com.github.secretx33.infernalmobsreloaded.manager
 
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
-import com.github.secretx33.infernalmobsreloaded.utils.extension.getHealthPercent
+import com.github.secretx33.infernalmobsreloaded.util.extension.getHealthPercent
 import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity

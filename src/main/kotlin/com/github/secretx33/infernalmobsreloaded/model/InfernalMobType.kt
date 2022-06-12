@@ -1,7 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
-import com.github.secretx33.infernalmobsreloaded.utils.extension.random
+import com.github.secretx33.infernalmobsreloaded.util.extension.random
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.ComplexLivingEntity
