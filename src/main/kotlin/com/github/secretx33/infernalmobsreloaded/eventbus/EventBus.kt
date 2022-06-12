@@ -4,7 +4,6 @@ import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.Internal
 import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
 import org.bukkit.Bukkit
 import toothpick.InjectConstructor
-import java.util.TreeSet
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.logging.Logger
@@ -50,7 +49,7 @@ class EventBus(private val log: Logger) {
     ) {
         require(!isClosed.get()) { "EventBus is closed, thus it no longer accepts any subscribers" }
 
-        val thisSubscribes = subscribers.getOrPut(owner) { TreeSet() }
+        val thisSubscribes = subscribers.getOrPut(owner) { ConcurrentHashMap.newKeySet() }
         val newSubscription = Subscriber(
             owner = owner::class,
             eventType = eventType,
@@ -65,11 +64,12 @@ class EventBus(private val log: Logger) {
 
         subscribers.flatMap { it.value }
             .filter { it.eventType.isInstance(event) }
+            .sorted()
             .forEach {
                 try {
                     it.onEvent(event)
                 } catch (e: Exception) {
-                    log.severe("Exception while dispatching event ${event::class.simpleName} to subscriber ${it.owner.simpleName} (${it.uuid}). Message: ${e.message}\n${e.stackTraceToString()}")
+                    log.severe("Exception while dispatching event ${event::class.simpleName} to subscriber ${it.ownerName} (${it.order}). Message: ${e.message}\n${e.stackTraceToString()}")
                 }
             }
     }

@@ -1,6 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded
 
 import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.events.PacketAdapter
 import com.github.secretx33.infernalmobsreloaded.annotation.SkipAutoRegistration
 import com.github.secretx33.infernalmobsreloaded.command.Commands
 import com.github.secretx33.infernalmobsreloaded.command.subcommand.SubCommand
@@ -17,7 +18,6 @@ import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardChecker
 import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardCheckerDummy
 import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardCheckerImpl
 import com.github.secretx33.infernalmobsreloaded.model.PluginMetricsId
-import com.github.secretx33.infernalmobsreloaded.packetlistener.InvisibleEntitiesEquipVanisherListener
 import com.github.secretx33.infernalmobsreloaded.util.extension.findClasses
 import com.github.secretx33.infernalmobsreloaded.util.extension.hasAnnotation
 import com.github.secretx33.infernalmobsreloaded.util.extension.isConcreteType
@@ -115,7 +115,8 @@ open class InfernalMobsReloaded : JavaPlugin {
 
         if (isProtocolLibEnabled) {
             logger.info("Enabling ProtocolLib hook.")
-            val packetListeners = setOf(InvisibleEntitiesEquipVanisherListener::class)
+            val packetListeners = findClasspathPacketListeners()
+                .filterNotTo(mutableSetOf()) { it.hasAnnotation<SkipAutoRegistration>() }
 
             packetListeners.map { scope.getInstance(it.java) }
                 .forEach(ProtocolLibrary.getProtocolManager()::addPacketListener)
@@ -129,6 +130,9 @@ open class InfernalMobsReloaded : JavaPlugin {
 
     private fun findClasspathListeners(): Set<KClass<out Listener>> =
         findClasses("$PLUGIN_PACKAGE.eventlistener") { it.isConcreteType && it.isSubclassOf(Listener::class) }
+
+    private fun findClasspathPacketListeners(): Set<KClass<out PacketAdapter>> =
+        findClasses("$PLUGIN_PACKAGE.packetlistener") { it.isConcreteType && it.isSubclassOf(PacketAdapter::class) }
 
     private fun findClasspathSubcommands(): Set<KClass<out SubCommand>> =
         findClasses("$PLUGIN_PACKAGE.command") { it.isConcreteType && it.isSubclassOf(SubCommand::class) }
