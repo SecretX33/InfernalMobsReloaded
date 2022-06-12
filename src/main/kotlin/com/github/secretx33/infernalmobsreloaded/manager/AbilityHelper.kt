@@ -466,7 +466,7 @@ class AbilityHelper (
                     // if potion type is invalid or empty, silently fail
                     val type = abilityConfig.get(AbilityConfigKeys.POTIONS_ENABLED_TYPES, emptyList<String>())
                         .randomOrNull()
-                        ?.let { name -> XPotion.matchXPotion(name).orElse(null)?.parsePotionEffectType() }
+                        ?.let { name -> XPotion.matchXPotion(name).orElse(null)?.potionEffectType }
                         ?: return@forEach
 
                     entity.throwPotion(victim, type)

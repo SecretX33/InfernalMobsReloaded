@@ -7,21 +7,21 @@ import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.utils.extension.formattedTypeName
 import com.github.secretx33.infernalmobsreloaded.utils.extension.getTarget
-import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.other.inject
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import toothpick.InjectConstructor
 
-class InspectCommand : SubCommand(), CustomKoinComponent {
+@InjectConstructor
+class InspectCommand(
+    private val messages: Messages,
+    private val mobsManager: InfernalMobsManager,
+): SubCommand() {
 
     override val name: String = "inspect"
     override val permission: String = "inspect"
     override val aliases: List<String> = listOf(name, "insp", "ins", "in", "i")
-
-    private val messages by inject<Messages>()
-    private val mobsManager by inject<InfernalMobsManager>()
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
         // if player is not targeting an entity

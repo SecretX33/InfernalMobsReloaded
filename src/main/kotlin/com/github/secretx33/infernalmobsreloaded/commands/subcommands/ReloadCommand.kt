@@ -11,27 +11,25 @@ import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.GlobalDropsRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repositories.LootItemsRepo
-import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.other.inject
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class ReloadCommand : SubCommand(), CustomKoinComponent {
+class ReloadCommand(
+    private val config: Config,
+    private val messages: Messages,
+    private val abilityConfig: AbilityConfig,
+    private val lootItemsRepo: LootItemsRepo,
+    private val globalDropsRepo: GlobalDropsRepo,
+    private val infernalMobTypesRepo: InfernalMobTypesRepo,
+    private val charmsRepo: CharmsRepo,
+    private val infernalMobsManager: InfernalMobsManager,
+    private val bossBarManager: BossBarManager,
+    private val charmsManager: CharmsManager,
+) : SubCommand() {
 
     override val name: String = "reload"
     override val permission: String = "reload"
     override val aliases: List<String> = listOf(name, "rel", "r")
-
-    private val config by inject<Config>()
-    private val messages by inject<Messages>()
-    private val abilityConfig by inject<AbilityConfig>()
-    private val lootItemsRepo by inject<LootItemsRepo>()
-    private val globalDropsRepo by inject<GlobalDropsRepo>()
-    private val infernalMobTypesRepo by inject<InfernalMobTypesRepo>()
-    private val charmsRepo by inject<CharmsRepo>()
-    private val infernalMobsManager by inject<InfernalMobsManager>()
-    private val bossBarManager by inject<BossBarManager>()
-    private val charmsManager by inject<CharmsManager>()
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) =
         onCommandByConsole(player, alias, strings)

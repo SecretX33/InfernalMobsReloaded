@@ -1,6 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners.hook
 
-import com.github.secretx33.infernalmobsreloaded.annotation.ConditionalListener
+import com.github.secretx33.infernalmobsreloaded.annotation.SkipAutoRegistration
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerBreakListener
@@ -19,7 +19,7 @@ import toothpick.InjectConstructor
 /**
  * Replaces [SpawnerBreakListener] in the presence of `SilkSpawners` (and its hook is enabled).
  */
-@ConditionalListener
+@SkipAutoRegistration
 @InjectConstructor
 class SpawnerBreakWithSilkSpawnersListener(
     private val config: Config,

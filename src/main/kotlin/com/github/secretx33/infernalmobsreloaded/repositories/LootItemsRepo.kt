@@ -298,7 +298,7 @@ class LootItemsRepo (
         return enchants.mapTo(hashSetOf()) { line ->
             val fields = line.split(':')
 
-            val enchant = XEnchantment.matchXEnchantment(fields[0]).map { it.parseEnchantment() }.orElseGet {
+            val enchant = XEnchantment.matchXEnchantment(fields[0]).map { it.enchant }.orElseGet {
                 logger.warning("Inside item loot '$name', enchantment with name '${fields[0]}' doesn't exist, please fix your item loot configurations. Defaulting this enchantment to LUCK.")
                 Enchantment.LUCK
             }!!
@@ -339,7 +339,7 @@ class LootItemsRepo (
             return Pair(1, 1)
         }
 
-        // if there's one one number, min and max amounts should be equal
+        // if there's one number, min and max amounts should be equal
         if(amounts.size < 2 || amounts[1].isBlank()) return Pair(minAmount, minAmount)
 
         val maxAmount = amounts[1].toIntOrNull()?.let { max(minAmount, it) } ?: run {

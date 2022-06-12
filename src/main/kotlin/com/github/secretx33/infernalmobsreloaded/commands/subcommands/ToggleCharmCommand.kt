@@ -10,8 +10,6 @@ import com.github.secretx33.infernalmobsreloaded.repositories.CharmsRepo
 import com.github.secretx33.infernalmobsreloaded.utils.extension.displayName
 import com.github.secretx33.infernalmobsreloaded.utils.extension.isAir
 import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
-import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.other.inject
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.command.CommandSender
@@ -20,16 +18,16 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
 
-class ToggleCharmCommand: SubCommand(), CustomKoinComponent {
+class ToggleCharmCommand(
+    private val messages: Messages,
+    private val keyChain: KeyChain,
+    private val charmsRepo: CharmsRepo,
+    private val charmsManager: CharmsManager,
+) : SubCommand() {
 
     override val name: String = "togglecharm"
     override val permission: String = "charms.toggle"
     override val aliases: List<String> = listOf(name, "togglec", "tcharm", "tc")
-
-    private val messages by inject<Messages>()
-    private val keyChain by inject<KeyChain>()
-    private val charmsRepo by inject<CharmsRepo>()
-    private val charmsManager by inject<CharmsManager>()
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
         val intention = player.getIntention()

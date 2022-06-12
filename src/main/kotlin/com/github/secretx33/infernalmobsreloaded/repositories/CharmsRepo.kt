@@ -125,7 +125,7 @@ class CharmsRepo (
             return PotionEffectType.LUCK
         }
 
-        return XPotion.parsePotionEffectFromString(potionEffect)?.type ?: run {
+        return XPotion.parseEffect(potionEffect)?.xPotion?.potionEffectType ?: run {
             log.warning("Inside charm effect '$name', $key '$potionEffect' is invalid or doesn't exist, please fix your charms configurations. Defaulting $name $key to Luck")
             PotionEffectType.LUCK
         }

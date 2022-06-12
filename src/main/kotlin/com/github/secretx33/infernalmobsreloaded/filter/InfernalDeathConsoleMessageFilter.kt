@@ -19,7 +19,7 @@ import javax.inject.Singleton
 class InfernalDeathConsoleMessageFilter(
     private val config: Config,
     private val mobsManager: InfernalMobsManager,
-) : AbstractFilter(Filter.Result.DENY, Filter.Result.NEUTRAL), CustomKoinComponent {
+) : AbstractFilter(Filter.Result.DENY, Filter.Result.NEUTRAL) {
     private val useRawMessage = false
 
     private fun filter(msg: String?): Filter.Result {

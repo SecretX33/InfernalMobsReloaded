@@ -8,22 +8,22 @@ import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.utils.extension.displayName
 import com.github.secretx33.infernalmobsreloaded.utils.extension.turnIntoSpawner
-import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.other.inject
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import toothpick.InjectConstructor
 
-class GetSpawnerCommand: SubCommand(), CustomKoinComponent {
+@InjectConstructor
+class GetSpawnerCommand(
+    private val messages: Messages,
+    private val infernalMobTypesRepo: InfernalMobTypesRepo,
+) : SubCommand() {
 
     override val name: String = "getspawner"
     override val permission: String = "getspawner"
     override val aliases: List<String> = listOf(name, "spawner", "gs")
-
-    private val messages by inject<Messages>()
-    private val infernalMobTypesRepo by inject<InfernalMobTypesRepo>()
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) {
         if(strings.size < 2) {

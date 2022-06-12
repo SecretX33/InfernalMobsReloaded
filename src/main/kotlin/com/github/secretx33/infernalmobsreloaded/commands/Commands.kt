@@ -1,34 +1,26 @@
 package com.github.secretx33.infernalmobsreloaded.commands
 
-import com.github.secretx33.infernalmobsreloaded.commands.subcommands.GetLootCommand
-import com.github.secretx33.infernalmobsreloaded.commands.subcommands.GetSpawnerCommand
-import com.github.secretx33.infernalmobsreloaded.commands.subcommands.InspectCommand
-import com.github.secretx33.infernalmobsreloaded.commands.subcommands.KillAllCommand
-import com.github.secretx33.infernalmobsreloaded.commands.subcommands.MultispawnCommand
-import com.github.secretx33.infernalmobsreloaded.commands.subcommands.ReloadCommand
-import com.github.secretx33.infernalmobsreloaded.commands.subcommands.SpawnCommand
 import com.github.secretx33.infernalmobsreloaded.commands.subcommands.SubCommand
-import com.github.secretx33.infernalmobsreloaded.commands.subcommands.ToggleCharmCommand
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+import toothpick.InjectConstructor
+import toothpick.Scope
 import java.util.Locale
+import kotlin.reflect.KClass
 
-class Commands(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
+@InjectConstructor
+class Commands(
+    plugin: JavaPlugin,
+    scope: Scope,
+    subcommandClasses: Set<KClass<out SubCommand>>,
+) : CommandExecutor, TabCompleter {
 
-    private val subcommands: Set<SubCommand> = setOf(
-        GetLootCommand(),
-        GetSpawnerCommand(),
-        InspectCommand(),
-        KillAllCommand(),
-        MultispawnCommand(),
-        ReloadCommand(),
-        SpawnCommand(),
-        ToggleCharmCommand(),
-    )
+    private val subcommands = subcommandClasses
+        .mapTo(mutableSetOf()) { scope.getInstance(it.java) }
 
     init {
         plugin.getCommand("imr")?.let { cmd ->

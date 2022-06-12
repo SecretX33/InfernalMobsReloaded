@@ -12,6 +12,7 @@ import java.util.concurrent.*
 import java.util.function.*
 import java.util.logging.Level
 import java.util.zip.GZIPOutputStream
+import javax.inject.Named
 import javax.net.ssl.HttpsURLConnection
 
 /**
@@ -20,7 +21,7 @@ import javax.net.ssl.HttpsURLConnection
  * @param plugin Your plugin instance.
  * @param serviceId The id of the service. It can be found at [What is my plugin id?](https://bstats.org/what-is-my-plugin-id)
  */
-class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
+class Metrics(private val plugin: JavaPlugin, @Named("metricsServiceId") serviceId: Int) {
 
     private val metricsBase: MetricsBase
 

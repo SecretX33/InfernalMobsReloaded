@@ -1,11 +1,9 @@
 package com.github.secretx33.infernalmobsreloaded.utils.extension
 
+import com.github.secretx33.infernalmobsreloaded.InfernalMobsReloaded
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
-import com.github.secretx33.infernalmobsreloaded.utils.extension.Utils.keyChain
-import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.other.inject
 import kotlinx.coroutines.delay
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -22,13 +20,14 @@ import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataHolder
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
+import toothpick.ktp.extension.getInstance
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
 
-
-private object Utils: CustomKoinComponent {
-    val keyChain by inject<KeyChain>()
-}
+/**
+ * Small static access to avoid a lot of boilerplate code.
+ */
+private val keyChain by lazy(LazyThreadSafetyMode.NONE) { InfernalMobsReloaded.scope.getInstance<KeyChain>() }
 
 fun ItemStack.turnIntoSpawner(infernalType: InfernalMobType): ItemStack {
     require(type == Material.SPAWNER) { "may only turn into spawn actual spawners, $type is not spawner" }

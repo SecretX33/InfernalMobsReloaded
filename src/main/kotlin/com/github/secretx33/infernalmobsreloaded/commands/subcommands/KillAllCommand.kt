@@ -5,22 +5,22 @@ import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.config.replace
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
-import com.github.secretx33.infernalmobsreloaded.utils.other.CustomKoinComponent
-import com.github.secretx33.infernalmobsreloaded.utils.other.inject
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import toothpick.InjectConstructor
 
-class KillAllCommand : SubCommand(), CustomKoinComponent {
+@InjectConstructor
+class KillAllCommand(
+    private val messages: Messages,
+    private val mobsManager: InfernalMobsManager,
+    private val keyChain: KeyChain,
+) : SubCommand() {
 
     override val name: String = "killall"
     override val permission: String = "killall"
     override val aliases: List<String> = listOf(name, "ka")
-
-    private val messages by inject<Messages>()
-    private val mobsManager by inject<InfernalMobsManager>()
-    private val keyChain by inject<KeyChain>()
 
     override fun onCommandByPlayer(player: Player, alias: String, strings: Array<String>) =
         onCommandByConsole(player, alias, strings)
