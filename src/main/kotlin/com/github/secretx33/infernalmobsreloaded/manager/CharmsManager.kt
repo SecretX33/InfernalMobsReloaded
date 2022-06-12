@@ -1,5 +1,8 @@
 package com.github.secretx33.infernalmobsreloaded.manager
 
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginLoad
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
 import com.github.secretx33.infernalmobsreloaded.manager.InvisibilityHelper.isInvisibleOrVanished
 import com.github.secretx33.infernalmobsreloaded.model.CharmEffect
 import com.github.secretx33.infernalmobsreloaded.model.CharmParticleMode
@@ -36,7 +39,13 @@ class CharmsManager(
     private val plugin: Plugin,
     private val charmsRepo: CharmsRepo,
     private val lootItemsRepo: LootItemsRepo,
+    eventBus: EventBus,
 ) {
+
+    init {
+        eventBus.subscribe<PluginLoad>(this, 20) { startAllCharmTasks() }
+        eventBus.subscribe<PluginUnload>(this, 20) { stopAllCharmTasks() }
+    }
 
     private val permanentEffects = HashBasedTable.create<UUID, CharmEffect, PotionEffectType>()               // PlayerUuid, charmEffect, PotionEffect
     private val periodicEffects  = HashBasedTable.create<UUID, CharmEffect, Job>()                            // PlayerUuid, charmEffect, Coroutine

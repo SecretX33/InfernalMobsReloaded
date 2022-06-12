@@ -3,7 +3,6 @@ package com.github.secretx33.infernalmobsreloaded.filter
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
-import com.github.secretx33.infernalmobsreloaded.util.other.CustomKoinComponent
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.Marker
 import org.apache.logging.log4j.core.Filter

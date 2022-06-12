@@ -14,8 +14,10 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.CreatureSpawnEvent
+import toothpick.InjectConstructor
 import kotlin.math.min
 
+@InjectConstructor
 class MultispawnCommand(
     private val messages: Messages,
     private val infernalMobTypesRepo: InfernalMobTypesRepo,

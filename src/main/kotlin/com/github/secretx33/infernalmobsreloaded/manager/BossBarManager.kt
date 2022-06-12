@@ -2,6 +2,9 @@ package com.github.secretx33.infernalmobsreloaded.manager
 
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginLoad
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
 import com.github.secretx33.infernalmobsreloaded.util.extension.getHealthPercent
 import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.Bukkit
@@ -16,9 +19,14 @@ import javax.inject.Singleton
 class BossBarManager (
     private val config: Config,
     private val mobsManager: InfernalMobsManager,
+    eventBus: EventBus,
 ) {
-
     private val bossBarMap = HashMap<UUID, BossBar>()
+
+    init {
+        eventBus.subscribe<PluginLoad>(this, 10) { showBarsOfNearbyInfernalsForAllPlayers() }
+        eventBus.subscribe<PluginUnload>(this, 10) { hideAllBarsFromAllPlayers() }
+    }
 
     fun updateBossBar(entity: LivingEntity, newHealth: Float) {
         if(!bossBarEnabled) return

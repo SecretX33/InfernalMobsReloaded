@@ -13,7 +13,9 @@ import com.github.secretx33.infernalmobsreloaded.repository.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.repository.LootItemsRepo
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import toothpick.InjectConstructor
 
+@InjectConstructor
 class ReloadCommand(
     private val config: Config,
     private val messages: Messages,

@@ -14,6 +14,7 @@ import org.bukkit.block.CreatureSpawner
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.persistence.PersistentDataType
 import toothpick.InjectConstructor
 
 /**
@@ -41,5 +42,5 @@ class SpawnerBreakWithSilkSpawnersListener(
     private val dropSpawners: Boolean
         get() = config.get(ConfigKeys.ENABLE_SPAWNER_DROPS)
 
-    private fun CreatureSpawner.getSpawnerCategory() = pdc.get(keyChain.spawnerCategoryKey, org.bukkit.persistence.PersistentDataType.STRING)
+    private fun CreatureSpawner.getSpawnerCategory(): String? = pdc.get(keyChain.spawnerCategoryKey, PersistentDataType.STRING)
 }

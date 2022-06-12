@@ -17,7 +17,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
+import toothpick.InjectConstructor
 
+@InjectConstructor
 class ToggleCharmCommand(
     private val messages: Messages,
     private val keyChain: KeyChain,

@@ -19,6 +19,7 @@ import kotlin.math.sqrt
 @Singleton
 @InjectConstructor
 class AbilityConfig(plugin: Plugin, private val log: Logger) {
+
     private val file = YamlManager(plugin, "abilities")
     private val cache = ConcurrentHashMap<String, Any>()
 

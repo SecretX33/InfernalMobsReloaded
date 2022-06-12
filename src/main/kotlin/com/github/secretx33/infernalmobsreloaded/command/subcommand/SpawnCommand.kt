@@ -14,7 +14,9 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
+import toothpick.InjectConstructor
 
+@InjectConstructor
 class SpawnCommand(
     private val messages: Messages,
     private val infernalMobTypesRepo: InfernalMobTypesRepo,

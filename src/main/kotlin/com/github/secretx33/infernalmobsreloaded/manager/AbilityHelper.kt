@@ -13,6 +13,8 @@ import com.github.secretx33.infernalmobsreloaded.event.InfernalDamageTakenEvent
 import com.github.secretx33.infernalmobsreloaded.event.InfernalHealedEvent
 import com.github.secretx33.infernalmobsreloaded.event.InfernalLightningStrike
 import com.github.secretx33.infernalmobsreloaded.event.InfernalSpawnEvent
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
 import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardChecker
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.BlockModification
@@ -23,6 +25,7 @@ import com.github.secretx33.infernalmobsreloaded.util.Cuboid
 import com.github.secretx33.infernalmobsreloaded.util.extension.contentsMap
 import com.github.secretx33.infernalmobsreloaded.util.extension.displayName
 import com.github.secretx33.infernalmobsreloaded.util.extension.futureSync
+import com.github.secretx33.infernalmobsreloaded.util.extension.gsonTypeToken
 import com.github.secretx33.infernalmobsreloaded.util.extension.isAir
 import com.github.secretx33.infernalmobsreloaded.util.extension.pdc
 import com.github.secretx33.infernalmobsreloaded.util.extension.random
@@ -30,7 +33,6 @@ import com.github.secretx33.infernalmobsreloaded.util.extension.runSync
 import com.github.secretx33.infernalmobsreloaded.util.extension.toUuid
 import com.google.common.collect.Sets
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -84,7 +86,6 @@ import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.Vector
 import toothpick.InjectConstructor
 import java.lang.StrictMath.pow
-import java.lang.reflect.Type
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import java.util.logging.Logger
@@ -110,9 +111,14 @@ class AbilityHelper (
     private val particlesHelper: ParticlesHelper,
     private val infernalMobTypesRepo: InfernalMobTypesRepo,
     private val logger: Logger,
+    eventBus: EventBus,
 ){
     private val blockModifications = Sets.newConcurrentHashSet<BlockModification>()
     private val blocksBlackList = Sets.newConcurrentHashSet<Location>()
+
+    init {
+        eventBus.subscribe<PluginUnload>(this, 40) { revertPendingBlockModifications() }
+    }
 
     // abilities that are applied when mob spawns
 
@@ -1125,7 +1131,7 @@ class AbilityHelper (
 
     private companion object {
         val gson = Gson()
-        val infernalAbilitySetToken: Type = object : TypeToken<Set<Ability>>() {}.type
+        val infernalAbilitySetToken = gsonTypeToken<Set<Ability>>()
         val movSpeedUID: UUID = "57202f4c-2e52-46cb-ad37-77550e99edb2".toUuid()
         val knockbackResistUID: UUID = "984e7a8c-188f-444b-82ea-5d02197ea8e4".toUuid()
         val healthUID: UUID = "18f1d8fb-6fed-4d47-a69b-df5c76693ad5".toUuid()

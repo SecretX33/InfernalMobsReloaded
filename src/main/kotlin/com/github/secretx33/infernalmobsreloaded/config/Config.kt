@@ -21,6 +21,7 @@ import kotlin.math.min
 @Singleton
 @InjectConstructor
 class Config(plugin: Plugin, private val log: Logger) {
+
     private val file = YamlManager(plugin, "config")
     private val cache = ConcurrentHashMap<String, Any>()
 

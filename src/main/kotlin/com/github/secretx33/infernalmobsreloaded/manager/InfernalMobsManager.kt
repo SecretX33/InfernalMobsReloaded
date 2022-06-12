@@ -7,18 +7,21 @@ import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.event.InfernalDamageDoneEvent
 import com.github.secretx33.infernalmobsreloaded.event.InfernalDamageTakenEvent
 import com.github.secretx33.infernalmobsreloaded.event.InfernalSpawnEvent
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginLoad
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.DisplayCustomNameMode
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repository.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.util.extension.contents
+import com.github.secretx33.infernalmobsreloaded.util.extension.gsonTypeToken
 import com.github.secretx33.infernalmobsreloaded.util.extension.pdc
 import com.github.secretx33.infernalmobsreloaded.util.extension.runSync
 import com.github.secretx33.infernalmobsreloaded.util.extension.toUuid
 import com.google.common.collect.MultimapBuilder
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -38,7 +41,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 import toothpick.InjectConstructor
-import java.lang.reflect.Type
 import java.util.Random
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -55,9 +57,15 @@ class InfernalMobsManager (
     private val infernalMobTypesRepo: InfernalMobTypesRepo,
     private val particlesHelper: ParticlesHelper,
     private val abilityHelper: AbilityHelper,
+    eventBus: EventBus,
 ) {
     private val infernalMobParticleTasks = ConcurrentHashMap<UUID, Job>()   // stores the job currently emitting infernal particles
     private val infernalMobAbilityTasks = MultimapBuilder.hashKeys().arrayListValues().build<UUID, Job>()  // for abilities that require a target
+
+    init {
+        eventBus.subscribe<PluginLoad>(this, 0) { loadAllInfernals() }
+        eventBus.subscribe<PluginUnload>(this, 0) { unloadAllInfernals() }
+    }
 
     fun isValidInfernalMob(entity: LivingEntity) = infernalMobTypesRepo.canTypeBecomeInfernal(entity.type) && entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)?.let { infernalMobTypesRepo.isValidInfernalType(it) } == true
 
@@ -301,7 +309,7 @@ class InfernalMobsManager (
     private companion object {
         val gson = Gson()
         val random = Random()
-        val infernalAbilitySetToken: Type = object : TypeToken<Set<Ability>>() {}.type
+        val infernalAbilitySetToken = gsonTypeToken<Set<Ability>>()
 
         val followRangeUID: UUID = "ff6d1ee3-8c7e-4826-b795-945689b5dc76".toUuid()
         val atkKnockbackUID: UUID = "0c9a9cf0-4507-47b7-b4db-77be78e7d55e".toUuid()

@@ -10,13 +10,14 @@ import org.bukkit.plugin.java.JavaPlugin
 import toothpick.InjectConstructor
 import toothpick.Scope
 import java.util.Locale
+import javax.inject.Named
 import kotlin.reflect.KClass
 
 @InjectConstructor
 class Commands(
     plugin: JavaPlugin,
     scope: Scope,
-    subcommandClasses: Set<KClass<out SubCommand>>,
+    @Named("subcommands") subcommandClasses: Set<KClass<out SubCommand>>,
 ) : CommandExecutor, TabCompleter {
 
     private val subcommands = subcommandClasses

@@ -6,20 +6,22 @@ import com.github.secretx33.infernalmobsreloaded.command.Commands
 import com.github.secretx33.infernalmobsreloaded.command.subcommand.SubCommand
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginLoad
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
 import com.github.secretx33.infernalmobsreloaded.eventlistener.hook.SpawnerBreakWithSilkSpawnersListener
 import com.github.secretx33.infernalmobsreloaded.eventlistener.hook.TownyListener
 import com.github.secretx33.infernalmobsreloaded.eventlistener.spawner.SpawnerBreakListener
 import com.github.secretx33.infernalmobsreloaded.filter.InfernalDeathConsoleMessageFilter
-import com.github.secretx33.infernalmobsreloaded.manager.AbilityHelper
-import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
-import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
-import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardChecker
 import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardCheckerDummy
 import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardCheckerImpl
-import com.github.secretx33.infernalmobsreloaded.model.Ability.Companion.getOrNull
+import com.github.secretx33.infernalmobsreloaded.model.PluginMetricsId
 import com.github.secretx33.infernalmobsreloaded.packetlistener.InvisibleEntitiesEquipVanisherListener
 import com.github.secretx33.infernalmobsreloaded.util.extension.findClasses
+import com.github.secretx33.infernalmobsreloaded.util.extension.hasAnnotation
+import com.github.secretx33.infernalmobsreloaded.util.extension.isConcreteType
+import com.github.secretx33.infernalmobsreloaded.util.extension.isSubclassOf
 import com.github.secretx33.infernalmobsreloaded.util.extension.replace
 import com.github.secretx33.infernalmobsreloaded.util.other.Metrics
 import me.mattstudios.msg.adventure.AdventureMessage
@@ -40,8 +42,6 @@ import toothpick.ktp.extension.getInstance
 import java.io.File
 import java.util.logging.Logger
 import kotlin.reflect.KClass
-import kotlin.reflect.full.hasAnnotation
-import kotlin.reflect.full.isSuperclassOf
 
 open class InfernalMobsReloaded : JavaPlugin {
 
@@ -58,8 +58,8 @@ open class InfernalMobsReloaded : JavaPlugin {
         bind<Plugin>().toInstance(this@InfernalMobsReloaded)
         bind<JavaPlugin>().toInstance(this@InfernalMobsReloaded)
         bind<Logger>().toInstance(logger)
-        bind<Int>().withName("metricsServiceId").toInstance(11253)
-        bind<Set<KClass<out SubCommand>>>().toInstance(findClasspathSubcommands())
+        bind<PluginMetricsId>().toInstance(PluginMetricsId(11253))
+        bind<Set<KClass<out SubCommand>>>().withName("subcommands").toInstance(findClasspathSubcommands())
         bind<AdventureMessage>().toInstance(AdventureMessage.create())
     }
 
@@ -74,29 +74,21 @@ open class InfernalMobsReloaded : JavaPlugin {
     override fun onEnable() {
         KTP.setConfiguration(Configuration.forDevelopment())
         _scope = KTP.openScope(this) {
-            it.installModules(module {
+            it.installModules(mod, module {
                 bind<Scope>().toInstance(it)
             })
         }
         findAndRegisterClasspathListeners()
         scope.apply {
-            registerLoggerFilters(getInstance<InfernalDeathConsoleMessageFilter>())
             getInstance<Commands>()
             getInstance<Metrics>()
-            getInstance<InfernalMobsManager>().loadAllInfernals()
-            getInstance<BossBarManager>().showBarsOfNearbyInfernalsForAllPlayers()
-            getInstance<CharmsManager>().startAllCharmTasks()
+            registerLoggerFilters(getInstance<InfernalDeathConsoleMessageFilter>())
         }
+        scope.getInstance<EventBus>().post(PluginLoad())
     }
 
     override fun onDisable() {
-        scope.apply {
-            getInstance<InfernalMobsManager>().unloadAllInfernals()
-            getInstance<BossBarManager>().hideAllBarsFromAllPlayers()
-            getInstance<CharmsManager>().stopAllCharmTasks()
-            getInstance<AbilityHelper>().revertPendingBlockModifications()
-        }
-        getOrNull<TownyListener>()?.cancelRemovalTasks()
+        scope.getInstance<EventBus>().post(PluginUnload())
         KTP.closeScope(this)
         _scope = null
     }
@@ -136,10 +128,10 @@ open class InfernalMobsReloaded : JavaPlugin {
     }
 
     private fun findClasspathListeners(): Set<KClass<out Listener>> =
-        findClasses("$PLUGIN_PACKAGE.eventlistener") { !it.isAbstract && Listener::class.isSuperclassOf(it) }
+        findClasses("$PLUGIN_PACKAGE.eventlistener") { it.isConcreteType && it.isSubclassOf(Listener::class) }
 
     private fun findClasspathSubcommands(): Set<KClass<out SubCommand>> =
-        findClasses("$PLUGIN_PACKAGE.command") { !it.isAbstract && SubCommand::class.isSuperclassOf(it) }
+        findClasses("$PLUGIN_PACKAGE.command") { it.isConcreteType && it.isSubclassOf(SubCommand::class) }
 
     private val isWorldGuardEnabled
         get() = Bukkit.getPluginManager().getPlugin("WorldGuard") != null

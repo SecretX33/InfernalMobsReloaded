@@ -2,6 +2,8 @@ package com.github.secretx33.infernalmobsreloaded.eventlistener.hook
 
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.util.extension.runSync
@@ -23,14 +25,21 @@ import toothpick.InjectConstructor
 import java.lang.ref.WeakReference
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
+@Singleton
 @InjectConstructor
 class TownyListener(
     private val plugin: Plugin,
     private val config: Config,
     private val mobsManager: InfernalMobsManager,
     private val bossBarManager: BossBarManager,
+    eventBus: EventBus,
 ) : Listener {
+
+    init {
+        eventBus.subscribe<PluginUnload>(this, 50) { cancelRemovalTasks() }
+    }
 
     private val removalDelay = (config.get<Double>(ConfigKeys.TOWNY_REMOVE_INFERNAL_IN_TOWNS_DELAY) * 1000.0).toLong()
         .coerceAtLeast(0L)
@@ -91,7 +100,10 @@ class TownyListener(
     private fun LivingEntity.isInfernalMobOrMount() = mobsManager.isValidInfernalMob(this)
             || mobsManager.isMountOfAnotherInfernal(this)
 
-    fun cancelRemovalTasks() {
+    /**
+     * Finalize task that must be run before plugin is unloaded.
+     */
+    private fun cancelRemovalTasks() {
         removalTaskCache.asMap().forEach { (job, _) -> job.cancel() }
         removalTaskCache.invalidateAll()
     }

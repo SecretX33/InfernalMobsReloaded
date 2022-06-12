@@ -26,7 +26,6 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("reflect"))
     implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.2"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     implementation("com.github.cryptomorin:XSeries:8.7.1")
@@ -67,16 +66,14 @@ artifacts.archives(tasks.shadowJar)
 tasks.shadowJar {
     archiveFileName.set("${rootProject.name}.jar")
     val dependencyPackage = "${rootProject.group}.dependencies.${rootProject.name.toLowerCase()}"
-    relocate("com.zaxxer.hikari", "${dependencyPackage}.hikari")
-    relocate("okio", ".${dependencyPackage}.moshi.okio")
-    relocate("org.koin", "${dependencyPackage}.koin")
-    relocate("org.slf4j", "${dependencyPackage}.slf4j")
+    relocate("com.cryptomorin.xseries", "${dependencyPackage}.xseries")
+    relocate("javax.inject", "${dependencyPackage}.javax.inject")
     relocate("kotlin", "${dependencyPackage}.kotlin")
     relocate("kotlinx", "${dependencyPackage}.kotlinx")
+    relocate("me.mattstudios.msg", "${dependencyPackage}.mfmsg")
     relocate("org.jetbrains", "${dependencyPackage}.jetbrains")
     relocate("org.intellij", "${dependencyPackage}.jetbrains.intellij")
-    relocate("com.cryptomorin.xseries", "${dependencyPackage}.xseries")
-    relocate("me.mattstudios.msg", "${dependencyPackage}.mfmsg")
+    relocate("toothpick", "${dependencyPackage}.toothpick")
     exclude("ScopeJVMKt.class")
     exclude("DebugProbesKt.bin")
     exclude("META-INF/**")
