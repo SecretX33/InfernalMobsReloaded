@@ -5,7 +5,6 @@ import com.github.secretx33.infernalmobsreloaded.config.AbilityConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
 import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
-import org.bukkit.Bukkit
 import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -17,14 +16,14 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
+@InjectConstructor
 class ThiefAbilityListener(
     private val plugin: Plugin,
     private val abilityConfig: AbilityConfig,
     private val keyChain: KeyChain,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun EntityPickupItemEvent.onStolenItemPickup() {

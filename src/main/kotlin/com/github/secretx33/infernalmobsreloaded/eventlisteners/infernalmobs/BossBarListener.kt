@@ -5,7 +5,6 @@ import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.utils.extension.getHealthPercent
 import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
-import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -15,14 +14,14 @@ import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
+@InjectConstructor
 class BossBarListener(
     private val plugin: Plugin,
     private val mobsManager: InfernalMobsManager,
     private val bossBarManager: BossBarManager,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun EntityDamageEvent.updateBossBarHealth() {

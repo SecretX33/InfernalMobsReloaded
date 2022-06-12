@@ -69,6 +69,6 @@ class SpawnCommand: SubCommand(), CustomKoinComponent {
 
         if(length == 2) return infernalMobTypesRepo.getAllInfernalTypeNames().filter { it.startsWith(hint, ignoreCase = true) }
 
-        return Ability.lowercasedValues.filter { it.startsWith(hint, ignoreCase = true) }
+        return Ability.LOWERCASE_VALUES.filter { it.startsWith(hint, ignoreCase = true) }
     }
 }

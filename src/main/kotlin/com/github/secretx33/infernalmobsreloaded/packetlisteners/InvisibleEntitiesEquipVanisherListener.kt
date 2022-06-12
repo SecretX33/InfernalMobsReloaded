@@ -1,7 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.packetlisteners
 
 import com.comphenix.protocol.PacketType
-import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
@@ -15,33 +14,27 @@ import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
+@InjectConstructor
 class InvisibleEntitiesEquipVanisherListener (
-    private val plugin: Plugin,
+    plugin: Plugin,
     private val abilityConfig: AbilityConfig,
     private val mobsManager: InfernalMobsManager,
-) {
+) : PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_EQUIPMENT) {
 
-    init { setup() }
+    override fun onPacketSending(event: PacketEvent) {
+        if(event.packetType != PacketType.Play.Server.ENTITY_EQUIPMENT || event.isCancelled || !disableEquipVisibility) return
 
-    private fun setup() {
-        val manager = ProtocolLibrary.getProtocolManager()
+        val wrapper = WrapperPlayServerEntityEquipment(event.packet)
+        val entity = wrapper.getEntity(event) as? LivingEntity ?: return
+        // if entity is not invisible inferno, no need to alter its equipments
+        if(!entity.isInvisibleInfernal()) return
 
-        manager.addPacketListener(object : PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_EQUIPMENT) {
-            override fun onPacketSending(event: PacketEvent) {
-                if(event.packetType != PacketType.Play.Server.ENTITY_EQUIPMENT || event.isCancelled || !disableEquipVisibility) return
-
-                val wrapper = WrapperPlayServerEntityEquipment(event.packet)
-                val entity = wrapper.getEntity(event) as? LivingEntity ?: return
-                // if entity is not invisible inferno, no need to alter its equipments
-                if(!entity.isInvisibleInfernal()) return
-
-                // setting air as item in all lists pairs of slot <-> item for the invisible infernal
-                wrapper.handle.slotStackPairLists.apply {
-                    (0 until values.size).forEach { i -> modify(i) { list -> list?.map { Pair(it.first, ItemStack(Material.AIR)) } } }
-                }
-            }
-        })
+        // setting air as item in all lists pairs of slot <-> item for the invisible infernal
+        wrapper.handle.slotStackPairLists.apply {
+            (0 until values.size).forEach { i -> modify(i) { list -> list?.map { Pair(it.first, ItemStack(Material.AIR)) } } }
+        }
     }
 
     private fun LivingEntity.isInvisibleInfernal() = mobsManager.isValidInfernalMob(this) && mobsManager.hasAbility(this, Ability.INVISIBLE)

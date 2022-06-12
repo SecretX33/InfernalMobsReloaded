@@ -37,12 +37,16 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.lang.reflect.Type
 import java.util.Random
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Singleton
 import kotlin.math.max
 
+@Singleton
+@InjectConstructor
 class InfernalMobsManager (
     private val plugin: Plugin,
     private val config: Config,

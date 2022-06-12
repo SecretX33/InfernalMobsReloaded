@@ -19,3 +19,8 @@ fun String.capitalizeFully(): String = WordUtils.capitalizeFully(this)
 fun String.toUuid(): UUID = UUID.fromString(this)
 
 fun Regex.matchOrNull(line: String, index: Int): String? = this.matchEntire(line)?.groupValues?.get(index)
+
+fun <T> MutableSet<T>.replace(oldElement: T, newElement: T) {
+    remove(oldElement)
+    add(newElement)
+}

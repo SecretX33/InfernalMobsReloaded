@@ -8,7 +8,6 @@ import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
 import com.github.secretx33.infernalmobsreloaded.utils.extension.random
 import com.github.secretx33.infernalmobsreloaded.utils.extension.toUuid
-import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
@@ -18,17 +17,15 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.util.UUID
 
+@InjectConstructor
 class FireworkAbilityListener(
-    plugin: Plugin,
     private val config: Config,
     private val abilityConfig: AbilityConfig,
     private val keyChain: KeyChain,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     private fun EntityDamageByEntityEvent.fireworkDamagingOwner() {

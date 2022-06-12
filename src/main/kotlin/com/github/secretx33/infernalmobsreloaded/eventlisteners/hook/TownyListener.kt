@@ -13,17 +13,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.lang.ref.WeakReference
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
+@InjectConstructor
 class TownyListener(
     private val plugin: Plugin,
     private val config: Config,
@@ -31,13 +32,16 @@ class TownyListener(
     private val bossBarManager: BossBarManager,
 ) : Listener {
 
-    private val removalDelay = (config.get<Double>(ConfigKeys.TOWNY_REMOVE_INFERNAL_IN_TOWNS_DELAY) * 1000.0).toLong().coerceAtLeast(0L)
+    private val removalDelay = (config.get<Double>(ConfigKeys.TOWNY_REMOVE_INFERNAL_IN_TOWNS_DELAY) * 1000.0).toLong()
+        .coerceAtLeast(0L)
 
-    private val removalCache = CacheBuilder.newBuilder().expireAfterWrite(removalDelay, TimeUnit.MILLISECONDS).build<UUID, Boolean>()
+    private val removalCache = CacheBuilder.newBuilder()
+        .expireAfterWrite(removalDelay, TimeUnit.MILLISECONDS)
+        .build<UUID, Boolean>()
 
-    private val removalTaskCache = CacheBuilder.newBuilder().expireAfterWrite(removalDelay, TimeUnit.MILLISECONDS).build<Job, Boolean>()
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
+    private val removalTaskCache = CacheBuilder.newBuilder()
+        .expireAfterWrite(removalDelay, TimeUnit.MILLISECONDS)
+        .build<Job, Boolean>()
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun EntityMoveEvent.onInfernalMove() {
@@ -82,7 +86,7 @@ class TownyListener(
     }
 
     private fun Entity.getSelfAndPassengersRecursively(): Set<Entity> =
-        passengers.flatMapTo(HashSet()) { it.getSelfAndPassengersRecursively() } + this
+        passengers.flatMapTo(hashSetOf()) { it.getSelfAndPassengersRecursively() } + this
 
     private fun LivingEntity.isInfernalMobOrMount() = mobsManager.isValidInfernalMob(this)
             || mobsManager.isMountOfAnotherInfernal(this)

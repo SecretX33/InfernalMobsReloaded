@@ -17,11 +17,15 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffectType
+import toothpick.InjectConstructor
 import java.util.Locale
 import java.util.logging.Logger
+import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 
+@Singleton
+@InjectConstructor
 class CharmsRepo (
     plugin: Plugin,
     private val log: Logger,
@@ -74,7 +78,7 @@ class CharmsRepo (
     }
 
     private fun loadWorldWhitelist() {
-        worldWhitelist = manager.getStringList("charm-effects-world-whitelist").mapTo(HashSet()) { it.lowercase(Locale.US) }
+        worldWhitelist = manager.getStringList("charm-effects-world-whitelist").mapTo(hashSetOf()) { it.lowercase(Locale.US) }
     }
 
     private fun makeCharmEffect(name: String): CharmEffect {
@@ -196,7 +200,7 @@ class CharmsRepo (
         items.filter { !lootItemsRepo.hasLootItem(it) }.forEach {
             log.warning("Inside ${manager.fileName} key '$name.$key', loot item named '$it' was not found, please fix your charm configurations and reload.")
         }
-        return items.filter { lootItemsRepo.hasLootItem(it) }.mapTo(HashSet()) { lootItemsRepo.getLootItem(it).name }
+        return items.filter { lootItemsRepo.hasLootItem(it) }.mapTo(hashSetOf()) { lootItemsRepo.getLootItem(it).name }
     }
 
     private fun getRequiredSlots(name: String): Set<Int> {

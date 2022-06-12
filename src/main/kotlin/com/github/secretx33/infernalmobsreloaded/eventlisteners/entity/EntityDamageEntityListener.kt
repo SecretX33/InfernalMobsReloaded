@@ -5,22 +5,19 @@ import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageDoneEvent
 import com.github.secretx33.infernalmobsreloaded.events.InfernalDamageTakenEvent
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
-import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
+@InjectConstructor
 class EntityDamageEntityListener(
-    plugin: Plugin,
     private val config: Config,
     private val mobsManager: InfernalMobsManager,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     // When an infernal takes damage
 

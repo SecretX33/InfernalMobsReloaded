@@ -4,7 +4,6 @@ import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
-import org.bukkit.Bukkit
 import org.bukkit.block.CreatureSpawner
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
@@ -12,15 +11,13 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.SpawnerSpawnEvent
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
+@InjectConstructor
 class SpawnerSpawnListener(
-    plugin: Plugin,
     private val infernalMobTypeRepo: InfernalMobTypesRepo,
     private val keyChain: KeyChain,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun SpawnerSpawnEvent.spawnerMobSpawn() {

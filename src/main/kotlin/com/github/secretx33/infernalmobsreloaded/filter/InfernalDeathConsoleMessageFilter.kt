@@ -11,7 +11,11 @@ import org.apache.logging.log4j.core.LogEvent
 import org.apache.logging.log4j.core.Logger
 import org.apache.logging.log4j.core.filter.AbstractFilter
 import org.apache.logging.log4j.message.Message
+import toothpick.InjectConstructor
+import javax.inject.Singleton
 
+@Singleton
+@InjectConstructor
 class InfernalDeathConsoleMessageFilter(
     private val config: Config,
     private val mobsManager: InfernalMobsManager,

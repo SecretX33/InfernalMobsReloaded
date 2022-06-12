@@ -5,22 +5,19 @@ import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
-import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
+@InjectConstructor
 class EntityLoadListener(
-    plugin: Plugin,
     private val config: Config,
     private val mobsManager: InfernalMobsManager,
     private val bossBarManager: BossBarManager,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun EntityAddToWorldEvent.onInfernalMobsRespawn() {
@@ -52,7 +49,7 @@ class EntityLoadListener(
             }
     }
 
-    private fun Entity.getSelfAndPassengersRecursively(): Set<Entity> = passengers.flatMapTo(HashSet()) { it.getSelfAndPassengersRecursively() } + this
+    private fun Entity.getSelfAndPassengersRecursively(): Set<Entity> = passengers.flatMapTo(hashSetOf()) { it.getSelfAndPassengersRecursively() } + this
 
     private val isPersistanceEnabled
         get() = config.get<Boolean>(ConfigKeys.INFERNALS_ARE_PERSISTENT)

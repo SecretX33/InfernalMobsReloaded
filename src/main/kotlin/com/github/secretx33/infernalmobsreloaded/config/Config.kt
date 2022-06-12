@@ -10,12 +10,16 @@ import org.bukkit.Particle
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
+import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 
+@Singleton
+@InjectConstructor
 class Config(plugin: Plugin, private val log: Logger) {
     private val file = YamlManager(plugin, "config")
     private val cache = ConcurrentHashMap<String, Any>()
@@ -83,7 +87,7 @@ class Config(plugin: Plugin, private val log: Logger) {
     fun <T : Enum<T>> getEnumSet(key: ConfigKeys, clazz: Class<T>, predicate: Predicate<T>? = null): Set<T> {
         return cache.getOrPut(key.configEntry) {
             if(!file.contains(key.configEntry)) return@getOrPut key.defaultValue
-            file.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
+            file.getStringList(key.configEntry).mapNotNullTo(hashSetOf()) { item ->
                 val optional = Enums.getIfPresent(clazz, item.uppercase(Locale.US)).takeIf { opt -> opt.isPresent }?.get() ?: run {
                     log.severe("Error while trying to get config key '$key', value passed '${item.uppercase(Locale.US)}' is an invalid value, please fix this entry in the ${file.fileName} and reload the configs")
                     return@mapNotNullTo null

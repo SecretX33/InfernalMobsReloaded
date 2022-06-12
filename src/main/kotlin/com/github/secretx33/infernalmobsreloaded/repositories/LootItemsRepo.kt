@@ -27,12 +27,16 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.util.EnumSet
 import java.util.Locale
 import java.util.logging.Logger
+import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 
+@Singleton
+@InjectConstructor
 class LootItemsRepo (
     plugin: Plugin,
     private val logger: Logger,
@@ -291,7 +295,7 @@ class LootItemsRepo (
         // if there's no enchant
         if(enchants.isEmpty()) return emptySet()
 
-        return enchants.mapTo(HashSet()) { line ->
+        return enchants.mapTo(hashSetOf()) { line ->
             val fields = line.split(':')
 
             val enchant = XEnchantment.matchXEnchantment(fields[0]).map { it.parseEnchantment() }.orElseGet {

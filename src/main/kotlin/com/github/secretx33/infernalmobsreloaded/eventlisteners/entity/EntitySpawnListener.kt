@@ -15,17 +15,15 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
-import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.util.Random
 
+@InjectConstructor
 class EntitySpawnListener (
-    plugin: Plugin,
     private val config: Config,
     private val infernalManager: InfernalMobsManager,
     private val infernalTypesRepo: InfernalMobTypesRepo,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun CreatureSpawnEvent.onNaturalEntitySpawn() {

@@ -8,7 +8,6 @@ import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import java.util.Locale
-import java.util.Objects
 import java.util.concurrent.ThreadLocalRandom
 
 data class InfernalMobType (
@@ -85,15 +84,17 @@ data class InfernalMobType (
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is InfernalMobType) return false
+        if (javaClass != other?.javaClass) return false
 
-        if (entityType != other.entityType) return false
-        if (!name.equals(other.name, ignoreCase = true)) return false
-
-        return true
+        other as InfernalMobType
+        return entityType == other.entityType && name.equals(other.name, ignoreCase = true)
     }
 
-    override fun hashCode() = Objects.hash(name.lowercase(Locale.US), entityType)
+    override fun hashCode(): Int {
+        var result = name.lowercase(Locale.US).hashCode()
+        result = 31 * result + entityType.hashCode()
+        return result
+    }
 
     private val random get() = ThreadLocalRandom.current()
 }

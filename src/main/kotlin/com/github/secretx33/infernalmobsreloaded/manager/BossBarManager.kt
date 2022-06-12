@@ -7,8 +7,12 @@ import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import toothpick.InjectConstructor
 import java.util.UUID
+import javax.inject.Singleton
 
+@Singleton
+@InjectConstructor
 class BossBarManager (
     private val config: Config,
     private val mobsManager: InfernalMobsManager,

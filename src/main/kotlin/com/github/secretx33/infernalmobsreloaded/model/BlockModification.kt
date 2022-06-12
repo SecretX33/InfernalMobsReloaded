@@ -13,7 +13,7 @@ class BlockModification (
     private val blockBlacklist: MutableSet<Location>,
     private val makeTask: (List<Block>) -> Unit,
 ) {
-    val blockLocations = blocks.mapTo(HashSet()) { it.location }
+    val blockLocations = blocks.mapTo(hashSetOf()) { it.location }
     private val blockState: List<BlockState> = blocks.map { it.state }
     private val unmade = AtomicBoolean(false)
 

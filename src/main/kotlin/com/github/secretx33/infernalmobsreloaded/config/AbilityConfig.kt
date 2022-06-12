@@ -7,17 +7,18 @@ import com.google.common.base.Enums
 import com.google.common.base.Predicate
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffectType
+import toothpick.InjectConstructor
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
+import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-class AbilityConfig (
-    plugin: Plugin,
-    private val log: Logger,
-) {
+@Singleton
+@InjectConstructor
+class AbilityConfig(plugin: Plugin, private val log: Logger) {
     private val file = YamlManager(plugin, "abilities")
     private val cache = ConcurrentHashMap<String, Any>()
 
@@ -172,7 +173,7 @@ class AbilityConfig (
     fun <T : Enum<T>> getEnumSet(key: AbilityConfigKeys, clazz: Class<T>, predicate: Predicate<T>? = null): Set<T> {
         return cache.getOrPut(key.configEntry) {
             if(!file.contains(key.configEntry)) return@getOrPut key.defaultValue
-            file.getStringList(key.configEntry).mapNotNullTo(HashSet()) { item ->
+            file.getStringList(key.configEntry).mapNotNullTo(hashSetOf()) { item ->
                 val optional = Enums.getIfPresent(clazz, item.uppercase(Locale.US)).takeIf { opt -> opt.isPresent }?.get() ?: run {
                     log.severe("Error while trying to get ability key '$key', value passed '${item.uppercase(Locale.US)}' is an invalid value, please fix this entry in the ${file.fileName} and reload the configs")
                     return@mapNotNullTo null

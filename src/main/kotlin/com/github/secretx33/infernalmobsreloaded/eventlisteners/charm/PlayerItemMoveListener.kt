@@ -3,7 +3,6 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners.charm
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
 import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
 import com.github.secretx33.infernalmobsreloaded.utils.extension.runSync
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -17,13 +16,13 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
+@InjectConstructor
 class PlayerItemMoveListener(
     private val plugin: Plugin,
     private val charmsManager: CharmsManager,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun InventoryDragEvent.onItemDrag() {

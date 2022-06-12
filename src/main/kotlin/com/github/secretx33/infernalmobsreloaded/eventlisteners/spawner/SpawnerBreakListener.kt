@@ -2,11 +2,11 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner
 
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.hook.SpawnerBreakWithSilkSpawnersListener
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
 import com.github.secretx33.infernalmobsreloaded.utils.extension.turnIntoSpawner
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.CreatureSpawner
 import org.bukkit.event.EventHandler
@@ -15,16 +15,17 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
+/**
+ * Might be replaced by [SpawnerBreakWithSilkSpawnersListener] if hook with `SilkSpawners` is enabled.
+ */
+@InjectConstructor
 class SpawnerBreakListener(
-    plugin: Plugin,
     private val config: Config,
     private val infernalMobTypeRepo: InfernalMobTypesRepo,
     private val keyChain: KeyChain,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun BlockBreakEvent.infernalSpawnerBreak() {

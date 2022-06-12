@@ -1,21 +1,16 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners.charm
 
 import com.github.secretx33.infernalmobsreloaded.manager.CharmsManager
-import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
-class PlayerDamageCharmListener(
-    plugin: Plugin,
-    private val charmsManager: CharmsManager,
-) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
+@InjectConstructor
+class PlayerDamageCharmListener(private val charmsManager: CharmsManager) : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun EntityDamageByEntityEvent.onPlayerHitEntity() {

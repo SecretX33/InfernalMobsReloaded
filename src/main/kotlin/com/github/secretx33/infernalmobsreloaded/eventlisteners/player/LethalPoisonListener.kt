@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Monster
 import org.bukkit.entity.Player
@@ -20,15 +19,15 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import toothpick.InjectConstructor
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
+@InjectConstructor
 class LethalPoisonListener(
     private val plugin: Plugin,
     private val config: Config,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     private val scheduledLethalTicks = ConcurrentHashMap.newKeySet<UUID>()
 
@@ -49,7 +48,7 @@ class LethalPoisonListener(
         entity.scheduleLethalTick()
     }
 
-    private fun EntityDamageEvent.isNotPoison() = cause != DamageCause.POISON
+    private fun EntityDamageEvent.isNotPoison(): Boolean = cause != DamageCause.POISON
 
     private fun LivingEntity.scheduleLethalTick() {
         val poison = getAffectedPoison() ?: return
@@ -64,7 +63,7 @@ class LethalPoisonListener(
             delay(poison.getTickDelay())
             // if entity is not poisoned anymore, or has its health above the threshold, don't do anything
             if (isDead || !isValid || !isPoisoned() || uniqueId !in scheduledLethalTicks || health > (MIN_HP_VALUE_TO_DIE_OF_POISON + 0.5)) {
-                scheduledLethalTicks.remove(uniqueId)
+                scheduledLethalTicks -= uniqueId
                 return@launch
             }
             killByPoison()
@@ -76,19 +75,20 @@ class LethalPoisonListener(
 
     private fun LivingEntity.isPoisoned(): Boolean = getAffectedPoison() != null
 
-    private fun PotionEffect.getTickDelay(): Long {
-        var delay = 500.0 // delay in milliseconds
-
-        if (amplifier == 0) delay = 1250.0
-        else if (amplifier <= 3) delay = 600.0
-
-        return delay.toLong()
+    /**
+     * Returns the poison tick delay in millis.
+     */
+    private fun PotionEffect.getTickDelay(): Long = when {
+        amplifier == 0 -> 1250L
+        amplifier <= 3 -> 600L
+        else -> 500L
     }
 
     @EventHandler
     private fun PlayerQuitEvent.onPlayerQuit() {
         if (lethalPoisonDisabled || player.uniqueId !in scheduledLethalTicks) return
-        // If player tries to logs off and he is on the scheduledLethalTicks, he's low hp and probably logging off to avoid dying poisoned, so he'll be killed to prevent this exploit
+        // If player tries to logs off and he is on the scheduledLethalTicks, he's low hp and probably logging off to
+        // avoid dying poisoned, so he'll be killed to prevent this exploit
         player.killByPoison()
     }
 
@@ -98,7 +98,7 @@ class LethalPoisonListener(
             if (!event.callEvent()) return@runSync
             lastDamageCause = event
             damage(event.finalDamage)
-            scheduledLethalTicks.remove(uniqueId)
+            scheduledLethalTicks -= uniqueId
         }
     }
 

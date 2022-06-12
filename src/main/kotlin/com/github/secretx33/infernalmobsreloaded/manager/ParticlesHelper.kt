@@ -12,7 +12,11 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.Vector
+import toothpick.InjectConstructor
+import javax.inject.Singleton
 
+@Singleton
+@InjectConstructor
 class ParticlesHelper(private val config: Config) {
 
     fun sendParticle(loc: Location, particle: Particle, spread: Double, amount: Int = particleAmount) {

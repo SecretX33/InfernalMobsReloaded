@@ -7,7 +7,6 @@ import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.events.InfernalLightningStrike
 import com.github.secretx33.infernalmobsreloaded.utils.extension.random
 import com.google.common.cache.CacheBuilder
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
@@ -18,19 +17,19 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityCombustByEntityEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
+@InjectConstructor
 class LightningAbilityListener(
-    plugin: Plugin,
     private val config: Config,
     private val abilityConfig: AbilityConfig,
 ) : Listener {
 
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
-
-    private val strikeLocations = CacheBuilder.newBuilder().expireAfterWrite(1000L, TimeUnit.MILLISECONDS).build<Location, UUID>()
+    private val strikeLocations = CacheBuilder.newBuilder()
+        .expireAfterWrite(1000L, TimeUnit.MILLISECONDS)
+        .build<Location, UUID>()
 
     @EventHandler(priority = EventPriority.NORMAL)
     private fun InfernalLightningStrike.cacheLightningLocation() {

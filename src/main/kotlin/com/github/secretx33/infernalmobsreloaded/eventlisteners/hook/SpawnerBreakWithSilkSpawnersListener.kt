@@ -1,28 +1,31 @@
 package com.github.secretx33.infernalmobsreloaded.eventlisteners.hook
 
+import com.github.secretx33.infernalmobsreloaded.annotation.ConditionalListener
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
+import com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner.SpawnerBreakListener
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
 import com.github.secretx33.infernalmobsreloaded.utils.extension.turnIntoSpawner
 import de.dustplanet.silkspawners.events.SilkSpawnersSpawnerBreakEvent
 import de.dustplanet.util.SilkUtil
-import org.bukkit.Bukkit
 import org.bukkit.block.CreatureSpawner
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
+/**
+ * Replaces [SpawnerBreakListener] in the presence of `SilkSpawners` (and its hook is enabled).
+ */
+@ConditionalListener
+@InjectConstructor
 class SpawnerBreakWithSilkSpawnersListener(
-    plugin: Plugin,
     private val config: Config,
     private val infernalMobTypeRepo: InfernalMobTypesRepo,
     private val keyChain: KeyChain,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private fun SilkSpawnersSpawnerBreakEvent.infernalSpawnerBreak() {

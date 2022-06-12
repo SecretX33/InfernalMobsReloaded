@@ -3,10 +3,14 @@ package com.github.secretx33.infernalmobsreloaded.repositories
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
 import com.github.secretx33.infernalmobsreloaded.utils.other.YamlManager
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.util.logging.Logger
+import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 
+@Singleton
+@InjectConstructor
 class GlobalDropsRepo (
     plugin: Plugin,
     private val logger: Logger,

@@ -50,9 +50,11 @@ fun Player.getTarget(range: Int): LivingEntity? = (world.rayTraceEntities(eyeLoc
     ?.takeIf { hasLineOfSight(it) }
 
 fun runSync(plugin: Plugin, delay: Long = 0L, runnable: Runnable) {
-    if (delay < 0L) return
-    if (delay == 0L) Bukkit.getScheduler().runTask(plugin, runnable)
-    else Bukkit.getScheduler().runTaskLater(plugin, runnable, delay / 50L)
+    when {
+        delay < 0L -> {}
+        delay == 0L -> Bukkit.getScheduler().runTask(plugin, runnable)
+        else -> Bukkit.getScheduler().runTaskLater(plugin, runnable, delay / 50L)
+    }
 }
 
 suspend fun <T> futureSync(plugin: Plugin, callable: Callable<T>): T = Bukkit.getScheduler().callSyncMethod(plugin, callable).await()

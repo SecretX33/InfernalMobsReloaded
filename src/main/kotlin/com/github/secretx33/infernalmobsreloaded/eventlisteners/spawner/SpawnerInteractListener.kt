@@ -3,7 +3,6 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners.spawner
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
 import com.github.secretx33.infernalmobsreloaded.repositories.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.utils.extension.pdc
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.CreatureSpawner
 import org.bukkit.event.EventHandler
@@ -12,15 +11,13 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
+@InjectConstructor
 class SpawnerInteractListener(
-    plugin: Plugin,
     private val infernalMobTypeRepo: InfernalMobTypesRepo,
     private val keyChain: KeyChain,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun PlayerInteractEvent.onInfernalSpawnerInteract() {

@@ -82,11 +82,13 @@ import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.Vector
+import toothpick.InjectConstructor
 import java.lang.StrictMath.pow
 import java.lang.reflect.Type
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import java.util.logging.Logger
+import javax.inject.Singleton
 import kotlin.math.atan
 import kotlin.math.atan2
 import kotlin.math.ceil
@@ -95,6 +97,8 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
+@Singleton
+@InjectConstructor
 class AbilityHelper (
     private val plugin: Plugin,
     private val config: Config,

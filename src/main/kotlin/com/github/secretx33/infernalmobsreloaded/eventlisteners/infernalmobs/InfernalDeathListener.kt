@@ -18,20 +18,18 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
-import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.util.Random
 import kotlin.math.max
 
+@InjectConstructor
 class InfernalDeathListener(
-    plugin: Plugin,
     private val config: Config,
     private val messages: Messages,
     private val particlesHelper: ParticlesHelper,
     private val mobsManager: InfernalMobsManager,
     private val bossBarManager: BossBarManager,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private fun InfernalDeathEvent.onInfernalPossibleDeath() {

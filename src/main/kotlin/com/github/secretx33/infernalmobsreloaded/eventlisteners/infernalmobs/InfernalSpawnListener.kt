@@ -7,21 +7,18 @@ import com.github.secretx33.infernalmobsreloaded.config.Messages
 import com.github.secretx33.infernalmobsreloaded.events.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import net.kyori.adventure.text.Component
-import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import kotlin.math.max
 
+@InjectConstructor
 class InfernalSpawnListener (
-    plugin: Plugin,
     private val config: Config,
     private val messages: Messages,
     private val mobsManager: InfernalMobsManager,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun InfernalSpawnEvent.onInfernalSpawn() {

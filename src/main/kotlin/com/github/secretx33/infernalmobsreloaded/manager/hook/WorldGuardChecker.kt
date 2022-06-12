@@ -5,17 +5,20 @@ import com.sk89q.worldguard.WorldGuard
 import com.sk89q.worldguard.protection.flags.Flags
 import org.bukkit.Bukkit
 import org.bukkit.block.Block
+import toothpick.InjectConstructor
 
 interface WorldGuardChecker {
     fun canMobGriefBlock(block: Block): Boolean
 }
 
 // Used when WorldGuard is absent
+@InjectConstructor
 class WorldGuardCheckerDummy : WorldGuardChecker {
-    override fun canMobGriefBlock(block: Block) = true
+    override fun canMobGriefBlock(block: Block): Boolean = true
 }
 
 // Used when WorldGuard is present
+@InjectConstructor
 class WorldGuardCheckerImpl : WorldGuardChecker {
 
     override fun canMobGriefBlock(block: Block): Boolean {

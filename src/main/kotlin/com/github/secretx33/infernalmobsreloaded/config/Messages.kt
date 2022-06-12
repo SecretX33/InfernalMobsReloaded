@@ -7,25 +7,27 @@ import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Singleton
 
+@Singleton
+@InjectConstructor
 class Messages(plugin: Plugin, private val adventureMessage: AdventureMessage) {
     private val file = YamlManager(plugin, "messages")
     private val stringCache = ConcurrentHashMap<MessageKeys, Component>()
     private val listCache = ConcurrentHashMap<MessageKeys, List<Component>>()
 
-    fun get(key: MessageKeys, default: String? = null): Component {
-        return stringCache.getOrPut(key) {
+    fun get(key: MessageKeys, default: String? = null): Component =
+        stringCache.getOrPut(key) {
             file.getString(key.configEntry)?.parse() ?: default?.parse() ?: (key.default as? Component) ?: (key.default as String).parse()
         }
-    }
 
-    fun getList(key: MessageKeys): List<Component> {
-        return listCache.getOrPut(key) {
+    fun getList(key: MessageKeys): List<Component> =
+        listCache.getOrPut(key) {
             file.getStringList(key.configEntry).map { it.parse() }
         }
-    }
 
     fun reload() {
         stringCache.clear()

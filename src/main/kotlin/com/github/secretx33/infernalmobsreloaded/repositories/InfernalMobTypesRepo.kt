@@ -18,12 +18,16 @@ import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 import java.util.EnumSet
 import java.util.Locale
 import java.util.logging.Logger
+import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 
+@Singleton
+@InjectConstructor
 class InfernalMobTypesRepo (
     plugin: Plugin,
     private val log: Logger,
@@ -86,7 +90,7 @@ class InfernalMobTypesRepo (
             .mapValues { (type, list) -> list.map { Pair(type, it) } }
             .values.flatten()
             .filter { (_, infernal) -> !infernal.name.equals("ghost", ignoreCase = true) && !infernal.name.equals("haunted_ghost", ignoreCase = true) }
-        infernalMobPlainTextDisplayNames = infernalTypeCache.mapNotNullTo(HashSet()) { PlainTextComponentSerializer.plainText().serializeOrNull(it.value.displayName) }
+        infernalMobPlainTextDisplayNames = infernalTypeCache.mapNotNullTo(hashSetOf()) { PlainTextComponentSerializer.plainText().serializeOrNull(it.value.displayName) }
     }
 
     private fun makeMobType(name: String): InfernalMobType {
@@ -123,7 +127,7 @@ class InfernalMobTypesRepo (
         if(forcedAbilities.isEmpty()) return emptySet()
 
         return forcedAbilities.mapNotNull { ability ->
-            Ability.values.firstOrNull { it.name.equals(ability, ignoreCase = true) } ?: run {
+            Ability.VALUES.firstOrNull { it.name.equals(ability, ignoreCase = true) } ?: run {
                 log.warning("Inside mob category '$name' $subKey, ability named '$ability' doesn't exist, please fix your mobs configurations. Ignoring this entry for now.")
                 null
             }

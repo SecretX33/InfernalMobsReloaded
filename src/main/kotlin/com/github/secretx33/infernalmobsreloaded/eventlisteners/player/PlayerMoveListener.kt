@@ -3,22 +3,19 @@ package com.github.secretx33.infernalmobsreloaded.eventlisteners.player
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
-import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
-import org.bukkit.plugin.Plugin
+import toothpick.InjectConstructor
 
 // to update the boss bars
+@InjectConstructor
 class PlayerMoveListener(
-    plugin: Plugin,
     private val config: Config,
     private val bossBarManager: BossBarManager,
 ) : Listener {
-
-    init { Bukkit.getPluginManager().registerEvents(this, plugin) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerMoveEvent.whenPlayerMoves() {
