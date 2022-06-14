@@ -2,6 +2,7 @@
 
 package com.github.secretx33.infernalmobsreloaded.util.extension
 
+import com.github.secretx33.infernalmobsreloaded.annotation.SkipAutoRegistration
 import com.google.common.reflect.ClassPath
 import com.google.common.reflect.TypeToken
 import org.apache.commons.lang.WordUtils
@@ -47,3 +48,6 @@ inline fun <T : Any> Any.findClasses(pkg: String, filter: (KClass<*>) -> Boolean
         .getTopLevelClassesRecursive(pkg)
         .map { it.load().kotlin }
         .filterTo(mutableSetOf(), filter) as Set<KClass<T>>
+
+fun <T : Any> Iterable<KClass<T>>.onlyRegisterableClasses(): Set<KClass<T>> =
+    filterNotTo(mutableSetOf()) { it.hasAnnotation<SkipAutoRegistration>() }

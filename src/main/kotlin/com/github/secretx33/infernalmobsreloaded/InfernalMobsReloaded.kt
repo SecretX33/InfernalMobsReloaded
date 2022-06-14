@@ -2,7 +2,6 @@ package com.github.secretx33.infernalmobsreloaded
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketAdapter
-import com.github.secretx33.infernalmobsreloaded.annotation.SkipAutoRegistration
 import com.github.secretx33.infernalmobsreloaded.command.Commands
 import com.github.secretx33.infernalmobsreloaded.command.subcommand.SubCommand
 import com.github.secretx33.infernalmobsreloaded.config.Config
@@ -19,9 +18,9 @@ import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardCheckerD
 import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardCheckerImpl
 import com.github.secretx33.infernalmobsreloaded.model.PluginMetricsId
 import com.github.secretx33.infernalmobsreloaded.util.extension.findClasses
-import com.github.secretx33.infernalmobsreloaded.util.extension.hasAnnotation
 import com.github.secretx33.infernalmobsreloaded.util.extension.isConcreteType
 import com.github.secretx33.infernalmobsreloaded.util.extension.isSubclassOf
+import com.github.secretx33.infernalmobsreloaded.util.extension.onlyRegisterableClasses
 import com.github.secretx33.infernalmobsreloaded.util.extension.replace
 import com.github.secretx33.infernalmobsreloaded.util.other.Metrics
 import me.mattstudios.msg.adventure.AdventureMessage
@@ -98,8 +97,7 @@ open class InfernalMobsReloaded : JavaPlugin {
      * any other imposed condition for their registral.
      */
     private fun findAndRegisterClasspathListeners() {
-        val listeners = findClasspathListeners()
-            .filterNotTo(mutableSetOf()) { it.hasAnnotation<SkipAutoRegistration>() }
+        val listeners = findClasspathListeners().toMutableSet()
 
         if (silkSpawnerHandlesSpawnerDrops) {
             logger.info("Enabling SilkSpawners hook")
@@ -116,7 +114,6 @@ open class InfernalMobsReloaded : JavaPlugin {
         if (isProtocolLibEnabled) {
             logger.info("Enabling ProtocolLib hook")
             val packetListeners = findClasspathPacketListeners()
-                .filterNotTo(mutableSetOf()) { it.hasAnnotation<SkipAutoRegistration>() }
 
             packetListeners.map { scope.getInstance(it.java) }
                 .forEach(ProtocolLibrary.getProtocolManager()::addPacketListener)
@@ -129,13 +126,16 @@ open class InfernalMobsReloaded : JavaPlugin {
     }
 
     private fun findClasspathListeners(): Set<KClass<out Listener>> =
-        findClasses("$PLUGIN_PACKAGE.eventlistener") { it.isConcreteType && it.isSubclassOf(Listener::class) }
+        findClasses<Listener>("$PLUGIN_PACKAGE.eventlistener") { it.isConcreteType && it.isSubclassOf(Listener::class) }
+            .onlyRegisterableClasses()
 
     private fun findClasspathPacketListeners(): Set<KClass<out PacketAdapter>> =
-        findClasses("$PLUGIN_PACKAGE.packetlistener") { it.isConcreteType && it.isSubclassOf(PacketAdapter::class) }
+        findClasses<PacketAdapter>("$PLUGIN_PACKAGE.packetlistener") { it.isConcreteType && it.isSubclassOf(PacketAdapter::class) }
+            .onlyRegisterableClasses()
 
     private fun findClasspathSubcommands(): Set<KClass<out SubCommand>> =
-        findClasses("$PLUGIN_PACKAGE.command") { it.isConcreteType && it.isSubclassOf(SubCommand::class) }
+        findClasses<SubCommand>("$PLUGIN_PACKAGE.command") { it.isConcreteType && it.isSubclassOf(SubCommand::class) }
+            .onlyRegisterableClasses()
 
     private val isWorldGuardEnabled
         get() = Bukkit.getPluginManager().getPlugin("WorldGuard") != null

@@ -1,5 +1,6 @@
 package com.github.secretx33.infernalmobsreloaded.eventlistener.hook
 
+import com.github.secretx33.infernalmobsreloaded.annotation.SkipAutoRegistration
 import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
@@ -26,9 +27,11 @@ import java.lang.ref.WeakReference
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
-import javax.inject.Singleton
 
-@Singleton
+/**
+ * Registered only if Towny is installed (and hook is enabled).
+ */
+@SkipAutoRegistration
 @InjectConstructor
 class TownyListener(
     private val plugin: Plugin,
