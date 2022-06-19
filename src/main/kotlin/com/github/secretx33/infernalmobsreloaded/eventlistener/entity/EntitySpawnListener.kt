@@ -5,6 +5,7 @@ import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.event.InfernalSpawnEvent
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.repository.InfernalMobTypesRepo
+import com.github.secretx33.infernalmobsreloaded.util.extension.random
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Ageable
@@ -16,7 +17,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 import toothpick.InjectConstructor
-import java.util.Random
 
 @InjectConstructor
 class EntitySpawnListener (
@@ -50,9 +50,5 @@ class EntitySpawnListener (
     private val validReasons get() = config.getEnumSet<SpawnReason>(ConfigKeys.INFERNAL_ALLOWED_SPAWN_REASONS)
 
     private val blacklistedBabies get() = config.getEnumSet<EntityType>(ConfigKeys.INFERNAL_BLACKLISTED_BABY_MOBS)
-
-    private companion object {
-        val random = Random()
-    }
 }
 

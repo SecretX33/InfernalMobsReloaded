@@ -10,6 +10,7 @@ import com.github.secretx33.infernalmobsreloaded.manager.BossBarManager
 import com.github.secretx33.infernalmobsreloaded.manager.InfernalMobsManager
 import com.github.secretx33.infernalmobsreloaded.manager.ParticlesHelper
 import com.github.secretx33.infernalmobsreloaded.model.Ability
+import com.github.secretx33.infernalmobsreloaded.util.extension.random
 import com.github.secretx33.infernalmobsreloaded.util.extension.turnIntoSpawner
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -19,7 +20,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
 import toothpick.InjectConstructor
-import java.util.Random
 import kotlin.math.max
 
 @InjectConstructor
@@ -96,8 +96,4 @@ class InfernalDeathListener(
     private val deathMessageEnabled get() = config.get<Boolean>(ConfigKeys.ENABLE_INFERNAL_DEATH_MESSAGE)
     private val deathMessages get() = messages.getList(MessageKeys.INFERNAL_MOB_DEATH_MESSAGES)
     private val messageRange get() = config.getInt(ConfigKeys.INFERNAL_DEATH_MESSAGE_RADIUS)
-
-    private companion object {
-        val random = Random()
-    }
 }

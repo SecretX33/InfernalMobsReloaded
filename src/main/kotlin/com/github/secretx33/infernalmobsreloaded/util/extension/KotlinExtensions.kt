@@ -17,21 +17,26 @@ import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.reflect.KClass
 
+/**
+ * Simplify `Random` usage by providing an extension function to retrieve the current thread local random instance.
+ */
+val random: ThreadLocalRandom get() = ThreadLocalRandom.current()
+
 fun Pair<Int, Int>.random(): Int {
     val (minValue, maxValue) = this
-    return ThreadLocalRandom.current().nextInt(maxValue - minValue + 1) + minValue
+    return random.nextInt(maxValue - minValue + 1) + minValue
 }
 
 fun Pair<Double, Double>.random(): Double {
     val (minValue, maxValue) = this
-    return minValue + (maxValue - minValue) * ThreadLocalRandom.current().nextDouble()
+    return minValue + (maxValue - minValue) * random.nextDouble()
 }
 
 fun String.capitalizeFully(): String = WordUtils.capitalizeFully(this)
 
 fun String.toUuid(): UUID = UUID.fromString(this)
 
-fun Regex.matchOrNull(line: String, index: Int): String? = this.matchEntire(line)?.groupValues?.get(index)
+fun Regex.matchOrNull(line: String, index: Int): String? = matchEntire(line)?.groupValues?.get(index)
 
 inline fun <reified T : Any> gsonTypeToken(): Type = object : TypeToken<T>() {}.type
 
@@ -60,13 +65,3 @@ fun <T : Any> Iterable<KClass<T>>.onlyRegisterableClasses(): Set<KClass<T>> =
 inline fun <reified T : Any> findRegistrableClasses(pkg: String): Set<KClass<T>> =
     findClasses<T>(pkg) { it.isConcreteType && it.isSubclassOf(T::class) }
         .onlyRegisterableClasses()
-
-fun Duration.prettyString(): String {
-    val secondsDouble = toMillis().toDouble() / 1000.0
-    val pattern = when {
-        seconds <= 0 -> "#.##"
-        else -> "#,###.#"
-    }
-    val format = DecimalFormat(pattern, DecimalFormatSymbols(Locale.US))
-    return format.format(secondsDouble)
-}

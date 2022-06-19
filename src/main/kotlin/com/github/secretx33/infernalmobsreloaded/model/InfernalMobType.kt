@@ -8,7 +8,6 @@ import org.bukkit.entity.ComplexLivingEntity
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import java.util.Locale
-import java.util.concurrent.ThreadLocalRandom
 
 data class InfernalMobType (
     val name: String,
@@ -95,6 +94,4 @@ data class InfernalMobType (
         result = 31 * result + entityType.hashCode()
         return result
     }
-
-    private val random get() = ThreadLocalRandom.current()
 }

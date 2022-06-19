@@ -3,7 +3,6 @@ package com.github.secretx33.infernalmobsreloaded.model
 import com.github.secretx33.infernalmobsreloaded.util.extension.random
 import org.bukkit.enchantments.Enchantment
 import java.util.Optional
-import java.util.Random
 
 data class CustomEnchantment (
     private val type: Enchantment,
@@ -29,10 +28,6 @@ data class CustomEnchantment (
         return true
     }
 
-    override fun hashCode() = type.hashCode()
-
-    private companion object {
-        val random = Random()
-    }
+    override fun hashCode(): Int = type.hashCode()
 }
 

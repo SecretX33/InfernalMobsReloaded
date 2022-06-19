@@ -20,6 +20,7 @@ import com.github.secretx33.infernalmobsreloaded.repository.InfernalMobTypesRepo
 import com.github.secretx33.infernalmobsreloaded.util.extension.contents
 import com.github.secretx33.infernalmobsreloaded.util.extension.gsonTypeToken
 import com.github.secretx33.infernalmobsreloaded.util.extension.pdc
+import com.github.secretx33.infernalmobsreloaded.util.extension.random
 import com.github.secretx33.infernalmobsreloaded.util.extension.runSync
 import com.github.secretx33.infernalmobsreloaded.util.extension.toUuid
 import com.google.common.collect.MultimapBuilder
@@ -43,7 +44,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 import toothpick.InjectConstructor
-import java.util.Random
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
@@ -310,7 +310,6 @@ class InfernalMobsManager (
 
     private companion object {
         val gson = Gson()
-        val random = Random()
         val infernalAbilitySetToken = gsonTypeToken<Set<Ability>>()
 
         val followRangeUID: UUID = "ff6d1ee3-8c7e-4826-b795-945689b5dc76".toUuid()
