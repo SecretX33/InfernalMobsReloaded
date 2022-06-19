@@ -73,18 +73,19 @@ class InfernalMobsManager (
         eventBus.subscribe<PluginReloaded>(this, 0) { loadAllInfernals() }
     }
 
-    fun isValidInfernalMob(entity: LivingEntity) = infernalMobTypesRepo.canTypeBecomeInfernal(entity.type) && entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)?.let { infernalMobTypesRepo.isValidInfernalType(it) } == true
+    fun isValidInfernalMob(entity: LivingEntity): Boolean = infernalMobTypesRepo.canTypeBecomeInfernal(entity.type)
+        && entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)?.let { infernalMobTypesRepo.isValidInfernalType(it) } == true
 
-    fun isPossibleInfernalMob(entity: LivingEntity) = entity.pdc.has(keyChain.infernalCategoryKey, PersistentDataType.STRING)
+    fun isPossibleInfernalMob(entity: LivingEntity): Boolean = entity.pdc.has(keyChain.infernalCategoryKey, PersistentDataType.STRING)
 
-    fun getInfernalGroupNameOrNull(entity: LivingEntity) = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)
+    fun getInfernalGroupNameOrNull(entity: LivingEntity): String? = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)
 
-    fun getInfernalAbilities(entity: LivingEntity) = entity.getAbilities() ?: throw IllegalStateException("Queried for infernal mob abilities but it doesn't have any")
+    fun getInfernalAbilities(entity: LivingEntity): Set<Ability> = entity.getAbilities() ?: throw IllegalStateException("Queried for infernal mob abilities but it doesn't have any")
 
-    fun isMountOfAnotherInfernal(entity: Entity) = keyChain.hasMountKey(entity)
+    fun isMountOfAnotherInfernal(entity: Entity): Boolean = keyChain.hasMountKey(entity)
 
-    fun getInfernalTypeOrNull(entity: LivingEntity) = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)
-        ?.let { infernalMobTypesRepo.getInfernalTypeOrNull(it) }
+    fun getInfernalTypeOrNull(entity: LivingEntity): InfernalMobType? = entity.pdc.get(keyChain.infernalCategoryKey, PersistentDataType.STRING)
+        ?.let(infernalMobTypesRepo::getInfernalTypeOrNull)
 
     fun isInfernalMobDisplayName(mobName: String): Boolean = infernalMobTypesRepo.isInfernalMobDisplayName(mobName)
 
@@ -92,7 +93,7 @@ class InfernalMobsManager (
 
     fun setLives(entity: LivingEntity, lives: Int) = entity.pdc.set(keyChain.livesKey, PersistentDataType.INTEGER, lives)
 
-    fun hasAbility(entity: LivingEntity, ability: Ability) = entity.getAbilities()?.contains(ability) ?: false
+    fun hasAbility(entity: LivingEntity, ability: Ability): Boolean = entity.getAbilities()?.contains(ability) ?: false
 
     fun makeInfernalMob(event: InfernalSpawnEvent) {
         val entity = event.entity
@@ -214,7 +215,7 @@ class InfernalMobsManager (
 
         val job = CoroutineScope(Dispatchers.Default).launch {
             delay(100L)  // delay to give entity time to load
-            while(isActive && !entity.isDead && entity.isValid) {
+            while (isActive && !entity.isDead && entity.isValid) {
                 particlesHelper.sendParticle(entity, particleType, particleSpread)
                 delay(delay)
             }
@@ -246,7 +247,7 @@ class InfernalMobsManager (
     fun unloadAllInfernals() {
         log.info("Unloading all infernal mobs")
         Bukkit.getWorlds().flatMap { it.livingEntities }.forEach(::unloadInfernalMob)
-        infernalMobParticleTasks.forEach { (_, job) -> job.cancel() }
+        infernalMobParticleTasks.values.forEach { it.cancel() }
         infernalMobParticleTasks.clear()
     }
 
@@ -298,15 +299,15 @@ class InfernalMobsManager (
         entity.remove()
     }
 
-    private fun ItemStack?.isStolenItem() = this != null && itemMeta?.pdc?.has(keyChain.stolenItemByThiefKey, PersistentDataType.SHORT) == true
+    private fun ItemStack?.isStolenItem(): Boolean = this != null && itemMeta?.pdc?.has(keyChain.stolenItemByThiefKey, PersistentDataType.SHORT) == true
 
     // util
 
     private fun LivingEntity.getAbilities(): Set<Ability>? = pdc.get(keyChain.abilityListKey, PersistentDataType.STRING)?.toAbilitySet()
 
-    private fun Set<Ability>.toJson() = gson.toJson(this, infernalAbilitySetToken)
+    private fun Set<Ability>.toJson(): String = gson.toJson(this, infernalAbilitySetToken)
 
-    private fun String.toAbilitySet() = gson.fromJson<Set<Ability>>(this, infernalAbilitySetToken)
+    private fun String.toAbilitySet(): Set<Ability> = gson.fromJson(this, infernalAbilitySetToken)
 
     private companion object {
         val gson = Gson()

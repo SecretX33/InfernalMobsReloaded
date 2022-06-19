@@ -107,7 +107,7 @@ class YamlManager (
                 var currentLine = line
                 lastStoredIndex = index - 1
 
-                while(currentLine.isBlank() || commentMatcher.matches()) {
+                while (currentLine.isBlank() || commentMatcher.matches()) {
                     lastStoredIndex++
                     commentArray.add(currentLine)
                     // breaks if we are on the last line already
@@ -156,7 +156,7 @@ class YamlManager (
         val fullLineComments = comments.filter { it.type == CommentType.FULL_MULTILINE || it.type == CommentType.FULL_LINE }
         for(comment in fullLineComments) {
             var placed = false
-            while(newFile.size < comment.index) newFile.add("")
+            while (newFile.size < comment.index) newFile.add("")
 
             if (comment.lineBelow.isNotBlank()) {
                 for(index in 0 until newFile.size) {

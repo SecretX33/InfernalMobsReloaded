@@ -25,7 +25,7 @@ class BossBarManager (
     private val log: Logger,
     eventBus: EventBus,
 ) {
-    private val bossBarMap = HashMap<UUID, BossBar>()
+    private val bossBarMap = mutableMapOf<UUID, BossBar>()
 
     init {
         eventBus.subscribe<PluginLoad>(this, 10) { showBarsOfNearbyInfernalsForAllPlayers() }
@@ -62,7 +62,7 @@ class BossBarManager (
         nearbyInfernals.mapNotNull { it.getBossBar() }.forEach { player.showBossBar(it) }
     }
 
-    fun showBarOfNearbyInfernals(player: Player) {
+    fun showBossBarOfNearbyInfernals(player: Player) {
         if (!bossBarEnabled) return
         val nearbyInfernals = player.getNearbyInfernals()
         manageInfernalBossBarsVisibility(player, nearbyInfernals)
@@ -73,15 +73,16 @@ class BossBarManager (
     fun showBossBarForNearbyPlayers(entity: LivingEntity) {
         if (!bossBarEnabled) return
         val bossBar = entity.getBossBar() ?: return
-        entity.location.getNearbyPlayers(bossBarShowDistance, bossBarShowHeight, bossBarShowDistance) { !it.isDead && it.isValid && (!bossBarRequireLineOfSight || it.hasLineOfSight(entity)) }.forEach {
-            it.showBossBar(bossBar)
-        }
+        entity.location.getNearbyPlayers(bossBarShowDistance, bossBarShowHeight, bossBarShowDistance) { !it.isDead && it.isValid && (!bossBarRequireLineOfSight || it.hasLineOfSight(entity)) }
+            .forEach {
+                it.showBossBar(bossBar)
+            }
     }
 
     fun showBarsOfNearbyInfernalsForAllPlayers() {
         if (!bossBarEnabled) return
         log.info("Enabling Infernal Mobs boss bars")
-        Bukkit.getOnlinePlayers().forEach(::showBarOfNearbyInfernals)
+        Bukkit.getOnlinePlayers().forEach(::showBossBarOfNearbyInfernals)
     }
 
     fun hideAllBarsFromAllPlayers() {

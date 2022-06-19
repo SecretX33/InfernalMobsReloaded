@@ -37,18 +37,18 @@ class BossBarListener(
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerJoinEvent.onPlayerJoin() {
-        bossBarManager.showBarOfNearbyInfernals(player)
+        bossBarManager.showBossBarOfNearbyInfernals(player)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerTeleportEvent.onPlayerTeleport() {
-        runSync(plugin, 50L) { bossBarManager.showBarOfNearbyInfernals(player) }
+        runSync(plugin, 50L) { bossBarManager.showBossBarOfNearbyInfernals(player) }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerChangedWorldEvent.onPlayerSwitchWorld() {
-        runSync(plugin, 150L) { bossBarManager.showBarOfNearbyInfernals(player) }
+        runSync(plugin, 150L) { bossBarManager.showBossBarOfNearbyInfernals(player) }
     }
 
-    private fun LivingEntity.isInfernalMob() = mobsManager.isValidInfernalMob(this)
+    private fun LivingEntity.isInfernalMob(): Boolean = mobsManager.isValidInfernalMob(this)
 }

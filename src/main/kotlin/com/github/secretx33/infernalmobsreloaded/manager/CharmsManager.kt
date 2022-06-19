@@ -97,7 +97,7 @@ class CharmsManager(
 
     private fun Player.startCharmEffect(charmEffect: CharmEffect) {
 //        println("2. Starting effect of charm '${charmEffect.name}' -> $charmEffect'")
-        when(charmEffect.effectApplyMode) {
+        when (charmEffect.effectApplyMode) {
             // permanent buffs, like speed
             PotionEffectApplyMode.SELF_PERMANENT -> addPermanentCharmEffect(charmEffect)
             // recurrent effects, like healing
@@ -125,7 +125,7 @@ class CharmsManager(
         val job = CoroutineScope(Dispatchers.Default).launch {
             delay((charmEffect.getDelay() * 1000.0).toLong())
 
-            while(isActive && isValid && !isDead) {
+            while (isActive && isValid && !isDead) {
                 runSync(plugin) { addPotionEffect(PotionEffect(charmEffect.potionEffect, (charmEffect.getDuration() * 20.0).toInt(), charmEffect.getPotency())) }
                 spawnCharmParticles(charmEffect)
                 charmEffect.playerMessage?.let { sendMessage(it) }
@@ -166,7 +166,7 @@ class CharmsManager(
 
 
     private fun Player.cancelCharmEffect(charmEffect: CharmEffect) {
-        when(charmEffect.effectApplyMode) {
+        when (charmEffect.effectApplyMode) {
             PotionEffectApplyMode.SELF_PERMANENT -> {
                 permanentEffects.remove(uniqueId, charmEffect)?.let { removePotionEffect(it) }
             }

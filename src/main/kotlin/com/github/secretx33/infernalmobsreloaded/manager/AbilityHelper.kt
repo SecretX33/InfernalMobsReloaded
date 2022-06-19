@@ -129,7 +129,7 @@ class AbilityHelper (
 
     private fun LivingEntity.addAbilities(abilitySet: Set<Ability>) {
         abilitySet.forEach {
-            when(it) {
+            when (it) {
                 Ability.ARMOURED -> addArmouredAbility()
                 Ability.FLYING -> addFlyingAbility()
                 Ability.HEAVY -> addHeavyAbility()
@@ -167,7 +167,7 @@ class AbilityHelper (
             chestplate = lootItemsRepo.getLootItemOrNull("armoured_chestplate")?.makeItem()
             leggings = lootItemsRepo.getLootItemOrNull("armoured_leggings")?.makeItem()
             boots =  lootItemsRepo.getLootItemOrNull("armoured_boots")?.makeItem()
-            when(itemInMainHand.type) {
+            when (itemInMainHand.type) {
                 Material.BOW -> lootItemsRepo.getLootItemOrNull("armoured_bow")?.makeItem()
                 Material.CROSSBOW -> lootItemsRepo.getLootItemOrNull("armoured_crossbow")?.makeItem()
                 else -> lootItemsRepo.getLootItemOrNull("armoured_sword")?.makeItem()
@@ -283,7 +283,7 @@ class AbilityHelper (
 
         val jobList = ArrayList<Job>()
         abilities.forEach {
-            when(it) {
+            when (it) {
                 Ability.ARCHER -> makeArcherTask(entity, target)
                 Ability.CALL_THE_GANG -> makeCallTheGangTask(entity, target)
                 Ability.GHASTLY -> makeGhastlyTask(entity, target) // TODO("Make a damage modifier listener for this task")
@@ -308,7 +308,7 @@ class AbilityHelper (
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.ARCHER, 1.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.ARCHER, 0.05)
 
-        while(isActive && entity.isTargeting(target)) {
+        while (isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if (random.nextDouble() > chance) continue
             val amount = abilityConfig.getIntPair(AbilityConfigKeys.ARCHER_ARROW_AMOUNT, minValue = 1).random()
@@ -329,7 +329,7 @@ class AbilityHelper (
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.CALL_THE_GANG, 2.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.CALL_THE_GANG, 0.025)
 
-        while(isActive && entity.isTargeting(target)) {
+        while (isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if (random.nextDouble() > chance) continue
             val amount = abilityConfig.getIntAmounts(Ability.CALL_THE_GANG, 2).random()
@@ -355,7 +355,7 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChance(Ability.GHASTLY, 0.25)
         val speed = abilityConfig.getProjectileSpeed(Ability.GHASTLY, 1.75)
 
-        while(isActive && entity.isTargeting(target)) {
+        while (isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if (random.nextDouble() > chance) continue
 
@@ -371,7 +371,7 @@ class AbilityHelper (
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.MORPH, 1.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.MORPH, 0.01)
 
-        while(isActive && entity.isTargeting(target)) {
+        while (isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if (random.nextDouble() > chance) continue
             val newType = infernalMobTypesRepo.getRandomInfernalType(entity)
@@ -420,7 +420,7 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChance(Ability.MULTI_GHASTLY, 0.25)
         val speed = abilityConfig.getProjectileSpeed(Ability.MULTI_GHASTLY, 1.75)
 
-        while(isActive && entity.isTargeting(target)) {
+        while (isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if (random.nextDouble() > chance) continue
             val amount = abilityConfig.getIntPair(AbilityConfigKeys.MULTI_GHASTLY_FIREBALL_AMOUNT, minValue = 1).random()
@@ -443,7 +443,7 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChance(Ability.NECROMANCER, 0.25)
         val speed = abilityConfig.getProjectileSpeed(Ability.NECROMANCER, 1.7)
 
-        while(isActive && entity.isTargeting(target)) {
+        while (isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if (random.nextDouble() > chance) continue
 
@@ -460,7 +460,7 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChance(Ability.POTIONS, 0.05)
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.POTIONS, 1.0).toLongDelay()
 
-        while(isActive && entity.isTargeting(target)) {
+        while (isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if (random.nextDouble() > chance) continue
             val amount = abilityConfig.getIntAmounts(Ability.POTIONS, 1, minValue = 1).random()
@@ -513,7 +513,7 @@ class AbilityHelper (
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.TELEPORT, 2.5).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.TELEPORT, 0.6)
 
-        while(isActive && entity.isTargeting(target)) {
+        while (isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if (random.nextDouble() > chance || !entity.isWithinDistance(40.0, target)) continue
 
@@ -547,7 +547,7 @@ class AbilityHelper (
         val requireLoS = abilityConfig.doesRequireLineOfSight(Ability.THIEF)
         val sendMessage = abilityConfig.getSendMessage(Ability.THIEF)
 
-        while(isActive && entity.isTargeting(target)) {
+        while (isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if (random.nextDouble() > chance || (requireLoS && !entity.hasLineOfSight(target))) continue
 
@@ -596,7 +596,7 @@ class AbilityHelper (
         val requireLoS = abilityConfig.doesRequireLineOfSight(Ability.TOSSER)
         val sneakerMultiplier = abilityConfig.getDouble(AbilityConfigKeys.TOSSER_SNEAK_MULTIPLIER_PERCENTAGE)
 
-        while(isActive && entity.isTargeting(target)) {
+        while (isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if (random.nextDouble() > chance || (requireLoS && !entity.hasLineOfSight(target))) continue
 
@@ -618,7 +618,7 @@ class AbilityHelper (
         val chance = abilityConfig.getAbilityChance(Ability.WEBBER, 0.08)
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.WEBBER, 1.5).toLongDelay()
 
-        while(isActive && entity.isTargeting(target)) {
+        while (isActive && entity.isTargeting(target)) {
             delay(recheckDelay)
             if (random.nextDouble() > chance) continue
             launchCobweb(target)
@@ -705,7 +705,7 @@ class AbilityHelper (
     fun triggerOnDeathAbilities(entity: LivingEntity) {
         val abilities = entity.getAbilities() ?: return
         abilities.forEach {
-            when(it) {
+            when (it) {
                 Ability.GHOST -> entity.triggerGhost()
                 Ability.KAMIKAZE -> entity.triggerKamikaze()
                 else -> {}
@@ -776,7 +776,7 @@ class AbilityHelper (
         val abilities = event.entity.getAbilities() ?: return
 
         abilities.forEach {
-            when(it) {
+            when (it) {
                 Ability.BERSERK -> event.triggerBerserk()
                 Ability.BLINDING -> event.triggerBlinding()
                 Ability.CONFUSION -> event.triggerConfusion()
@@ -968,7 +968,7 @@ class AbilityHelper (
         val abilities = event.entity.getAbilities() ?: return
 
         abilities.forEach {
-            when(it) {
+            when (it) {
                 Ability.BERSERK -> event.triggerBerserk()
                 Ability.FIREWORK -> event.triggerFirework()
                 Ability.MOLTEN -> event.triggerMolten()

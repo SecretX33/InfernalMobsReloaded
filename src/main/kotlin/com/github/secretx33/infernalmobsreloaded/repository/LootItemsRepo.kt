@@ -80,12 +80,11 @@ class LootItemsRepo (
         lootItemCache = lootItemNames.map { it.lowercase(Locale.US) }.associateWithTo(HashMap(lootItemNames.size)) { makeLootItem(it) }
     }
 
-    private fun makeLootItem(name: String): LootItem {
-        return when(getLootType(name)) {
+    private fun makeLootItem(name: String): LootItem =
+        when (getLootType(name)) {
             LootItemType.NORMAL -> makeNormalLootItem(name)
             LootItemType.BOOK -> makeLootBook(name)
         }
-    }
 
     private fun getLootType(name: String): LootItemType {
         val itemType = manager.getString("$name.type") ?: ""

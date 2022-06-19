@@ -20,7 +20,7 @@ class PlayerMoveListener(
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private fun PlayerMoveEvent.whenPlayerMoves() {
         if (!bossBarEnabled || !player.world.isWhitelisted()) return
-        bossBarManager.showBarOfNearbyInfernals(player)
+        bossBarManager.showBossBarOfNearbyInfernals(player)
     }
 
     private fun World.isWhitelisted(): Boolean =

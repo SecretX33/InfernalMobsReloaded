@@ -181,7 +181,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
                 submitData()
                 delay(secondDelay)
 
-                while(isActive) {
+                while (isActive) {
                     submitData()
                     delay(THIRTY_MINUTES)
                 }
@@ -638,7 +638,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
             private fun String.escape(): String {
                 val builder = StringBuilder()
                 for (char in this) {
-                    when(char) {
+                    when (char) {
                         '"' -> builder.append("\\\"")
                         '\\' -> builder.append("\\\\")
                         '\u000F' -> builder.append("\\u000").append(Integer.toHexString(char.code))

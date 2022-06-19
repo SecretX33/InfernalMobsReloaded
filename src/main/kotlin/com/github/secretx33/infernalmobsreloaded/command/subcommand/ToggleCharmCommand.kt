@@ -57,7 +57,7 @@ class ToggleCharmCommand(
         val itemName = item.displayName
         val newMeta = item.itemMeta
 
-        message = when(intention) {
+        message = when (intention) {
             Intention.RESTORE -> {
                 newMeta.restoreCharm(item)
                 messages.get(MessageKeys.YOU_HAVE_RESTORED_YOUR_CHARM).replace("<charm>", newMeta.displayName()

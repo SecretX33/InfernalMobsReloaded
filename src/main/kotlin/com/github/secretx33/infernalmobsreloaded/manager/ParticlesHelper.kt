@@ -37,7 +37,7 @@ class ParticlesHelper(private val config: Config) {
 
     fun sendParticle(entity: LivingEntity, ability: Ability) {
         CoroutineScope(Dispatchers.Default).launch {
-            when(ability) {
+            when (ability) {
                 Ability.SECOND_WIND -> XParticle.circle(entity.width * 1.2, entity.width * 1.5, 0.5, 1.0, 2.0, particleDisplay(Particle.TOTEM, entity.location, 20, defaultOffsetVector))
                 Ability.THORNMAIL -> XParticle.filledCircle(1.0, 0.5, 0.5, particleDisplay(Particle.WARPED_SPORE, entity.location.add(0.0, entity.height * 0.5, 0.0), 100, defaultOffsetVector))
                 else -> {}
@@ -48,11 +48,11 @@ class ParticlesHelper(private val config: Config) {
     private fun particleDisplay(particle: Particle, location: Location?, count: Int, offset: Vector): ParticleDisplay =
         ParticleDisplay.simple(location, particle).withCount(count).offset(offset)
 
-    private val globalEffectsEnabled
-        get() = config.get<Boolean>(ConfigKeys.ENABLE_GLOBAL_PARTICLE_EFFECTS)
+    private val globalEffectsEnabled: Boolean
+        get() = config.get(ConfigKeys.ENABLE_GLOBAL_PARTICLE_EFFECTS)
 
-    private val particleAmount
-        get() = config.get<Int>(ConfigKeys.INFERNAL_PARTICLES_AMOUNT)
+    private val particleAmount: Int
+        get() = config.get(ConfigKeys.INFERNAL_PARTICLES_AMOUNT)
 
     private companion object {
         val defaultOffsetVector = Vector(0.25, 0.25, 0.25)
