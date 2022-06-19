@@ -28,7 +28,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.2"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
-    implementation("com.github.cryptomorin:XSeries:8.7.1")
+    implementation("com.github.cryptomorin:XSeries:8.8.0")
     implementation("me.mattstudios:triumph-msg-adventure:2.2.4-SNAPSHOT")
     val toothpick_version = "3.1.0"
     implementation("com.github.stephanenicolas.toothpick:ktp:$toothpick_version")
