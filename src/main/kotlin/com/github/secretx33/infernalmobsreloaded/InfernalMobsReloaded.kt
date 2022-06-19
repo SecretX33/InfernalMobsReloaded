@@ -17,10 +17,7 @@ import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardChecker
 import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardCheckerDummy
 import com.github.secretx33.infernalmobsreloaded.manager.hook.WorldGuardCheckerImpl
 import com.github.secretx33.infernalmobsreloaded.model.PluginMetricsId
-import com.github.secretx33.infernalmobsreloaded.util.extension.findClasses
-import com.github.secretx33.infernalmobsreloaded.util.extension.isConcreteType
-import com.github.secretx33.infernalmobsreloaded.util.extension.isSubclassOf
-import com.github.secretx33.infernalmobsreloaded.util.extension.onlyRegisterableClasses
+import com.github.secretx33.infernalmobsreloaded.util.extension.findRegistrableClasses
 import com.github.secretx33.infernalmobsreloaded.util.extension.replace
 import com.github.secretx33.infernalmobsreloaded.util.other.Metrics
 import me.mattstudios.msg.adventure.AdventureMessage
@@ -29,29 +26,17 @@ import org.apache.logging.log4j.core.Filter
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
-import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.java.JavaPlugin
-import org.bukkit.plugin.java.JavaPluginLoader
 import toothpick.Scope
 import toothpick.configuration.Configuration
 import toothpick.ktp.KTP
 import toothpick.ktp.binding.bind
 import toothpick.ktp.binding.module
 import toothpick.ktp.extension.getInstance
-import java.io.File
 import java.util.logging.Logger
 import kotlin.reflect.KClass
 
-open class InfernalMobsReloaded : JavaPlugin {
-
-    constructor() : super()
-
-    constructor(
-        loader: JavaPluginLoader,
-        description: PluginDescriptionFile,
-        dataFolder: File,
-        file: File,
-    ) : super(loader, description, dataFolder, file)
+class InfernalMobsReloaded : JavaPlugin() {
 
     private val mod = module {
         bind<Plugin>().toInstance(this@InfernalMobsReloaded)
@@ -82,8 +67,8 @@ open class InfernalMobsReloaded : JavaPlugin {
             getInstance<Commands>()
             getInstance<Metrics>()
             registerLoggerFilters(getInstance<InfernalDeathConsoleMessageFilter>())
+            getInstance<EventBus>().post(PluginLoad())
         }
-        scope.getInstance<EventBus>().post(PluginLoad())
     }
 
     override fun onDisable() {
@@ -125,17 +110,11 @@ open class InfernalMobsReloaded : JavaPlugin {
         filters.forEach(rootLogger::addFilter)
     }
 
-    private fun findClasspathListeners(): Set<KClass<out Listener>> =
-        findClasses<Listener>("$PLUGIN_PACKAGE.eventlistener") { it.isConcreteType && it.isSubclassOf(Listener::class) }
-            .onlyRegisterableClasses()
+    private fun findClasspathListeners(): Set<KClass<out Listener>> = findRegistrableClasses("$PLUGIN_PACKAGE.eventlistener")
 
-    private fun findClasspathPacketListeners(): Set<KClass<out PacketAdapter>> =
-        findClasses<PacketAdapter>("$PLUGIN_PACKAGE.packetlistener") { it.isConcreteType && it.isSubclassOf(PacketAdapter::class) }
-            .onlyRegisterableClasses()
+    private fun findClasspathPacketListeners(): Set<KClass<out PacketAdapter>> = findRegistrableClasses("$PLUGIN_PACKAGE.packetlistener")
 
-    private fun findClasspathSubcommands(): Set<KClass<out SubCommand>> =
-        findClasses<SubCommand>("$PLUGIN_PACKAGE.command") { it.isConcreteType && it.isSubclassOf(SubCommand::class) }
-            .onlyRegisterableClasses()
+    private fun findClasspathSubcommands(): Set<KClass<out SubCommand>> = findRegistrableClasses("$PLUGIN_PACKAGE.command")
 
     private val isWorldGuardEnabled
         get() = Bukkit.getPluginManager().getPlugin("WorldGuard") != null

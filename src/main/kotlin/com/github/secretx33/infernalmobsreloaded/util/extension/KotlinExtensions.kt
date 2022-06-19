@@ -2,12 +2,17 @@
 
 package com.github.secretx33.infernalmobsreloaded.util.extension
 
+import com.github.secretx33.infernalmobsreloaded.InfernalMobsReloaded
 import com.github.secretx33.infernalmobsreloaded.annotation.SkipAutoRegistration
 import com.google.common.reflect.ClassPath
 import com.google.common.reflect.TypeToken
 import org.apache.commons.lang.WordUtils
 import java.lang.reflect.Modifier
 import java.lang.reflect.Type
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.time.Duration
+import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.reflect.KClass
@@ -43,11 +48,25 @@ fun KClass<*>.isSubclassOf(clazz: KClass<*>): Boolean = clazz.java.isAssignableF
 inline fun <reified T : Annotation> KClass<*>.hasAnnotation(): Boolean = java.isAnnotationPresent(T::class.java)
 
 @Suppress("UNCHECKED_CAST")
-inline fun <T : Any> Any.findClasses(pkg: String, filter: (KClass<*>) -> Boolean): Set<KClass<T>> =
-    ClassPath.from(this::class.java.classLoader)
+inline fun <T : Any> findClasses(pkg: String, filter: (KClass<*>) -> Boolean): Set<KClass<T>> =
+    ClassPath.from(InfernalMobsReloaded::class.java.classLoader)
         .getTopLevelClassesRecursive(pkg)
         .map { it.load().kotlin }
         .filterTo(mutableSetOf(), filter) as Set<KClass<T>>
 
 fun <T : Any> Iterable<KClass<T>>.onlyRegisterableClasses(): Set<KClass<T>> =
     filterNotTo(mutableSetOf()) { it.hasAnnotation<SkipAutoRegistration>() }
+
+inline fun <reified T : Any> findRegistrableClasses(pkg: String): Set<KClass<T>> =
+    findClasses<T>(pkg) { it.isConcreteType && it.isSubclassOf(T::class) }
+        .onlyRegisterableClasses()
+
+fun Duration.prettyString(): String {
+    val secondsDouble = toMillis().toDouble() / 1000.0
+    val pattern = when {
+        seconds <= 0 -> "#.##"
+        else -> "#,###.#"
+    }
+    val format = DecimalFormat(pattern, DecimalFormatSymbols(Locale.US))
+    return format.format(secondsDouble)
+}

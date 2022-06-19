@@ -4,7 +4,9 @@ import com.github.secretx33.infernalmobsreloaded.InfernalMobsReloaded
 import com.github.secretx33.infernalmobsreloaded.config.toComponent
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.KeyChain
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeout
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -21,8 +23,8 @@ import org.bukkit.persistence.PersistentDataHolder
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 import toothpick.ktp.extension.getInstance
-import java.util.concurrent.Callable
-import java.util.concurrent.Future
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 /**
  * Small static access to avoid a lot of boilerplate code.
@@ -56,13 +58,12 @@ fun runSync(plugin: Plugin, delay: Long = 0L, runnable: Runnable) {
     }
 }
 
-suspend fun <T> futureSync(plugin: Plugin, callable: Callable<T>): T = Bukkit.getScheduler().callSyncMethod(plugin, callable).await()
-
-suspend fun <T> Future<T>.await(): T {
-    while(!isDone)
-        delay(25) // or whatever you want your polling frequency to be
-    @Suppress("BlockingMethodInNonBlockingContext")
-    return get()
+suspend fun <T> suspendSync(plugin: Plugin, task: () -> T): T = withTimeout(5000L) {
+    suspendCancellableCoroutine { cont ->
+        Bukkit.getScheduler().runTask(plugin, Runnable {
+            runCatching(task).fold({ cont.resume(it) }, cont::resumeWithException)
+        })
+    }
 }
 
 fun ItemStack.isAir(): Boolean = type.isAir

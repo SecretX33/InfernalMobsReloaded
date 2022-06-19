@@ -24,12 +24,12 @@ import com.github.secretx33.infernalmobsreloaded.repository.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.util.Cuboid
 import com.github.secretx33.infernalmobsreloaded.util.extension.contentsMap
 import com.github.secretx33.infernalmobsreloaded.util.extension.displayName
-import com.github.secretx33.infernalmobsreloaded.util.extension.futureSync
 import com.github.secretx33.infernalmobsreloaded.util.extension.gsonTypeToken
 import com.github.secretx33.infernalmobsreloaded.util.extension.isAir
 import com.github.secretx33.infernalmobsreloaded.util.extension.pdc
 import com.github.secretx33.infernalmobsreloaded.util.extension.random
 import com.github.secretx33.infernalmobsreloaded.util.extension.runSync
+import com.github.secretx33.infernalmobsreloaded.util.extension.suspendSync
 import com.github.secretx33.infernalmobsreloaded.util.extension.toUuid
 import com.google.common.collect.Sets
 import com.google.gson.Gson
@@ -552,7 +552,7 @@ class AbilityHelper (
             if (random.nextDouble() > chance || (requireLoS && !entity.hasLineOfSight(target))) continue
 
             val equip = target.equipment ?: return@launch
-            // slot chosen to have its equipment stolen, skipping this interaction if there's none (and yeah EntityEquipment#getItem returns null even if its annotated with @NonNull)
+            // slot chosen to have its equipment stolen, skipping this interaction if there's none (and yeah EntityEquipment#getItem returns null even if it's annotated with @NonNull)
             val chosenSlot = EquipmentSlot.values().filter { slot -> equip.getItem(slot).let { it != null && !it.isAir() } }.randomOrNull() ?: continue
             val durabilityLoss = abilityConfig.getDurabilityLoss(Ability.THIEF, 0.04).random()
             val item = equip.getItem(chosenSlot)
@@ -738,8 +738,8 @@ class AbilityHelper (
                 leggings = lootItemsRepo.getLootItemOrNull("${hauntedPrefix}ghost_leggings")?.makeItem()
                 boots = lootItemsRepo.getLootItemOrNull("${hauntedPrefix}ghost_boots")?.makeItem()
                 setItemInMainHand(lootItemsRepo.getLootItemOrNull("${hauntedPrefix}ghost_weapon")?.makeItem())
+                EquipmentSlot.values().forEach { slot -> setDropChance(slot, itemDropChance) }
             }
-            EquipmentSlot.values().forEach { slot -> equip?.setDropChance(slot, itemDropChance) }
             InfernalSpawnEvent(it, infernalType, randomAbilities = false, abilitySet = abilitySet).callEvent()
             it.target = target
         }
@@ -1059,11 +1059,13 @@ class AbilityHelper (
 
     // utility functions
 
-    private fun Double.toLongDelay() = (this * 1000.0).toLong()
+    private fun Double.toLongDelay(): Long = (this * 1000.0).toLong()
 
-    private fun LivingEntity.getValidNearbyTargets(range: Double) = location.getNearbyLivingEntities(range) { !it.isDead && it.isValid }.takeUnless { it.isEmpty() } ?: listOf(this)
+    private fun LivingEntity.getValidNearbyTargets(range: Double): Collection<LivingEntity> =
+        location.getNearbyLivingEntities(range) { !it.isDead && it.isValid }.takeUnless { it.isEmpty() } ?: listOf(this)
 
-    private suspend fun LivingEntity.getValidNearbyTargetsAsync(range: Double) = futureSync(plugin) { getValidNearbyTargets(range) }
+    private suspend fun LivingEntity.getValidNearbyTargetsAsync(range: Double): Collection<LivingEntity> =
+        suspendSync(plugin) { getValidNearbyTargets(range) }
 
     private fun LivingEntity.multiplyMaxHp(percentage: Double) {
         val hp = getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
@@ -1099,7 +1101,8 @@ class AbilityHelper (
         duration: Double,
         amplifier: Int = 0,
         isAmbient: Boolean = abilityConfig.getPotionIsAmbient(ability),
-        emitParticles: Boolean = abilityConfig.getPotionEmitParticles(ability)) {
+        emitParticles: Boolean = abilityConfig.getPotionEmitParticles(ability),
+    ) {
         // add a temporary potion effect to the living entity
         addPotionEffect(PotionEffect(effectType, (duration * 20.0).toInt().coerceAtLeast(0), amplifier, isAmbient, emitParticles))
     }
@@ -1109,7 +1112,7 @@ class AbilityHelper (
         ability: Ability,
         amplifier: Int = 0,
         isAmbient: Boolean = abilityConfig.getPotionIsAmbient(ability),
-        emitParticles: Boolean = abilityConfig.getPotionEmitParticles(ability)
+        emitParticles: Boolean = abilityConfig.getPotionEmitParticles(ability),
     ) {
         // add a permanent potion effect to the living entity
         addPotionEffect(PotionEffect(effectType, Int.MAX_VALUE, amplifier, isAmbient, emitParticles))

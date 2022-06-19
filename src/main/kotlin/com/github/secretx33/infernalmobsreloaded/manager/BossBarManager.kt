@@ -80,7 +80,7 @@ class BossBarManager (
 
     fun showBarsOfNearbyInfernalsForAllPlayers() {
         if (!bossBarEnabled) return
-        log.info("Enabling infernal mobs boss bars")
+        log.info("Enabling Infernal Mobs boss bars")
         Bukkit.getOnlinePlayers().forEach(::showBarOfNearbyInfernals)
     }
 
