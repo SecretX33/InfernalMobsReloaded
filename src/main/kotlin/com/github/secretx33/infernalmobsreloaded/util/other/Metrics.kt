@@ -1,5 +1,7 @@
 package com.github.secretx33.infernalmobsreloaded.util.other
 
+import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
+import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
 import com.github.secretx33.infernalmobsreloaded.model.PluginMetricsId
 import kotlinx.coroutines.*
 import org.bukkit.Bukkit
@@ -8,9 +10,9 @@ import org.bukkit.plugin.java.JavaPlugin
 import toothpick.InjectConstructor
 import java.io.*
 import java.net.URL
-import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.*
+import java.util.concurrent.atomic.AtomicReference
 import java.util.function.*
 import java.util.logging.Level
 import java.util.zip.GZIPOutputStream
@@ -19,11 +21,15 @@ import javax.net.ssl.HttpsURLConnection
 /**
  * Creates a new Metrics instance.
  *
- * @param plugin Your plugin instance.
+ * @param plugin Your plugin instance
  * @param serviceId The id of the service. It can be found at [What is my plugin id?](https://bstats.org/what-is-my-plugin-id)
  */
 @InjectConstructor
-class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
+class Metrics(
+    private val plugin: JavaPlugin,
+    serviceId: PluginMetricsId,
+    eventBus: EventBus,
+) {
 
     private val metricsBase: MetricsBase
 
@@ -36,6 +42,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
             createDefaultConfig(config, configFile)
         }
         metricsBase = makeMetricsBase(config, serviceId.value)
+        eventBus.subscribe<PluginUnload>(this, 60) { metricsBase.stopSubmitting() }
     }
 
     private fun createDefaultConfig(config: YamlConfiguration, configFile: File) {
@@ -65,7 +72,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
         val logSentData = config.getBoolean("logSentData", false)
         val logResponseStatusText = config.getBoolean("logResponseStatusText", false)
 
-        return MetricsBase (
+        return MetricsBase(
             platform = "bukkit",
             serverUuid = serverUUID,
             serviceId = serviceId,
@@ -106,16 +113,16 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
 
     private val playerAmount: Int
         get() = try {
-                // Around MC 1.8 the return type was changed from an array to a collection,
-                // This fixes java.lang.NoSuchMethodError:
-                // org.bukkit.Bukkit.getOnlinePlayers()Ljava/util/Collection;
-                val onlinePlayersMethod = Class.forName("org.bukkit.Server").getMethod("getOnlinePlayers")
-                if (onlinePlayersMethod.returnType == MutableCollection::class.java) (onlinePlayersMethod.invoke(Bukkit.getServer()) as Collection<*>).size
-                else (onlinePlayersMethod.invoke(Bukkit.getServer()) as Array<*>).size
-            } catch (e: Exception) {
-                // Just use the new method if the reflection failed
-                Bukkit.getOnlinePlayers().size
-            }
+            // Around MC 1.8 the return type was changed from an array to a collection,
+            // This fixes java.lang.NoSuchMethodError:
+            // org.bukkit.Bukkit.getOnlinePlayers()Ljava/util/Collection;
+            val onlinePlayersMethod = Class.forName("org.bukkit.Server").getMethod("getOnlinePlayers")
+            if (onlinePlayersMethod.returnType == MutableCollection::class.java) (onlinePlayersMethod.invoke(Bukkit.getServer()) as Collection<*>).size
+            else (onlinePlayersMethod.invoke(Bukkit.getServer()) as Array<*>).size
+        } catch (e: Exception) {
+            // Just use the new method if the reflection failed
+            Bukkit.getOnlinePlayers().size
+        }
 
     /**
      * Creates a new MetricsBase class instance.
@@ -135,7 +142,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
      * @param logSentData Whether or not the sent data should be logged.
      * @param logResponseStatusText Whether or not the response status text should be logged.
      */
-    class MetricsBase (
+    class MetricsBase(
         private val platform: String,
         private val serverUuid: String,
         private val serviceId: Int,
@@ -149,7 +156,8 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
         private val logSentData: Boolean,
         private val logResponseStatusText: Boolean
     ) {
-        private val customCharts: MutableSet<CustomChart> = HashSet()
+        private val customCharts = mutableSetOf<CustomChart>()
+        private val submitJob = AtomicReference<Job?>(null)
 
         init {
             checkRelocation()
@@ -160,6 +168,11 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
 
         fun addCustomChart(chart: CustomChart) {
             customCharts.add(chart)
+        }
+
+        fun stopSubmitting() {
+            val job = submitJob.getAndSet(null)
+            job?.cancel()
         }
 
         private fun startSubmitting() {
@@ -177,6 +190,8 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
             val secondDelay = (ONE_MINUTE * (Math.random() * 30)).toLong()     // 1 - 30 minutes after the initial delay
 
             CoroutineScope(Dispatchers.Default).launch {
+                if (!submitJob.compareAndSet(null, coroutineContext.job)) return@launch
+
                 delay(initialDelay)
                 submitData()
                 delay(secondDelay)
@@ -276,7 +291,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: PluginMetricsId) {
          */
         private fun compress(str: String): ByteArray {
             val outputStream = ByteArrayOutputStream()
-            GZIPOutputStream(outputStream).use { gzip -> gzip.write(str.toByteArray(StandardCharsets.UTF_8)) }
+            GZIPOutputStream(outputStream).use { gzip -> gzip.write(str.toByteArray(Charsets.UTF_8)) }
             return outputStream.toByteArray()
         }
 

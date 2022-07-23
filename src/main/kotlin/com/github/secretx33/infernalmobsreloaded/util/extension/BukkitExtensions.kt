@@ -19,6 +19,7 @@ import org.bukkit.inventory.EntityEquipment
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataHolder
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
@@ -58,11 +59,11 @@ fun runSync(plugin: Plugin, delay: Long = 0L, runnable: Runnable) {
     }
 }
 
-suspend fun <T> suspendSync(plugin: Plugin, task: () -> T): T = withTimeout(5000L) {
+suspend fun <T> suspendSync(plugin: Plugin, task: () -> T): T = withTimeout(6000L) {
     suspendCancellableCoroutine { cont ->
-        Bukkit.getScheduler().runTask(plugin, Runnable {
+        runSync(plugin) {
             runCatching(task).fold({ cont.resume(it) }, cont::resumeWithException)
-        })
+        }
     }
 }
 
@@ -82,7 +83,7 @@ fun Entity.formattedTypeName(): String = type.formattedTypeName()
 val Entity.displayName: Component
     get() = customName() ?: type.formattedTypeName().toComponent()
 
-val PersistentDataHolder.pdc
+val PersistentDataHolder.pdc: PersistentDataContainer
     get() = persistentDataContainer
 
 fun LivingEntity.getHealthPercent(damageTaken: Double = 0.0): Float =

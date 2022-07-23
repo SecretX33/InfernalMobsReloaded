@@ -13,6 +13,7 @@ import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItemType
 import com.github.secretx33.infernalmobsreloaded.model.items.NormalLootItem
 import com.github.secretx33.infernalmobsreloaded.model.items.ShieldWithPatternLootItem
+import com.github.secretx33.infernalmobsreloaded.util.extension.enumSetOf
 import com.github.secretx33.infernalmobsreloaded.util.extension.formattedTypeName
 import com.github.secretx33.infernalmobsreloaded.util.extension.pdc
 import com.github.secretx33.infernalmobsreloaded.util.other.YamlManager
@@ -30,7 +31,6 @@ import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
 import toothpick.InjectConstructor
-import java.util.EnumSet
 import java.util.Locale
 import java.util.logging.Logger
 import javax.inject.Singleton
@@ -87,7 +87,7 @@ class LootItemsRepo (
         }
 
     private fun getLootType(name: String): LootItemType {
-        val itemType = manager.getString("$name.type") ?: ""
+        val itemType = manager.getString("$name.type").orEmpty()
 
         // if item type is absent or blank, assume normal item
         if (itemType.isBlank()) return LootItemType.NORMAL
@@ -115,7 +115,7 @@ class LootItemsRepo (
     }
 
     private fun getBookMaterial(name: String): Material {
-        val materialName = manager.getString("$name.material") ?: ""
+        val materialName = manager.getString("$name.material").orEmpty()
 
         // if material name is absent or blank
         if (materialName.isBlank()) return Material.WRITTEN_BOOK
@@ -127,7 +127,7 @@ class LootItemsRepo (
     }
 
     private fun getBookTitle(name: String, material: Material): Component {
-        val bookTitle = manager.getString("$name.title") ?: ""
+        val bookTitle = manager.getString("$name.title").orEmpty()
 
         // if book title is absent or blank
         if (bookTitle.isBlank()) {
@@ -144,7 +144,7 @@ class LootItemsRepo (
     }
 
     private fun getBookGeneration(name: String): BookMeta.Generation {
-        val generation = manager.getString("$name.generation") ?: ""
+        val generation = manager.getString("$name.generation").orEmpty()
 
         // if book generation is absent or blank
         if (generation.isBlank()) return BookMeta.Generation.ORIGINAL
@@ -228,7 +228,7 @@ class LootItemsRepo (
     private fun getItemFlags(name: String): Set<ItemFlag> {
         val itemFlags = manager.getStringList("$name.item-flags").filter { it.isNotBlank() }.takeUnless { it.isEmpty() } ?: return emptySet()
 
-        return itemFlags.mapNotNullTo(EnumSet.noneOf(ItemFlag::class.java)) { flag ->
+        return itemFlags.mapNotNullTo(enumSetOf()) { flag ->
             ItemFlag.values().firstOrNull { it.name.equals(flag, ignoreCase = true) } ?: run {
                 logger.warning("Invalid item flag '$flag' for loot item '$name', please fix your configurations and reload.")
                 null
@@ -237,14 +237,14 @@ class LootItemsRepo (
     }
 
     private fun getItemColor(name: String): Color? {
-        val colorRGB = manager.getString("$name.color") ?: ""
-        // if color name is absent or blank
-        if (colorRGB.isBlank()) return null
+        val colorRGB = manager.getString("$name.color")
+            ?.takeIf { it.isNotBlank() }
+            ?: return null
         return colorRGB.toColor()
     }
 
     private fun parseDisplayName(name: String, material: Material): Component {
-        val displayName = manager.getString("$name.name") ?: ""
+        val displayName = manager.getString("$name.name").orEmpty()
 
         // if display name is absent or blank
         if (displayName.isBlank()) {
@@ -254,8 +254,18 @@ class LootItemsRepo (
         return adventureMessage.parse(displayName)
     }
 
-    private fun genericLootItem(name: String, displayName: Component, material: Material, color: Color?, dyeColor: DyeColor?, amounts: Pair<Int, Int>, flags: Set<ItemFlag>, lore: List<Component>, enchants: Set<CustomEnchantment>): NormalLootItem {
-        return NormalLootItem(name,
+    private fun genericLootItem(
+        name: String,
+        displayName: Component,
+        material: Material,
+        color: Color?,
+        dyeColor: DyeColor?,
+        amounts: Pair<Int, Int>,
+        flags: Set<ItemFlag>,
+        lore: List<Component>,
+        enchants: Set<CustomEnchantment>,
+    ): NormalLootItem =
+        NormalLootItem(name,
             displayName = displayName,
             material = material,
             color = color,
@@ -265,7 +275,6 @@ class LootItemsRepo (
             lore = lore,
             enchants = enchants,
         )
-    }
 
     private fun String.toColor(): Color {
         val results = COLOR_PATTERN.find(this.trim())?.groupValues
@@ -278,7 +287,7 @@ class LootItemsRepo (
         val b = results[3].toInt()
         return try {
             Color.fromRGB(r, g, b)
-        } catch(e: IllegalArgumentException) {
+        } catch (e: IllegalArgumentException) {
             logger.warning("Inside loot items, seems like you have typoed a invalid number somewhere in '$this', please only use values between 0 and 255 to write the colors. Original error message: ${e.message}")
             Color.WHITE
         }
@@ -307,7 +316,7 @@ class LootItemsRepo (
                 logger.warning("Inside item loot '$name', enchantment with name '${fields[0]}' doesn't exist, please fix your item loot configurations. Defaulting this enchantment to LUCK.")
                 Enchantment.LUCK
             }!!
-            if (fields.size == 1) return@mapTo CustomEnchantment(type = enchant, levels = Pair(1, 1), chance = 1.0)
+            if (fields.size == 1) return@mapTo CustomEnchantment(type = enchant, levels = 1 to 1, chance = 1.0)
 
             // split the level section by '-' to get the enchant minLevel and maxLevel
             val levels = fields[1].split('-')
@@ -320,42 +329,42 @@ class LootItemsRepo (
             // get the enchant maxLevel or just default it to minLevel, in case of missing or invalid argument
             val maxLevel = levels.getOrNull(1)?.toIntOrNull()?.let { max(minLevel, it) } ?: minLevel
 
-            if (fields.size == 2) return@mapTo CustomEnchantment(type = enchant, levels = Pair(minLevel, maxLevel), chance = 1.0)
+            if (fields.size == 2) return@mapTo CustomEnchantment(type = enchant, levels = minLevel to maxLevel, chance = 1.0)
 
             // parse the chance of that enchant to be applied to the item
             val chance = fields[2].toDoubleOrNull()?.let { max(0.0, min(1.0, it)) } ?: run {
                 logger.warning("Inside item loot '$name', chance for enchantment '${levels[0]}' is invalid. Defaulting $name's $enchant enchant chance to 100%.")
                 1.0
             }
-            CustomEnchantment(type = enchant, levels = Pair(minLevel, maxLevel), chance = chance)
+            CustomEnchantment(type = enchant, levels = minLevel to maxLevel, chance = chance)
         }
     }
 
     // returns a pair with <Min, Max> amount of that item
     private fun getAmounts(name: String): Pair<Int, Int> {
-        val amounts = (manager.getString("$name.amount") ?: "").split('-', limit = 2)
+        val amounts = (manager.getString("$name.amount").orEmpty()).split('-', limit = 2)
 
         // if there's no amount field, default it to 1
-        if (amounts[0].isBlank()) return Pair(1, 1)
+        if (amounts[0].isBlank()) return 1 to 1
 
         // if typed amount is not an integer
         val minAmount = amounts[0].toIntOrNull()?.let { max(1, it) } ?: run {
             logger.warning("Amount provided for item loot '$name' is not an integer. Defaulting '$name' amount to 1.")
-            return Pair(1, 1)
+            return 1 to 1
         }
 
         // if there's one number, min and max amounts should be equal
-        if (amounts.size < 2 || amounts[1].isBlank()) return Pair(minAmount, minAmount)
+        if (amounts.size < 2 || amounts[1].isBlank()) return minAmount to minAmount
 
         val maxAmount = amounts[1].toIntOrNull()?.let { max(minAmount, it) } ?: run {
             logger.warning("Max amount provided for item loot '$name' is not an integer, please fix the typo and reload the configurations. Defaulting '$name' max amount to its minimum amount, which is $minAmount.")
             minAmount
         }
-        return Pair(minAmount, maxAmount)
+        return minAmount to maxAmount
     }
 
     private fun getItemMaterial(name: String): Material {
-        val materialName = manager.getString("$name.material") ?: ""
+        val materialName = manager.getString("$name.material").orEmpty()
 
         // if material name is absent or blank
         if (materialName.isBlank()) {

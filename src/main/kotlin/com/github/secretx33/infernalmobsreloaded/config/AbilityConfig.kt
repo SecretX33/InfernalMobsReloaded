@@ -123,7 +123,7 @@ class AbilityConfig(
     @Suppress("UNCHECKED_CAST")
     fun getIntPair(key: String, default: Int, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Pair<Int, Int> {
         return cache.getOrPut(key) {
-            val values = file.getString(key) ?: ""
+            val values = file.getString(key).orEmpty()
 
             // if there's no amount field, return pair with default values
             if (values.isBlank()) return@getOrPut Pair(default, default)
@@ -152,7 +152,7 @@ class AbilityConfig(
     @Suppress("UNCHECKED_CAST")
     fun getDoublePair(key: String, default: Double, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Pair<Double, Double> {
         return cache.getOrPut(key) {
-            val values = file.getString(key) ?: ""
+            val values = file.getString(key).orEmpty()
 
             // if there's no amount field, return pair with default values
             if (values.isBlank()) return@getOrPut Pair(default, default)

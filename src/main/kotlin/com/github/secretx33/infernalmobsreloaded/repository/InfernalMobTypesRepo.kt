@@ -7,6 +7,7 @@ import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginRe
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import com.github.secretx33.infernalmobsreloaded.model.InfernalMobType
 import com.github.secretx33.infernalmobsreloaded.model.items.LootItem
+import com.github.secretx33.infernalmobsreloaded.util.extension.enumSetOf
 import com.github.secretx33.infernalmobsreloaded.util.extension.formattedTypeName
 import com.github.secretx33.infernalmobsreloaded.util.extension.matchOrNull
 import com.github.secretx33.infernalmobsreloaded.util.other.YamlManager
@@ -21,7 +22,6 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.plugin.Plugin
 import toothpick.InjectConstructor
-import java.util.EnumSet
 import java.util.Locale
 import java.util.logging.Logger
 import javax.inject.Singleton
@@ -57,13 +57,13 @@ class InfernalMobTypesRepo (
         loadMobTypes()
     }
 
-    fun canTypeBecomeInfernal(type: EntityType) = infernalTypeMultimap.containsKey(type)
+    fun canTypeBecomeInfernal(type: EntityType): Boolean = infernalTypeMultimap.containsKey(type)
 
-    fun getInfernalTypeOrNull(name: String) = infernalTypeCache[name.lowercase(Locale.US)]
+    fun getInfernalTypeOrNull(name: String): InfernalMobType? = infernalTypeCache[name.lowercase(Locale.US)]
 
     fun getInfernalTypes(entityType: EntityType): ImmutableSet<InfernalMobType> = infernalTypeMultimap[entityType]
 
-    fun isValidInfernalType(name: String) = infernalTypeCache.containsKey(name.lowercase(Locale.US))
+    fun isValidInfernalType(name: String): Boolean = infernalTypeCache.containsKey(name.lowercase(Locale.US))
 
     fun getAllInfernalTypeNames(): List<String> = infernalTypeNames
 
@@ -88,12 +88,13 @@ class InfernalMobTypesRepo (
 
     private fun loadMobTypes() {
         infernalTypeNames = manager.getKeys(false).sorted()
-        infernalTypeCache = infernalTypeNames.map { it.lowercase(Locale.US) }.associateWithTo(HashMap(infernalTypeNames.size)) { makeMobType(it) }
+        infernalTypeCache = infernalTypeNames.map { it.lowercase(Locale.US) }
+            .associateWithTo(HashMap(infernalTypeNames.size), ::makeMobType)
         val builder = ImmutableSetMultimap.builder<EntityType, InfernalMobType>()
         infernalTypeCache.forEach { (_, infernalType) -> builder.put(infernalType.entityType, infernalType) }
         infernalTypeMultimap = builder.build()
         userDefinedInfernalTypes = infernalTypeMultimap.asMap()
-            .mapValues { (type, list) -> list.map { Pair(type, it) } }
+            .mapValues { (type, list) -> list.map { type to it } }
             .values.flatten()
             .filter { (_, infernal) -> !infernal.name.equals("ghost", ignoreCase = true) && !infernal.name.equals("haunted_ghost", ignoreCase = true) }
         infernalMobPlainTextDisplayNames = infernalTypeCache.mapNotNullTo(hashSetOf()) { PlainTextComponentSerializer.plainText().serializeOrNull(it.value.displayName) }
@@ -137,7 +138,7 @@ class InfernalMobTypesRepo (
                 log.warning("Inside mob category '$name' $subKey, ability named '$ability' doesn't exist, please fix your mobs configurations. Ignoring this entry for now.")
                 null
             }
-        }.filterTo(EnumSet.noneOf(Ability::class.java)) { !filterDisabled || it !in disabledAbilities }
+        }.filterTo(enumSetOf()) { !filterDisabled || it !in disabledAbilities }
     }
 
     private val disabledAbilities: Set<Ability>
@@ -146,7 +147,7 @@ class InfernalMobTypesRepo (
     private fun getConsoleCommands(name: String) = manager.getStringList("$name.run-command").map { it.trim() }
 
     private fun getMobType(name: String): EntityType {
-        val mobType = manager.getString("$name.type") ?: ""
+        val mobType = manager.getString("$name.type").orEmpty()
 
         // if type is absent or blank
         if (mobType.isBlank()) {
@@ -161,7 +162,7 @@ class InfernalMobTypesRepo (
     }
 
     private fun getMobDisplayName(name: String, type: EntityType): Component {
-        val displayName = manager.getString("$name.display-name") ?: ""
+        val displayName = manager.getString("$name.display-name").orEmpty()
 
         if (displayName.isBlank()) {
             log.warning("You must provide a display name for the mob category '$name'! Defaulting $name display name to its type.")
@@ -171,7 +172,7 @@ class InfernalMobTypesRepo (
     }
 
     private fun getMobBossBarName(name: String, type: EntityType): Component {
-        val displayName = manager.getString("$name.boss-bar-text") ?: ""
+        val displayName = manager.getString("$name.boss-bar-text").orEmpty()
 
         // if boss bar name is absent or blank, fallback to entity type
         if (displayName.isBlank()) {
@@ -182,7 +183,7 @@ class InfernalMobTypesRepo (
     }
 
     private fun getMobBossBarColor(name: String): BossBar.Color {
-        val barColor = manager.getString("$name.boss-bar-color") ?: ""
+        val barColor = manager.getString("$name.boss-bar-color").orEmpty()
 
         // if boss bar color is absent or blank, fallback to PURPLE
         if (barColor.isBlank()) {
@@ -197,7 +198,7 @@ class InfernalMobTypesRepo (
     }
 
     private fun getMobBossBarOverlay(name: String): BossBar.Overlay {
-        val bossBarOverlay = manager.getString("$name.boss-bar-overlay") ?: ""
+        val bossBarOverlay = manager.getString("$name.boss-bar-overlay").orEmpty()
 
         // if boss bar overlay style is absent or blank, fallback to NOTCHED_12
         if (bossBarOverlay.isBlank()) {
@@ -217,7 +218,7 @@ class InfernalMobTypesRepo (
         // if there's no flag set or boss bars are disabled, return empty set
         if (bossBarFlags.isEmpty() || !bossBarEnabled) return emptySet()
 
-        return bossBarFlags.mapNotNullTo(EnumSet.noneOf(BossBar.Flag::class.java)) { line ->
+        return bossBarFlags.mapNotNullTo(enumSetOf()) { line ->
             BossBar.Flag.values().firstOrNull { it.name.equals(line, ignoreCase = true) } ?: run {
                 log.warning("Inside mob category '$name', boss bar flag named '$line' is invalid or doesn't exist, please fix your mobs configurations.")
                 null
@@ -246,7 +247,7 @@ class InfernalMobTypesRepo (
     }
 
     private fun getSpawnerName(name: String, type: EntityType, dropChance: Double): Component {
-        val displayName = manager.getString("$name.mob-spawner-name") ?: ""
+        val displayName = manager.getString("$name.mob-spawner-name").orEmpty()
 
         // if boss bar name is absent or blank, fallback to entity type
         if (displayName.isBlank()) {
@@ -276,7 +277,7 @@ class InfernalMobTypesRepo (
 
     // returns a pair with the <Min, Max> amount of the key property
     private fun getIntPair(name: String, key: String, default: Int = 0, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Pair<Int, Int> {
-        val values = manager.getString("$name.$key") ?: ""
+        val values = manager.getString("$name.$key").orEmpty()
 
         // if there's no amount field, return pair with default values
         if (values.isBlank()) return Pair(default, default)
@@ -299,7 +300,7 @@ class InfernalMobTypesRepo (
 
     // returns a pair with the <Min, Max> amount of the key property
     private fun getDoublePair(name: String, key: String, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Pair<Double, Double> {
-        val values = manager.getString("$name.$key") ?: ""
+        val values = manager.getString("$name.$key").orEmpty()
 
         // if there's no amount field, return pair with default values
         if (values.isBlank()) return Pair(default, default)

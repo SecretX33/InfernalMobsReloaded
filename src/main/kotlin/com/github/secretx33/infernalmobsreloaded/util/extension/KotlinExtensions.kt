@@ -9,13 +9,16 @@ import com.google.common.reflect.TypeToken
 import org.apache.commons.lang.WordUtils
 import java.lang.reflect.Modifier
 import java.lang.reflect.Type
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.time.Duration
-import java.util.Locale
+import java.util.EnumSet
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.reflect.KClass
+
+inline fun <reified T : Enum<T>> enumSetOf(): MutableSet<T> = EnumSet.noneOf(T::class.java)
+
+inline fun <reified T : Enum<T>> enumSetOf(vararg values: T): MutableSet<T> = EnumSet.noneOf(T::class.java).apply { addAll(values) }
+
+inline fun <reified T : Enum<T>> enumSetAll(): MutableSet<T> = EnumSet.allOf(T::class.java)
 
 /**
  * Simplify `Random` usage by providing an extension function to retrieve the current thread local random instance.

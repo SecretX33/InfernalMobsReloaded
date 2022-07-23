@@ -117,13 +117,13 @@ class CharmsRepo (
     }
 
     private fun getComponentMessage(name: String, key: String): Component? {
-        val message = manager.getString("charm-effects.$name.$key") ?: ""
+        val message = manager.getString("charm-effects.$name.$key").orEmpty()
         if (message.isBlank()) return null
         return adventureMessage.parse(message)
     }
 
     private fun getPotionEffect(name: String, key: String): PotionEffectType {
-        val potionEffect = manager.getString("charm-effects.$name.$key") ?: ""
+        val potionEffect = manager.getString("charm-effects.$name.$key").orEmpty()
 
         // if type is absent or blank
         if (potionEffect.isBlank()) {
@@ -138,7 +138,7 @@ class CharmsRepo (
     }
 
     private fun getEffectApplyMode(name: String, key: String): PotionEffectApplyMode {
-        val applyMode = manager.getString("charm-effects.$name.$key") ?: ""
+        val applyMode = manager.getString("charm-effects.$name.$key").orEmpty()
 
         // if type is absent or blank
         if (applyMode.isBlank()) {
@@ -153,7 +153,7 @@ class CharmsRepo (
     }
 
     private fun getParticle(name: String, key: String): Particle? {
-        val particleEffect = manager.getString("charm-effects.$name.$key") ?: ""
+        val particleEffect = manager.getString("charm-effects.$name.$key").orEmpty()
 
         // if type is absent or blank
         if (particleEffect.isBlank()) return null
@@ -168,7 +168,7 @@ class CharmsRepo (
         // no particle selected
         if (particle == null) return CharmParticleMode.NONE
 
-        val typedParticleMode = manager.getString("charm-effects.$name.$key") ?: ""
+        val typedParticleMode = manager.getString("charm-effects.$name.$key").orEmpty()
 
         // if type is absent or blank
         if (typedParticleMode.isBlank()) {
@@ -230,7 +230,7 @@ class CharmsRepo (
 
     // returns a pair with the <Min, Max> amount of the key property
     private fun getIntPair(name: String, key: String, default: Int = 0, minValue: Int = 0, maxValue: Int = Int.MAX_VALUE): Pair<Int, Int> {
-        val values = manager.getString("charm-effects.$name.$key") ?: ""
+        val values = manager.getString("charm-effects.$name.$key").orEmpty()
 
         // if there's no amount field, return pair with default values
         if (values.isBlank()) return Pair(default, default)
@@ -253,7 +253,7 @@ class CharmsRepo (
 
     // returns a pair with the <Min, Max> amount of the key property
     private fun getDoublePair(name: String, key: String, default: Double = 1.0, minValue: Double = 0.0, maxValue: Double = Double.MAX_VALUE): Pair<Double, Double> {
-        val values = manager.getString("charm-effects.$name.$key") ?: ""
+        val values = manager.getString("charm-effects.$name.$key").orEmpty()
 
         // if there's no amount field, return pair with default values
         if (values.isBlank()) return Pair(default, default)

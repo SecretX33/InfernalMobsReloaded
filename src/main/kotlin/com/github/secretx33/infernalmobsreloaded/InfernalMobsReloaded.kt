@@ -20,6 +20,7 @@ import com.github.secretx33.infernalmobsreloaded.model.PluginMetricsId
 import com.github.secretx33.infernalmobsreloaded.util.extension.findRegistrableClasses
 import com.github.secretx33.infernalmobsreloaded.util.extension.replace
 import com.github.secretx33.infernalmobsreloaded.util.other.Metrics
+import com.github.secretx33.infernalmobsreloaded.util.other.getEnvConfiguration
 import me.mattstudios.msg.adventure.AdventureMessage
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.Filter
@@ -28,7 +29,6 @@ import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 import toothpick.Scope
-import toothpick.configuration.Configuration
 import toothpick.ktp.KTP
 import toothpick.ktp.binding.bind
 import toothpick.ktp.binding.module
@@ -56,7 +56,7 @@ class InfernalMobsReloaded : JavaPlugin() {
     }
 
     override fun onEnable() {
-        KTP.setConfiguration(Configuration.forDevelopment())
+        KTP.setConfiguration(getEnvConfiguration())
         _scope = KTP.openScope(this) {
             it.installModules(mod, module {
                 bind<Scope>().toInstance(it)

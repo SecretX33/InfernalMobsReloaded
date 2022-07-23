@@ -29,7 +29,7 @@ open class NormalLootItem (
         require(amount.first <= amount.second) { "min amount cannot be higher than the max amount, value passed was amount = $amount" }
     }
 
-    protected val preparedItem
+    protected val preparedItem: ItemBuilder
         get() = ItemBuilder.from(material)
             .displayName(displayName)
             .amount(amount.random())
@@ -48,5 +48,5 @@ open class NormalLootItem (
         return name.equals(other.name, ignoreCase = true)
     }
 
-    override fun hashCode() = name.lowercase(Locale.US).hashCode()
+    override fun hashCode(): Int = name.lowercase(Locale.US).hashCode()
 }

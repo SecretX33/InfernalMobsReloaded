@@ -27,5 +27,6 @@ class KeyChain(plugin: Plugin) {
     val brokenCharmKey             = NamespacedKey(plugin, "broken_charm_marker")           // Short = 1
     val brokenCharmOriginalNameKey = NamespacedKey(plugin, "broken_charm_original_name")    // String
 
-    fun hasMountKey(entity: Entity) = entity.pdc.has(infernalMountKey, PersistentDataType.SHORT) || entity.pdc.has(infernalBatMountKey, PersistentDataType.SHORT)
+    fun hasMountKey(entity: Entity): Boolean = entity.pdc.has(infernalMountKey, PersistentDataType.SHORT)
+        || entity.pdc.has(infernalBatMountKey, PersistentDataType.SHORT)
 }

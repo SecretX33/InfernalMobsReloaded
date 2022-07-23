@@ -1,10 +1,11 @@
 package com.github.secretx33.infernalmobsreloaded.model
 
+import com.github.secretx33.infernalmobsreloaded.util.extension.enumSetAll
+import com.github.secretx33.infernalmobsreloaded.util.extension.enumSetOf
 import com.github.secretx33.infernalmobsreloaded.util.extension.random
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.potion.PotionEffectType
-import java.util.EnumSet
 import java.util.Locale
 import kotlin.math.max
 
@@ -100,9 +101,9 @@ enum class PotionEffectApplyMode {
 }
 
 enum class CharmParticleMode(val validApplyModes: Set<PotionEffectApplyMode>) {
-    NONE(EnumSet.allOf(PotionEffectApplyMode::class.java)),
-    SELF_ONCE(EnumSet.of(PotionEffectApplyMode.SELF_PERMANENT)),
-    SELF_WHEN_APPLIED(EnumSet.of(PotionEffectApplyMode.SELF_RECURRENT, PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
-    TARGET_WHEN_APPLIED(EnumSet.of(PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
-    BOTH_WHEN_APPLIED(EnumSet.of(PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
+    NONE(enumSetAll<PotionEffectApplyMode>()),
+    SELF_ONCE(enumSetOf(PotionEffectApplyMode.SELF_PERMANENT)),
+    SELF_WHEN_APPLIED(enumSetOf(PotionEffectApplyMode.SELF_RECURRENT, PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
+    TARGET_WHEN_APPLIED(enumSetOf(PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
+    BOTH_WHEN_APPLIED(enumSetOf(PotionEffectApplyMode.SELF_ON_HIT, PotionEffectApplyMode.TARGET_ON_HIT, PotionEffectApplyMode.BOTH_ON_HIT)),
 }
