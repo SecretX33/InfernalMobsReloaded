@@ -12,7 +12,6 @@ import com.google.common.cache.CacheBuilder
 import com.palmergames.bukkit.towny.TownyAPI
 import io.papermc.paper.event.entity.EntityMoveEvent
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -39,6 +38,7 @@ class TownyListener(
     private val mobsManager: InfernalMobsManager,
     private val bossBarManager: BossBarManager,
     private val log: Logger,
+    private val coroutineScope: CoroutineScope,
     eventBus: EventBus,
 ) : Listener {
 
@@ -70,7 +70,7 @@ class TownyListener(
     private fun EntityMoveEvent.scheduleMobRemoval() {
         removalCache.put(entity.uniqueId, true)
         val wEntity = WeakReference(entity)
-        CoroutineScope(Dispatchers.Default).launch {
+        coroutineScope.launch {
             delay(removalDelay)
             val entity = wEntity.get()?.takeIf { it.isValid && !it.isDead && it.isInsideProtectedTown() }
                 ?: return@launch

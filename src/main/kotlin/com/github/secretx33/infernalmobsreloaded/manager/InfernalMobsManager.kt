@@ -26,7 +26,6 @@ import com.github.secretx33.infernalmobsreloaded.util.extension.toUuid
 import com.google.common.collect.MultimapBuilder
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -59,8 +58,9 @@ class InfernalMobsManager (
     private val abilityConfig: AbilityConfig,
     private val infernalMobTypesRepo: InfernalMobTypesRepo,
     private val particlesHelper: ParticlesHelper,
-    private val abilityHelper: AbilityHelper,
+    private val infernalAbilityManager: InfernalAbilityManager,
     private val log: Logger,
+    private val coroutineScope: CoroutineScope,
     eventBus: EventBus,
 ) {
     private val infernalMobParticleTasks = ConcurrentHashMap<UUID, Job>()   // stores the job currently emitting infernal particles
@@ -104,7 +104,7 @@ class InfernalMobsManager (
             addPdcKeysToInfernal(infernalType, event)
             addInfernalCustomAttribs(infernalType)
         }
-        abilityHelper.addAbilityEffects(entity)
+        infernalAbilityManager.addAbilityEffects(entity)
     }
 
     private fun LivingEntity.addInfernalCustomAttribs(infernalType: InfernalMobType) {
@@ -213,7 +213,7 @@ class InfernalMobsManager (
         val particleSpread = particleSpread
         val delay = delayBetweenParticleEmission
 
-        val job = CoroutineScope(Dispatchers.Default).launch {
+        val job = coroutineScope.launch {
             delay(100L)  // delay to give entity time to load
             while (isActive && !entity.isDead && entity.isValid) {
                 particlesHelper.sendParticle(entity, particleType, particleSpread)
@@ -253,16 +253,16 @@ class InfernalMobsManager (
 
     fun unloadInfernalMob(entity: LivingEntity) = entity.cancelAllInfernalTasks()
 
-    fun startTargetAbilityTasks(entity: LivingEntity, target: LivingEntity)
-        = infernalMobAbilityTasks.putAll(entity.uniqueId, abilityHelper.startTargetAbilityTasks(entity, target))
+    fun startTargetAbilityTasks(entity: LivingEntity, target: LivingEntity) =
+        infernalMobAbilityTasks.putAll(entity.uniqueId, infernalAbilityManager.startTargetAbilityTasks(entity, target))
 
-    fun triggerOnDamageDoneAbilities(event: InfernalDamageDoneEvent)
-        = abilityHelper.triggerOnDamageDoneAbilities(event)
+    fun triggerOnDamageDoneAbilities(event: InfernalDamageDoneEvent) =
+        infernalAbilityManager.triggerOnDamageDoneAbilities(event)
 
-    fun triggerOnDamageTakenAbilities(event: InfernalDamageTakenEvent)
-        = abilityHelper.triggerOnDamageTakenAbilities(event)
+    fun triggerOnDamageTakenAbilities(event: InfernalDamageTakenEvent) =
+        infernalAbilityManager.triggerOnDamageTakenAbilities(event)
 
-    fun triggerOnDeathAbilities(entity: LivingEntity) = abilityHelper.triggerOnDeathAbilities(entity)
+    fun triggerOnDeathAbilities(entity: LivingEntity) = infernalAbilityManager.triggerOnDeathAbilities(entity)
 
     private fun LivingEntity.cancelAllInfernalTasks() {
         cancelParticleTask(this) // cancel particle task

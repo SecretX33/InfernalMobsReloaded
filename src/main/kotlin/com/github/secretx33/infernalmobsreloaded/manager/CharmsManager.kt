@@ -16,7 +16,6 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.collect.HashBasedTable
 import com.google.common.collect.MultimapBuilder
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -42,6 +41,7 @@ class CharmsManager(
     private val charmsRepo: CharmsRepo,
     private val lootItemsRepo: LootItemsRepo,
     private val log: Logger,
+    private val coroutineScope: CoroutineScope,
     eventBus: EventBus,
 ) {
 
@@ -60,9 +60,9 @@ class CharmsManager(
         .expireAfterWrite((charmsRepo.getHighestEffectDelay() * 1000.0).toLong(), TimeUnit.MILLISECONDS)
         .build<Pair<UUID, CharmEffect>, Long>()
 
-    fun areCharmsAllowedOnWorld(world: World) = charmsRepo.areCharmsAllowedOnWorld(world)
+    fun areCharmsAllowedOnWorld(world: World): Boolean = charmsRepo.areCharmsAllowedOnWorld(world)
 
-    private fun Player.isOnCharmEnabledWorld() = areCharmsAllowedOnWorld(world)
+    private fun Player.isOnCharmEnabledWorld(): Boolean = areCharmsAllowedOnWorld(world)
 
     fun updateCharmEffects(player: Player) {
         // player is not on a charm effects enabled world
@@ -122,7 +122,7 @@ class CharmsManager(
         // if effect task is already running
         if (periodicEffects.contains(uniqueId, charmEffect)) return
 
-        val job = CoroutineScope(Dispatchers.Default).launch {
+        val job = coroutineScope.launch {
             delay((charmEffect.getDelay() * 1000.0).toLong())
 
             while (isActive && isValid && !isDead) {

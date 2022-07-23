@@ -31,10 +31,8 @@ import com.github.secretx33.infernalmobsreloaded.util.extension.random
 import com.github.secretx33.infernalmobsreloaded.util.extension.runSync
 import com.github.secretx33.infernalmobsreloaded.util.extension.suspendSync
 import com.github.secretx33.infernalmobsreloaded.util.extension.toUuid
-import com.google.common.collect.Sets
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -87,6 +85,7 @@ import org.bukkit.util.Vector
 import toothpick.InjectConstructor
 import java.lang.StrictMath.pow
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadLocalRandom
 import java.util.logging.Logger
 import javax.inject.Singleton
@@ -100,7 +99,7 @@ import kotlin.math.sqrt
 
 @Singleton
 @InjectConstructor
-class AbilityHelper (
+class InfernalAbilityManager (
     private val plugin: Plugin,
     private val config: Config,
     private val messages: Messages,
@@ -110,11 +109,12 @@ class AbilityHelper (
     private val wgChecker: WorldGuardChecker,
     private val particlesHelper: ParticlesHelper,
     private val infernalMobTypesRepo: InfernalMobTypesRepo,
+    private val coroutineScope: CoroutineScope,
     private val log: Logger,
     eventBus: EventBus,
 ){
-    private val blockModifications = Sets.newConcurrentHashSet<BlockModification>()
-    private val blocksBlackList = Sets.newConcurrentHashSet<Location>()
+    private val blockModifications = ConcurrentHashMap.newKeySet<BlockModification>()
+    private val blocksBlackList = ConcurrentHashMap.newKeySet<Location>()
 
     init {
         eventBus.subscribe<PluginUnload>(this, 40) { revertPendingBlockModifications() }
@@ -281,7 +281,7 @@ class AbilityHelper (
     fun startTargetAbilityTasks(entity: LivingEntity, target: LivingEntity): List<Job> {
         val abilities = entity.getAbilities() ?: return emptyList()
 
-        val jobList = ArrayList<Job>()
+        val jobList = mutableListOf<Job>()
         abilities.forEach {
             when (it) {
                 Ability.ARCHER -> makeArcherTask(entity, target)
@@ -296,12 +296,12 @@ class AbilityHelper (
                 Ability.THIEF -> makeThiefTask(entity, target)
                 Ability.WEBBER -> makeWebberTask(entity, target)
                 else -> null
-            }?.let { job -> jobList.add(job) }
+            }?.let(jobList::add)
         }
         return jobList
     }
 
-    private fun makeArcherTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeArcherTask(entity: LivingEntity, target: LivingEntity) = coroutineScope.launch {
         val nearbyRange = abilityConfig.getNearbyRange(Ability.ARCHER, 4.0)
         val speed = abilityConfig.getProjectileSpeed(Ability.ARCHER, 2.2)
         val delay = abilityConfig.getDouble(AbilityConfigKeys.ARCHER_ARROW_DELAY, minValue = 0.001).toLongDelay()
@@ -325,7 +325,7 @@ class AbilityHelper (
         }
     }
 
-    private fun makeCallTheGangTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeCallTheGangTask(entity: LivingEntity, target: LivingEntity) = coroutineScope.launch {
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.CALL_THE_GANG, 2.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.CALL_THE_GANG, 0.025)
 
@@ -349,7 +349,7 @@ class AbilityHelper (
         }
     }
 
-    private fun makeGhastlyTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeGhastlyTask(entity: LivingEntity, target: LivingEntity) = coroutineScope.launch {
         val nearbyRange = abilityConfig.getNearbyRange(Ability.GHASTLY, 4.0)
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.GHASTLY, 1.5).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.GHASTLY, 0.25)
@@ -367,7 +367,7 @@ class AbilityHelper (
         }
     }
 
-    private fun makeMorphTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeMorphTask(entity: LivingEntity, target: LivingEntity) = coroutineScope.launch {
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.MORPH, 1.0).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.MORPH, 0.01)
 
@@ -413,7 +413,7 @@ class AbilityHelper (
         }
     }
 
-    private fun makeMultiGhastlyTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeMultiGhastlyTask(entity: LivingEntity, target: LivingEntity) = coroutineScope.launch {
         val nearbyRange = abilityConfig.getNearbyRange(Ability.MULTI_GHASTLY, 4.0)
         val delay = abilityConfig.getDouble(AbilityConfigKeys.MULTI_GHASTLY_FIREBALL_DELAY, minValue = 0.001).toLongDelay()
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.MULTI_GHASTLY, 2.0).toLongDelay()
@@ -437,7 +437,7 @@ class AbilityHelper (
         }
     }
 
-    private fun makeNecromancerTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeNecromancerTask(entity: LivingEntity, target: LivingEntity) = coroutineScope.launch {
         val nearbyRange = abilityConfig.getNearbyRange(Ability.NECROMANCER, 4.0)
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.NECROMANCER, 1.25).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.NECROMANCER, 0.25)
@@ -455,7 +455,7 @@ class AbilityHelper (
         }
     }
 
-    private fun makePotionsTasks(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makePotionsTasks(entity: LivingEntity, target: LivingEntity) = coroutineScope.launch {
         val nearbyRange = abilityConfig.getNearbyRange(Ability.POTIONS, 4.0)
         val chance = abilityConfig.getAbilityChance(Ability.POTIONS, 0.05)
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.POTIONS, 1.0).toLongDelay()
@@ -509,7 +509,7 @@ class AbilityHelper (
         return this
     }
 
-    private fun makeTeleportTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeTeleportTask(entity: LivingEntity, target: LivingEntity) = coroutineScope.launch {
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.TELEPORT, 2.5).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.TELEPORT, 0.6)
 
@@ -537,7 +537,7 @@ class AbilityHelper (
 
     private fun Entity.isWithinDistance(distance: Double, other: Entity): Boolean = world.uid == other.world.uid && location.distance(other.location) < distance
 
-    private fun makeThiefTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeThiefTask(entity: LivingEntity, target: LivingEntity) = coroutineScope.launch {
         // if thief ability should affect only players and target is not one, return
         val affectOnlyPlayers = abilityConfig.getAffectsOnlyPlayers(Ability.THIEF, true)
         if (affectOnlyPlayers && target.type != EntityType.PLAYER || target.equipment == null) return@launch
@@ -589,7 +589,7 @@ class AbilityHelper (
 
     private fun ItemStack.isStolen() = itemMeta?.pdc?.has(keyChain.stolenItemByThiefKey, PersistentDataType.SHORT) == true
 
-    private fun makeTosserTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeTosserTask(entity: LivingEntity, target: LivingEntity) = coroutineScope.launch {
         val nearbyRange = abilityConfig.getNearbyRange(Ability.TOSSER, 4.0)
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.TOSSER, 1.5).toLongDelay()
         val chance = abilityConfig.getAbilityChance(Ability.TOSSER, 0.5)
@@ -614,7 +614,7 @@ class AbilityHelper (
         }
     }
 
-    private fun makeWebberTask(entity: LivingEntity, target: LivingEntity) = CoroutineScope(Dispatchers.Default).launch {
+    private fun makeWebberTask(entity: LivingEntity, target: LivingEntity) = coroutineScope.launch {
         val chance = abilityConfig.getAbilityChance(Ability.WEBBER, 0.08)
         val recheckDelay = abilityConfig.getRecheckDelay(Ability.WEBBER, 1.5).toLongDelay()
 
@@ -746,14 +746,14 @@ class AbilityHelper (
 
         if (haunted) {
             ghost.world.playSound(ghost.eyeLocation, Sound.ENTITY_ENDERMAN_SCREAM, 0.9f, 1f)
-            CoroutineScope(Dispatchers.Default).launch {
+            coroutineScope.launch {
                 delay(300L)
                 ghost.world.playSound(ghost.eyeLocation, Sound.ENTITY_ENDERMAN_STARE, 0.6f, 1f)
             }
         }
         else ghost.world.playSound(ghost.location, Sound.AMBIENT_CAVE, 1f, random.nextFloat() + 0.5f)
 
-        CoroutineScope(Dispatchers.Default).launch {
+        coroutineScope.launch {
             repeat(6) {
                 if (haunted) particlesHelper.sendParticle(ghost, Particle.SMOKE_LARGE, 2.5, 90)
                 else particlesHelper.sendParticle(ghost, Particle.CLOUD, 2.0, 35)

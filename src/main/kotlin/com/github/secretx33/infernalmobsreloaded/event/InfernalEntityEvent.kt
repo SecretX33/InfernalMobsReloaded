@@ -12,9 +12,8 @@ import org.bukkit.event.HandlerList
  * @property infernalType InfernalMobType What type the infernal entity is
  * @property world World the world the infernal is
  * @property entityType EntityType What type of vanilla entity the mob is
- * @constructor
  */
-abstract class InfernalEntityEvent (
+abstract class InfernalEntityEvent(
     val entity: LivingEntity,
     val infernalType: InfernalMobType,
 ) : Event() {

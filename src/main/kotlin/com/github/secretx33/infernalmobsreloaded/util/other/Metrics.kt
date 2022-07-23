@@ -1,7 +1,5 @@
 package com.github.secretx33.infernalmobsreloaded.util.other
 
-import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
-import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
 import com.github.secretx33.infernalmobsreloaded.model.PluginMetricsId
 import kotlinx.coroutines.*
 import org.bukkit.Bukkit
@@ -12,7 +10,6 @@ import java.io.*
 import java.net.URL
 import java.util.*
 import java.util.concurrent.*
-import java.util.concurrent.atomic.AtomicReference
 import java.util.function.*
 import java.util.logging.Level
 import java.util.zip.GZIPOutputStream
@@ -28,7 +25,7 @@ import javax.net.ssl.HttpsURLConnection
 class Metrics(
     private val plugin: JavaPlugin,
     serviceId: PluginMetricsId,
-    eventBus: EventBus,
+    coroutineScope: CoroutineScope,
 ) {
 
     private val metricsBase: MetricsBase
@@ -41,8 +38,7 @@ class Metrics(
         if (!config.isSet("serverUuid")) {
             createDefaultConfig(config, configFile)
         }
-        metricsBase = makeMetricsBase(config, serviceId.value)
-        eventBus.subscribe<PluginUnload>(this, 60) { metricsBase.stopSubmitting() }
+        metricsBase = makeMetricsBase(config, serviceId.value, coroutineScope)
     }
 
     private fun createDefaultConfig(config: YamlConfiguration, configFile: File) {
@@ -64,7 +60,11 @@ class Metrics(
         runCatching { config.save(configFile) }
     }
 
-    private fun makeMetricsBase(config: YamlConfiguration, serviceId: Int): MetricsBase {
+    private fun makeMetricsBase(
+        config: YamlConfiguration,
+        serviceId: Int,
+        coroutineScope: CoroutineScope,
+    ): MetricsBase {
         // Load the data
         val enabled = config.getBoolean("enabled", true)
         val serverUUID = config.getString("serverUuid") ?: UUID.randomUUID().toString()
@@ -85,6 +85,7 @@ class Metrics(
             logErrors = logErrors,
             logSentData = logSentData,
             logResponseStatusText = logResponseStatusText,
+            pluginScope = coroutineScope,
         )
     }
 
@@ -154,10 +155,10 @@ class Metrics(
         private val infoLogger: Consumer<String>,
         private val logErrors: Boolean,
         private val logSentData: Boolean,
-        private val logResponseStatusText: Boolean
+        private val logResponseStatusText: Boolean,
+        private val pluginScope: CoroutineScope,
     ) {
         private val customCharts = mutableSetOf<CustomChart>()
-        private val submitJob = AtomicReference<Job?>(null)
 
         init {
             checkRelocation()
@@ -168,11 +169,6 @@ class Metrics(
 
         fun addCustomChart(chart: CustomChart) {
             customCharts.add(chart)
-        }
-
-        fun stopSubmitting() {
-            val job = submitJob.getAndSet(null)
-            job?.cancel()
         }
 
         private fun startSubmitting() {
@@ -189,9 +185,7 @@ class Metrics(
             val initialDelay = (ONE_MINUTE * (3 + Math.random() * 3)).toLong() // 3 - 6 minutes after the server started
             val secondDelay = (ONE_MINUTE * (Math.random() * 30)).toLong()     // 1 - 30 minutes after the initial delay
 
-            CoroutineScope(Dispatchers.Default).launch {
-                if (!submitJob.compareAndSet(null, coroutineContext.job)) return@launch
-
+            pluginScope.launch {
                 delay(initialDelay)
                 submitData()
                 delay(secondDelay)

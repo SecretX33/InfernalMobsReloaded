@@ -5,7 +5,6 @@ import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.KilledByPoison
 import com.github.secretx33.infernalmobsreloaded.util.extension.runSync
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.bukkit.entity.LivingEntity
@@ -27,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap
 class LethalPoisonListener(
     private val plugin: Plugin,
     private val config: Config,
+    private val coroutineScope: CoroutineScope,
 ) : Listener {
 
     private val scheduledLethalTicks = ConcurrentHashMap.newKeySet<UUID>()
@@ -59,7 +59,7 @@ class LethalPoisonListener(
         // add entity to the lethal ticks schedule
         scheduledLethalTicks.add(uniqueId)
 
-        CoroutineScope(Dispatchers.Default).launch {
+        coroutineScope.launch {
             delay(poison.getTickDelay())
             // if entity is not poisoned anymore, or has its health above the threshold, don't do anything
             if (isDead || !isValid || !isPoisoned() || uniqueId !in scheduledLethalTicks || health > (MIN_HP_VALUE_TO_DIE_OF_POISON + 0.5)) {
@@ -92,7 +92,7 @@ class LethalPoisonListener(
         player.killByPoison()
     }
 
-    private fun LivingEntity.killByPoison() {
+    private fun LivingEntity.killByPoison() =
         runSync(plugin) {
             val event = EntityDamageEvent(this, DamageCause.POISON, 100_000.0)
             if (!event.callEvent()) return@runSync
@@ -100,7 +100,6 @@ class LethalPoisonListener(
             damage(event.finalDamage)
             scheduledLethalTicks -= uniqueId
         }
-    }
 
     private val killedByPoison: KilledByPoison
         get() = config.getEnum(ConfigKeys.LETHAL_POISON_TARGETS)

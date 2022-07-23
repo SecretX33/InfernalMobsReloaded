@@ -21,6 +21,11 @@ import com.github.secretx33.infernalmobsreloaded.util.extension.findRegistrableC
 import com.github.secretx33.infernalmobsreloaded.util.extension.replace
 import com.github.secretx33.infernalmobsreloaded.util.other.Metrics
 import com.github.secretx33.infernalmobsreloaded.util.other.getEnvConfiguration
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import me.mattstudios.msg.adventure.AdventureMessage
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.Filter
@@ -45,6 +50,7 @@ class InfernalMobsReloaded : JavaPlugin() {
         bind<PluginMetricsId>().toInstance(PluginMetricsId(11253))
         bind<Set<KClass<out SubCommand>>>().withName("subcommands").toInstance(findClasspathSubcommands())
         bind<AdventureMessage>().toInstance(AdventureMessage.create())
+        bind<CoroutineScope>().toInstance(CoroutineScope(Dispatchers.Default + SupervisorJob() + CoroutineName(PLUGIN_NAME)))
     }
 
     override fun onLoad() {
@@ -67,7 +73,12 @@ class InfernalMobsReloaded : JavaPlugin() {
             getInstance<Commands>()
             getInstance<Metrics>()
             registerLoggerFilters(getInstance<InfernalDeathConsoleMessageFilter>())
-            getInstance<EventBus>().post(PluginLoad())
+            getInstance<EventBus>().apply {
+                subscribe<PluginUnload>(this@InfernalMobsReloaded, Integer.MAX_VALUE - 1) {
+                    getInstance<CoroutineScope>().cancel()
+                }
+                post(PluginLoad())
+            }
         }
     }
 
@@ -131,6 +142,7 @@ class InfernalMobsReloaded : JavaPlugin() {
                 && scope.getInstance<Config>().get(ConfigKeys.SILKSPAWNERS_HANDLES_SPAWNER_DROP)
 
     companion object {
+        val PLUGIN_NAME: String = InfernalMobsReloaded::class.java.simpleName
         private const val PLUGIN_PACKAGE = "com.github.secretx33.infernalmobsreloaded"
         private var _scope: Scope? = null
         val scope: Scope get() = _scope!!

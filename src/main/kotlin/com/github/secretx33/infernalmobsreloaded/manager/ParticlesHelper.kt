@@ -6,7 +6,6 @@ import com.github.secretx33.infernalmobsreloaded.config.Config
 import com.github.secretx33.infernalmobsreloaded.config.ConfigKeys
 import com.github.secretx33.infernalmobsreloaded.model.Ability
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -17,7 +16,10 @@ import javax.inject.Singleton
 
 @Singleton
 @InjectConstructor
-class ParticlesHelper(private val config: Config) {
+class ParticlesHelper(
+    private val config: Config,
+    private val coroutineScope: CoroutineScope,
+) {
 
     fun sendParticle(loc: Location, particle: Particle, spread: Double, amount: Int = particleAmount) {
         if (!globalEffectsEnabled) return
@@ -36,7 +38,7 @@ class ParticlesHelper(private val config: Config) {
     }
 
     fun sendParticle(entity: LivingEntity, ability: Ability) {
-        CoroutineScope(Dispatchers.Default).launch {
+        coroutineScope.launch {
             when (ability) {
                 Ability.SECOND_WIND -> XParticle.circle(entity.width * 1.2, entity.width * 1.5, 0.5, 1.0, 2.0, particleDisplay(Particle.TOTEM, entity.location, 20, defaultOffsetVector))
                 Ability.THORNMAIL -> XParticle.filledCircle(1.0, 0.5, 0.5, particleDisplay(Particle.WARPED_SPORE, entity.location.add(0.0, entity.height * 0.5, 0.0), 100, defaultOffsetVector))
