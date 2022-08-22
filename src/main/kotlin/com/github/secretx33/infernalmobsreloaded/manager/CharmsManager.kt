@@ -4,13 +4,13 @@ import com.github.secretx33.infernalmobsreloaded.eventbus.EventBus
 import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginLoad
 import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginReloaded
 import com.github.secretx33.infernalmobsreloaded.eventbus.internalevent.PluginUnload
-import com.github.secretx33.infernalmobsreloaded.manager.InvisibilityHelper.isInvisibleOrVanished
 import com.github.secretx33.infernalmobsreloaded.model.CharmEffect
 import com.github.secretx33.infernalmobsreloaded.model.CharmParticleMode
 import com.github.secretx33.infernalmobsreloaded.model.PotionEffectApplyMode
 import com.github.secretx33.infernalmobsreloaded.repository.CharmsRepo
 import com.github.secretx33.infernalmobsreloaded.repository.LootItemsRepo
 import com.github.secretx33.infernalmobsreloaded.util.extension.isAir
+import com.github.secretx33.infernalmobsreloaded.util.extension.isInvisibleOrVanished
 import com.github.secretx33.infernalmobsreloaded.util.extension.runSync
 import com.google.common.cache.CacheBuilder
 import com.google.common.collect.HashBasedTable
@@ -51,10 +51,10 @@ class CharmsManager(
         eventBus.subscribe<PluginReloaded>(this, 20) { reload() }
     }
 
-    private val permanentEffects = HashBasedTable.create<UUID, CharmEffect, PotionEffectType>()               // PlayerUuid, charmEffect, PotionEffect
-    private val periodicEffects  = HashBasedTable.create<UUID, CharmEffect, Job>()                            // PlayerUuid, charmEffect, Coroutine
-    private val targetEffects    = MultimapBuilder.hashKeys().hashSetValues().build<UUID, CharmEffect>()      // PlayerUuid, charmEffect
-    private var cooldowns        = makeCooldownsCache()
+    private val permanentEffects = HashBasedTable.create<UUID, CharmEffect, PotionEffectType>()            // PlayerUuid, charmEffect, PotionEffect
+    private val periodicEffects  = HashBasedTable.create<UUID, CharmEffect, Job>()                         // PlayerUuid, charmEffect, Coroutine
+    private val targetEffects = MultimapBuilder.hashKeys().hashSetValues().build<UUID, CharmEffect>()      // PlayerUuid, charmEffect
+    private var cooldowns = makeCooldownsCache()
 
     private fun makeCooldownsCache() = CacheBuilder.newBuilder()
         .expireAfterWrite((charmsRepo.getHighestEffectDelay() * 1000.0).toLong(), TimeUnit.MILLISECONDS)
@@ -72,28 +72,32 @@ class CharmsManager(
         }
 
         val invMap = player.inventoryMap
-        val charms = invMap.filterKeys { charmsRepo.isItemRequiredByCharmEffect(it) }
+        val charms = invMap.filterKeys(charmsRepo::isItemRequiredByCharmEffect)
         // if player has no charms in his inventory
         if (charms.isEmpty()) {
             cancelAllCharmTasks(player)
             return
         }
         // owned loot items, because charms may require loot items to work
-        val lootItems = invMap.filterKeys { lootItemsRepo.isLootItem(it) }.mapKeys { lootItemsRepo.getLootItemTag(it.key) } // TODO("maybe change invMap to charms again")
-        val mainHand = player.inventory.itemInMainHand.let { lootItemsRepo.getLootItemTagOrNull(it) }
+        val lootItems = invMap.filterKeys(lootItemsRepo::isLootItem).mapKeys { lootItemsRepo.getLootItemTag(it.key) } // TODO("maybe change invMap to charms again")
+        val mainHand = player.inventory.itemInMainHand.let(lootItemsRepo::getLootItemTagOrNull)
 
         // charmEffects present in all loot items in player's inventory
         val effects = charms.flatMap { charmsRepo.getCharmEffects(it.key) }.filter { it.requiredItems.isNotEmpty() } + player.getActiveCharms()
 
         // start valid effects and cancel invalid effects
         effects.forEach {
-            if (it.validateEffect(lootItems, mainHand)) player.startCharmEffect(it)
-            else player.cancelCharmEffect(it)
+            if (it.isEffectApplicableForInventory(lootItems, mainHand)) {
+                player.startCharmEffect(it)
+            } else {
+                player.cancelCharmEffect(it)
+            }
         }
 //        println("2. lootItems = ${lootItems.keys.joinToString()}, effects = ${effects.joinToString(separator = ",\n")}")
     }
 
-    private fun Player.getActiveCharms() = permanentEffects.row(uniqueId).keys + periodicEffects.row(uniqueId).keys + targetEffects.get(uniqueId)
+    private fun Player.getActiveCharms(): Set<CharmEffect> =
+        permanentEffects.row(uniqueId).keys + periodicEffects.row(uniqueId).keys + targetEffects.get(uniqueId)
 
     private fun Player.startCharmEffect(charmEffect: CharmEffect) {
 //        println("2. Starting effect of charm '${charmEffect.name}' -> $charmEffect'")
@@ -112,10 +116,11 @@ class CharmsManager(
     private fun Player.addPermanentCharmEffect(charmEffect: CharmEffect) {
         // if effect is already applied
         if (permanentEffects.contains(uniqueId, charmEffect)) return
+
         addPotionEffect(PotionEffect(charmEffect.potionEffect, Int.MAX_VALUE, charmEffect.getPotency()))
         spawnCharmParticles(charmEffect)
         permanentEffects.put(uniqueId, charmEffect, charmEffect.potionEffect)
-        charmEffect.playerMessage?.let { msg -> sendMessage(msg) }
+        charmEffect.playerMessage?.let(::sendMessage)
     }
 
     private fun Player.addRecurrentCharmEffect(charmEffect: CharmEffect) {
@@ -128,7 +133,7 @@ class CharmsManager(
             while (isActive && isValid && !isDead) {
                 runSync(plugin) { addPotionEffect(PotionEffect(charmEffect.potionEffect, (charmEffect.getDuration() * 20.0).toInt(), charmEffect.getPotency())) }
                 spawnCharmParticles(charmEffect)
-                charmEffect.playerMessage?.let { sendMessage(it) }
+                charmEffect.playerMessage?.let(::sendMessage)
                 delay((charmEffect.getDelay() * 1000.0).toLong())
             }
         }
@@ -137,7 +142,9 @@ class CharmsManager(
 
     private fun LivingEntity.spawnCharmParticles(charmEffect: CharmEffect) {
         if (this is Player && isInvisibleOrVanished()) return
-        val particle = charmEffect.particle?.takeIf { charmEffect.particleMode != CharmParticleMode.NONE } ?: return
+
+        val particle = charmEffect.particle?.takeIf { charmEffect.particleMode != CharmParticleMode.NONE }
+            ?: return
         world.spawnParticle(particle, eyeLocation, 100, 0.5, 1.0, 0.5)
     }
 
@@ -157,19 +164,17 @@ class CharmsManager(
             if (it.enabledTargetParticle) target.spawnCharmParticles(it)
 
             // messages
-            it.playerMessage?.let { msg -> player.sendMessage(msg) }
-            if (target is Player) it.targetMessage?.let { msg -> target.sendMessage(msg) }
+            it.playerMessage?.let(player::sendMessage)
+            if (target is Player) it.targetMessage?.let(target::sendMessage)
         }
     }
 
-    private fun CharmEffect.isNotCooldown(player: Player) = cooldowns.getIfPresent(Pair(player.uniqueId, this)).let { it == null || it < System.currentTimeMillis() }.also { if (it) cooldowns.put(Pair(player.uniqueId, this), System.currentTimeMillis() + (getDelay() * 1000.0).toLong()) }
-
+    private fun CharmEffect.isNotCooldown(player: Player) = cooldowns.getIfPresent(Pair(player.uniqueId, this))
+        .let { it == null || it < System.currentTimeMillis() }.also { if (it) cooldowns.put(Pair(player.uniqueId, this), System.currentTimeMillis() + (getDelay() * 1000.0).toLong()) }
 
     private fun Player.cancelCharmEffect(charmEffect: CharmEffect) {
         when (charmEffect.effectApplyMode) {
-            PotionEffectApplyMode.SELF_PERMANENT -> {
-                permanentEffects.remove(uniqueId, charmEffect)?.let { removePotionEffect(it) }
-            }
+            PotionEffectApplyMode.SELF_PERMANENT -> permanentEffects.remove(uniqueId, charmEffect)?.let(::removePotionEffect)
             PotionEffectApplyMode.SELF_RECURRENT -> periodicEffects.remove(uniqueId, charmEffect)?.cancel()
             PotionEffectApplyMode.SELF_ON_HIT,
             PotionEffectApplyMode.TARGET_ON_HIT,
@@ -183,7 +188,7 @@ class CharmsManager(
             .associateTo(HashMap()) { it.value to it.index }
 
     fun cancelAllCharmTasks(player: Player) {
-        permanentEffects.row(player.uniqueId).values.forEach { player.removePotionEffect(it) }
+        permanentEffects.row(player.uniqueId).values.forEach(player::removePotionEffect)
         permanentEffects.rowKeySet().remove(player.uniqueId)
         periodicEffects.row(player.uniqueId).values.forEach { it.cancel() }
         periodicEffects.rowKeySet().remove(player.uniqueId)

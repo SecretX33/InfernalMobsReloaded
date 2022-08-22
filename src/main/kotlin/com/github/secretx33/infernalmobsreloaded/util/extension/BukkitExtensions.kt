@@ -23,6 +23,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataHolder
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
+import org.bukkit.potion.PotionEffectType
 import toothpick.ktp.extension.getInstance
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -98,6 +99,12 @@ val EntityEquipment.contents: List<ItemStack>
 @Suppress("UNNECESSARY_SAFE_CALL", "UselessCallOnCollection")
 val EntityEquipment.contentsMap: Map<EquipmentSlot, ItemStack>
     get() = EquipmentSlot.values()
-        .mapNotNull { slot -> getItem(slot)?.let { slot to it } }
-        .filter { !it.second.isAir() }
+        .mapNotNull { slot -> getItem(slot)?.takeUnless { it.isAir() }?.let { slot to it } }
         .toMap()
+
+fun Player.isInvisibleOrVanished(): Boolean = isVanished() || isInvisible(this)
+
+private fun Player.isVanished(): Boolean = getMetadata("vanished").any { it.asBoolean() }
+
+private fun isInvisible(player: Player): Boolean = player.isInvisible
+    || player.activePotionEffects.any { it.type == PotionEffectType.INVISIBILITY && it.duration > 0 }

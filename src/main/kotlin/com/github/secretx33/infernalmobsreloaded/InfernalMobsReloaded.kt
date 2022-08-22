@@ -23,7 +23,6 @@ import com.github.secretx33.infernalmobsreloaded.util.other.Metrics
 import com.github.secretx33.infernalmobsreloaded.util.other.getEnvConfiguration
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import me.mattstudios.msg.adventure.AdventureMessage
@@ -50,7 +49,7 @@ class InfernalMobsReloaded : JavaPlugin() {
         bind<PluginMetricsId>().toInstance(PluginMetricsId(11253))
         bind<Set<KClass<out SubCommand>>>().withName("subcommands").toInstance(findClasspathSubcommands())
         bind<AdventureMessage>().toInstance(AdventureMessage.create())
-        bind<CoroutineScope>().toInstance(CoroutineScope(Dispatchers.Default + SupervisorJob() + CoroutineName(PLUGIN_NAME)))
+        bind<CoroutineScope>().toInstance(CoroutineScope(SupervisorJob() + CoroutineName(PLUGIN_NAME)))
     }
 
     override fun onLoad() {
@@ -64,9 +63,7 @@ class InfernalMobsReloaded : JavaPlugin() {
     override fun onEnable() {
         KTP.setConfiguration(getEnvConfiguration())
         _scope = KTP.openScope(this) {
-            it.installModules(mod, module {
-                bind<Scope>().toInstance(it)
-            })
+            it.installModules(mod, module { bind<Scope>().toInstance(it) })
         }
         findAndRegisterClasspathListeners()
         scope.apply {

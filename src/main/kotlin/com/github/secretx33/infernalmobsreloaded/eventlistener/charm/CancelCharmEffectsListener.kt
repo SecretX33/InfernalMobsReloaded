@@ -28,33 +28,26 @@ class CancelCharmEffectsListener(
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    private fun PlayerQuitEvent.onPlayerQuit() {
-        player.cancelCharmEffects()
-    }
+    private fun PlayerQuitEvent.onPlayerQuit() = player.cancelCharmEffects()
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    private fun PlayerDeathEvent.onPlayerDeath() {
-        entity.cancelCharmEffects()
-    }
+    private fun PlayerDeathEvent.onPlayerDeath() = entity.cancelCharmEffects()
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    private fun PlayerItemBreakEvent.onItemBreak() {
+    private fun PlayerItemBreakEvent.onItemBreak() =
         runSync(plugin, 50L) { player.updateCharmEffects() }
-    }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    private fun PlayerChangedWorldEvent.onWorldChange() {
-        runSync(plugin, 50L) {
-            if (player.isOnCharmEnabledWorld()) player.updateCharmEffects()
-            else player.cancelCharmEffects()
-        }
-    }
+    private fun PlayerChangedWorldEvent.onWorldChange() = player.scheduleCharmCheck()
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    private fun PlayerTeleportEvent.onPlayerTeleport() {
-        runSync(plugin, 50L) {
-            if (player.isOnCharmEnabledWorld()) player.updateCharmEffects()
-            else player.cancelCharmEffects()
+    private fun PlayerTeleportEvent.onPlayerTeleport() = player.scheduleCharmCheck()
+
+    private fun Player.scheduleCharmCheck() = runSync(plugin, 50L) {
+        if (isOnCharmEnabledWorld()) {
+            updateCharmEffects()
+        } else {
+            cancelCharmEffects()
         }
     }
 

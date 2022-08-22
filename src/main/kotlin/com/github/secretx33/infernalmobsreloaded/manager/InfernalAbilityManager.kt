@@ -86,7 +86,6 @@ import toothpick.InjectConstructor
 import java.lang.StrictMath.pow
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ThreadLocalRandom
 import java.util.logging.Logger
 import javax.inject.Singleton
 import kotlin.math.atan
@@ -1078,8 +1077,8 @@ class InfernalAbilityManager (
 
     private fun LivingEntity.copyHpPercentage(entity: LivingEntity) {
         val oldHp = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
-        val oldPercentHp = entity.health / oldHp.value
         val newHp = getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
+        val oldPercentHp = entity.health / oldHp.value
         health = newHp.value * oldPercentHp
     }
 
@@ -1129,9 +1128,6 @@ class InfernalAbilityManager (
         blockModifications.forEach { it.unmake() }
         blockModifications.clear()
     }
-
-    private val random: ThreadLocalRandom
-        get() = ThreadLocalRandom.current()
 
     private companion object {
         val gson = Gson()

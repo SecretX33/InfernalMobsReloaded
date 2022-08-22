@@ -47,18 +47,18 @@ class CharmEffect (
         require(effectApplyMode in particleMode.validApplyModes) { "effectApplyMode has to be inside valid list of particleMode, but $effectApplyMode is not inside $particleMode's validApplyModes = ${particleMode.validApplyModes}" }
     }
 
-    fun getPotency() = max(0, potency.random() - 1)
+    fun getPotency(): Int = max(0, potency.random() - 1)
 
-    fun getDuration() = duration.random()
+    fun getDuration(): Double = duration.random()
 
-    fun getDelay() = delay.random()
+    fun getDelay(): Double = delay.random()
 
-    fun getMaxDelay() = delay.second
+    fun getMaxDelay(): Double = delay.second
 
-    val enabledSelfParticle
+    val enabledSelfParticle: Boolean
         get() = particle != null && (particleMode == CharmParticleMode.BOTH_WHEN_APPLIED || particleMode == CharmParticleMode.SELF_WHEN_APPLIED)
 
-    val enabledTargetParticle
+    val enabledTargetParticle: Boolean
         get() = particle != null && (particleMode == CharmParticleMode.BOTH_WHEN_APPLIED || particleMode == CharmParticleMode.TARGET_WHEN_APPLIED)
 
     /**
@@ -68,7 +68,7 @@ class CharmEffect (
      * @param inventory Map<String, Int> a list containing all loot items owned, mapped as (lootItemTag <-> slot)
      * @return Boolean if effect can be granted to the holder
      */
-    fun validateEffect(inventory: Map<String, Int>, mainHand: String?): Boolean {
+    fun isEffectApplicableForInventory(inventory: Map<String, Int>, mainHand: String?): Boolean {
         // no items should have this effect
         if (requiredItems.isEmpty()) return false
 
@@ -86,7 +86,7 @@ class CharmEffect (
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+        if (other === null || this::class.java != other::class.java) return false
 
         return name.lowercase(Locale.US) == (other as CharmEffect).name.lowercase(Locale.US)
     }

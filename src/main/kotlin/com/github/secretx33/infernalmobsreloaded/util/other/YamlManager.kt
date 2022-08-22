@@ -6,13 +6,11 @@ import kotlinx.coroutines.launch
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.Plugin
 import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
-import java.io.InputStreamReader
 import kotlin.math.max
 
-class YamlManager (
+class YamlManager(
     private val plugin: Plugin,
     path: String,
 ) : YamlConfiguration() {
@@ -199,9 +197,7 @@ class YamlManager (
 
     override fun load(file: File) {
         try {
-            FileInputStream(file).use { fis ->
-                super.load(InputStreamReader(fis, CHARSET))
-            }
+            file.inputStream().reader(CHARSET).use { super.load(it) }
         } catch (e: Exception) {
             e.printStackTrace()
         }

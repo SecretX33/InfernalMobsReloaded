@@ -53,7 +53,7 @@ class BossBarManager (
         }
     }
 
-    private fun manageInfernalBossBarsVisibility(player: Player, nearbyInfernals: Collection<LivingEntity>) {
+    private fun manageInfernalBossBarsVisibility(player: Player, nearbyInfernals: Iterable<LivingEntity>) {
         if (!bossBarEnabled) return
         val infernalUuids = nearbyInfernals.map { it.uniqueId }
         // filter the infernals further away and hide their bar from the player
@@ -101,6 +101,6 @@ class BossBarManager (
 
     private val bossBarShowHeight get() = config.getDouble(ConfigKeys.BOSS_BAR_SHOW_RANGE_HEIGHT, maxValue = 256.0)
 
-    private val bossBarRequireLineOfSight
-        get() = config.get<Boolean>(ConfigKeys.INFERNAL_BOSS_BAR_REQUIRE_LINE_OF_SIGHT)
+    private val bossBarRequireLineOfSight: Boolean
+        get() = config.get(ConfigKeys.INFERNAL_BOSS_BAR_REQUIRE_LINE_OF_SIGHT)
 }
